@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.IO;
 
 using Backsight.Editor.Properties;
+using Backsight.Data;
+using Backsight.Environment;
 
 namespace Backsight.Editor.FileStore
 {
@@ -57,10 +59,11 @@ namespace Backsight.Editor.FileStore
         /// Creates a brand new job.
         /// </summary>
         /// <param name="jobName">The user-perceived name for the job.</param>
+        /// <param name="layer">The map layer the job is for.</param>
         /// <returns>
         /// Information describing the state of the job.
         /// </returns>
-        public IJobInfo CreateJob(string jobName)
+        public IJobInfo CreateJob(string jobName, ILayer layer)
         {
             string jobFolder = Path.Combine(m_FolderName, jobName);
             if (Directory.Exists(jobFolder))
@@ -71,6 +74,15 @@ namespace Backsight.Editor.FileStore
             // Save the information in a job file
             string jobFileName = Path.Combine(jobFolder, jobName + ".cedx");
             JobFileInfo jfi = new JobFileInfo();
+            jfi.ConnectionString = ConnectionFactory.ConnectionString;
+            jfi.JobId = 0;
+
+            // Remember default entity types for points, lines, text, polygons
+            jfi.DefaultPointType = layer.DefaultPointType.Id;
+            jfi.DefaultLineType = layer.DefaultLineType.Id;
+            jfi.DefaultPolygonType = layer.DefaultPolygonType.Id;
+            jfi.DefaultTextType = layer.DefaultTextType.Id;
+
             IJobInfo result = JobFile.SaveJobFile(jobFileName, jfi);
 
             Settings.Default.LastJobName = jobName;

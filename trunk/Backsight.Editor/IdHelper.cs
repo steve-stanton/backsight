@@ -106,6 +106,9 @@ namespace Backsight.Editor
             // Get a list of all the available IDs for the specified entity type...
 
             IdManager idMan = CadastralMapModel.Current.IdManager;
+            if (idMan == null)
+                return 0;
+
             IdGroup group = idMan.GetGroup(ent);
             if (group==null)
                 return 0;

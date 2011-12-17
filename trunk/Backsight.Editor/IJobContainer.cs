@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using Backsight.Environment;
 namespace Backsight.Editor
 {
     /// <summary>
@@ -24,8 +25,9 @@ namespace Backsight.Editor
         /// Creates a brand new job.
         /// </summary>
         /// <param name="jobName">The user-perceived name for the job.</param>
+        /// <param name="layer">The map layer the job is for.</param>
         /// <returns>Information describing the state of the job.</returns>
-        IJobInfo CreateJob(string jobName);
+        IJobInfo CreateJob(string jobName, ILayer layer);
 
         /// <summary>
         /// Opens an editing job that was previously created.

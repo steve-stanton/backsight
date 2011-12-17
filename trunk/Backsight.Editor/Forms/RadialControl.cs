@@ -633,6 +633,7 @@ namespace Backsight.Editor.Forms
                 ShowUpdate();
 
                 // Disable the ID combo.
+                pointIdLabel.Enabled = false;
                 pointIdComboBox.Enabled = false;
             }
             else
@@ -655,6 +656,12 @@ namespace Backsight.Editor.Forms
                 EditingController controller = m_Cmd.Controller;
                 if (controller.IsAutoNumber)
                     pointIdComboBox.Enabled = false;
+
+                if (map.IdManager == null)
+                {
+                    pointIdLabel.Enabled = false;
+                    pointIdComboBox.Enabled = false;
+                }
             }
 
             // Get the view to de-select the from point. Then redraw it in light blue.

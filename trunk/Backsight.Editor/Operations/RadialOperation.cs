@@ -74,6 +74,23 @@ namespace Backsight.Editor.Operations
             m_Length = length;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RadialOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal RadialOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_Direction = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
+            m_Length = editDeserializer.ReadPersistent<Observation>(DataField.Length);
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub(DataField.To, editDeserializer.ReadPersistent<FeatureStub>(DataField.To));
+            dff.AddFeatureStub(DataField.Line, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line));
+            ProcessFeatures(dff);
+        }
+
         #endregion
 
         /// <summary>
@@ -436,23 +453,6 @@ void CeRadial::CreateAngleText ( CPtrList& text
 
             if (m_Line != null)
                 editSerializer.WritePersistent<FeatureStub>(DataField.Line, new FeatureStub(m_Line));
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RadialOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal RadialOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            m_Direction = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
-            m_Length = editDeserializer.ReadPersistent<Observation>(DataField.Length);
-
-            DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub(DataField.To, editDeserializer.ReadPersistent<FeatureStub>(DataField.To));
-            dff.AddFeatureStub(DataField.Line, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line));
-            ProcessFeatures(dff);
         }
     }
 }

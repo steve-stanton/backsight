@@ -16,6 +16,7 @@
 using System;
 using System.Windows.Forms;
 using Backsight.Editor.FileStore;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Forms
 {
@@ -83,8 +84,16 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
+            // Grab the layer the job is for
+            ILayer layer = (layerComboBox.SelectedItem as ILayer);
+            if (layer == null || layer.Id == 0)
+            {
+                MessageBox.Show("You must specify the editing layer for the job");
+                return;
+            }
+
             // Create the job
-            m_NewJob = m_Container.CreateJob(jobName);
+            m_NewJob = m_Container.CreateJob(jobName, layer);
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -101,6 +110,20 @@ namespace Backsight.Editor.Forms
         {
             DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void NewJobForm_Load(object sender, EventArgs e)
+        {
+            // Load the layers combo
+            IEnvironmentContainer ec = EnvironmentContainer.Current;
+            ILayer[] layers = EnvironmentContainer.Current.Layers;
+            layerComboBox.Items.AddRange(layers);
+
+            // Remove first item if it's blank
+            if (layerComboBox.Items.Count > 0 && layerComboBox.Items[0].ToString().Length == 0)
+                layerComboBox.Items.RemoveAt(0);
+
+            layerComboBox.SelectedIndex = 0;
         }
     }
 }

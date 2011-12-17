@@ -58,14 +58,18 @@ namespace Backsight.Editor.Forms
             this.offsetButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.entityTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.addLineCheckBox = new System.Windows.Forms.CheckBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.pointIdLabel = new System.Windows.Forms.Label();
             this.pointIdComboBox = new System.Windows.Forms.ComboBox();
-            this.entityTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
             editingHelpProvider = new Backsight.Editor.EditingHelpProvider();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // editingHelpProvider
+            // 
+            editingHelpProvider.HelpNamespace = "C:\\Users\\sstanton\\Code\\Files\\Backsight.chm";
             // 
             // backsightTextBox
             // 
@@ -212,7 +216,7 @@ namespace Backsight.Editor.Forms
             this.groupBox1.Controls.Add(this.entityTypeComboBox);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.addLineCheckBox);
-            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.pointIdLabel);
             this.groupBox1.Controls.Add(this.pointIdComboBox);
             this.groupBox1.Location = new System.Drawing.Point(345, 16);
             this.groupBox1.Name = "groupBox1";
@@ -220,6 +224,17 @@ namespace Backsight.Editor.Forms
             this.groupBox1.TabIndex = 14;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "New Sideshot Point";
+            // 
+            // entityTypeComboBox
+            // 
+            this.entityTypeComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.entityTypeComboBox.FormattingEnabled = true;
+            this.entityTypeComboBox.Location = new System.Drawing.Point(59, 19);
+            this.entityTypeComboBox.Name = "entityTypeComboBox";
+            this.entityTypeComboBox.ShowBlankEntityType = false;
+            this.entityTypeComboBox.Size = new System.Drawing.Size(282, 24);
+            this.entityTypeComboBox.TabIndex = 16;
+            this.entityTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.entityTypeComboBox_SelectedValueChanged);
             // 
             // label6
             // 
@@ -242,14 +257,14 @@ namespace Backsight.Editor.Forms
             this.addLineCheckBox.UseVisualStyleBackColor = true;
             this.addLineCheckBox.CheckedChanged += new System.EventHandler(this.addLineCheckBox_CheckedChanged);
             // 
-            // label5
+            // pointIdLabel
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(17, 61);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(18, 13);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "ID";
+            this.pointIdLabel.AutoSize = true;
+            this.pointIdLabel.Location = new System.Drawing.Point(17, 61);
+            this.pointIdLabel.Name = "pointIdLabel";
+            this.pointIdLabel.Size = new System.Drawing.Size(18, 13);
+            this.pointIdLabel.TabIndex = 2;
+            this.pointIdLabel.Text = "ID";
             // 
             // pointIdComboBox
             // 
@@ -261,21 +276,6 @@ namespace Backsight.Editor.Forms
             this.pointIdComboBox.TabIndex = 4;
             this.pointIdComboBox.TabStop = false;
             this.pointIdComboBox.SelectedValueChanged += new System.EventHandler(this.pointIdComboBox_SelectedValueChanged);
-            // 
-            // entityTypeComboBox
-            // 
-            this.entityTypeComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.entityTypeComboBox.FormattingEnabled = true;
-            this.entityTypeComboBox.Location = new System.Drawing.Point(59, 19);
-            this.entityTypeComboBox.Name = "entityTypeComboBox";
-            this.entityTypeComboBox.ShowBlankEntityType = false;
-            this.entityTypeComboBox.Size = new System.Drawing.Size(282, 24);
-            this.entityTypeComboBox.TabIndex = 16;
-            this.entityTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.entityTypeComboBox_SelectedValueChanged);
-            // 
-            // editingHelpProvider
-            // 
-            editingHelpProvider.HelpNamespace = "C:\\Users\\sstanton\\Code\\Files\\Backsight.chm";
             // 
             // RadialControl
             // 
@@ -325,7 +325,7 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.Button offsetButton;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label pointIdLabel;
         private System.Windows.Forms.ComboBox pointIdComboBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.CheckBox addLineCheckBox;

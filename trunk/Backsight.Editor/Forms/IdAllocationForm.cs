@@ -42,6 +42,10 @@ namespace Backsight.Editor.Forms
             InitializeComponent();
             m_IdMan = CadastralMapModel.Current.IdManager;
 	        m_IsChange = false;
+
+            // This dialog shouldn't have been created if there's no ID manager
+            if (m_IdMan == null)
+                throw new InvalidOperationException();
         }
 
         #endregion

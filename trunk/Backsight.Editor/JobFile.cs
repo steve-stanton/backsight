@@ -299,21 +299,20 @@ namespace Backsight.Editor
             }
 
             // Load each session
-            foreach (string s in Directory.EnumerateDirectories(sessionsFolder))
+            foreach (string sessionFolderName in Directory.EnumerateDirectories(sessionsFolder))
             {
                 // Only those folder names that are numbers are valid
-                string subFolderName = Path.GetFileName(s);
+                string subFolderName = Path.GetFileName(sessionFolderName);
                 uint sessionId;
                 if (UInt32.TryParse(subFolderName, out sessionId))
-                    LoadSessionFolder(sessionId, s, mapModel, editDeserializer);
-            }
-        }
+                {
+                    // Append the session to the model (the Operation constructor will need this upon deserialization)
+                    SessionFolder sf = new SessionFolder(sessionId, sessionFolderName);
+                    mapModel.AddSession(sf);
 
-        void LoadSessionFolder(uint sessionId, string sessionFolder, CadastralMapModel mapModel, EditDeserializer editDeserializer)
-        {
-            SessionFolder s = new SessionFolder(sessionId, sessionFolder);
-            mapModel.AddSession(s);
-            s.LoadEdits(editDeserializer);
+                    sf.LoadEdits(editDeserializer);
+                }
+            }
         }
 
         /// <summary>

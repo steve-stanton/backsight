@@ -75,9 +75,9 @@ namespace Backsight.Editor
         readonly List<ISession> m_Sessions;
 
         /// <summary>
-        /// Management of user-specified IDs
+        /// Management of user-specified IDs (null if there is no ID provider).
         /// </summary>
-        readonly IdManager m_IdManager;
+        IdManager m_IdManager;
 
         /// <summary>
         /// The session that we are currently appending to. Defined on a call to
@@ -117,7 +117,11 @@ namespace Backsight.Editor
             m_Window = new Window();
             m_Sessions = new List<ISession>();
             m_Index = null; // new EditingIndex();
-            m_IdManager = new IdManager();
+
+            // Create an ID manager only if a database can be reached
+            if (ConnectionFactory.CanConnect())
+                m_IdManager = new IdManager();
+
             m_Features = new Dictionary<InternalIdValue, Feature>(1000);
             m_NativeIds = new Dictionary<uint, NativeId>(1000);
             m_ForeignIds = new Dictionary<string, ForeignId>(1000);
@@ -1124,7 +1128,8 @@ namespace Backsight.Editor
 
             // Initialize ID handling. This associates ID allocations with their
             // corresponding ID group.
-            m_IdManager.Load(this, job, user);
+            if (m_IdManager != null)
+                m_IdManager.Load(this, job, user);
 
             // Now go through the sessions to notify the ID manager about IDs
             // that have been used
@@ -1204,7 +1209,8 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The object that manages assignment of user-specified IDs
+        /// The object that manages assignment of user-specified IDs (null if there
+        /// is no ID provider).
         /// </summary>
         internal IdManager IdManager
         {
@@ -1385,11 +1391,15 @@ namespace Backsight.Editor
         /// to <see cref="FindNativeId"/> to see if the add is needed.
         /// </summary>
         /// <param name="rawId">The raw key for the new ID</param>
-        /// <returns>The corresponding ID (not null)</returns>
+        /// <returns>The corresponding ID (usually not null, but could be if the connection
+        /// to the ID database can no longer be established)</returns>
         /// <exception cref="ArgumentException">If an ID group that encloses the specified
         /// raw key cannot be found</exception>
         internal NativeId AddNativeId(uint rawId)
         {
+            if (m_IdManager == null)
+                return null;
+
             IdGroup group = m_IdManager.FindGroupByRawId(rawId);
             Debug.Assert(group != null);
             NativeId result = new NativeId(group, rawId);
