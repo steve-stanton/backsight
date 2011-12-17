@@ -1036,7 +1036,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool IsEditIdAllocationsEnabled()
         {
-            return this.HasMap;
+            CadastralMapModel mapModel = CadastralMapModel.Current;
+            return (mapModel != null && mapModel.IdManager != null);
         }
 
         private void EditIdAllocations(IUserAction action)

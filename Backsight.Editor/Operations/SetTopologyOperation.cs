@@ -58,7 +58,6 @@ namespace Backsight.Editor.Operations
             : base(editDeserializer)
         {
             m_Line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
-            m_Line.SwitchTopology(); // later?
         }
 
         #endregion
@@ -126,12 +125,10 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Performs data processing that involves creating or retiring spatial features.
-        /// Newly created features will not have any definition for their geometry - a
-        /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
+        /// Performs the data processing associated with this editing operation.
         /// </summary>
-        /// <param name="ff">The factory class for generating any spatial features</param>
-        internal override void ProcessFeatures(FeatureFactory ff)
+        /// <param name="ctx">The context in which the geometry is being calculated.</param>
+        internal override void CalculateGeometry(EditingContext ctx)
         {
             m_Line.SwitchTopology();
         }

@@ -296,8 +296,9 @@ namespace Backsight.Editor
                 throw new ApplicationException("IdHandle.CreateId - ID previously defined");
 
             // The packet has to be known.
-            if (m_Group==null || m_Packet==null)
-                throw new ApplicationException("IdHandle.CreateId - No ID group or range");
+            if (m_Group == null || m_Packet == null)
+                return null;
+                //throw new ApplicationException("IdHandle.CreateId - No ID group or range");
 
             // Get the group to pick up the reserved ID
             return m_Group.CreateId(m_Id, m_Packet);

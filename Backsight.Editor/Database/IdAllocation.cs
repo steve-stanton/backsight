@@ -29,6 +29,7 @@ namespace Backsight.Editor.Database
     {
         #region Static
 
+        /*
         /// <summary>
         /// Locates rows that refer to a specific job and user.
         /// </summary>
@@ -55,6 +56,7 @@ namespace Backsight.Editor.Database
                 return result.ToArray();
             }
         }
+        */
 
         /// <summary>
         /// Inserts an ID allocation into the database
@@ -94,6 +96,7 @@ namespace Backsight.Editor.Database
             }
         }
 
+        /*
         /// <summary>
         /// Deletes an ID allocation
         /// </summary>
@@ -108,7 +111,9 @@ namespace Backsight.Editor.Database
                 return cmd.ExecuteNonQuery();
             }
         }
+        */
 
+        /*
         /// <summary>
         /// Trims or extends an ID allocation
         /// </summary>
@@ -125,6 +130,7 @@ namespace Backsight.Editor.Database
                 return cmd.ExecuteNonQuery();
             }
         }
+        */
 
         #endregion
 
@@ -283,6 +289,7 @@ namespace Backsight.Editor.Database
         //    m_NumUsed++;
         //}
 
+        /*
         /// <summary>
         /// Trims or extends an ID allocation
         /// </summary>
@@ -295,5 +302,6 @@ namespace Backsight.Editor.Database
                 m_HighestId = highestId;
             return nRows;
         }
+         */
     }
 }

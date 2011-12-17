@@ -54,9 +54,6 @@ namespace Backsight.Editor
             if (upo != null)
                 upo.ApplyChanges();
 
-            // Remember the edit as part of the session
-            //editDeserializer.MapModel.LastSession.Add(result);
-
             return result;
         }
 
