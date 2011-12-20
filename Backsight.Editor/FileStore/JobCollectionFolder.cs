@@ -76,6 +76,11 @@ namespace Backsight.Editor.FileStore
             JobFileInfo jfi = new JobFileInfo();
             jfi.ConnectionString = ConnectionFactory.ConnectionString;
             jfi.JobId = 0;
+            jfi.LayerId = layer.Id;
+
+            // Turn off auto-number if there's no database connection string
+            if (String.IsNullOrEmpty(jfi.ConnectionString))
+                jfi.IsAutoNumber = false;
 
             // Remember default entity types for points, lines, text, polygons
             jfi.DefaultPointType = layer.DefaultPointType.Id;

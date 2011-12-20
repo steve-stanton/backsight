@@ -187,16 +187,25 @@ namespace Backsight.Editor
             }
 
             m_Reader.ReadBeginObject();
-            uint nItem = m_Reader.ReadUInt32("Length");
-            T[] result = new T[nItem];
 
-            for (int i = 0; i < result.Length; i++)
+            try
             {
-                string itemName = string.Format("[{0}]", i);
-                result[i] = ReadPersistent<T>(itemName);
+                uint nItem = m_Reader.ReadUInt32("Length");
+                T[] result = new T[nItem];
+
+                for (int i = 0; i < result.Length; i++)
+                {
+                    string itemName = string.Format("[{0}]", i);
+                    result[i] = ReadPersistent<T>(itemName);
+                }
+
+                return result;
             }
 
-            return result;
+            finally
+            {
+                m_Reader.ReadEndObject();
+            }
         }
 
         /// <summary>

@@ -455,7 +455,6 @@
     <Compile Include="IEditReader.cs" />
     <Compile Include="IEditWriter.cs" />
     <Compile Include="IFeature.cs" />
-    <Compile Include="ILoader.cs" />
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="JobFile.cs" />
     <Compile Include="JobFileInfo.cs" />

@@ -473,12 +473,10 @@ namespace Backsight.Editor
             //    throw new Exception("Cannot locate editing job in database");
 
             // Locate information about the editing layer
-            /*
-            int layerId = m_JobData.LayerId;
-            m_ActiveLayer = EnvironmentContainer.FindLayerById(layerId);
+            //int layerId = m_JobData.LayerId;
+            m_ActiveLayer = EnvironmentContainer.FindLayerById(jobInfo.LayerId);
             if (m_ActiveLayer == null)
                 throw new Exception("Cannot locate map layer associated with current job");
-            */
 
             // Initialize the model
 

@@ -22,6 +22,7 @@ using Backsight.Editor.UI;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Editor.FileStore;
+using Backsight.Data;
 
 
 namespace Backsight.Editor.Forms
@@ -1054,7 +1055,10 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void EditAutoNumber(IUserAction action)
         {
-            m_Controller.ToggleAutoNumber();
+            if (m_Controller.IsAutoNumber == false && ConnectionFactory.CanConnect() == false)
+                MessageBox.Show("Cannot switch auto-number on because a database connection is not available.");
+            else
+                m_Controller.ToggleAutoNumber();
         }
 
         private bool IsEditPreferencesEnabled()

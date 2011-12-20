@@ -268,10 +268,9 @@ namespace Backsight.Editor
         /// <summary>
         /// Identifies a map layer associated with the job.
         /// </summary>
-        /// <value>Always 0</value>
         int IJobInfo.LayerId
         {
-            get { return 0; }
+            get { return m_Info.LayerId; }
         }
 
         /// <summary>
