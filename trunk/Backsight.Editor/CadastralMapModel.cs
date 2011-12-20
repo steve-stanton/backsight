@@ -16,18 +16,16 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
 
 using Backsight.Data;
-using Backsight.Editor.Database;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Index;
 
 namespace Backsight.Editor
 {
-    class CadastralMapModel : ISpatialModel, ISpatialData, ILoader
+    class CadastralMapModel : ISpatialModel, ISpatialData
     {
         #region Static Methods
 
@@ -882,6 +880,9 @@ namespace Backsight.Editor
 
             CleanEdit();
 
+            /*
+             * When dealing with SessionFolder, this gets done by the Rollback call done above
+             * 
             // Remove the edit from the database
             using (IConnection ic = ConnectionFactory.Create())
             {
@@ -894,7 +895,7 @@ namespace Backsight.Editor
             // If the session is now empty, and it's not the working session, remove it from the model
             if (s.OperationCount==0 && !Object.ReferenceEquals(s, m_WorkingSession))
                 m_Sessions.Remove(s);
-
+            */
             return true;
         }
 

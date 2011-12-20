@@ -60,6 +60,11 @@ namespace Backsight.Editor
         uint m_JobId;
 
         /// <summary>
+        /// The ID of the map layer the job relates to.
+        /// </summary>
+        int m_LayerId;
+
+        /// <summary>
         /// Information about the area that was last drawn.
         /// </summary>
         DrawInfo m_DrawInfo;
@@ -153,6 +158,7 @@ namespace Backsight.Editor
         {
             m_ConnectionString = String.Empty;
             m_JobId = 0;
+            m_LayerId = 0;
             m_DrawInfo = new DrawInfo(0.0, 0.0, 0.0);
             m_DisplayUnit = DistanceUnitType.AsEntered;
             m_EntryUnit = DistanceUnitType.Meters;
@@ -240,6 +246,16 @@ namespace Backsight.Editor
         {
             get { return m_JobId; }
             set { m_JobId = Set<uint>(value); }
+        }
+
+        /// <summary>
+        /// The internal ID of the map layer the job relates to.
+        /// </summary>
+        [XmlElement]
+        public int LayerId
+        {
+            get { return m_LayerId; }
+            set { m_LayerId = Set<int>(value); }
         }
 
         /// <summary>

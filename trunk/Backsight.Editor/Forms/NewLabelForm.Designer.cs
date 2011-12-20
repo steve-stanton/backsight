@@ -90,12 +90,14 @@ namespace Backsight.Editor.Forms
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.schemaComboBox);
             this.groupBox1.Controls.Add(this.allSchemasCheckBox);
             this.groupBox1.Controls.Add(this.noAttributesCheckBox);
             this.groupBox1.Location = new System.Drawing.Point(12, 52);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(561, 78);
+            this.groupBox1.Size = new System.Drawing.Size(582, 78);
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "What sort of Attributes?";
@@ -136,12 +138,14 @@ namespace Backsight.Editor.Forms
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.noTemplatesLabel);
             this.groupBox2.Controls.Add(this.defaultAnnotationCheckBox);
             this.groupBox2.Controls.Add(this.annotationTemplateComboBox);
             this.groupBox2.Location = new System.Drawing.Point(12, 136);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(558, 84);
+            this.groupBox2.Size = new System.Drawing.Size(582, 84);
             this.groupBox2.TabIndex = 10;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "What sort of Annotation?";
@@ -182,7 +186,7 @@ namespace Backsight.Editor.Forms
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(585, 282);
+            this.ClientSize = new System.Drawing.Size(606, 282);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.entityTypeComboBox);
