@@ -1,4 +1,4 @@
-DASH_STYLE=Large		= 5.0,5.1
+DASH_STYLE=Large		= 5.0,5.0
 DASH_STYLE=Small		= 1.0,1.0,2.0
 DASH_STYLE=Large-Small		= 5.0,2.0,1.0,2.0
 
