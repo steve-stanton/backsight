@@ -63,7 +63,7 @@ namespace Backsight.Editor.FileStore
         /// <returns>
         /// Information describing the state of the job.
         /// </returns>
-        public IJobInfo CreateJob(string jobName, ILayer layer)
+        public JobFile CreateJob(string jobName, ILayer layer)
         {
             string jobFolder = Path.Combine(m_FolderName, jobName);
             if (Directory.Exists(jobFolder))
@@ -88,7 +88,7 @@ namespace Backsight.Editor.FileStore
             jfi.DefaultPolygonType = layer.DefaultPolygonType.Id;
             jfi.DefaultTextType = layer.DefaultTextType.Id;
 
-            IJobInfo result = JobFile.SaveJobFile(jobFileName, jfi);
+            JobFile result = JobFile.SaveJobFile(jobFileName, jfi);
 
             Settings.Default.LastJobName = jobName;
             Settings.Default.Save();
@@ -103,7 +103,7 @@ namespace Backsight.Editor.FileStore
         /// <returns>
         /// Information describing the state of the job.
         /// </returns>
-        public IJobInfo OpenJob(string jobName)
+        public JobFile OpenJob(string jobName)
         {
             string jobFolder = Path.Combine(m_FolderName, jobName);
             if (!Directory.Exists(jobFolder))

@@ -13,6 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System;
+
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="31-OCT-2011" />
@@ -79,6 +81,13 @@ namespace Backsight.Editor
         /// <param name="name">A name tag associated with the value</param>
         /// <returns>The string that was read (null if nothing follows the name)</returns>
         string ReadString(string name);
+
+        /// <summary>
+        /// Reads a timestamp.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The timestamp that was read.</returns>
+        DateTime ReadDateTime(string name);
 
         /// <summary>
         /// Reads any text that precedes the data values for an object.

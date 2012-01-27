@@ -614,6 +614,18 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Reads a timestamp.
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="field">A tag associated with the value</param>
+        /// <returns>The timestamp that was read</returns>
+        internal DateTime ReadDateTime(DataField field)
+        {
+            return m_Reader.ReadDateTime(field.ToString());
+        }
+
+
+        /// <summary>
         /// Checks whether the next data item has a specific field tag. Make a call to any
         /// <c>Read</c> method to actually advance.
         /// </summary>

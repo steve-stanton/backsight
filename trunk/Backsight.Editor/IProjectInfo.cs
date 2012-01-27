@@ -14,34 +14,34 @@
 // </remarks>
 
 using Backsight.Forms;
+using System;
 
 namespace Backsight.Editor
 {
     /// <summary>
-    /// Information about current options for an editing job.
+    /// Information about current options for an editing project.
     /// </summary>
-    /// <remarks>Implemented by <see cref="JobFile"/></remarks>
-    interface IJobInfo
+    /// <remarks>Implemented by <see cref="ProjectInfoFile"/></remarks>
+    interface IProjectInfo
     {
         /// <summary>
-        /// The container for the job data.
+        /// The container for the project data.
         /// </summary>
-        IJobContainer Container { get; }
+        ProjectSilo Container { get; }
 
         /// <summary>
-        /// The user-perceived name of the job.
+        /// The user-perceived name of the project.
         /// </summary>
         string Name { get; }
 
         /// <summary>
-        /// An internal ID for the job (0 if the job is only local).
+        /// A unique ID for the project
         /// </summary>
-        uint JobId { get; }
+        Guid ProjectId { get; }
 
         /// <summary>
-        /// Identifies a map layer associated with the job.
+        /// Identifies a map layer associated with the project.
         /// </summary>
-        /// <remarks>Possibly obsolete. Return 0 in the meantime.</remarks>
         int LayerId { get; }
 
         /// <summary>
@@ -120,32 +120,32 @@ namespace Backsight.Editor
         string SplashPercents { get; set; }
 
         /// <summary>
-        /// Has modified job information been saved?
+        /// Has modified project information been saved?
         /// </summary>
         bool IsSaved { get; }
 
         /// <summary>
-        /// Saves the job info as part of a persistent storage area.
+        /// Saves the project info as part of a persistent storage area.
         /// </summary>
         void Save();
 
         /// <summary>
-        /// Loads a map model with the content of this job.
+        /// Loads a map model with the content of this project.
         /// </summary>
         /// <param name="mapModel">The model to load</param>
         void LoadModel(CadastralMapModel mapModel);
 
         /// <summary>
-        /// Loads ID allocations that have been made for this job.
+        /// Loads ID allocations that have been made for this project.
         /// </summary>
         /// <returns>The ID allocations (never null, but may be an empty array).</returns>
         IdAllocationInfo[] GetIdAllocations();
 
         /// <summary>
-        /// Creates a brand new session for this job.
+        /// Creates a brand new session for this project.
         /// </summary>
         /// <param name="sessionId">The ID to assign to the new session</param>
         /// <returns>The newly created session</returns>
-        ISession AppendWorkingSession(uint sessionId);
+        //ISession AppendWorkingSession(uint sessionId);
     }
 }

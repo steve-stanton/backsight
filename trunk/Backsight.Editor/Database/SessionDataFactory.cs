@@ -33,7 +33,7 @@ namespace Backsight.Editor.Database
         /// </summary>
         /// <param name="model">The model to load</param>
         /// <param name="job">The job to load</param>
-        internal static void Load(CadastralMapModel model, IJobInfo job)
+        internal static void Load(CadastralMapModel model, JobFile job)
         {
             throw new NotImplementedException();
 
@@ -71,7 +71,7 @@ namespace Backsight.Editor.Database
                 SessionData curSessionData = null;
                 Session curSession = null;
                 IUser curUser = null;
-                IJobInfo curJob = null;
+                JobFile curJob = null;
                 Trace.Write("Reading data...");
 
                 EditDeserializer editDeserializer = new EditDeserializer(model);
@@ -135,7 +135,7 @@ namespace Backsight.Editor.Database
         /// <param name="con">The database connection to use</param>
         /// <param name="sessions">The sessions to append to</param>
         /// <param name="job">The job that's being loaded</param>
-        static void LoadSessions(SqlConnection con, List<SessionData> sessions, IJobInfo job)
+        static void LoadSessions(SqlConnection con, List<SessionData> sessions, JobFile job)
         {
             throw new NotImplementedException();
 

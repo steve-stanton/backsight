@@ -95,7 +95,7 @@ namespace Backsight.Editor.Forms
                 return;
 
             IJobContainer jc = new JobCollectionFolder();
-            IJobInfo job = jc.OpenJob(jobName);
+            JobFile job = jc.OpenJob(jobName);
             if (job == null)
                 return;
 
@@ -642,7 +642,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             {
                 if (dial.ShowDialog() == DialogResult.OK)
                 {
-                    IJobInfo job = dial.NewJob;
+                    JobFile job = dial.NewJob;
                     if (m_Controller.OpenJob(job))
                         AddRecentJob(job.Name);
                 }
@@ -1533,7 +1533,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void PointReduce(IUserAction action)
         {
-            IJobInfo ji = m_Controller.JobInfo;
+            JobFile ji = m_Controller.JobInfo;
             CadastralMapModel cmm = m_Controller.CadastralMapModel;
             ISpatialDisplay display = m_Controller.ActiveDisplay;
             if (display==null)

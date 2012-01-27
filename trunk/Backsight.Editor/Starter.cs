@@ -35,12 +35,12 @@ namespace Backsight.Editor
         /// The job that the user double-clicked on (null if the application
         /// was launched some other way)
         /// </summary>
-        IJobInfo m_Job;
+        JobFile m_Job;
 
         /// <summary>
         /// The ID of the user involved (null for no user)
         /// </summary>
-        IUser m_User;
+        User m_User;
 
         #endregion
 
@@ -52,7 +52,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="job">The job info (could be null if user needs to be asked
         /// for info)</param>
-        internal Starter(IJobInfo job)
+        internal Starter(JobFile job)
         {
             m_Job = job;
             m_User = null;
@@ -117,7 +117,7 @@ namespace Backsight.Editor
 
             // Get the ID of the current user
             //m_User = User.GetCurrentUser();
-            m_User = AnyLocalUser.Instance;
+            m_User = new User(System.Environment.UserName);
 
             /*
             // Confirm that we can get the job info from the database
@@ -178,7 +178,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The current user (null if not known)
         /// </summary>
-        internal IUser User
+        internal User User
         {
             get { return m_User; }
         }
@@ -186,7 +186,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The job used to launch the application
         /// </summary>
-        internal IJobInfo Job
+        internal JobFile Job
         {
             get { return m_Job; }
         }

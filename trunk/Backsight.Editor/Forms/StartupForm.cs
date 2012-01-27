@@ -48,7 +48,7 @@ namespace Backsight.Editor.Forms
         {
             ShowDatabaseName();
             IJobContainer jc = new JobCollectionFolder();
-            IJobInfo job = null;
+            JobFile job = null;
 
             string lastJobName = Settings.Default.LastJobName;
             if (!String.IsNullOrEmpty(lastJobName))

@@ -424,6 +424,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Writes a timestamp to a storage medium.
+        /// </summary>
+        /// <param name="field">The tag that identifies the item.</param>
+        /// <param name="when">The timestamp to write</param>
+        internal void WriteDateTime(DataField field, DateTime when)
+        {
+            m_Writer.WriteDateTime(field.ToString(), when);
+        }
+
+        /// <summary>
         /// Expresses the content produced by this serializer as a string.
         /// </summary>
         /// <returns>The content produced by this serializer</returns>

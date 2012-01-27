@@ -67,7 +67,7 @@ namespace Backsight.Editor
         /// <param name="job">The job the session is associated with</param>
         /// <returns>The created session (can also be subsequently accessed through the
         /// <see cref="CurrentSession"/> property</returns>
-        internal static Session CreateCurrentSession(CadastralMapModel model, SessionData sessionData, IUser user, IJobInfo job)
+        internal static Session CreateCurrentSession(CadastralMapModel model, SessionData sessionData, IUser user, JobFile job)
         {
             s_CurrentSession = new Session(model, sessionData, user, job);
             model.AddSession(s_CurrentSession);
@@ -103,12 +103,12 @@ namespace Backsight.Editor
         /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        readonly IUser m_Who;
+        readonly User m_Who;
 
         /// <summary>
         /// The job the session is associated with
         /// </summary>
-        readonly IJobInfo m_Job;
+        readonly JobFile m_Job;
 
         /// <summary>
         /// Operations (if any) that were performed during the session. 
@@ -132,7 +132,7 @@ namespace Backsight.Editor
         /// <param name="user">The user who performed the session</param>
         /// <param name="job">The job the session is associated with</param>
         /// <remarks>To be called only by <see cref="CreateCurrentSessoon"/></remarks>
-        Session(CadastralMapModel model, SessionData sessionData, IUser user, IJobInfo job)
+        Session(CadastralMapModel model, SessionData sessionData, User user, JobFile job)
         {
             if (sessionData == null || user == null || job == null)
                 throw new ArgumentNullException();
@@ -233,7 +233,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        IUser ISession.User
+        User ISession.User
         {
             get { return m_Who; }
         }
@@ -241,7 +241,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The job the session is associated with
         /// </summary>
-        internal IJobInfo Job
+        internal JobFile Job
         {
             get { return m_Job; }
         }
