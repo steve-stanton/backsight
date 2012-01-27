@@ -194,6 +194,16 @@ namespace Backsight.Editor
             WriteValue(name, value);
         }
 
+        /// <summary>
+        /// Writes a timestamp to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="when">The timestamp to write</param>
+        public void WriteDateTime(string name, DateTime value)
+        {
+            WriteValue(name, value.ToString("s"));
+        }
+
         #endregion
 
         /// <summary>

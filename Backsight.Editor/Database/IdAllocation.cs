@@ -36,7 +36,7 @@ namespace Backsight.Editor.Database
         /// <param name="job">The job</param>
         /// <param name="user">The user</param>
         /// <returns>The rows identifying ID ranges that have been allocated</returns>
-        internal static IdAllocation[] FindByJobUser(IJobInfo job, IUser user)
+        internal static IdAllocation[] FindByJobUser(JobFile job, IUser user)
         {
             using (IConnection ic = ConnectionFactory.Create())
             {
@@ -69,7 +69,7 @@ namespace Backsight.Editor.Database
         /// <param name="insertTime"></param>
         /// <param name="numUsed">The number of IDs already used</param>
         internal static IdAllocationInfo Insert(IdGroup idGroup, int lowestId, int highestId,
-                                                int jobId, IUser user, DateTime insertTime, int numUsed)
+                                                int jobId, User user, DateTime insertTime, int numUsed)
         {
             using (IConnection ic = ConnectionFactory.Create())
             {

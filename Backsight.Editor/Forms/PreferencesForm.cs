@@ -167,7 +167,7 @@ void CdPrefLabel::OnFont()
 
         void ShowPointsPage(CadastralMapModel cmm)
         {
-            IJobInfo ji = EditingController.Current.JobInfo;
+            JobFile ji = EditingController.Current.JobInfo;
             pointScaleTextBox.Text = String.Format("{0:F0}", ji.ShowPointScale);
             pointSizeTextBox.Text = String.Format("{0:F2}", ji.PointHeight);
             showIntersectionsCheckBox.Checked = ji.AreIntersectionsDrawn;
@@ -175,7 +175,7 @@ void CdPrefLabel::OnFont()
 
         bool SavePointsPage(CadastralMapModel cmm)
         {
-            IJobInfo ji = EditingController.Current.JobInfo;
+            JobFile ji = EditingController.Current.JobInfo;
 
             // Point threshold scale
 
@@ -214,7 +214,7 @@ void CdPrefLabel::OnFont()
 
         void ShowLabelsPage(CadastralMapModel cmm)
         {
-            IJobInfo ji = EditingController.Current.JobInfo;
+            JobFile ji = EditingController.Current.JobInfo;
             labelScaleTextBox.Text = String.Format("{0:F0}", ji.ShowLabelScale);
             textRotationAngleLabel.Text = RadianValue.AsShortString(cmm.DefaultTextRotation);
             nominalScaleTextBox.Text = ji.NominalMapScale.ToString();
@@ -223,7 +223,7 @@ void CdPrefLabel::OnFont()
 
         bool SaveLabelsPage(CadastralMapModel cmm)
         {
-            IJobInfo ji = EditingController.Current.JobInfo;
+            JobFile ji = EditingController.Current.JobInfo;
 
             // Label threshold scale
 
@@ -315,7 +315,7 @@ void CdPrefLabel::OnFont()
 
         bool SaveUnitsPage(CadastralMapModel cmm)
         {
-            IJobInfo ji = EditingController.Current.JobInfo;
+            JobFile ji = EditingController.Current.JobInfo;
 
             if (enterMetersRadioButton.Checked)
                 ji.EntryUnitType = DistanceUnitType.Meters;

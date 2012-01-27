@@ -58,12 +58,12 @@ namespace Backsight.Editor
         /// <summary>
         /// The current user
         /// </summary>
-        IUser m_User;
+        User m_User;
 
         /// <summary>
         /// Information about the current job
         /// </summary>
-        IJobInfo m_JobInfo;
+        JobFile m_JobInfo;
 
         /// <summary>
         /// Information about the editing layer
@@ -161,7 +161,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Information about the current job file
         /// </summary>
-        internal IJobInfo JobInfo
+        internal JobFile JobInfo
         {
             get { return m_JobInfo; }
         }
@@ -449,7 +449,7 @@ namespace Backsight.Editor
         /// <param name="jobInfo">The job info (null if the user should be asked)</param>
         /// <exception cref="Exception">If a job could not be opened</exception>
         /// <returns>True if the job was opened. False if there was some problem opening it.</returns>
-        internal bool OpenJob(IJobInfo jobInfo)
+        internal bool OpenJob(JobFile jobInfo)
         {
             m_User = null;
             m_JobInfo = jobInfo;
@@ -1263,7 +1263,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The current user
         /// </summary>
-        internal IUser User
+        internal User User
         {
             get { return m_User; }
         }

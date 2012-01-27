@@ -52,7 +52,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        IUser User { get; }
+        User User { get; }
 
         /// <summary>
         /// The model that contains this session

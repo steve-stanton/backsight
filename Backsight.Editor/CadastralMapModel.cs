@@ -230,7 +230,7 @@ namespace Backsight.Editor
 
             // Suppress text if the display scale is too small
             EditingController ec = EditingController.Current;
-            IJobInfo ji = ec.JobInfo;
+            JobFile ji = ec.JobInfo;
             if (display.MapScale > ji.ShowLabelScale)
                 types ^= SpatialType.Text;
 
@@ -1092,7 +1092,7 @@ namespace Backsight.Editor
         /// Loads this model from the database
         /// </summary>
         /// <param name="job">The job to load</param>
-        internal void Load(IJobInfo job, IUser user)
+        internal void Load(JobFile job, User user)
         {
             m_Sessions.Clear();
             job.LoadModel(this);
@@ -1182,7 +1182,7 @@ namespace Backsight.Editor
         /// session that is created during initial data loading).
         /// </summary>
         /// <returns>The created session</returns>
-        internal ISession AppendWorkingSession(IJobInfo job, IUser user)
+        internal ISession AppendWorkingSession(JobFile job, User user)
         {
             //SessionData data = SessionDataFactory.Insert(job.JobId, user.UserId);
 

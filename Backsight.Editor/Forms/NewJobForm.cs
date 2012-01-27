@@ -35,7 +35,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Information for the newly created job (defined when user clicks the OK button)
         /// </summary>
-        IJobInfo m_NewJob;
+        JobFile m_NewJob;
 
         #endregion
 
@@ -94,6 +94,11 @@ namespace Backsight.Editor.Forms
 
             // Create the job
             m_NewJob = m_Container.CreateJob(jobName, layer);
+
+            // Test creation of new-style project
+            Project.CreateNewProject(jobName, layer, String.Empty);
+            MessageBox.Show("ok");
+
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -101,7 +106,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The new job (created when user clicks on OK)
         /// </summary>
-        internal IJobInfo NewJob
+        internal JobFile NewJob
         {
             get { return m_NewJob; }
         }

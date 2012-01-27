@@ -13,6 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System;
+
 namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="31-OCT-2011" />
@@ -87,6 +89,13 @@ namespace Backsight.Editor
         /// <param name="name">A name tag for the item</param>
         /// <param name="value">The string to write (if a null is supplied, just the name tag will be written).</param>
         void WriteString(string name, string value);
+
+        /// <summary>
+        /// Writes a timestamp to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="when">The timestamp to write</param>
+        void WriteDateTime(string name, DateTime when);
 
         /// <summary>
         /// Writes any text that precedes the data values for an object.

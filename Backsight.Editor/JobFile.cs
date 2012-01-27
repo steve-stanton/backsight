@@ -26,7 +26,7 @@ namespace Backsight.Editor
     /// <summary>
     /// The file holding job information (with the "cedx" file extension).
     /// </summary>
-    class JobFile : IJobInfo
+    class JobFile
     {
         #region Static
 
@@ -89,7 +89,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The container for the job data.
         /// </summary>
-        IJobContainer IJobInfo.Container
+        IJobContainer Container
         {
             get { return new JobCollectionFolder(); }
         }
@@ -97,7 +97,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The user-perceived name of the job.
         /// </summary>
-        string IJobInfo.Name
+        internal string Name
         {
             get { return Path.GetFileNameWithoutExtension(m_FileName); }
         }
@@ -105,7 +105,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Information about the area that was last drawn.
         /// </summary>
-        DrawInfo IJobInfo.LastDraw
+        internal DrawInfo LastDraw
         {
             get { return m_Info.LastDraw; }
             set { m_Info.LastDraw = value; }
@@ -114,7 +114,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Current display units
         /// </summary>
-        DistanceUnitType IJobInfo.DisplayUnitType
+        internal DistanceUnitType DisplayUnitType
         {
             get { return m_Info.DisplayUnitType; }
             set { m_Info.DisplayUnitType = value; }
@@ -123,7 +123,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Current data entry units
         /// </summary>
-        DistanceUnitType IJobInfo.EntryUnitType
+        internal DistanceUnitType EntryUnitType
         {
             get { return m_Info.EntryUnitType; }
             set { m_Info.EntryUnitType = value; }
@@ -132,7 +132,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Height of point symbols, in meters on the ground.
         /// </summary>
-        double IJobInfo.PointHeight
+        internal double PointHeight
         {
             get { return m_Info.PointHeight; }
             set { m_Info.PointHeight = value; }
@@ -141,7 +141,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Scale denominator at which labels (text) will start to be drawn.
         /// </summary>
-        double IJobInfo.ShowLabelScale
+        internal double ShowLabelScale
         {
             get { return m_Info.ShowLabelScale; }
             set { m_Info.ShowLabelScale = value; }
@@ -150,7 +150,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Scale denominator at which points will start to be drawn.
         /// </summary>
-        double IJobInfo.ShowPointScale
+        internal double ShowPointScale
         {
             get { return m_Info.ShowPointScale; }
             set { m_Info.ShowPointScale = value; }
@@ -159,7 +159,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Should feature IDs be assigned automatically? (false if the user must specify).
         /// </summary>
-        bool IJobInfo.IsAutoNumber
+        internal bool IsAutoNumber
         {
             get { return m_Info.IsAutoNumber; }
             set { m_Info.IsAutoNumber = value; }
@@ -168,7 +168,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Has modified job information been saved?
         /// </summary>
-        bool IJobInfo.IsSaved
+        internal bool IsSaved
         {
             get { return m_Info.IsSaved; }
         }
@@ -176,7 +176,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Saves the job info as part of a persistent storage area.
         /// </summary>
-        void IJobInfo.Save()
+        internal void Save()
         {
             m_Info.WriteXML(m_FileName);
         }
@@ -184,7 +184,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the default entity type for points (0 if undefined)
         /// </summary>
-        int IJobInfo.DefaultPointType
+        internal int DefaultPointType
         {
             get { return m_Info.DefaultPointType; }
             set { m_Info.DefaultPointType = value; }
@@ -193,7 +193,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the default entity type for lines (0 if undefined)
         /// </summary>
-        int IJobInfo.DefaultLineType
+        internal int DefaultLineType
         {
             get { return m_Info.DefaultLineType; }
             set { m_Info.DefaultLineType = value; }
@@ -202,7 +202,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the default entity type for polygons (0 if undefined)
         /// </summary>
-        int IJobInfo.DefaultPolygonType
+        internal int DefaultPolygonType
         {
             get { return m_Info.DefaultPolygonType; }
             set { m_Info.DefaultPolygonType = value; }
@@ -211,7 +211,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The ID of the default entity type for text (0 if undefined)
         /// </summary>
-        int IJobInfo.DefaultTextType
+        internal int DefaultTextType
         {
             get { return m_Info.DefaultTextType; }
             set { m_Info.DefaultTextType = value; }
@@ -220,7 +220,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The nominal map scale, for use in converting the size of fonts.
         /// </summary>
-        uint IJobInfo.NominalMapScale
+        internal uint NominalMapScale
         {
             get { return m_Info.NominalMapScale; }
             set { m_Info.NominalMapScale = value; }
@@ -229,7 +229,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The style for annotating lines with distances (and angles)
         /// </summary>
-        LineAnnotationStyle IJobInfo.LineAnnotation
+        internal LineAnnotationStyle LineAnnotation
         {
             get { return m_Info.LineAnnotation; }
             set { m_Info.LineAnnotation = value; }
@@ -239,19 +239,19 @@ namespace Backsight.Editor
         /// Should intersection points be drawn? Relevant only if points
         /// are drawn at the current display scale (see the <see cref="ShowPointScale"/> property).
         /// </summary>
-        bool IJobInfo.AreIntersectionsDrawn
+        internal bool AreIntersectionsDrawn
         {
             get { return m_Info.AreIntersectionsDrawn; }
             set { m_Info.AreIntersectionsDrawn = value; }
         }
 
-        string IJobInfo.SplashIncrement
+        internal string SplashIncrement
         {
             get { return m_Info.SplashIncrement; }
             set { m_Info.SplashIncrement = value; }
         }
 
-        string IJobInfo.SplashPercents
+        internal string SplashPercents
         {
             get { return m_Info.SplashPercents; }
             set { m_Info.SplashPercents = value; }
@@ -260,7 +260,7 @@ namespace Backsight.Editor
         /// <summary>
         /// An internal ID for the job (0 if the job is only local).
         /// </summary>
-        uint IJobInfo.JobId
+        internal uint JobId
         {
             get { return m_Info.JobId; }
         }
@@ -268,7 +268,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Identifies a map layer associated with the job.
         /// </summary>
-        int IJobInfo.LayerId
+        internal int LayerId
         {
             get { return m_Info.LayerId; }
         }
@@ -277,7 +277,7 @@ namespace Backsight.Editor
         /// Loads a map model with the content of this job.
         /// </summary>
         /// <param name="mapModel">The model to load</param>
-        void IJobInfo.LoadModel(CadastralMapModel mapModel)
+        internal void LoadModel(CadastralMapModel mapModel)
         {
             //SessionDataFactory.Load(mapModel, this);
             Trace.Write("Reading data...");
@@ -319,7 +319,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="sessionId">The ID to assign to the new session</param>
         /// <returns>The newly created session</returns>
-        ISession IJobInfo.AppendWorkingSession(uint sessionId)
+        internal ISession AppendWorkingSession(uint sessionId)
         {
             string jobFolder = Path.GetDirectoryName(m_FileName);
             string sessionsFolder = Path.Combine(jobFolder, "Sessions");
@@ -337,7 +337,7 @@ namespace Backsight.Editor
         /// Obtains information about ID allocations.
         /// </summary>
         /// <returns></returns>
-        IdAllocationInfo[] IJobInfo.GetIdAllocations()
+        internal IdAllocationInfo[] GetIdAllocations()
         {
             // Look for a Ids folder in the same place as this job file
             // (not sure if m_FileName really has the full path when loaded from MRU)

@@ -13,9 +13,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System;
+
 namespace Backsight.Editor
 {
-    class User : IUser
+    [Obsolete("Use plain username")]
+    class User
     {
         #region Class data
 

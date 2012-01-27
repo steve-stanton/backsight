@@ -100,6 +100,7 @@
     <Compile Include="AttributeData.cs" />
     <Compile Include="AutoCad\AcLayerEntitySet.cs" />
     <Compile Include="BasicList.cs" />
+    <Compile Include="ChangeEvents\NewProjectEvent.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />
@@ -114,7 +115,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Database\SessionDataFactory.cs" />
-    <Compile Include="Database\User.cs" />
     <Compile Include="DataField.cs" />
     <Compile Include="DeserializationFactory.cs" />
     <Compile Include="DxfWriter.cs" />
@@ -125,16 +125,18 @@
     </Compile>
     <Compile Include="EditSerializer.cs" />
     <Compile Include="EnvironmentResource.cs" />
-    <Compile Include="FileStore\AnyLocalUser.cs" />
     <Compile Include="FileStore\IdFolder.cs" />
     <Compile Include="FileStore\JobCollectionFolder.cs" />
     <Compile Include="FileStore\SessionFolder.cs" />
     <Compile Include="IdAllocationInfo.cs" />
     <Compile Include="IEditingJob.cs" />
     <Compile Include="IJobContainer.cs" />
-    <Compile Include="IJobInfo.cs" />
+    <Compile Include="IProjectInfo.cs" />
     <Compile Include="ISession.cs" />
-    <Compile Include="IUser.cs" />
+    <Compile Include="Change.cs" />
+    <Compile Include="Project.cs" />
+    <Compile Include="ProjectDatabase.cs" />
+    <Compile Include="ProjectSilo.cs" />
     <Compile Include="SessionInfo.cs" />
     <Compile Include="TextEditReader.cs" />
     <Compile Include="EntityBlock.cs" />

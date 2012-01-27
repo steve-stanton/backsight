@@ -163,7 +163,7 @@ namespace Backsight.Editor.FileStore
         /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        IUser ISession.User
+        User ISession.User
         {
             get { return new User(m_Info.UserName); }
         }

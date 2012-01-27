@@ -119,6 +119,13 @@ namespace Backsight.Editor
         Fixed,
         Unit,
         UpdatedPoint,
-        Sections
+        Sections,
+        ProjectId,
+        ProjectName,
+        UserName,
+        MachineName,
+        CoordinateSystem,
+        When,
+        LayerId,
     }
 }

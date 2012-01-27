@@ -27,14 +27,14 @@ namespace Backsight.Editor
         /// <param name="jobName">The user-perceived name for the job.</param>
         /// <param name="layer">The map layer the job is for.</param>
         /// <returns>Information describing the state of the job.</returns>
-        IJobInfo CreateJob(string jobName, ILayer layer);
+        JobFile CreateJob(string jobName, ILayer layer);
 
         /// <summary>
         /// Opens an editing job that was previously created.
         /// </summary>
         /// <param name="jobName">The name of the job</param>
         /// <returns>Information describing the state of the job (null if it could not be found).</returns>
-        IJobInfo OpenJob(string jobName);
+        JobFile OpenJob(string jobName);
 
         /// <summary>
         /// Obtains a list of all previously created editing jobs.

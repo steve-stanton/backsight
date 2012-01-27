@@ -107,7 +107,7 @@ namespace Backsight.Editor
             //List<IdRange> ranges = CadastralMapModel.Current.IdRanges;
 
         	// Grab a hold of info we'll need to stick into the IdAllocation table.
-            IUser curuser = CadastralMapModel.Current.WorkingSession.User;
+            User curuser = CadastralMapModel.Current.WorkingSession.User;
             DateTime curtime = DateTime.Now;
 
 	        int ntoget = PacketSize;   // How many do we need to allocate?
