@@ -16,7 +16,6 @@
 using System;
 using System.IO;
 
-using Backsight.Editor.ChangeEvents;
 using Backsight.Environment;
 
 namespace Backsight.Editor

@@ -15,7 +15,7 @@
 
 using System;
 
-namespace Backsight.Editor.ChangeEvents
+namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="23-JAN-2012"/>
     /// <summary>

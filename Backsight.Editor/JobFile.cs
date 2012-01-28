@@ -60,7 +60,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The IDs for the job.
         /// </summary>
-        IdFolder m_IdFolder;
+        //IdFolder m_IdFolder;
 
         #endregion
 
@@ -339,6 +339,8 @@ namespace Backsight.Editor
         /// <returns></returns>
         internal IdAllocationInfo[] GetIdAllocations()
         {
+            throw new NotImplementedException();
+            /*
             // Look for a Ids folder in the same place as this job file
             // (not sure if m_FileName really has the full path when loaded from MRU)
             if (m_IdFolder == null)
@@ -349,6 +351,7 @@ namespace Backsight.Editor
             }
 
             return m_IdFolder.GetIdAllocations();
+             */
         }
     }
 }

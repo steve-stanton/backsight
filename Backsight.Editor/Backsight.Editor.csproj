@@ -100,7 +100,7 @@
     <Compile Include="AttributeData.cs" />
     <Compile Include="AutoCad\AcLayerEntitySet.cs" />
     <Compile Include="BasicList.cs" />
-    <Compile Include="ChangeEvents\NewProjectEvent.cs" />
+    <Compile Include="NewProjectEvent.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
     <Compile Include="CircularSpan.cs" />
@@ -125,7 +125,6 @@
     </Compile>
     <Compile Include="EditSerializer.cs" />
     <Compile Include="EnvironmentResource.cs" />
-    <Compile Include="FileStore\IdFolder.cs" />
     <Compile Include="FileStore\JobCollectionFolder.cs" />
     <Compile Include="FileStore\SessionFolder.cs" />
     <Compile Include="IdAllocationInfo.cs" />
