@@ -23,23 +23,11 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="29-APR-2008" />
     /// <summary>
-    /// Information about a mapping job that gets saved as a disk file (with the
-    /// file type <c>.cedx</c>). The expectation is that the file type will be
-    /// associated with the Cadastral Editor application so that the application
-    /// can be launched with a double-click.
+    /// Current settings for a Backsight project.
     /// </summary>
     [XmlRoot]
-    public class JobFileInfo
+    public class ProjectSettings
     {
-        #region Constants
-
-        /// <summary>
-        /// The file extension for job files is ".cedx"
-        /// </summary>
-        public const string TYPE = ".cedx";
-
-        #endregion
-
         #region Class data
 
         /// <summary>
@@ -50,17 +38,12 @@ namespace Backsight.Editor
         bool m_IsChanged;
 
         /// <summary>
-        /// The database connection string
+        /// Any database connection string
         /// </summary>
         string m_ConnectionString;
 
         /// <summary>
-        /// The ID of the job that should be accessed (0 if not known)
-        /// </summary>
-        uint m_JobId;
-
-        /// <summary>
-        /// The ID of the map layer the job relates to.
+        /// The ID of the map layer the project relates to.
         /// </summary>
         int m_LayerId;
 
@@ -154,10 +137,9 @@ namespace Backsight.Editor
         /// <summary>
         /// Default constructor (for serialization mechanism)
         /// </summary>
-        public JobFileInfo()
+        public ProjectSettings()
         {
             m_ConnectionString = String.Empty;
-            m_JobId = 0;
             m_LayerId = 0;
             m_DrawInfo = new DrawInfo(0.0, 0.0, 0.0);
             m_DisplayUnit = DistanceUnitType.AsEntered;
@@ -194,23 +176,23 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Reads job information from an XML file.
+        /// Reads project settings from an XML file.
         /// </summary>
         /// <param name="fileName">The file spec for the input data</param>
         /// <returns>The data read from the input file</returns>
-        public static JobFileInfo CreateInstance(string fileName)
+        public static ProjectSettings CreateInstance(string fileName)
         {
-            XmlSerializer xs = new XmlSerializer(typeof(JobFileInfo));
+            XmlSerializer xs = new XmlSerializer(typeof(ProjectSettings));
             using (TextReader reader = new StreamReader(fileName))
             {
-                JobFileInfo result = (JobFileInfo)xs.Deserialize(reader);
+                ProjectSettings result = (ProjectSettings)xs.Deserialize(reader);
                 result.m_IsChanged = false;
                 return result;
             }
         }
 
         /// <summary>
-        /// Writes job information to an XML file.
+        /// Writes project information to an XML file.
         /// </summary>
         /// <param name="fileName">The output file (to create)</param>
         public void WriteXML(string fileName)
@@ -220,7 +202,7 @@ namespace Backsight.Editor
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            XmlSerializer xs = new XmlSerializer(typeof(JobFileInfo));
+            XmlSerializer xs = new XmlSerializer(typeof(ProjectSettings));
             using (TextWriter writer = new StreamWriter(fileName))
             {
                 xs.Serialize(writer, this);
@@ -239,17 +221,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The ID of the job that should be accessed (0 if not known)
-        /// </summary>
-        [XmlElement]
-        public uint JobId
-        {
-            get { return m_JobId; }
-            set { m_JobId = Set<uint>(value); }
-        }
-
-        /// <summary>
-        /// The internal ID of the map layer the job relates to.
+        /// The internal ID of the map layer the project relates to.
         /// </summary>
         [XmlElement]
         public int LayerId

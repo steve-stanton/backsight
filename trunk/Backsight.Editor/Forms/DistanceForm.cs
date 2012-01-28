@@ -292,7 +292,7 @@ namespace Backsight.Editor.Forms
 
             // Change the default units if required
             if (m_NewUnit)
-                EditingController.Current.JobInfo.EntryUnitType = m_Unit.UnitType;
+                EditingController.Current.JobInfo.Settings.EntryUnitType = m_Unit.UnitType;
 
             DialogResult = DialogResult.OK;
             Close();
