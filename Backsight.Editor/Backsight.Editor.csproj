@@ -133,6 +133,7 @@
     <Compile Include="Change.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="ProjectDatabase.cs" />
+    <Compile Include="ProjectSettings.cs" />
     <Compile Include="ProjectSilo.cs" />
     <Compile Include="SessionInfo.cs" />
     <Compile Include="TextEditReader.cs" />
@@ -456,7 +457,6 @@
     <Compile Include="IFeature.cs" />
     <Compile Include="InternalIdValue.cs" />
     <Compile Include="JobFile.cs" />
-    <Compile Include="JobFileInfo.cs" />
     <Compile Include="KeyTextGeometry.cs" />
     <Compile Include="MiscTextGeometry.cs" />
     <Compile Include="NativeId.cs" />

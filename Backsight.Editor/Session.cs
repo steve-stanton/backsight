@@ -138,7 +138,7 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             Debug.Assert(user.UserId == sessionData.UserId);
-            Debug.Assert(job.JobId == sessionData.JobId);
+            //Debug.Assert(job.JobId == sessionData.JobId);
 
             m_Model = model;
             m_Data = sessionData;

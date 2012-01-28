@@ -164,7 +164,7 @@ namespace Backsight.Editor.UI
             PointFeature oldCurrentPoint = m_CurrentPoint;
             CadastralMapModel map = CadastralMapModel.Current;
             EditingController ec = EditingController.Current;
-            ILength size = new Length(ec.JobInfo.PointHeight * 0.5);
+            ILength size = new Length(ec.JobInfo.Settings.PointHeight * 0.5);
             m_CurrentPoint = (map.QueryClosest(p, size, SpatialType.Point) as PointFeature);
 
             if (m_Start==null)

@@ -36,7 +36,7 @@ namespace Backsight.Editor
         /// <param name="fileName">The name of the job file to create</param>
         /// <param name="info">The information to write out</param>
         /// <returns>An object representing the resultant file</returns>
-        internal static JobFile SaveJobFile(string fileName, JobFileInfo info)
+        internal static JobFile SaveJobFile(string fileName, ProjectSettings info)
         {
             // Write out the info, then read it back in
             info.WriteXML(fileName);
@@ -55,7 +55,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The information read from the file.
         /// </summary>
-        JobFileInfo m_Info;
+        readonly ProjectSettings m_Info;
 
         /// <summary>
         /// The IDs for the job.
@@ -73,18 +73,10 @@ namespace Backsight.Editor
         internal JobFile(string fileName)
         {
             m_FileName = fileName;
-            m_Info = JobFileInfo.CreateInstance(m_FileName);
+            m_Info = ProjectSettings.CreateInstance(m_FileName);
         }
 
         #endregion
-
-        /// <summary>
-        /// The information read from the file.
-        /// </summary>
-        internal JobFileInfo Data
-        {
-            get { return m_Info; }
-        }
 
         /// <summary>
         /// The container for the job data.
@@ -100,42 +92,6 @@ namespace Backsight.Editor
         internal string Name
         {
             get { return Path.GetFileNameWithoutExtension(m_FileName); }
-        }
-
-        /// <summary>
-        /// Information about the area that was last drawn.
-        /// </summary>
-        internal DrawInfo LastDraw
-        {
-            get { return m_Info.LastDraw; }
-            set { m_Info.LastDraw = value; }
-        }
-
-        /// <summary>
-        /// Current display units
-        /// </summary>
-        internal DistanceUnitType DisplayUnitType
-        {
-            get { return m_Info.DisplayUnitType; }
-            set { m_Info.DisplayUnitType = value; }
-        }
-
-        /// <summary>
-        /// Current data entry units
-        /// </summary>
-        internal DistanceUnitType EntryUnitType
-        {
-            get { return m_Info.EntryUnitType; }
-            set { m_Info.EntryUnitType = value; }
-        }
-
-        /// <summary>
-        /// Height of point symbols, in meters on the ground.
-        /// </summary>
-        internal double PointHeight
-        {
-            get { return m_Info.PointHeight; }
-            set { m_Info.PointHeight = value; }
         }
 
         /// <summary>
@@ -258,14 +214,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// An internal ID for the job (0 if the job is only local).
-        /// </summary>
-        internal uint JobId
-        {
-            get { return m_Info.JobId; }
-        }
-
-        /// <summary>
         /// Identifies a map layer associated with the job.
         /// </summary>
         internal int LayerId
@@ -352,6 +300,11 @@ namespace Backsight.Editor
 
             return m_IdFolder.GetIdAllocations();
              */
+        }
+
+        internal ProjectSettings Settings
+        {
+            get { return m_Info; }
         }
     }
 }

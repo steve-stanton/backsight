@@ -1513,13 +1513,13 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 double scale = display.MapScale;
                 m_Controller.JobInfo.ShowPointScale = (scale + 1.0);
                 double height = 0.001 * scale;
-                m_Controller.JobInfo.PointHeight = Math.Max(0.01, height);
+                m_Controller.JobInfo.Settings.PointHeight = Math.Max(0.01, height);
             }
             else
             {
                 // Increase by a meter on the ground.
-                double oldHeight = m_Controller.JobInfo.PointHeight;
-                m_Controller.JobInfo.PointHeight = oldHeight + 1.0;
+                double oldHeight = m_Controller.JobInfo.Settings.PointHeight;
+                m_Controller.JobInfo.Settings.PointHeight = oldHeight + 1.0;
             }
 
             // Redraw (no need for erase).
@@ -1540,7 +1540,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 return;
 
             // Reduce the current size of points by a metre. 
-            double height = ji.PointHeight;
+            double height = ji.Settings.PointHeight;
             if ((height-1.0) < 1.0)
                 height -= 0.2;
             else
@@ -1552,7 +1552,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             if (size < 0.0001)
                 ji.ShowPointScale = 0.01; // not sure why 0.01 rather than 0.0
             else
-                ji.PointHeight = Math.Max(0.01, height);
+                ji.Settings.PointHeight = Math.Max(0.01, height);
 
             // Force redraw (with erase).
             m_Controller.RefreshAllDisplays();

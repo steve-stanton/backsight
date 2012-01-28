@@ -208,7 +208,7 @@ namespace Backsight.Editor.Forms
                 }
 
                 // Ensure the point size isn't TOO small (2mm at the display scale should be fine)
-                EditingController.Current.JobInfo.PointHeight = 0.002 * scale;
+                EditingController.Current.JobInfo.Settings.PointHeight = 0.002 * scale;
 
                 string scalemsg = String.Format("Draw scale has been set to 1:{0}", (uint)scale);
                 MessageBox.Show(scalemsg);

@@ -511,7 +511,7 @@ namespace Backsight.Editor
                 {
                     // Pick up the last draw info before defining the overview extent (really,
                     // should modify SetMapModel so it accepts the DrawInfo rather than an extent).
-                    DrawInfo drawInfo = m_JobInfo.LastDraw;
+                    DrawInfo drawInfo = m_JobInfo.Settings.LastDraw;
                     SetMapModel(cmm, null);
 
                     double cx = drawInfo.CenterX;
@@ -575,7 +575,7 @@ namespace Backsight.Editor
 
         private IDrawStyle InitializeDrawStyle(IDrawStyle style)
         {
-            style.PointHeight = new Length(m_JobInfo.PointHeight);
+            style.PointHeight = new Length(m_JobInfo.Settings.PointHeight);
             return style;
         }
 
@@ -589,7 +589,7 @@ namespace Backsight.Editor
             // Try to find a point feature if points are drawn.
             if ((spatialType & SpatialType.Point) != 0 && display.MapScale <= m_JobInfo.ShowPointScale)
             {
-                ILength size = new Length(m_JobInfo.PointHeight * 0.5);
+                ILength size = new Length(m_JobInfo.Settings.PointHeight * 0.5);
                 newItem = cmm.QueryClosest(p, size, SpatialType.Point);
                 if (newItem!=null)
                     return newItem;
@@ -1103,7 +1103,7 @@ namespace Backsight.Editor
         /// <param name="sender">The display that has changed</param>
         public override void OnSetExtent(ISpatialDisplay sender)
         {
-            m_JobInfo.LastDraw = new DrawInfo(sender.Extent, sender.MapScale);
+            m_JobInfo.Settings.LastDraw = new DrawInfo(sender.Extent, sender.MapScale);
         }
 
         /// <summary>
@@ -1163,7 +1163,7 @@ namespace Backsight.Editor
         {
             get
             {
-                DistanceUnitType du = m_JobInfo.DisplayUnitType;
+                DistanceUnitType du = m_JobInfo.Settings.DisplayUnitType;
                 return GetUnits(du);
             }
         }
@@ -1172,7 +1172,7 @@ namespace Backsight.Editor
         {
             get
             {
-                DistanceUnitType du = m_JobInfo.EntryUnitType;
+                DistanceUnitType du = m_JobInfo.Settings.EntryUnitType;
                 return GetUnits(du);
             }
         }

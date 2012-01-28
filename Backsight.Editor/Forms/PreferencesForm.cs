@@ -167,15 +167,15 @@ void CdPrefLabel::OnFont()
 
         void ShowPointsPage(CadastralMapModel cmm)
         {
-            JobFile ji = EditingController.Current.JobInfo;
-            pointScaleTextBox.Text = String.Format("{0:F0}", ji.ShowPointScale);
-            pointSizeTextBox.Text = String.Format("{0:F2}", ji.PointHeight);
-            showIntersectionsCheckBox.Checked = ji.AreIntersectionsDrawn;
+            ProjectSettings ps = EditingController.Current.JobInfo.Settings;
+            pointScaleTextBox.Text = String.Format("{0:F0}", ps.ShowPointScale);
+            pointSizeTextBox.Text = String.Format("{0:F2}", ps.PointHeight);
+            showIntersectionsCheckBox.Checked = ps.AreIntersectionsDrawn;
         }
 
         bool SavePointsPage(CadastralMapModel cmm)
         {
-            JobFile ji = EditingController.Current.JobInfo;
+            ProjectSettings ps = EditingController.Current.JobInfo.Settings;
 
             // Point threshold scale
 
@@ -188,9 +188,9 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (Math.Abs(pointScale - ji.ShowPointScale) > 0.001)
+            if (Math.Abs(pointScale - ps.ShowPointScale) > 0.001)
             {
-                ji.ShowPointScale = pointScale;
+                ps.ShowPointScale = pointScale;
             }
 
             // Point size
@@ -204,11 +204,11 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (Math.Abs(pointSize - ji.PointHeight) > 0.001)
-                ji.PointHeight = pointSize;
+            if (Math.Abs(pointSize - ps.PointHeight) > 0.001)
+                ps.PointHeight = pointSize;
 
             // Should intersections be drawn?
-            ji.AreIntersectionsDrawn = showIntersectionsCheckBox.Checked;
+            ps.AreIntersectionsDrawn = showIntersectionsCheckBox.Checked;
             return true;
         }
 
@@ -316,22 +316,23 @@ void CdPrefLabel::OnFont()
         bool SaveUnitsPage(CadastralMapModel cmm)
         {
             JobFile ji = EditingController.Current.JobInfo;
+            ProjectSettings ps = ji.Settings;
 
             if (enterMetersRadioButton.Checked)
-                ji.EntryUnitType = DistanceUnitType.Meters;
+                ps.EntryUnitType = DistanceUnitType.Meters;
             else if (enterFeetRadioButton.Checked)
-                ji.EntryUnitType = DistanceUnitType.Feet;
+                ps.EntryUnitType = DistanceUnitType.Feet;
             else if (enterChainsRadioButton.Checked)
-                ji.EntryUnitType = DistanceUnitType.Chains;
+                ps.EntryUnitType = DistanceUnitType.Chains;
 
             if (displayMetersRadioButton.Checked)
-                ji.DisplayUnitType = DistanceUnitType.Meters;
+                ps.DisplayUnitType = DistanceUnitType.Meters;
             else if (displayFeetRadioButton.Checked)
-                ji.DisplayUnitType = DistanceUnitType.Feet;
+                ps.DisplayUnitType = DistanceUnitType.Feet;
             else if (displayChainsRadioButton.Checked)
-                ji.DisplayUnitType = DistanceUnitType.Chains;
+                ps.DisplayUnitType = DistanceUnitType.Chains;
             else if (displayAsEnteredRadioButton.Checked)
-                ji.DisplayUnitType = DistanceUnitType.AsEntered;
+                ps.DisplayUnitType = DistanceUnitType.AsEntered;
 
             return true;
         }

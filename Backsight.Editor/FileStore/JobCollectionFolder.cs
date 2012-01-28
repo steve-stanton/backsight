@@ -73,9 +73,8 @@ namespace Backsight.Editor.FileStore
 
             // Save the information in a job file
             string jobFileName = Path.Combine(jobFolder, jobName + ".cedx");
-            JobFileInfo jfi = new JobFileInfo();
+            ProjectSettings jfi = new ProjectSettings();
             jfi.ConnectionString = ConnectionFactory.ConnectionString;
-            jfi.JobId = 0;
             jfi.LayerId = layer.Id;
 
             // Turn off auto-number if there's no database connection string
