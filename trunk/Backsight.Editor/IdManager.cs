@@ -185,8 +185,10 @@ namespace Backsight.Editor
         {
             // Grab all defined allocations for the job and user
             //IdAllocation[] allocs = IdAllocation.FindByJobUser(job, user);
-            IdAllocationInfo[] allocs = job.GetIdAllocations();
+            //IdAllocationInfo[] allocs = job.GetIdAllocations();
+            throw new NotImplementedException();
 
+            /*
             // Attach each allocation to its group
             foreach (IdAllocationInfo a in allocs)
             {
@@ -197,6 +199,7 @@ namespace Backsight.Editor
 
                 g.AddIdPacket(a);
             }
+             */
         }
 
         /// <summary>
