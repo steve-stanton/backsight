@@ -486,7 +486,7 @@ namespace Backsight.Editor
                 // The Load method will end up calling software that requires access to the
                 // current map model, so we need to set it now (we'll set it once more after
                 // the model has been loaded)
-                SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
+                SetMapModel(cmm, null); //m_ProjectFile.Data.LastDraw);
 
                 cmm.Load(m_Project, m_User);
                 cmm.AppendWorkingSession(m_Project, m_User);

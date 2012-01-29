@@ -87,7 +87,7 @@ namespace Backsight.Editor.FileStore
             jfi.DefaultPolygonType = layer.DefaultPolygonType.Id;
             jfi.DefaultTextType = layer.DefaultTextType.Id;
 
-            ProjectFile result = ProjectFile.SaveJobFile(jobFileName, jfi);
+            ProjectFile result = ProjectFile.SaveProjectFile(jobFileName, jfi);
 
             Settings.Default.LastJobName = jobName;
             Settings.Default.Save();

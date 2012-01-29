@@ -24,6 +24,12 @@ namespace Backsight.Editor
     /// <written by="Steve Stanton" on="29-APR-2008" />
     /// <summary>
     /// Current settings for a Backsight project.
+    /// <para/>
+    /// This class hold transient properties relating to the Cadastral Editor application -
+    /// things like the position for the last draw, as well as editing defaults that the user has
+    /// the ability to respecify. The important thing to remember is that only the most recent project
+    /// settings are persisted. Thus, no edit should rely implicitly on these properties (the persistent
+    /// version of each edit must be able to stand alone).
     /// </summary>
     [XmlRoot]
     public class ProjectSettings

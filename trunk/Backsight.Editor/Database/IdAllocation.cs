@@ -36,7 +36,7 @@ namespace Backsight.Editor.Database
         /// <param name="job">The job</param>
         /// <param name="user">The user</param>
         /// <returns>The rows identifying ID ranges that have been allocated</returns>
-        internal static IdAllocation[] FindByJobUser(JobFile job, IUser user)
+        internal static IdAllocation[] FindByJobUser(ProjectFile job, IUser user)
         {
             using (IConnection ic = ConnectionFactory.Create())
             {

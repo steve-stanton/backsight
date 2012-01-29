@@ -57,8 +57,8 @@ namespace Backsight.Editor
         /// <summary>
         /// Obtains a list of all previously created editing projects.
         /// </summary>
-        /// <returns>The names of all editing projects in this database.</returns>
-        /// <remarks>The result relates to projects that exist on the local file system. It exlcudes
+        /// <returns>The names of all editing projects in this database (sorted alphabetically).</returns>
+        /// <remarks>The result relates to projects that exist on the local file system. It excludes
         /// any published projects that have not been downloaded.</remarks>
         internal string[] FindAllProjectNames()
         {
@@ -67,6 +67,7 @@ namespace Backsight.Editor
             result.AddRange(m_Public.FindAllProjectNames());
             result.AddRange(m_Private.FindAllProjectNames());
 
+            result.Sort();
             return result.ToArray();
         }
 
