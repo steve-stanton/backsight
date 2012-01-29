@@ -123,7 +123,7 @@ namespace Backsight.Editor.Forms
             }
 
             // Get the output file spec
-            string jobSpec = EditingController.Current.JobInfo.Name;
+            string jobSpec = EditingController.Current.Project.Name;
             string fileName = Path.ChangeExtension(jobSpec, ".dxf");
 
             using (SaveFileDialog dial = new SaveFileDialog())

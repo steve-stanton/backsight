@@ -26,7 +26,7 @@ namespace Backsight.Editor
     /// <summary>
     /// The file holding job information (with the "cedx" file extension).
     /// </summary>
-    class JobFile
+    class ProjectFile
     {
         #region Static
 
@@ -36,11 +36,11 @@ namespace Backsight.Editor
         /// <param name="fileName">The name of the job file to create</param>
         /// <param name="info">The information to write out</param>
         /// <returns>An object representing the resultant file</returns>
-        internal static JobFile SaveJobFile(string fileName, ProjectSettings info)
+        internal static ProjectFile SaveJobFile(string fileName, ProjectSettings info)
         {
             // Write out the info, then read it back in
             info.WriteXML(fileName);
-            return new JobFile(fileName);
+            return new ProjectFile(fileName);
         }
 
         #endregion
@@ -70,7 +70,7 @@ namespace Backsight.Editor
         /// Creates a new <c>JobFile</c> that refers to an existing file
         /// </summary>
         /// <param name="fileName">The name of the job file to load</param>
-        internal JobFile(string fileName)
+        internal ProjectFile(string fileName)
         {
             m_FileName = fileName;
             m_Info = ProjectSettings.CreateInstance(m_FileName);
@@ -95,33 +95,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Scale denominator at which labels (text) will start to be drawn.
-        /// </summary>
-        internal double ShowLabelScale
-        {
-            get { return m_Info.ShowLabelScale; }
-            set { m_Info.ShowLabelScale = value; }
-        }
-
-        /// <summary>
-        /// Scale denominator at which points will start to be drawn.
-        /// </summary>
-        internal double ShowPointScale
-        {
-            get { return m_Info.ShowPointScale; }
-            set { m_Info.ShowPointScale = value; }
-        }
-
-        /// <summary>
-        /// Should feature IDs be assigned automatically? (false if the user must specify).
-        /// </summary>
-        internal bool IsAutoNumber
-        {
-            get { return m_Info.IsAutoNumber; }
-            set { m_Info.IsAutoNumber = value; }
-        }
-
-        /// <summary>
         /// Has modified job information been saved?
         /// </summary>
         internal bool IsSaved
@@ -135,82 +108,6 @@ namespace Backsight.Editor
         internal void Save()
         {
             m_Info.WriteXML(m_FileName);
-        }
-
-        /// <summary>
-        /// The ID of the default entity type for points (0 if undefined)
-        /// </summary>
-        internal int DefaultPointType
-        {
-            get { return m_Info.DefaultPointType; }
-            set { m_Info.DefaultPointType = value; }
-        }
-
-        /// <summary>
-        /// The ID of the default entity type for lines (0 if undefined)
-        /// </summary>
-        internal int DefaultLineType
-        {
-            get { return m_Info.DefaultLineType; }
-            set { m_Info.DefaultLineType = value; }
-        }
-
-        /// <summary>
-        /// The ID of the default entity type for polygons (0 if undefined)
-        /// </summary>
-        internal int DefaultPolygonType
-        {
-            get { return m_Info.DefaultPolygonType; }
-            set { m_Info.DefaultPolygonType = value; }
-        }
-
-        /// <summary>
-        /// The ID of the default entity type for text (0 if undefined)
-        /// </summary>
-        internal int DefaultTextType
-        {
-            get { return m_Info.DefaultTextType; }
-            set { m_Info.DefaultTextType = value; }
-        }
-
-        /// <summary>
-        /// The nominal map scale, for use in converting the size of fonts.
-        /// </summary>
-        internal uint NominalMapScale
-        {
-            get { return m_Info.NominalMapScale; }
-            set { m_Info.NominalMapScale = value; }
-        }
-
-        /// <summary>
-        /// The style for annotating lines with distances (and angles)
-        /// </summary>
-        internal LineAnnotationStyle LineAnnotation
-        {
-            get { return m_Info.LineAnnotation; }
-            set { m_Info.LineAnnotation = value; }
-        }
-
-        /// <summary>
-        /// Should intersection points be drawn? Relevant only if points
-        /// are drawn at the current display scale (see the <see cref="ShowPointScale"/> property).
-        /// </summary>
-        internal bool AreIntersectionsDrawn
-        {
-            get { return m_Info.AreIntersectionsDrawn; }
-            set { m_Info.AreIntersectionsDrawn = value; }
-        }
-
-        internal string SplashIncrement
-        {
-            get { return m_Info.SplashIncrement; }
-            set { m_Info.SplashIncrement = value; }
-        }
-
-        internal string SplashPercents
-        {
-            get { return m_Info.SplashPercents; }
-            set { m_Info.SplashPercents = value; }
         }
 
         /// <summary>

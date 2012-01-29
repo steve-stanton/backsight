@@ -17,11 +17,8 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Windows.Forms;
 
-using Backsight.Data;
-using Backsight.Editor.Database;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Editor.UI;
@@ -46,10 +43,10 @@ namespace Backsight.Editor
             get { return (SpatialController.Current as EditingController); }
         }
 
-        static DistanceUnit s_Meters = new DistanceUnit(DistanceUnitType.Meters);
-        static DistanceUnit s_Feet = new DistanceUnit(DistanceUnitType.Feet);
-        static DistanceUnit s_Chains = new DistanceUnit(DistanceUnitType.Chains);
-        static DistanceUnit s_AsEntered = new DistanceUnit(DistanceUnitType.AsEntered);
+        static readonly DistanceUnit s_Meters = new DistanceUnit(DistanceUnitType.Meters);
+        static readonly DistanceUnit s_Feet = new DistanceUnit(DistanceUnitType.Feet);
+        static readonly DistanceUnit s_Chains = new DistanceUnit(DistanceUnitType.Chains);
+        static readonly DistanceUnit s_AsEntered = new DistanceUnit(DistanceUnitType.AsEntered);
 
         #endregion
 
@@ -61,9 +58,9 @@ namespace Backsight.Editor
         User m_User;
 
         /// <summary>
-        /// Information about the current job
+        /// Information about the current project
         /// </summary>
-        JobFile m_JobInfo;
+        ProjectFile m_Project;
 
         /// <summary>
         /// Information about the editing layer
@@ -122,7 +119,7 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             m_User = null;
-            m_JobInfo = null;
+            m_Project = null;
             m_ActiveLayer = null;
             m_Main = main;
             m_IsAutoSelect = 0;
@@ -149,8 +146,8 @@ namespace Backsight.Editor
                 cmm.Close();
 
             // Write out the job file
-            if (m_JobInfo!=null)
-                m_JobInfo.Save();
+            if (m_Project!=null)
+                m_Project.Save();
         }
 
         public CadastralMapModel CadastralMapModel
@@ -159,11 +156,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Information about the current job file
+        /// Information about the current project file
         /// </summary>
-        internal JobFile JobInfo
+        internal ProjectFile Project
         {
-            get { return m_JobInfo; }
+            get { return m_Project; }
         }
 
         /// <summary>
@@ -449,10 +446,10 @@ namespace Backsight.Editor
         /// <param name="jobInfo">The job info (null if the user should be asked)</param>
         /// <exception cref="Exception">If a job could not be opened</exception>
         /// <returns>True if the job was opened. False if there was some problem opening it.</returns>
-        internal bool OpenJob(JobFile jobInfo)
+        internal bool OpenJob(ProjectFile jobInfo)
         {
             m_User = null;
-            m_JobInfo = jobInfo;
+            m_Project = jobInfo;
             m_ActiveLayer = null;
 
             // Pass the job file (if any) over to a dedicated starter instance
@@ -466,7 +463,7 @@ namespace Backsight.Editor
             // defined in the AdapterFactory.ConnectionString property.
 
             m_User = s.User;
-            m_JobInfo = s.Job;
+            m_Project = s.Job;
             //m_JobData = Job.FindByJobId(m_JobInfo.Data.JobId);
 
             //if (m_JobData==null)
@@ -491,10 +488,10 @@ namespace Backsight.Editor
                 // the model has been loaded)
                 SetMapModel(cmm, null); //m_JobFile.Data.LastDraw);
 
-                cmm.Load(m_JobInfo, m_User);
-                cmm.AppendWorkingSession(m_JobInfo, m_User);
+                cmm.Load(m_Project, m_User);
+                cmm.AppendWorkingSession(m_Project, m_User);
 
-                Settings.Default.LastJobName = m_JobInfo.Name;
+                Settings.Default.LastJobName = m_Project.Name;
                 Settings.Default.Save();
                 return true;
             }
@@ -511,7 +508,7 @@ namespace Backsight.Editor
                 {
                     // Pick up the last draw info before defining the overview extent (really,
                     // should modify SetMapModel so it accepts the DrawInfo rather than an extent).
-                    DrawInfo drawInfo = m_JobInfo.Settings.LastDraw;
+                    DrawInfo drawInfo = m_Project.Settings.LastDraw;
                     SetMapModel(cmm, null);
 
                     double cx = drawInfo.CenterX;
@@ -575,21 +572,22 @@ namespace Backsight.Editor
 
         private IDrawStyle InitializeDrawStyle(IDrawStyle style)
         {
-            style.PointHeight = new Length(m_JobInfo.Settings.PointHeight);
+            style.PointHeight = new Length(m_Project.Settings.PointHeight);
             return style;
         }
 
         private ISpatialObject SelectObject(ISpatialDisplay display, IPosition p, SpatialType spatialType)
         {
+            ProjectSettings ps = m_Project.Settings;
             CadastralMapModel cmm = this.CadastralMapModel;
             ISpatialSelection currentSel = this.SpatialSelection;
             ISpatialObject oldItem = currentSel.Item;
             ISpatialObject newItem;
 
             // Try to find a point feature if points are drawn.
-            if ((spatialType & SpatialType.Point) != 0 && display.MapScale <= m_JobInfo.ShowPointScale)
+            if ((spatialType & SpatialType.Point) != 0 && display.MapScale <= ps.ShowPointScale)
             {
-                ILength size = new Length(m_JobInfo.Settings.PointHeight * 0.5);
+                ILength size = new Length(ps.PointHeight * 0.5);
                 newItem = cmm.QueryClosest(p, size, SpatialType.Point);
                 if (newItem!=null)
                     return newItem;
@@ -628,7 +626,7 @@ namespace Backsight.Editor
             // Try for a text string if text is drawn.
             // The old software handles text by checking that the point is inside
             // the outline, not sure whether the new index provides acceptable alternative.
-            if ((spatialType & SpatialType.Text)!=0 && display.MapScale <= m_JobInfo.ShowLabelScale)
+            if ((spatialType & SpatialType.Text)!=0 && display.MapScale <= ps.ShowLabelScale)
             {
                 newItem = cmm.QueryClosest(p, tol, SpatialType.Text);
                 if (newItem!=null)
@@ -786,8 +784,8 @@ namespace Backsight.Editor
         /// </summary>
         internal bool IsAutoNumber
         {
-            get { return m_JobInfo.IsAutoNumber; }
-            set { m_JobInfo.IsAutoNumber = value; }
+            get { return m_Project.Settings.IsAutoNumber; }
+            set { m_Project.Settings.IsAutoNumber = value; }
         }
 
         /// <summary>
@@ -953,9 +951,9 @@ namespace Backsight.Editor
         /// the display in question is the command display. Otherwise it's the currently
         /// active display.
         /// </summary>
-        bool ArePointsDrawn
+        internal bool ArePointsDrawn
         {
-            get { return IsVisible(m_JobInfo.ShowPointScale); }
+            get { return IsVisible(m_Project.Settings.ShowPointScale); }
         }
 
         /// <summary>
@@ -963,9 +961,9 @@ namespace Backsight.Editor
         /// the display in question is the command display. Otherwise it's the currently
         /// active display.
         /// </summary>
-        bool AreLabelsDrawn
+        internal bool AreLabelsDrawn
         {
-            get { return IsVisible(m_JobInfo.ShowLabelScale); }
+            get { return IsVisible(m_Project.Settings.ShowLabelScale); }
         }
 
         /// <summary>
@@ -1103,7 +1101,7 @@ namespace Backsight.Editor
         /// <param name="sender">The display that has changed</param>
         public override void OnSetExtent(ISpatialDisplay sender)
         {
-            m_JobInfo.Settings.LastDraw = new DrawInfo(sender.Extent, sender.MapScale);
+            m_Project.Settings.LastDraw = new DrawInfo(sender.Extent, sender.MapScale);
         }
 
         /// <summary>
@@ -1163,7 +1161,7 @@ namespace Backsight.Editor
         {
             get
             {
-                DistanceUnitType du = m_JobInfo.Settings.DisplayUnitType;
+                DistanceUnitType du = m_Project.Settings.DisplayUnitType;
                 return GetUnits(du);
             }
         }
@@ -1172,7 +1170,7 @@ namespace Backsight.Editor
         {
             get
             {
-                DistanceUnitType du = m_JobInfo.Settings.EntryUnitType;
+                DistanceUnitType du = m_Project.Settings.EntryUnitType;
                 return GetUnits(du);
             }
         }
@@ -1236,7 +1234,7 @@ namespace Backsight.Editor
             if (MessageBox.Show("Do you want to save changes?", "Changes not saved", MessageBoxButtons.YesNo)
                 == DialogResult.Yes)
             {
-                m_JobInfo.Save();
+                m_Project.Save();
                 s.SaveChanges();
             }
             else
@@ -1256,7 +1254,7 @@ namespace Backsight.Editor
                 if (s == null)
                     return true;
 
-                return (s.IsSaved && m_JobInfo.IsSaved);
+                return (s.IsSaved && m_Project.IsSaved);
             }
         }
 
@@ -1334,7 +1332,7 @@ namespace Backsight.Editor
         /// </summary>
         internal LineAnnotationStyle LineAnnotationStyle
         {
-            get { return JobInfo.LineAnnotation; }
+            get { return Project.Settings.LineAnnotation; }
         }
 
         /// <summary>

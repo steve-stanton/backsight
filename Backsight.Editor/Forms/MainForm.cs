@@ -95,17 +95,18 @@ namespace Backsight.Editor.Forms
                 return;
 
             IJobContainer jc = new JobCollectionFolder();
-            JobFile job = jc.OpenJob(jobName);
+            ProjectFile job = jc.OpenJob(jobName);
             if (job == null)
                 return;
 
             ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
             Stopwatch sw = Stopwatch.StartNew();
+            ProjectSettings ps = job.Settings;
 
             try
             {
-                string increment = job.SplashIncrement;
-                string percents = job.SplashPercents;
+                string increment = ps.SplashIncrement;
+                string percents = ps.SplashPercents;
 
                 // Don't show splash screen if it's a brand new file
                 //if (percents.Length > 0)
@@ -146,15 +147,15 @@ namespace Backsight.Editor.Forms
                 ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds / 1000.0));
                 SplashScreen.CloseForm();
 
-                if (job != null && ss != null)
+                if (ps != null && ss != null)
                 {
                     // Save the splash settings now. This is perhaps a little premature, since
                     // the original splash screen implementation waited until the screen had
                     // completely faded away. The drawback with that is that the job file would
                     // then be rewritten on another thread, which could trample on things that
                     // are happening here.
-                    job.SplashIncrement = ss.GetIncrement();
-                    job.SplashPercents = ss.GetPercents();
+                    ps.SplashIncrement = ss.GetIncrement();
+                    ps.SplashPercents = ss.GetPercents();
                     job.Save();
                 }
             }
@@ -504,7 +505,7 @@ namespace Backsight.Editor.Forms
                 pointEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);
                 ent = map.DefaultLineType;
                 lineEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);
-                string name = m_Controller.JobInfo.Name;
+                string name = m_Controller.Project.Name;
                 this.Text = (String.IsNullOrEmpty(name) ? "(Untitled map)" : name);
             }
 
@@ -642,7 +643,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             {
                 if (dial.ShowDialog() == DialogResult.OK)
                 {
-                    JobFile job = dial.NewJob;
+                    ProjectFile job = dial.NewJob;
                     if (m_Controller.OpenJob(job))
                         AddRecentJob(job.Name);
                 }
@@ -698,7 +699,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             try
             {
-                JobFile jf = new JobFile(filename);
+                ProjectFile jf = new ProjectFile(filename);
                 if (!m_Controller.OpenJob(jf))
                     throw new ApplicationException();
 
@@ -714,7 +715,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 try
                 {
                     if (m_Controller.OpenJob(null))
-                        m_MruMenu.AddString(m_Controller.JobInfo.Name);
+                        m_MruMenu.AddString(m_Controller.Project.Name);
                 }
 
                 catch (Exception ex2)
@@ -1490,8 +1491,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             get
             {
-                ISpatialDisplay display = m_Controller.ActiveDisplay;
-                return (display!=null && display.MapScale <= m_Controller.JobInfo.ShowPointScale);
+                return m_Controller.ArePointsDrawn;
+                //ISpatialDisplay display = m_Controller.ActiveDisplay;
+                //return (display!=null && display.MapScale <= m_Controller.JobInfo.ShowPointScale);
             }
         }
 
@@ -1503,6 +1505,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         private void PointEnlarge(IUserAction action)
         {
             CadastralMapModel cmm = m_Controller.CadastralMapModel;
+            ProjectSettings ps = m_Controller.Project.Settings;
 
             // If points are not currently drawn, set the scale threshold
             // to match the current scale, and set the size to be 1mm at scale.
@@ -1511,15 +1514,15 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 ISpatialDisplay display = m_Controller.ActiveDisplay;
                 Debug.Assert(display!=null);
                 double scale = display.MapScale;
-                m_Controller.JobInfo.ShowPointScale = (scale + 1.0);
+                ps.ShowPointScale = (scale + 1.0);
                 double height = 0.001 * scale;
-                m_Controller.JobInfo.Settings.PointHeight = Math.Max(0.01, height);
+                m_Controller.Project.Settings.PointHeight = Math.Max(0.01, height);
             }
             else
             {
                 // Increase by a meter on the ground.
-                double oldHeight = m_Controller.JobInfo.Settings.PointHeight;
-                m_Controller.JobInfo.Settings.PointHeight = oldHeight + 1.0;
+                double oldHeight = m_Controller.Project.Settings.PointHeight;
+                ps.PointHeight = oldHeight + 1.0;
             }
 
             // Redraw (no need for erase).
@@ -1533,14 +1536,14 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void PointReduce(IUserAction action)
         {
-            JobFile ji = m_Controller.JobInfo;
             CadastralMapModel cmm = m_Controller.CadastralMapModel;
+            ProjectSettings ps = m_Controller.Project.Settings;
             ISpatialDisplay display = m_Controller.ActiveDisplay;
             if (display==null)
                 return;
 
             // Reduce the current size of points by a metre. 
-            double height = ji.Settings.PointHeight;
+            double height = ps.PointHeight;
             if ((height-1.0) < 1.0)
                 height -= 0.2;
             else
@@ -1550,9 +1553,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // up below 0.1mm at the current draw scale, turn them off.
             double size = height / display.MapScale;
             if (size < 0.0001)
-                ji.ShowPointScale = 0.01; // not sure why 0.01 rather than 0.0
+                ps.ShowPointScale = 0.01; // not sure why 0.01 rather than 0.0
             else
-                ji.Settings.PointHeight = Math.Max(0.01, height);
+                ps.PointHeight = Math.Max(0.01, height);
 
             // Force redraw (with erase).
             m_Controller.RefreshAllDisplays();
@@ -1808,8 +1811,9 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             get
             {
-                ISpatialDisplay display = m_Controller.ActiveDisplay;
-                return (display!=null && display.MapScale <= m_Controller.JobInfo.ShowLabelScale);
+                return m_Controller.AreLabelsDrawn;
+                //ISpatialDisplay display = m_Controller.ActiveDisplay;
+                //return (display!=null && display.MapScale <= m_Controller.JobInfo.Settings.ShowLabelScale);
             }
         }
 

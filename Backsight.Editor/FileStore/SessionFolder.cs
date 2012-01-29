@@ -309,7 +309,7 @@ namespace Backsight.Editor.FileStore
             m_LastSavedItem = m_Info.NumItem;
 
             // Save the job file for good measure.
-            EditingController.Current.JobInfo.Save();
+            EditingController.Current.Project.Save();
         }
 
         /// <summary>

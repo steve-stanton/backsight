@@ -282,7 +282,7 @@ namespace Backsight.Editor
 
                 // If we're highlighting, and points are displayed, render the end points too
                 // (if the line is not a polygon boundary, draw hatched ends).
-                if (showPoints && display.MapScale < ec.JobInfo.ShowPointScale)
+                if (showPoints && display.MapScale < ec.Project.Settings.ShowPointScale)
                 {
                     if (IsTopological)
                     {

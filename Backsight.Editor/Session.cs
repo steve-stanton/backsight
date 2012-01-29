@@ -108,7 +108,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The job the session is associated with
         /// </summary>
-        readonly JobFile m_Job;
+        readonly ProjectFile m_Job;
 
         /// <summary>
         /// Operations (if any) that were performed during the session. 
@@ -132,7 +132,7 @@ namespace Backsight.Editor
         /// <param name="user">The user who performed the session</param>
         /// <param name="job">The job the session is associated with</param>
         /// <remarks>To be called only by <see cref="CreateCurrentSessoon"/></remarks>
-        Session(CadastralMapModel model, SessionData sessionData, User user, JobFile job)
+        Session(CadastralMapModel model, SessionData sessionData, User user, ProjectFile job)
         {
             if (sessionData == null || user == null || job == null)
                 throw new ArgumentNullException();
@@ -241,7 +241,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The job the session is associated with
         /// </summary>
-        internal JobFile Job
+        internal ProjectFile Job
         {
             get { return m_Job; }
         }
@@ -319,7 +319,7 @@ namespace Backsight.Editor
 
             // Save the job file for good measure. If the user looks at the file
             // timestamp, this will reassure them that something really has been done!
-            EditingController.Current.JobInfo.Save();
+            EditingController.Current.Project.Save();
         }
 
         /// <summary>

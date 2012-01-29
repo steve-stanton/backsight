@@ -35,7 +35,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Information for the newly created job (defined when user clicks the OK button)
         /// </summary>
-        JobFile m_NewJob;
+        ProjectFile m_NewJob;
 
         #endregion
 
@@ -106,7 +106,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The new job (created when user clicks on OK)
         /// </summary>
-        internal JobFile NewJob
+        internal ProjectFile NewJob
         {
             get { return m_NewJob; }
         }

@@ -109,7 +109,7 @@ namespace Backsight.Editor.UI
                 RenderGeometry(display, style);
 
                 EditingController ec = EditingController.Current;
-                if (ec.JobInfo.AreIntersectionsDrawn && ArePointsDrawn() && AddingTopology())
+                if (ec.Project.Settings.AreIntersectionsDrawn && ArePointsDrawn() && AddingTopology())
                 {
                     // The intersect geometry could be null when starting to add a new
                     // circular arc
@@ -164,7 +164,7 @@ namespace Backsight.Editor.UI
             PointFeature oldCurrentPoint = m_CurrentPoint;
             CadastralMapModel map = CadastralMapModel.Current;
             EditingController ec = EditingController.Current;
-            ILength size = new Length(ec.JobInfo.Settings.PointHeight * 0.5);
+            ILength size = new Length(ec.Project.Settings.PointHeight * 0.5);
             m_CurrentPoint = (map.QueryClosest(p, size, SpatialType.Point) as PointFeature);
 
             if (m_Start==null)

@@ -167,7 +167,7 @@ void CdPrefLabel::OnFont()
 
         void ShowPointsPage(CadastralMapModel cmm)
         {
-            ProjectSettings ps = EditingController.Current.JobInfo.Settings;
+            ProjectSettings ps = EditingController.Current.Project.Settings;
             pointScaleTextBox.Text = String.Format("{0:F0}", ps.ShowPointScale);
             pointSizeTextBox.Text = String.Format("{0:F2}", ps.PointHeight);
             showIntersectionsCheckBox.Checked = ps.AreIntersectionsDrawn;
@@ -175,7 +175,7 @@ void CdPrefLabel::OnFont()
 
         bool SavePointsPage(CadastralMapModel cmm)
         {
-            ProjectSettings ps = EditingController.Current.JobInfo.Settings;
+            ProjectSettings ps = EditingController.Current.Project.Settings;
 
             // Point threshold scale
 
@@ -214,16 +214,16 @@ void CdPrefLabel::OnFont()
 
         void ShowLabelsPage(CadastralMapModel cmm)
         {
-            JobFile ji = EditingController.Current.JobInfo;
-            labelScaleTextBox.Text = String.Format("{0:F0}", ji.ShowLabelScale);
+            ProjectSettings ps = EditingController.Current.Project.Settings;
+            labelScaleTextBox.Text = String.Format("{0:F0}", ps.ShowLabelScale);
             textRotationAngleLabel.Text = RadianValue.AsShortString(cmm.DefaultTextRotation);
-            nominalScaleTextBox.Text = ji.NominalMapScale.ToString();
+            nominalScaleTextBox.Text = ps.NominalMapScale.ToString();
             ShowFont();
         }
 
         bool SaveLabelsPage(CadastralMapModel cmm)
         {
-            JobFile ji = EditingController.Current.JobInfo;
+            ProjectSettings ps = EditingController.Current.Project.Settings;
 
             // Label threshold scale
 
@@ -236,8 +236,8 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (Math.Abs(labelScale - ji.ShowLabelScale) > 0.001)
-                ji.ShowLabelScale = labelScale;
+            if (Math.Abs(labelScale - ps.ShowLabelScale) > 0.001)
+                ps.ShowLabelScale = labelScale;
 
             // Rotation angle (can't be changed via this dialog)
 
@@ -251,8 +251,8 @@ void CdPrefLabel::OnFont()
                 return false;
             }
 
-            if (nominalScale != ji.NominalMapScale)
-                ji.NominalMapScale = (uint)nominalScale;
+            if (nominalScale != ps.NominalMapScale)
+                ps.NominalMapScale = (uint)nominalScale;
 
             // TODO: Font
 
@@ -315,7 +315,7 @@ void CdPrefLabel::OnFont()
 
         bool SaveUnitsPage(CadastralMapModel cmm)
         {
-            JobFile ji = EditingController.Current.JobInfo;
+            ProjectFile ji = EditingController.Current.Project;
             ProjectSettings ps = ji.Settings;
 
             if (enterMetersRadioButton.Checked)
