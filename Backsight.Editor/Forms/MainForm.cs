@@ -40,10 +40,10 @@ namespace Backsight.Editor.Forms
         readonly MruStripMenuInline m_MruMenu;
 
         /// <summary>
-        /// The name of the job file used to launch the application (null if user didn't
+        /// The name of the project file used to launch the application (null if user didn't
         /// double-click on a cedx file)
         /// </summary>
-        readonly string m_InitialJobFile;
+        readonly string m_InitialProjectFile;
 
         #endregion
 
@@ -54,9 +54,9 @@ namespace Backsight.Editor.Forms
             // If user double-clicked on a file, it should appear as an argument. In that
             // case, remember it as the initial job file (it gets dealt with by MainForm_Shown)
             if (args != null && args.Length > 0)
-                m_InitialJobFile = args[0];
+                m_InitialProjectFile = args[0];
             else
-                m_InitialJobFile = null;
+                m_InitialProjectFile = null;
 
             // Define the controller for the application
             m_Controller = new EditingController(this);
@@ -163,7 +163,7 @@ namespace Backsight.Editor.Forms
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            OpenJob(m_InitialJobFile);
+            OpenJob(m_InitialProjectFile);
 
             // If a model hasn't been obtained, ask
             if (m_Controller.CadastralMapModel==null)

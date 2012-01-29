@@ -24,19 +24,19 @@ using Backsight.Forms;
 namespace Backsight.Editor
 {
     /// <summary>
-    /// The file holding job information (with the "cedx" file extension).
+    /// The file holding project information.
     /// </summary>
     class ProjectFile
     {
         #region Static
 
         /// <summary>
-        /// Writes a new job file
+        /// Writes a new project file
         /// </summary>
-        /// <param name="fileName">The name of the job file to create</param>
+        /// <param name="fileName">The name of the project file to create</param>
         /// <param name="info">The information to write out</param>
         /// <returns>An object representing the resultant file</returns>
-        internal static ProjectFile SaveJobFile(string fileName, ProjectSettings info)
+        internal static ProjectFile SaveProjectFile(string fileName, ProjectSettings info)
         {
             // Write out the info, then read it back in
             info.WriteXML(fileName);
@@ -48,7 +48,7 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The full name of the job file (including directory)
+        /// The full name of the project file (including directory)
         /// </summary>
         string m_FileName;
 
@@ -57,19 +57,14 @@ namespace Backsight.Editor
         /// </summary>
         readonly ProjectSettings m_Info;
 
-        /// <summary>
-        /// The IDs for the job.
-        /// </summary>
-        //IdFolder m_IdFolder;
-
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>JobFile</c> that refers to an existing file
+        /// Creates a new <c>ProjectFile</c> that refers to an existing file
         /// </summary>
-        /// <param name="fileName">The name of the job file to load</param>
+        /// <param name="fileName">The name of the project file to load</param>
         internal ProjectFile(string fileName)
         {
             m_FileName = fileName;
@@ -79,7 +74,7 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// The container for the job data.
+        /// The container for the project data.
         /// </summary>
         IJobContainer Container
         {
@@ -87,7 +82,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The user-perceived name of the job.
+        /// The user-perceived name of the project.
         /// </summary>
         internal string Name
         {
@@ -95,7 +90,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Has modified job information been saved?
+        /// Have modified project setting been saved?
         /// </summary>
         internal bool IsSaved
         {
@@ -103,7 +98,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Saves the job info as part of a persistent storage area.
+        /// Saves the project settings as part of a persistent storage area.
         /// </summary>
         internal void Save()
         {
@@ -111,7 +106,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Identifies a map layer associated with the job.
+        /// Identifies a map layer associated with the project.
         /// </summary>
         internal int LayerId
         {
@@ -119,7 +114,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Loads a map model with the content of this job.
+        /// Loads a map model with the content of this project.
         /// </summary>
         /// <param name="mapModel">The model to load</param>
         internal void LoadModel(CadastralMapModel mapModel)
@@ -129,7 +124,7 @@ namespace Backsight.Editor
 
             EditDeserializer editDeserializer = new EditDeserializer(mapModel);
 
-            // Look for a Sessions folder in the same place as this job file
+            // Look for a Sessions folder in the same place as this project file
             // (not sure if m_FileName really has the full path when loaded from MRU)
             string jobFolder = Path.GetDirectoryName(m_FileName);
             string sessionsFolder = Path.Combine(jobFolder, "Sessions");
@@ -160,7 +155,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a brand new session for this job.
+        /// Creates a brand new session for this project.
         /// </summary>
         /// <param name="sessionId">The ID to assign to the new session</param>
         /// <returns>The newly created session</returns>
@@ -186,7 +181,7 @@ namespace Backsight.Editor
         {
             throw new NotImplementedException();
             /*
-            // Look for a Ids folder in the same place as this job file
+            // Look for a Ids folder in the same place as this project file
             // (not sure if m_FileName really has the full path when loaded from MRU)
             if (m_IdFolder == null)
             {

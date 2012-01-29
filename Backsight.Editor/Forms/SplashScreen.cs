@@ -14,15 +14,12 @@
 // </remarks>
 
 using System;
+using System.Collections;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Collections;
-using System.ComponentModel;
-using System.Windows.Forms;
 using System.Threading;
-//using System.Diagnostics;
+using System.Windows.Forms;
 
-using Microsoft.Win32;
 
 namespace Backsight.Editor.Forms
 {
@@ -35,8 +32,6 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Information about the job being opened while splash screen displayed
         /// </summary>
-        //static JobFileInfo ms_JobFileInfo = null;
-        //static Form ms_ParentForm = null;
         static string ms_Increment = null;
         static string ms_Percents = null;
 
@@ -266,8 +261,6 @@ namespace Backsight.Editor.Forms
 		static public void ShowSplashScreen(string increment, string percents)
 		{
             // Remember information about the job that's being loaded
-            //ms_JobFileInfo = info;
-            //ms_ParentForm = parent;
             if (String.IsNullOrEmpty(increment))
                 ms_Increment = "0.0015";
             else

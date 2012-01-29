@@ -80,7 +80,7 @@ namespace Backsight.Editor
             {
                 // If the job file isn't defined, get the database connection string
                 string cs = null;
-                if (m_JobFile == null)
+                if (m_ProjectFile == null)
                 {
                     cs = LastDatabase.ConnectionString;
 
@@ -91,7 +91,7 @@ namespace Backsight.Editor
                         return false;
                 }
                 else
-                    cs = m_JobFile.Data.ConnectionString;
+                    cs = m_ProjectFile.Data.ConnectionString;
 
                 // Attempt to open the database, to get the user ID for the person
                 // who's currently logged in.
@@ -108,7 +108,7 @@ namespace Backsight.Editor
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
-                    m_JobFile = null;
+                    m_ProjectFile = null;
                 }
             }
 

@@ -67,7 +67,7 @@ namespace Backsight.Editor
         /// <param name="job">The job the session is associated with</param>
         /// <returns>The created session (can also be subsequently accessed through the
         /// <see cref="CurrentSession"/> property</returns>
-        internal static Session CreateCurrentSession(CadastralMapModel model, SessionData sessionData, IUser user, JobFile job)
+        internal static Session CreateCurrentSession(CadastralMapModel model, SessionData sessionData, IUser user, ProjectFile job)
         {
             s_CurrentSession = new Session(model, sessionData, user, job);
             model.AddSession(s_CurrentSession);

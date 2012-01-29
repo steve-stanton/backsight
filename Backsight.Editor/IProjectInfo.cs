@@ -13,8 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using Backsight.Forms;
 using System;
+using Backsight.Forms;
 
 namespace Backsight.Editor
 {
@@ -45,79 +45,9 @@ namespace Backsight.Editor
         int LayerId { get; }
 
         /// <summary>
-        /// Information about the area that was last drawn.
+        /// Current settings for the project (things like current defaults specified by the user).
         /// </summary>
-        DrawInfo LastDraw { get; set; }
-
-        /// <summary>
-        /// Current display units
-        /// </summary>
-        DistanceUnitType DisplayUnitType { get; set; }
-
-        /// <summary>
-        /// Current data entry units
-        /// </summary>
-        DistanceUnitType EntryUnitType { get; set; }
-
-        /// <summary>
-        /// Height of point symbols, in meters on the ground.
-        /// </summary>
-        double PointHeight { get; set; }
-
-        /// <summary>
-        /// Scale denominator at which labels (text) will start to be drawn.
-        /// </summary>
-        double ShowLabelScale { get; set; }
-
-        /// <summary>
-        /// Scale denominator at which points will start to be drawn.
-        /// </summary>
-        double ShowPointScale { get; set; }
-
-        /// <summary>
-        /// Should feature IDs be assigned automatically? (false if the user must specify).
-        /// </summary>
-        bool IsAutoNumber { get; set; }
-
-        /// <summary>
-        /// The ID of the default entity type for points (0 if undefined)
-        /// </summary>
-        int DefaultPointType { get; set; }
-
-        /// <summary>
-        /// The ID of the default entity type for lines (0 if undefined)
-        /// </summary>
-        int DefaultLineType { get; set; }
-
-        /// <summary>
-        /// The ID of the default entity type for polygons (0 if undefined)
-        /// </summary>
-        int DefaultPolygonType { get; set; }
-
-        /// <summary>
-        /// The ID of the default entity type for text (0 if undefined)
-        /// </summary>
-        int DefaultTextType { get; set; }
-
-        /// <summary>
-        /// The nominal map scale, for use in converting the size of fonts.
-        /// </summary>
-        uint NominalMapScale { get; set; }
-
-        /// <summary>
-        /// The style for annotating lines with distances (and angles)
-        /// </summary>
-        LineAnnotationStyle LineAnnotation { get; set; }
-
-        /// <summary>
-        /// Should intersection points be drawn? Relevant only if points
-        /// are drawn at the current display scale (see the <see cref="ShowPointScale"/> property).
-        /// </summary>
-        bool AreIntersectionsDrawn { get; set; }
-
-        string SplashIncrement { get; set; }
-
-        string SplashPercents { get; set; }
+        ProjectSettings Settings { get; }
 
         /// <summary>
         /// Has modified project information been saved?
