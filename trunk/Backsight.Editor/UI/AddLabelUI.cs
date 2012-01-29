@@ -248,7 +248,7 @@ namespace Backsight.Editor.UI
 
             // Figure out the ground height at the map's nominal scale
             float fontSize = fontInfo.PointSize;
-            uint nominalScale = EditingController.Current.JobInfo.NominalMapScale;
+            uint nominalScale = EditingController.Current.Project.Settings.NominalMapScale;
             double ht = (double)fontSize * (double)nominalScale * MathConstants.POINTSIZE_TO_METERS;
 
             // Convert into pixels on the active display
@@ -401,9 +401,10 @@ namespace Backsight.Editor.UI
         {
             get
             {
-                EditingController ec = EditingController.Current;
-                ISpatialDisplay display = ActiveDisplay;
-                return (display!=null && display.MapScale <= ec.JobInfo.ShowLabelScale);
+                return EditingController.Current.AreLabelsDrawn;
+                //EditingController ec = EditingController.Current;
+                //ISpatialDisplay display = ActiveDisplay;
+                //return (display!=null && display.MapScale <= ec.JobInfo.ShowLabelScale);
             }
         }
 

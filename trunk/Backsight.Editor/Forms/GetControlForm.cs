@@ -199,16 +199,17 @@ namespace Backsight.Editor.Forms
 
                 // Tell the user the draw scale that has been defined, and ensure points are drawn
                 // at that scale.
+                ProjectSettings ps = EditingController.Current.Project.Settings;
                 double scale = GetSensibleScale(display.MapScale);
                 display.MapScale = scale;
                 if (!m_Cmd.ArePointsDrawn())
                 {
-                    EditingController.Current.JobInfo.ShowPointScale = (scale+1);
+                    ps.ShowPointScale = (scale+1);
                     Debug.Assert(m_Cmd.ArePointsDrawn());
                 }
 
                 // Ensure the point size isn't TOO small (2mm at the display scale should be fine)
-                EditingController.Current.JobInfo.Settings.PointHeight = 0.002 * scale;
+                ps.PointHeight = 0.002 * scale;
 
                 string scalemsg = String.Format("Draw scale has been set to 1:{0}", (uint)scale);
                 MessageBox.Show(scalemsg);

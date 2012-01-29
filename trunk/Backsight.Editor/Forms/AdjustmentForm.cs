@@ -75,7 +75,7 @@ namespace Backsight.Editor.Forms
 
             // Display the adjustment results in the current data entry units.
 
-            DistanceUnitType unitType = EditingController.Current.JobInfo.Settings.EntryUnitType;
+            DistanceUnitType unitType = EditingController.Current.Project.Settings.EntryUnitType;
             if (unitType==DistanceUnitType.Feet)
                 OnFeet();
             else if (unitType==DistanceUnitType.Chains)

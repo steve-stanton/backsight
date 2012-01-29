@@ -63,7 +63,7 @@ namespace Backsight.Editor.FileStore
         /// <returns>
         /// Information describing the state of the job.
         /// </returns>
-        public JobFile CreateJob(string jobName, ILayer layer)
+        public ProjectFile CreateJob(string jobName, ILayer layer)
         {
             string jobFolder = Path.Combine(m_FolderName, jobName);
             if (Directory.Exists(jobFolder))
@@ -87,7 +87,7 @@ namespace Backsight.Editor.FileStore
             jfi.DefaultPolygonType = layer.DefaultPolygonType.Id;
             jfi.DefaultTextType = layer.DefaultTextType.Id;
 
-            JobFile result = JobFile.SaveJobFile(jobFileName, jfi);
+            ProjectFile result = ProjectFile.SaveJobFile(jobFileName, jfi);
 
             Settings.Default.LastJobName = jobName;
             Settings.Default.Save();
@@ -102,7 +102,7 @@ namespace Backsight.Editor.FileStore
         /// <returns>
         /// Information describing the state of the job.
         /// </returns>
-        public JobFile OpenJob(string jobName)
+        public ProjectFile OpenJob(string jobName)
         {
             string jobFolder = Path.Combine(m_FolderName, jobName);
             if (!Directory.Exists(jobFolder))
@@ -112,7 +112,7 @@ namespace Backsight.Editor.FileStore
             Settings.Default.Save();
 
             string jobFileName = Path.Combine(jobFolder, jobName + ".cedx");
-            return new JobFile(jobFileName);
+            return new ProjectFile(jobFileName);
         }
 
         /// <summary>

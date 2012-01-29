@@ -33,7 +33,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The job info (null if nothing was selected)
         /// </summary>
-        JobFile m_Job;
+        ProjectFile m_Job;
 
         /// <summary>
         /// The names of all defined jobs
@@ -85,7 +85,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// Info for the new job (created when user clicks on Save button)
         /// </summary>
-        internal JobFile Job
+        internal ProjectFile Job
         {
             get { return m_Job; }
         }

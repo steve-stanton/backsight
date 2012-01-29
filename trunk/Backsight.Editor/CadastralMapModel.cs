@@ -143,7 +143,7 @@ namespace Backsight.Editor
         /// </summary>
         public string Name
         {
-            get { return EditingController.Current.JobInfo.Name; }
+            get { return EditingController.Current.Project.Name; }
         }
 
         /// <summary>
@@ -230,18 +230,18 @@ namespace Backsight.Editor
 
             // Suppress text if the display scale is too small
             EditingController ec = EditingController.Current;
-            JobFile ji = ec.JobInfo;
-            if (display.MapScale > ji.ShowLabelScale)
+            ProjectSettings ps = ec.Project.Settings;
+            if (display.MapScale > ps.ShowLabelScale)
                 types ^= SpatialType.Text;
 
             // Suppress points if the display scale is too small
-            if (display.MapScale > ec.JobInfo.ShowPointScale)
+            if (display.MapScale > ps.ShowPointScale)
                 types ^= SpatialType.Point;
 
             new DrawQuery(m_Index, display, style, types);
 
             // Draw intersections if necessary
-            if (ji.AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
+            if (ps.AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
                 (m_Index as EditingIndex).DrawIntersections(display);
 
             //(m_Index as SpatialIndex).Draw(display); // for testing
@@ -716,14 +716,16 @@ namespace Backsight.Editor
         /// are created with the specified geometric type</param>
         internal void SetDefaultEntity(SpatialType t, int entityId)
         {
+            ProjectSettings ps = EditingController.Current.Project.Settings;
+
             if (t == SpatialType.Point)
-                EditingController.Current.JobInfo.DefaultPointType = entityId;
+                ps.DefaultPointType = entityId;
             else if (t == SpatialType.Line)
-                EditingController.Current.JobInfo.DefaultLineType = entityId;
+                ps.DefaultLineType = entityId;
             else if (t == SpatialType.Polygon)
-                EditingController.Current.JobInfo.DefaultPolygonType = entityId;
+                ps.DefaultPolygonType = entityId;
             else if (t == SpatialType.Text)
-                EditingController.Current.JobInfo.DefaultTextType = entityId;
+                ps.DefaultTextType = entityId;
             else
                 throw new NotImplementedException("SetDefaultEntityType");
         }
@@ -732,7 +734,7 @@ namespace Backsight.Editor
         {
             get
             {
-                int entityId = EditingController.Current.JobInfo.DefaultPointType;
+                int entityId = EditingController.Current.Project.Settings.DefaultPointType;
                 return EnvironmentContainer.FindEntityById(entityId);
             }
         }
@@ -741,7 +743,7 @@ namespace Backsight.Editor
         {
             get
             {
-                int entityId = EditingController.Current.JobInfo.DefaultLineType;
+                int entityId = EditingController.Current.Project.Settings.DefaultLineType;
                 return EnvironmentContainer.FindEntityById(entityId);
             }
         }
@@ -750,7 +752,7 @@ namespace Backsight.Editor
         {
             get
             {
-                int entityId = EditingController.Current.JobInfo.DefaultPolygonType;
+                int entityId = EditingController.Current.Project.Settings.DefaultPolygonType;
                 return EnvironmentContainer.FindEntityById(entityId);
             }
         }
@@ -759,7 +761,7 @@ namespace Backsight.Editor
         {
             get
             {
-                int entityId = EditingController.Current.JobInfo.DefaultTextType;
+                int entityId = EditingController.Current.Project.Settings.DefaultTextType;
                 return EnvironmentContainer.FindEntityById(entityId);
             }
         }
@@ -1092,7 +1094,7 @@ namespace Backsight.Editor
         /// Loads this model from the database
         /// </summary>
         /// <param name="job">The job to load</param>
-        internal void Load(JobFile job, User user)
+        internal void Load(ProjectFile job, User user)
         {
             m_Sessions.Clear();
             job.LoadModel(this);
@@ -1182,7 +1184,7 @@ namespace Backsight.Editor
         /// session that is created during initial data loading).
         /// </summary>
         /// <returns>The created session</returns>
-        internal ISession AppendWorkingSession(JobFile job, User user)
+        internal ISession AppendWorkingSession(ProjectFile job, User user)
         {
             //SessionData data = SessionDataFactory.Insert(job.JobId, user.UserId);
 

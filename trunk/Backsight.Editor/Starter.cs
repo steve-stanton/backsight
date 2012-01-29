@@ -35,7 +35,7 @@ namespace Backsight.Editor
         /// The job that the user double-clicked on (null if the application
         /// was launched some other way)
         /// </summary>
-        JobFile m_Job;
+        ProjectFile m_Job;
 
         /// <summary>
         /// The ID of the user involved (null for no user)
@@ -52,7 +52,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="job">The job info (could be null if user needs to be asked
         /// for info)</param>
-        internal Starter(JobFile job)
+        internal Starter(ProjectFile job)
         {
             m_Job = job;
             m_User = null;
@@ -186,7 +186,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The job used to launch the application
         /// </summary>
-        internal JobFile Job
+        internal ProjectFile Job
         {
             get { return m_Job; }
         }
