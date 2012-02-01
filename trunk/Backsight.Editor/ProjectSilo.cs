@@ -100,5 +100,13 @@ namespace Backsight.Editor
 
             return folderName;
         }
+
+        /// <summary>
+        /// The path for the root folder of this silo.
+        /// </summary>
+        internal string FolderName
+        {
+            get { return m_FolderName; }
+        }
     }
 }

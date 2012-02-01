@@ -14,64 +14,55 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
-using Backsight.Editor.Database;
-using Backsight.Environment;
-using Backsight.Editor.FileStore;
 
 namespace Backsight.Editor.Forms
 {
     /// <summary>
-    /// Dialog that lets the user specify an an existing job.
+    /// Dialog that lets the user specify an an existing project.
     /// </summary>
-    public partial class GetJobForm : Form
+    public partial class OpenProjectForm : Form
     {
         #region Class data
 
         /// <summary>
-        /// The project info (null if nothing was selected)
+        /// The name of the selected project (null if nothing was selected)
         /// </summary>
-        Project m_Job;
+        string m_ProjectName;
 
         /// <summary>
         /// The names of all defined projects
         /// </summary>
-        string[] m_AllJobs;
+        string[] m_AllNames;
 
         #endregion
 
         #region Constructors
 
-        public GetJobForm()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenProjectForm"/> class.
+        /// </summary>
+        public OpenProjectForm()
         {
             InitializeComponent();
-            m_Job = null;
-            m_AllJobs = null;
+            m_ProjectName = null;
+            m_AllNames = null;
         }
 
         #endregion
 
-        private void GetJobForm_Shown(object sender, EventArgs e)
+        private void OpenProjectForm_Shown(object sender, EventArgs e)
         {
-            m_AllJobs = new ProjectDatabase().FindAllProjectNames();
-            listBox.DataSource = m_AllJobs;
+            m_AllNames = new ProjectDatabase().FindAllProjectNames();
+            listBox.DataSource = m_AllNames;
         }
 
         private void listBox_DoubleClick(object sender, EventArgs e)
         {
             if (listBox.SelectedItem != null)
-                OpenJobAndClose(listBox.SelectedItem.ToString());
-        }
-
-        void OpenJobAndClose(string jobName)
-        {
-            m_Job = new ProjectDatabase().OpenProject(jobName);
-
-            if (m_Job != null)
             {
-                DialogResult = DialogResult.OK;
+                m_ProjectName = listBox.SelectedItem.ToString();
+                this.DialogResult = DialogResult.OK;
                 Close();
             }
         }
@@ -83,19 +74,25 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Info for the new project (created when user clicks on OK button)
+        /// The name of the selected project (null if nothing was selected)
         /// </summary>
-        internal Project Job
+        internal string ProjectName
         {
-            get { return m_Job; }
+            get { return m_ProjectName; }
         }
 
         private void okButton_Click(object sender, EventArgs e)
         {
             if (listBox.SelectedItem == null)
-                MessageBox.Show("You must first select an existing job");
+            {
+                MessageBox.Show("You must first select an existing project");
+            }
             else
-                OpenJobAndClose(listBox.SelectedItem.ToString());
+            {
+                m_ProjectName = listBox.SelectedItem.ToString();
+                this.DialogResult = DialogResult.OK;
+                Close();
+            }
         }
     }
 }

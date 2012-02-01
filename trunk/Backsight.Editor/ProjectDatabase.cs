@@ -140,6 +140,41 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Attempts to load local settings for a specific project.
+        /// </summary>
+        /// <param name="projectName">The user-perceived name for the project</param>
+        /// <returns>The local settings for the specified project (null if the project could not be found).</returns>
+        internal ProjectSettings GetProjectSettings(string projectName)
+        {
+            if (String.IsNullOrWhiteSpace(projectName))
+                return null;
+
+            ProjectSilo silo = FindProjectSilo(projectName);
+            if (silo == null)
+                return null;
+
+            // Read the project ID from the silo
+            string projectGuid = silo.FindProjectId(projectName);
+            if (projectGuid == null)
+                return null;
+
+            // Load local project settings
+            string settingsFolderName = Path.Combine(m_Private.FolderName, projectGuid);
+            if (!Directory.Exists(settingsFolderName))
+                return null;
+
+            string settingsFileName = Path.Combine(settingsFolderName, "settings.txt");
+
+            try
+            {
+                return ProjectSettings.CreateInstance(settingsFileName);
+            }
+
+            catch { }
+            return null;
+        }
+
+        /// <summary>
         /// Opens an editing project that was previously created.
         /// </summary>
         /// <param name="projectName">The user-perceived name of the project</param>
@@ -195,6 +230,17 @@ namespace Backsight.Editor
 
             return null;
                 throw new ArgumentException("Cannot find project " + projectName);
+        }
+
+        /// <summary>
+        /// Checks whether a user-perceived project name is valid.
+        /// </summary>
+        /// <param name="projectName">The user-perceived name for the project</param>
+        /// <returns>True if the project appears to exist. False if it cannot be found on the local machine.</returns>
+        internal bool CanOpen(string projectName)
+        {
+            ProjectSilo silo = FindProjectSilo(projectName);
+            return (silo != null);
         }
     }
 }

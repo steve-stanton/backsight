@@ -14,12 +14,8 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-
-using Backsight.Editor.FileStore;
-using Backsight.Forms;
 
 namespace Backsight.Editor
 {
@@ -72,14 +68,6 @@ namespace Backsight.Editor
         }
 
         #endregion
-
-        /// <summary>
-        /// The container for the project data.
-        /// </summary>
-        IJobContainer Container
-        {
-            get { return new JobCollectionFolder(); }
-        }
 
         /// <summary>
         /// The user-perceived name of the project.
@@ -138,6 +126,7 @@ namespace Backsight.Editor
             }
 
             // Load each session
+            /*
             foreach (string sessionFolderName in Directory.EnumerateDirectories(sessionsFolder))
             {
                 // Only those folder names that are numbers are valid
@@ -152,6 +141,7 @@ namespace Backsight.Editor
                     sf.LoadEdits(editDeserializer);
                 }
             }
+             */
         }
 
         /// <summary>
@@ -159,6 +149,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="sessionId">The ID to assign to the new session</param>
         /// <returns>The newly created session</returns>
+        /*
         internal ISession AppendWorkingSession(uint sessionId)
         {
             string jobFolder = Path.GetDirectoryName(m_FileName);
@@ -172,6 +163,7 @@ namespace Backsight.Editor
             Directory.CreateDirectory(newFolder);
             return new SessionFolder(sessionId, newFolder);
         }
+        */
 
         /// <summary>
         /// Obtains information about ID allocations.

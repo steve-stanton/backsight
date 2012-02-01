@@ -55,7 +55,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The current user
         /// </summary>
-        User m_User;
+        readonly User m_User;
 
         /// <summary>
         /// Information about the current project
@@ -119,7 +119,7 @@ namespace Backsight.Editor
             if (main==null)
                 throw new ArgumentNullException();
 
-            m_User = null;
+            m_User = new User(System.Environment.UserName);
             m_Project = null;
             m_ActiveLayer = null;
             m_Main = main;
@@ -456,53 +456,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Attempts to open a job
+        /// Records the active project.
         /// </summary>
-        /// <param name="projectName">The user-perceived name of the project to open (specify null
-        /// if the user should be asked)</param>
-        /// <returns>The project that was opened (null if no project was opened).</returns>
-        internal Project OpenProject(string projectName)
+        /// <param name="p">The project the user is working with</param>
+        internal void SetProject(Project p)
         {
-            // Pick up a canned environment from embedded resource file
-            IEnvironmentContainer ec = new EnvironmentResource();
-            EnvironmentContainer.Current = ec;
-
-            // Get the ID of the current user
-            m_User = new User(System.Environment.UserName);
-
-            // If a project name has been specified, attempt to open it
-            Project p = null;
-            if (projectName != null)
-            {
-                try
-                {
-                    ProjectDatabase pd = new ProjectDatabase();
-                    p = pd.OpenProject(projectName);
-
-                    m_ActiveLayer = EnvironmentContainer.FindLayerById(p.LayerId);
-                    if (m_ActiveLayer == null)
-                        throw new Exception("Cannot locate map layer associated with selected project");
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-
-            // If we don't have a project, ask the user whether they want to open an existing
-            // project, or create a new one.
-            if (p == null)
-            {
-                using (NewProjectForm dial = new NewProjectForm())
-                {
-                    if (dial.ShowDialog() == DialogResult.OK)
-                        p = dial.NewProject;
-                }
-            }
+            m_ActiveLayer = EnvironmentContainer.FindLayerById(p.LayerId);
+            if (m_ActiveLayer == null)
+                throw new ApplicationException("Cannot locate map layer associated with selected project");
 
             m_Project = p;
-            return m_Project;
         }
 
         /// <summary>
@@ -513,33 +476,6 @@ namespace Backsight.Editor
         /// <returns>True if the job was opened. False if there was some problem opening it.</returns>
         internal bool OpenJob(Project jobInfo)
         {
-            m_User = null;
-            m_Project = jobInfo;
-            m_ActiveLayer = null;
-
-            // Pass the job file (if any) over to a dedicated starter instance
-            Starter s = new Starter(jobInfo);
-
-            if (!s.Open())
-                //throw new Exception("Cannot access editing job");
-                return false;
-
-            // If you get here, the database connection string should now be
-            // defined in the AdapterFactory.ConnectionString property.
-
-            m_User = s.User;
-            m_Project = s.Job;
-            //m_JobData = Job.FindByJobId(m_JobInfo.Data.JobId);
-
-            //if (m_JobData==null)
-            //    throw new Exception("Cannot locate editing job in database");
-
-            // Locate information about the editing layer
-            //int layerId = m_JobData.LayerId;
-            m_ActiveLayer = EnvironmentContainer.FindLayerById(jobInfo.Settings.LayerId);
-            if (m_ActiveLayer == null)
-                throw new Exception("Cannot locate map layer associated with current job");
-
             // Initialize the model
 
             CadastralMapModel cmm = null;
@@ -553,13 +489,11 @@ namespace Backsight.Editor
                 // The Load method will end up calling software that requires access to the
                 // current map model, so we need to set it now (we'll set it once more after
                 // the model has been loaded)
-                SetMapModel(cmm, null); //m_ProjectFile.Data.LastDraw);
+                SetMapModel(cmm, null);
 
                 cmm.Load(m_Project, m_User);
                 cmm.AppendWorkingSession(m_Project, m_User);
                 */
-                Settings.Default.LastJobName = m_Project.Name;
-                Settings.Default.Save();
                 return true;
             }
 

@@ -17,13 +17,11 @@ using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 
 using Backsight.Data;
 using Backsight.Editor.Properties;
-using Backsight.Editor.FileStore;
-//using Backsight.SqlServer;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Forms
 {
@@ -46,26 +44,33 @@ namespace Backsight.Editor.Forms
 
         private void StartupForm_Load(object sender, EventArgs e)
         {
+            // Pick up a canned environment from embedded resource file
+            IEnvironmentContainer ec = new EnvironmentResource();
+            EnvironmentContainer.Current = ec;
+
             ShowDatabaseName();
-            IJobContainer jc = new JobCollectionFolder();
-            ProjectFile job = null;
 
-            string lastJobName = Settings.Default.LastJobName;
-            if (!String.IsNullOrEmpty(lastJobName))
-                job = jc.OpenJob(lastJobName);
+            // Determine whether a previously open project is still available
+            bool canOpen = false;
+            string lastProjectName = Settings.Default.LastProjectName;
+            if (!String.IsNullOrEmpty(lastProjectName))
+            {
+                ProjectDatabase pd = new ProjectDatabase();
+                canOpen = pd.CanOpen(lastProjectName);
+            }
 
-            if (job == null)
+            if (canOpen)
+            {
+                openLastButton.Text = "&Open " + lastProjectName;
+                openLastButton.BackColor = SystemColors.Control;
+                this.AcceptButton = openLastButton;
+            }
+            else
             {
                 newProjectButton.BackColor = openLastButton.BackColor;
                 this.AcceptButton = newProjectButton;
                 openLastButton.BackColor = SystemColors.Control;
                 openLastButton.Enabled = false;
-            }
-            else
-            {
-                openLastButton.Text = "&Open " + lastJobName;
-                openLastButton.BackColor = SystemColors.Control;
-                this.AcceptButton = openLastButton;
             }
         }
 
@@ -86,7 +91,14 @@ namespace Backsight.Editor.Forms
         {
             try
             {
-                Project p = EditingController.Current.OpenProject(null);
+                Project p = null;
+
+                using (NewProjectForm dial = new NewProjectForm())
+                {
+                    if (dial.ShowDialog() == DialogResult.OK)
+                        p = dial.NewProject;
+                }
+
                 if (p != null)
                 {
                     DialogResult = DialogResult.OK;
@@ -145,7 +157,7 @@ namespace Backsight.Editor.Forms
                 openLastButton.BackColor = Color.Yellow;
                 openLastButton.Refresh();
 
-                m_Parent.OpenJob(lastProjectName);
+                m_Parent.OpenProject(lastProjectName);
                 Close();
             }
 

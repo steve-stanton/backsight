@@ -1192,7 +1192,8 @@ namespace Backsight.Editor
             //Session s = Session.CreateCurrentSession(this, data, user, job);
 
             uint sessionId = GetMaxSessionId() + 1;
-            m_WorkingSession = job.AppendWorkingSession(sessionId);
+            throw new NotImplementedException();
+            //m_WorkingSession = job.AppendWorkingSession(sessionId);
             AddSession(m_WorkingSession);
             return m_WorkingSession;
         }

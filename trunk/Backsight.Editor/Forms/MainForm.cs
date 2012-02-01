@@ -15,14 +15,13 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
 
+using Backsight.Data;
+using Backsight.Editor.Properties;
 using Backsight.Editor.UI;
 using Backsight.Environment;
 using Backsight.Forms;
-using Backsight.Editor.FileStore;
-using Backsight.Data;
 
 
 namespace Backsight.Editor.Forms
@@ -76,18 +75,18 @@ namespace Backsight.Editor.Forms
             SplashScreen.SetStatus(msg);
         }
 
-        internal void OpenJob(string jobName)
+        internal Project OpenProject(string projectName)
         {
-            if (String.IsNullOrEmpty(jobName))
-                return;
+            if (String.IsNullOrEmpty(projectName))
+                return null;
 
-            Project p = EditingController.Current.OpenProject(jobName);
-            if (p == null)
-                return;
+            ProjectDatabase pd = new ProjectDatabase();
+            ProjectSettings ps = pd.GetProjectSettings(projectName);
+            if (ps == null)
+                return null;
 
             ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
             Stopwatch sw = Stopwatch.StartNew();
-            ProjectSettings ps = p.Settings;
 
             try
             {
@@ -99,13 +98,38 @@ namespace Backsight.Editor.Forms
                 SplashScreen.ShowSplashScreen(increment, percents);
 
                 Trace.Listeners.Add(trace);
-                Trace.Write("Loading " + jobName);
+                Trace.Write("Loading " + projectName);
 
                 // Display the map name in the dialog title (nice to see what's loading
                 // rather than the default "Map Title" text)
-                this.Text = jobName;
-                if (!m_Controller.OpenJob(p))
-                    throw new ApplicationException("Cannot access job");
+                this.Text = projectName;
+                Project p = pd.OpenProject(projectName);
+
+                // Remember the project the user is now working with
+                EditingController.Current.SetProject(p);
+
+                // Update splashscreen metrics. This is perhaps a little premature, since
+                // the original splash screen implementation waited until the screen had
+                // completely faded away. The drawback with that is that the job file would
+                // then be rewritten on another thread, which could trample on things that
+                // are happening here.
+                SplashScreen ss = SplashScreen.SplashForm;
+                p.Settings.SplashIncrement = ss.GetIncrement();
+                p.Settings.SplashPercents = ss.GetPercents();
+                p.SaveSettings();
+
+                sw.Stop();
+                ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds / 1000.0));
+
+                // If the splash screen has been displayed for less than two seconds, WAIT (block
+                // this thread!)
+                int waitTime = (int)(2000 - sw.ElapsedMilliseconds);
+                if (waitTime > 0)
+                    System.Threading.Thread.Sleep(waitTime);
+
+                Settings.Default.LastProjectName = projectName;
+                Settings.Default.Save();
+                return p;
             }
 
             catch (Exception ex)
@@ -113,38 +137,15 @@ namespace Backsight.Editor.Forms
                 SplashScreen.CloseForm();
                 MessageBox.Show(ex.Message);
                 Trace.Write(ex.StackTrace);
-
-                // Don't save any changes to the job
-                p = null;
             }
 
             finally
             {
-                sw.Stop();
-                Trace.Listeners.Remove(trace);
-                SplashScreen ss = SplashScreen.SplashForm;
-
-                // If the splash screen has been displayed for less than two seconds, WAIT (block
-                // this thread!)
-                int waitTime = (int)(2000 - sw.ElapsedMilliseconds);
-                if (ss != null && waitTime > 0)
-                    System.Threading.Thread.Sleep(waitTime);
-
-                ShowLoadProgress(String.Format("Load time: {0:0.00} seconds", sw.ElapsedMilliseconds / 1000.0));
                 SplashScreen.CloseForm();
-
-                if (ps != null && ss != null)
-                {
-                    // Save the splash settings now. This is perhaps a little premature, since
-                    // the original splash screen implementation waited until the screen had
-                    // completely faded away. The drawback with that is that the job file would
-                    // then be rewritten on another thread, which could trample on things that
-                    // are happening here.
-                    ps.SplashIncrement = ss.GetIncrement();
-                    ps.SplashPercents = ss.GetPercents();
-                    p.SaveSettings();
-                }
+                Trace.Listeners.Remove(trace);
             }
+
+            return null;
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
@@ -454,7 +455,7 @@ namespace Backsight.Editor.Forms
             CadastralMapModel mapModel = CadastralMapModel.Current;
             if (mapModel != null)
             {
-                AddRecentJob(mapModel.Name);
+                AddRecentProject(mapModel.Name);
                 EditingController.Current.CheckSave();
             }
 
@@ -625,9 +626,8 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             {
                 if (dial.ShowDialog() == DialogResult.OK)
                 {
-                    Project job = dial.NewProject;
-                    if (m_Controller.OpenJob(job))
-                        AddRecentJob(job.Name);
+                    Project p = dial.NewProject;
+                    AddRecentProject(p.Name);
                 }
             }
         }
@@ -644,24 +644,21 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         internal bool OpenFile()
         {
-            using (GetJobForm dial = new GetJobForm())
+            using (OpenProjectForm dial = new OpenProjectForm())
             {
                 if (dial.ShowDialog() == DialogResult.OK)
                 {
-                    if (m_Controller.OpenJob(dial.Job))
-                    {
-                        AddRecentJob(dial.Job.Name);
-                        return true;
-                    }
+                    OpenProject(dial.ProjectName);
+                    return true;
                 }
             }
 
             return false;
         }
 
-        void AddRecentJob(string jobName)
+        void AddRecentProject(string projectName)
         {
-            m_MruMenu.AddString(jobName);
+            m_MruMenu.AddString(projectName);
             m_MruMenu.SaveToRegistry();
         }
 
@@ -681,7 +678,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             try
             {
-                if (m_Controller.OpenProject(projectName) == null)
+                if (OpenProject(projectName) == null)
                     throw new ApplicationException();
 
                 m_MruMenu.SetFirstFile(number);
@@ -692,20 +689,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 string msg = String.Format("Cannot access '{0}'", projectName);
                 MessageBox.Show(msg);
                 m_MruMenu.RemoveFile(number);
-
-                try
-                {
-                    Project p = m_Controller.OpenProject(null);
-                    if (p != null)
-                        m_MruMenu.AddString(p.Name);
-                }
-
-                catch (Exception ex)
-                {
-                    // You just get one extra shot at it
-                    MessageBox.Show(ex.Message);
-                    Close();
-                }
             }
 
             m_MruMenu.SaveToRegistry();
