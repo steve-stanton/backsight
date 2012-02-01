@@ -15,7 +15,7 @@
 
 using System;
 using System.Windows.Forms;
-using Backsight.Editor.FileStore;
+
 using Backsight.Environment;
 
 namespace Backsight.Editor.Forms

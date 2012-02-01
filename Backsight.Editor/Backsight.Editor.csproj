@@ -106,6 +106,12 @@
     <Compile Include="Forms\NewProjectForm.designer.cs">
       <DependentUpon>NewProjectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\OpenProjectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OpenProjectForm.designer.cs">
+      <DependentUpon>OpenProjectForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="NewProjectEvent.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
@@ -129,11 +135,8 @@
     </Compile>
     <Compile Include="EditSerializer.cs" />
     <Compile Include="EnvironmentResource.cs" />
-    <Compile Include="FileStore\JobCollectionFolder.cs" />
-    <Compile Include="FileStore\SessionFolder.cs" />
     <Compile Include="IdAllocationInfo.cs" />
     <Compile Include="IEditingJob.cs" />
-    <Compile Include="IJobContainer.cs" />
     <Compile Include="IProjectInfo.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="Change.cs" />
@@ -322,12 +325,6 @@
     </Compile>
     <Compile Include="Forms\IntersectTwoLinesForm.Designer.cs">
       <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetJobForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetJobForm.Designer.cs">
-      <DependentUpon>GetJobForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\LegForm.cs">
       <SubType>Form</SubType>
@@ -706,7 +703,6 @@
     <Compile Include="Forms\StyleEntry.cs" />
     <Compile Include="Forms\StyleFile.cs" />
     <Compile Include="SpanInfo.cs" />
-    <Compile Include="Starter.cs" />
     <Compile Include="StraightLeg.cs" />
     <Compile Include="StraightSpan.cs" />
     <Compile Include="TextCheck.cs" />
@@ -955,10 +951,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>InverseForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetJobForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetJobForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\LineExtensionControl.resx">
       <SubType>Designer</SubType>
       <DependentUpon>LineExtensionControl.cs</DependentUpon>
@@ -1009,6 +1001,9 @@
     <EmbeddedResource Include="Forms\NtxImportForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>NtxImportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OpenProjectForm.resx">
+      <DependentUpon>OpenProjectForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ParallelControl.resx">
       <SubType>Designer</SubType>
@@ -1328,7 +1323,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="FileStore\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

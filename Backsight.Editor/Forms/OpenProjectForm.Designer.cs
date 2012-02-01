@@ -1,6 +1,6 @@
 namespace Backsight.Editor.Forms
 {
-    partial class GetJobForm
+    partial class OpenProjectForm
     {
         /// <summary>
         /// Required designer variable.
@@ -80,8 +80,8 @@ namespace Backsight.Editor.Forms
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "GetJobForm";
-            this.Text = "Open Job";
-            this.Shown += new System.EventHandler(this.GetJobForm_Shown);
+            this.Text = "Open Project";
+            this.Shown += new System.EventHandler(this.OpenProjectForm_Shown);
             this.ResumeLayout(false);
 
         }
