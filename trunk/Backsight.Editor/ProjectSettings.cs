@@ -230,6 +230,7 @@ namespace Backsight.Editor
         /// The internal ID of the map layer the project relates to.
         /// </summary>
         [XmlElement]
+        [Obsolete("Get from the NewProjectEvent data")]
         public int LayerId
         {
             get { return m_LayerId; }

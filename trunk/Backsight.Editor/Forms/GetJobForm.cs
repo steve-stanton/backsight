@@ -31,12 +31,12 @@ namespace Backsight.Editor.Forms
         #region Class data
 
         /// <summary>
-        /// The job info (null if nothing was selected)
+        /// The project info (null if nothing was selected)
         /// </summary>
-        ProjectFile m_Job;
+        Project m_Job;
 
         /// <summary>
-        /// The names of all defined jobs
+        /// The names of all defined projects
         /// </summary>
         string[] m_AllJobs;
 
@@ -55,7 +55,7 @@ namespace Backsight.Editor.Forms
 
         private void GetJobForm_Shown(object sender, EventArgs e)
         {
-            m_AllJobs = new JobCollectionFolder().FindAllJobNames();
+            m_AllJobs = new ProjectDatabase().FindAllProjectNames();
             listBox.DataSource = m_AllJobs;
         }
 
@@ -67,7 +67,7 @@ namespace Backsight.Editor.Forms
 
         void OpenJobAndClose(string jobName)
         {
-            m_Job = new JobCollectionFolder().OpenJob(jobName);
+            m_Job = new ProjectDatabase().OpenProject(jobName);
 
             if (m_Job != null)
             {
@@ -83,9 +83,9 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Info for the new job (created when user clicks on Save button)
+        /// Info for the new project (created when user clicks on OK button)
         /// </summary>
-        internal ProjectFile Job
+        internal Project Job
         {
             get { return m_Job; }
         }

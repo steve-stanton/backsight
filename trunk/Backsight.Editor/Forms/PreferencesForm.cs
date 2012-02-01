@@ -315,8 +315,7 @@ void CdPrefLabel::OnFont()
 
         bool SaveUnitsPage(CadastralMapModel cmm)
         {
-            ProjectFile ji = EditingController.Current.Project;
-            ProjectSettings ps = ji.Settings;
+            ProjectSettings ps = EditingController.Current.Project.Settings;
 
             if (enterMetersRadioButton.Checked)
                 ps.EntryUnitType = DistanceUnitType.Meters;

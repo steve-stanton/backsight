@@ -23,6 +23,16 @@ namespace Backsight.Editor
     /// </summary>
     class NewProjectEvent : Change
     {
+        #region Constants
+
+        /// <summary>
+        /// The name of the file holding information for brand new projects.
+        /// </summary>
+        internal const string FileName = "00000001.txt";
+
+        #endregion
+
+
         #region Class data
 
         /// <summary>
@@ -68,6 +78,9 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="NewProjectEvent"/> class
         /// with default values for all properties.
         /// </summary>
+        /// <remarks>Note that the sequence number passed down to the base class
+        /// must be consistent with the <see cref="FileName"/> constant.
+        /// </remarks>
         internal NewProjectEvent()
             : base(1)
         {

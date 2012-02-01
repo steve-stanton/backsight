@@ -100,6 +100,12 @@
     <Compile Include="AttributeData.cs" />
     <Compile Include="AutoCad\AcLayerEntitySet.cs" />
     <Compile Include="BasicList.cs" />
+    <Compile Include="Forms\NewProjectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewProjectForm.designer.cs">
+      <DependentUpon>NewProjectForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="NewProjectEvent.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
@@ -353,12 +359,6 @@
     </Compile>
     <Compile Include="Forms\NewCircularArcContextMenu.Designer.cs">
       <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NewJobForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\NewJobForm.Designer.cs">
-      <DependentUpon>NewJobForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\NewLabelContextMenu.cs">
       <SubType>Component</SubType>
@@ -979,10 +979,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewJobForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>NewJobForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\NewLabelContextMenu.resx">
       <SubType>Designer</SubType>
       <DependentUpon>NewLabelContextMenu.cs</DependentUpon>
@@ -998,6 +994,9 @@
     <EmbeddedResource Include="Forms\NewPointForm.resx">
       <DependentUpon>NewPointForm.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewProjectForm.resx">
+      <DependentUpon>NewProjectForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\NewTextContextMenu.resx">
       <SubType>Designer</SubType>

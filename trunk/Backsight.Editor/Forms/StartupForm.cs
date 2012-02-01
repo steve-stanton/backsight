@@ -56,8 +56,8 @@ namespace Backsight.Editor.Forms
 
             if (job == null)
             {
-                newJobButton.BackColor = openLastButton.BackColor;
-                this.AcceptButton = newJobButton;
+                newProjectButton.BackColor = openLastButton.BackColor;
+                this.AcceptButton = newProjectButton;
                 openLastButton.BackColor = SystemColors.Control;
                 openLastButton.Enabled = false;
             }
@@ -86,8 +86,8 @@ namespace Backsight.Editor.Forms
         {
             try
             {
-                EditingController.Current.OpenJob(null);
-                if (CadastralMapModel.Current != null)
+                Project p = EditingController.Current.OpenProject(null);
+                if (p != null)
                 {
                     DialogResult = DialogResult.OK;
                     Close();
@@ -135,24 +135,23 @@ namespace Backsight.Editor.Forms
 
         private void openLastButton_Click(object sender, EventArgs e)
         {
-            string lastJobName = Settings.Default.LastJobName;
+            string lastProjectName = Settings.Default.LastProjectName;
 
             try
             {
+
                 // Splash screen isn't shown here, so provide user with a visual cue
-                openLastButton.Text = "Opening "+lastJobName+" ...";
+                openLastButton.Text = "Opening "+lastProjectName+" ...";
                 openLastButton.BackColor = Color.Yellow;
                 openLastButton.Refresh();
 
-                m_Parent.OpenJob(lastJobName);
-                //JobFile jf = new JobFile(lastFile);
-                //EditingController.Current.OpenJob(jf);
+                m_Parent.OpenJob(lastProjectName);
                 Close();
             }
 
             catch (Exception ex)
             {
-                MessageBox.Show(String.Format("Error reading {0} ({1})", lastJobName, ex.Message));
+                MessageBox.Show(String.Format("Error reading {0} ({1})", lastProjectName, ex.Message));
                 Trace.Write(ex.StackTrace);
                 openLastButton.Enabled = false;
             }

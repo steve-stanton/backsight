@@ -16,6 +16,10 @@
 using System.Collections.Generic;
 
 using Backsight.Environment;
+using System;
+using System.IO;
+using Backsight.Data;
+using Backsight.Editor.Properties;
 
 
 namespace Backsight.Editor
@@ -75,21 +79,122 @@ namespace Backsight.Editor
         /// Creates a brand new project.
         /// </summary>
         /// <param name="projectName">The user-perceived name for the project.</param>
-        /// <param name="layer">The map layer the project is for.</param>
+        /// <param name="layer">The map layer the project is for (not null)</param>
         /// <returns>Information describing the state of the project.</returns>
-        internal IProjectInfo CreateProject(string projectName, ILayer layer)
+        internal Project CreateProject(string projectName, ILayer layer)
         {
-            return null;
+            if (String.IsNullOrWhiteSpace(projectName) || layer == null)
+                throw new ArgumentNullException();
+
+            // Confirm that the project name is unique
+            if (m_Public.FindProjectId(projectName) != null || m_Private.FindProjectId(projectName) != null)
+                throw new ArgumentException("Specified project already exists");
+
+            // Define the event data
+            NewProjectEvent e = new NewProjectEvent()
+            {
+                ProjectId = Guid.NewGuid(),
+                ProjectName = projectName,
+                CreationTime = DateTime.Now,
+                LayerId = layer.Id,
+                DefaultSystem = String.Empty,
+                UserName = System.Environment.UserName,
+                MachineName = System.Environment.MachineName
+            };
+
+            // Create the private index entry
+            m_Private.CreateIndexEntry(projectName, e.ProjectId);
+
+            // Create the private data folder
+            string dataFolder = m_Private.CreateDataFolder(e.ProjectId);
+
+            // Serialize the event data to the data folder
+            string s = EditSerializer.GetSerializedString<NewProjectEvent>(DataField.Edit, e);
+            string fileName = Path.Combine(dataFolder, String.Format("{0:X8}.txt", e.EditSequence));
+            File.WriteAllText(fileName, s);
+
+            // Write initial project settings to the data folder
+            ProjectSettings ps = new ProjectSettings();
+            ps.ConnectionString = ConnectionFactory.ConnectionString;
+            ps.LayerId = layer.Id;
+
+            // Turn off auto-number if there's no database connection string
+            if (String.IsNullOrEmpty(ps.ConnectionString))
+                ps.IsAutoNumber = false;
+
+            // Remember default entity types for points, lines, text, polygons
+            ps.DefaultPointType = layer.DefaultPointType.Id;
+            ps.DefaultLineType = layer.DefaultLineType.Id;
+            ps.DefaultPolygonType = layer.DefaultPolygonType.Id;
+            ps.DefaultTextType = layer.DefaultTextType.Id;
+
+            Project result = new Project(m_Private, e, ps);
+            result.SaveSettings();
+
+            // Remember the newly created project as the default for the application
+            Settings.Default.LastProjectId = e.ProjectId;
+            Settings.Default.Save();
+
+            // Wrap the event data along with the initial project settings
+            return result;
         }
 
         /// <summary>
         /// Opens an editing project that was previously created.
         /// </summary>
-        /// <param name="projectName">The name of the project</param>
+        /// <param name="projectName">The user-perceived name of the project</param>
         /// <returns>Information describing the state of the project (null if it could not be found).</returns>
-        internal IProjectInfo OpenProject(string projectName)
+        internal Project OpenProject(string projectName)
         {
+            if (String.IsNullOrWhiteSpace(projectName))
+                throw new ArgumentNullException();
+
+            // Are we dealing with a public or a private project?
+            ProjectSilo silo = FindProjectSilo(projectName);
+            if (silo == null)
+                throw new ArgumentException("Cannot find project " + projectName);
+
+            // Read the project ID from the silo
+            string projectGuid = silo.FindProjectId(projectName);
+            if (projectGuid == null)
+                throw new ApplicationException();
+
+            // Load the project creation event
+            Guid projectId = Guid.Parse(projectGuid);
+            string dataFolder = silo.CreateDataFolder(projectId);
+            string creationFileName = Path.Combine(dataFolder, NewProjectEvent.FileName);
+            //EditDeserializer ed = new EditDeserializer();
+            //new TextEditReader();
+            NewProjectEvent e = null;
+
+            // Read current project settings from the private silo (even if the project is now public)
+            dataFolder = m_Private.CreateDataFolder(projectId);
+            string settingsFileName = Path.Combine(dataFolder, "settings.txt");
+            ProjectSettings ps = ProjectSettings.CreateInstance(settingsFileName);
+
+            Settings.Default.LastProjectId = projectId;
+            Settings.Default.Save();
+
+            return new Project(silo, e, ps);
+        }
+
+        /// <summary>
+        /// Attempts to locate the silo for a specific project.
+        /// </summary>
+        /// <param name="projectName">The user-perceived name for the project</param>
+        /// <returns>The corresponding silo (null if not found)</returns>
+        ProjectSilo FindProjectSilo(string projectName)
+        {
+            string projectId = m_Private.FindProjectId(projectName);
+            if (projectId != null)
+                return m_Private;
+
+            projectId = m_Public.FindProjectId(projectName);
+            if (projectId != null)
+                return m_Public;
+
             return null;
+                throw new ArgumentException("Cannot find project " + projectName);
         }
     }
 }

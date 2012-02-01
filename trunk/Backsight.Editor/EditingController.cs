@@ -60,11 +60,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Information about the current project
         /// </summary>
-        ProjectFile m_Project;
+        Project m_Project;
 
         /// <summary>
         /// Information about the editing layer
         /// </summary>
+        // There's now just one editing ayer per project - this should be obtained probably from Project.LayerId
         ILayer m_ActiveLayer;
 
         /// <summary>
@@ -145,9 +146,9 @@ namespace Backsight.Editor
             if (cmm!=null)
                 cmm.Close();
 
-            // Write out the job file
-            if (m_Project!=null)
-                m_Project.Save();
+            // Write out the project settings
+            if (m_Project != null)
+                m_Project.SaveSettings();
         }
 
         public CadastralMapModel CadastralMapModel
@@ -156,9 +157,9 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Information about the current project file
+        /// Information about the current project
         /// </summary>
-        internal ProjectFile Project
+        internal Project Project
         {
             get { return m_Project; }
         }
@@ -441,12 +442,76 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Creates (and opens) a brand new project.
+        /// </summary>
+        /// <param name="projectName">The user-perceived name for the project.</param>
+        /// <param name="layer">The map layer the project is for (not null)</param>
+        /// <returns>The newly created project (null if a project was not actually created).</returns>
+        internal Project CreateProject(string projectName, ILayer layer)
+        {
+            ProjectDatabase pd = new ProjectDatabase();
+            m_Project = pd.CreateProject(projectName, layer);
+            m_ActiveLayer = layer;
+            return m_Project;
+        }
+
+        /// <summary>
+        /// Attempts to open a job
+        /// </summary>
+        /// <param name="projectName">The user-perceived name of the project to open (specify null
+        /// if the user should be asked)</param>
+        /// <returns>The project that was opened (null if no project was opened).</returns>
+        internal Project OpenProject(string projectName)
+        {
+            // Pick up a canned environment from embedded resource file
+            IEnvironmentContainer ec = new EnvironmentResource();
+            EnvironmentContainer.Current = ec;
+
+            // Get the ID of the current user
+            m_User = new User(System.Environment.UserName);
+
+            // If a project name has been specified, attempt to open it
+            Project p = null;
+            if (projectName != null)
+            {
+                try
+                {
+                    ProjectDatabase pd = new ProjectDatabase();
+                    p = pd.OpenProject(projectName);
+
+                    m_ActiveLayer = EnvironmentContainer.FindLayerById(p.LayerId);
+                    if (m_ActiveLayer == null)
+                        throw new Exception("Cannot locate map layer associated with selected project");
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+
+            // If we don't have a project, ask the user whether they want to open an existing
+            // project, or create a new one.
+            if (p == null)
+            {
+                using (NewProjectForm dial = new NewProjectForm())
+                {
+                    if (dial.ShowDialog() == DialogResult.OK)
+                        p = dial.NewProject;
+                }
+            }
+
+            m_Project = p;
+            return m_Project;
+        }
+
+        /// <summary>
         /// Attempts to open a job
         /// </summary>
         /// <param name="jobInfo">The job info (null if the user should be asked)</param>
         /// <exception cref="Exception">If a job could not be opened</exception>
         /// <returns>True if the job was opened. False if there was some problem opening it.</returns>
-        internal bool OpenJob(ProjectFile jobInfo)
+        internal bool OpenJob(Project jobInfo)
         {
             m_User = null;
             m_Project = jobInfo;
@@ -471,7 +536,7 @@ namespace Backsight.Editor
 
             // Locate information about the editing layer
             //int layerId = m_JobData.LayerId;
-            m_ActiveLayer = EnvironmentContainer.FindLayerById(jobInfo.LayerId);
+            m_ActiveLayer = EnvironmentContainer.FindLayerById(jobInfo.Settings.LayerId);
             if (m_ActiveLayer == null)
                 throw new Exception("Cannot locate map layer associated with current job");
 
@@ -483,6 +548,8 @@ namespace Backsight.Editor
             {
                 cmm = new CadastralMapModel();
 
+                throw new NotImplementedException();
+                /*
                 // The Load method will end up calling software that requires access to the
                 // current map model, so we need to set it now (we'll set it once more after
                 // the model has been loaded)
@@ -490,7 +557,7 @@ namespace Backsight.Editor
 
                 cmm.Load(m_Project, m_User);
                 cmm.AppendWorkingSession(m_Project, m_User);
-
+                */
                 Settings.Default.LastJobName = m_Project.Name;
                 Settings.Default.Save();
                 return true;
@@ -1234,7 +1301,7 @@ namespace Backsight.Editor
             if (MessageBox.Show("Do you want to save changes?", "Changes not saved", MessageBoxButtons.YesNo)
                 == DialogResult.Yes)
             {
-                m_Project.Save();
+                m_Project.SaveSettings();
                 s.SaveChanges();
             }
             else
@@ -1243,7 +1310,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Have all changes been saved? This refers to editing operations, as well
-        /// as more minor changes that are recorded in the job file.
+        /// as more minor changes that are recorded in the project settings.
         /// </summary>
         internal bool IsSaved
         {
@@ -1254,7 +1321,7 @@ namespace Backsight.Editor
                 if (s == null)
                     return true;
 
-                return (s.IsSaved && m_Project.IsSaved);
+                return (s.IsSaved && m_Project.Settings.IsSaved);
             }
         }
 

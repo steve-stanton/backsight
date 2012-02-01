@@ -37,6 +37,9 @@ namespace Backsight.Editor
 
         #endregion
 
+        /// <summary>
+        /// The path for the directory holding project index entries.
+        /// </summary>
         string IndexFolderName
         {
             get { return Path.Combine(m_FolderName, "index"); }
@@ -58,5 +61,44 @@ namespace Backsight.Editor
 
             return result;
         }
-   }
+
+        /// <summary>
+        /// Attempts to obtain the internal ID for a project
+        /// </summary>
+        /// <param name="projectName">The user-perceived name of the project</param>
+        /// <returns>The corresponding GUID string for the project (null if not found)</returns>
+        internal string FindProjectId(string projectName)
+        {
+            string indexFileName = Path.Combine(IndexFolderName, projectName + ".txt");
+            if (File.Exists(indexFileName))
+                return File.ReadAllText(indexFileName);
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Creates an index entry for a new project.
+        /// </summary>
+        /// <param name="projectName">The user-perceived name for the new project.</param>
+        /// <param name="projectId">The unique ID for the project.</param>
+        internal void CreateIndexEntry(string projectName, Guid projectId)
+        {
+            string fileName = Path.Combine(IndexFolderName, projectName + ".txt");
+            File.WriteAllText(fileName, projectId.ToString());
+        }
+
+        /// <summary>
+        /// Creates a data folder for a project.
+        /// </summary>
+        /// <param name="projectId">The internal ID for the project</param>
+        /// <returns>The corresponding data folder (created if necessary)</returns>
+        internal string CreateDataFolder(Guid projectId)
+        {
+            string folderName = Path.Combine(m_FolderName, projectId.ToString());
+            if (!Directory.Exists(folderName))
+                Directory.CreateDirectory(folderName);
+
+            return folderName;
+        }
+    }
 }
