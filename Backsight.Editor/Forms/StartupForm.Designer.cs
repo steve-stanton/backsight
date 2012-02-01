@@ -32,7 +32,7 @@ namespace Backsight.Editor.Forms
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.openLastButton = new System.Windows.Forms.Button();
             this.openFileButton = new System.Windows.Forms.Button();
-            this.newJobButton = new System.Windows.Forms.Button();
+            this.newProjectButton = new System.Windows.Forms.Button();
             this.exitButton = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -46,7 +46,7 @@ namespace Backsight.Editor.Forms
             // 
             this.groupBox1.Controls.Add(this.openLastButton);
             this.groupBox1.Controls.Add(this.openFileButton);
-            this.groupBox1.Controls.Add(this.newJobButton);
+            this.groupBox1.Controls.Add(this.newProjectButton);
             this.groupBox1.Controls.Add(this.exitButton);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
@@ -64,7 +64,7 @@ namespace Backsight.Editor.Forms
             this.openLastButton.Name = "openLastButton";
             this.openLastButton.Size = new System.Drawing.Size(256, 25);
             this.openLastButton.TabIndex = 0;
-            this.openLastButton.Text = "&Open last job file";
+            this.openLastButton.Text = "&Open last project";
             this.toolTip.SetToolTip(this.openLastButton, "You will be asked to pick an existing cedx file");
             this.openLastButton.UseVisualStyleBackColor = false;
             this.openLastButton.Click += new System.EventHandler(this.openLastButton_Click);
@@ -77,24 +77,24 @@ namespace Backsight.Editor.Forms
             this.openFileButton.Size = new System.Drawing.Size(256, 25);
             this.openFileButton.TabIndex = 7;
             this.openFileButton.TabStop = false;
-            this.openFileButton.Text = "Open anothe&r job";
+            this.openFileButton.Text = "Open anothe&r project";
             this.toolTip.SetToolTip(this.openFileButton, "You will be asked to pick an existing cedx file");
             this.openFileButton.UseVisualStyleBackColor = true;
             this.openFileButton.Click += new System.EventHandler(this.openFileButton_Click);
             // 
-            // newJobButton
+            // newProjectButton
             // 
-            this.newJobButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.newJobButton.Location = new System.Drawing.Point(32, 121);
-            this.newJobButton.Name = "newJobButton";
-            this.newJobButton.Size = new System.Drawing.Size(256, 25);
-            this.newJobButton.TabIndex = 6;
-            this.newJobButton.TabStop = false;
-            this.newJobButton.Text = "Create a &new job";
-            this.toolTip.SetToolTip(this.newJobButton, "Look at all jobs that have been registered in the database (with option to create" +
+            this.newProjectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.newProjectButton.Location = new System.Drawing.Point(32, 121);
+            this.newProjectButton.Name = "newProjectButton";
+            this.newProjectButton.Size = new System.Drawing.Size(256, 25);
+            this.newProjectButton.TabIndex = 6;
+            this.newProjectButton.TabStop = false;
+            this.newProjectButton.Text = "Create a &new project";
+            this.toolTip.SetToolTip(this.newProjectButton, "Look at all jobs that have been registered in the database (with option to create" +
                     " new jobs)");
-            this.newJobButton.UseVisualStyleBackColor = true;
-            this.newJobButton.Click += new System.EventHandler(this.newJobButton_Click);
+            this.newProjectButton.UseVisualStyleBackColor = true;
+            this.newProjectButton.Click += new System.EventHandler(this.newJobButton_Click);
             // 
             // exitButton
             // 
@@ -170,7 +170,7 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Button exitButton;
-        private System.Windows.Forms.Button newJobButton;
+        private System.Windows.Forms.Button newProjectButton;
         private System.Windows.Forms.Button openFileButton;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel lastDatabaseLabel;

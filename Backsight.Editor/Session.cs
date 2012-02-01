@@ -317,9 +317,8 @@ namespace Backsight.Editor
             // been saved in the database (well, it should).
             m_LastSavedItem = m_Data.NumItem;
 
-            // Save the job file for good measure. If the user looks at the file
-            // timestamp, this will reassure them that something really has been done!
-            EditingController.Current.Project.Save();
+            // Save the project settings for good measure.
+            EditingController.Current.Project.SaveSettings();
         }
 
         /// <summary>

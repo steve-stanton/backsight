@@ -308,8 +308,8 @@ namespace Backsight.Editor.FileStore
             // been saved in the session folder (well, it should).
             m_LastSavedItem = m_Info.NumItem;
 
-            // Save the job file for good measure.
-            EditingController.Current.Project.Save();
+            // Save the project settings for good measure.
+            EditingController.Current.Project.SaveSettings();
         }
 
         /// <summary>

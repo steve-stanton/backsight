@@ -35,7 +35,7 @@ namespace Backsight.Editor
         /// The job that the user double-clicked on (null if the application
         /// was launched some other way)
         /// </summary>
-        ProjectFile m_Job;
+        Project m_Job;
 
         /// <summary>
         /// The ID of the user involved (null for no user)
@@ -50,11 +50,11 @@ namespace Backsight.Editor
         /// Creates a new <c>Starter</c> in a situation where the user may have
         /// double-clicked on a job file.
         /// </summary>
-        /// <param name="job">The job info (could be null if user needs to be asked
+        /// <param name="project">The project info (could be null if user needs to be asked
         /// for info)</param>
-        internal Starter(ProjectFile job)
+        internal Starter(Project project)
         {
-            m_Job = job;
+            m_Job = project;
             m_User = null;
         }
 
@@ -71,52 +71,7 @@ namespace Backsight.Editor
             IEnvironmentContainer ec = new EnvironmentResource();
             EnvironmentContainer.Current = ec;
 
-            /*
-            // If a job file was specified, attempt to connect to the database.
-
-            ConnectionFactory.ConnectionString = String.Empty;
-
-            while (String.IsNullOrEmpty(ConnectionFactory.ConnectionString))
-            {
-                // If the job file isn't defined, get the database connection string
-                string cs = null;
-                if (m_ProjectFile == null)
-                {
-                    cs = LastDatabase.ConnectionString;
-
-                    if (String.IsNullOrEmpty(cs))
-                        cs = GetConnectionString();
-
-                    if (String.IsNullOrEmpty(cs))
-                        return false;
-                }
-                else
-                    cs = m_ProjectFile.Data.ConnectionString;
-
-                // Attempt to open the database, to get the user ID for the person
-                // who's currently logged in.
-
-                try
-                {
-                    IEnvironmentContainer ec = new EnvironmentDatabase(cs);
-                    EnvironmentContainer.Current = ec;
-
-                    // Remember the successful connection
-                    SetConnectionString(cs);
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                    m_ProjectFile = null;
-                }
-            }
-
-            // If we get here, it means we have a valid database connection...
-            */
-
             // Get the ID of the current user
-            //m_User = User.GetCurrentUser();
             m_User = new User(System.Environment.UserName);
 
             /*
@@ -142,10 +97,10 @@ namespace Backsight.Editor
             // job, or create a new one.
             if (m_Job==null)
             {
-                using (NewJobForm dial = new NewJobForm())
+                using (NewProjectForm dial = new NewProjectForm())
                 {
                     if (dial.ShowDialog() == DialogResult.OK)
-                        m_Job = dial.NewJob;
+                        m_Job = dial.NewProject;
                 }
             }
 
@@ -186,7 +141,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The job used to launch the application
         /// </summary>
-        internal ProjectFile Job
+        internal Project Job
         {
             get { return m_Job; }
         }

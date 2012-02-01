@@ -39,24 +39,11 @@ namespace Backsight.Editor.Forms
         /// </summary>
         readonly MruStripMenuInline m_MruMenu;
 
-        /// <summary>
-        /// The name of the project file used to launch the application (null if user didn't
-        /// double-click on a cedx file)
-        /// </summary>
-        readonly string m_InitialProjectFile;
-
         #endregion
 
         public MainForm(string[] args)
         {
             InitializeComponent();
-
-            // If user double-clicked on a file, it should appear as an argument. In that
-            // case, remember it as the initial job file (it gets dealt with by MainForm_Shown)
-            if (args != null && args.Length > 0)
-                m_InitialProjectFile = args[0];
-            else
-                m_InitialProjectFile = null;
 
             // Define the controller for the application
             m_Controller = new EditingController(this);
@@ -94,14 +81,13 @@ namespace Backsight.Editor.Forms
             if (String.IsNullOrEmpty(jobName))
                 return;
 
-            IJobContainer jc = new JobCollectionFolder();
-            ProjectFile job = jc.OpenJob(jobName);
-            if (job == null)
+            Project p = EditingController.Current.OpenProject(jobName);
+            if (p == null)
                 return;
 
             ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
             Stopwatch sw = Stopwatch.StartNew();
-            ProjectSettings ps = job.Settings;
+            ProjectSettings ps = p.Settings;
 
             try
             {
@@ -118,7 +104,7 @@ namespace Backsight.Editor.Forms
                 // Display the map name in the dialog title (nice to see what's loading
                 // rather than the default "Map Title" text)
                 this.Text = jobName;
-                if (!m_Controller.OpenJob(job))
+                if (!m_Controller.OpenJob(p))
                     throw new ApplicationException("Cannot access job");
             }
 
@@ -129,7 +115,7 @@ namespace Backsight.Editor.Forms
                 Trace.Write(ex.StackTrace);
 
                 // Don't save any changes to the job
-                job = null;
+                p = null;
             }
 
             finally
@@ -156,24 +142,20 @@ namespace Backsight.Editor.Forms
                     // are happening here.
                     ps.SplashIncrement = ss.GetIncrement();
                     ps.SplashPercents = ss.GetPercents();
-                    job.Save();
+                    p.SaveSettings();
                 }
             }
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            OpenJob(m_InitialProjectFile);
-
-            // If a model hasn't been obtained, ask
-            if (m_Controller.CadastralMapModel==null)
+            // Get the project that the user wants to open
+            using (StartupForm dial = new StartupForm(this))
             {
-                StartupForm dial = new StartupForm(this);
                 dial.ShowDialog();
-                dial.Dispose();
             }
 
-            // If we still don't have a model, close
+            // Close if the map model hasn't been loaded (user decided to quit)
             if (m_Controller.CadastralMapModel==null)
             {
                 Close();
@@ -639,11 +621,11 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileNew(IUserAction action)
         {
-            using (NewJobForm dial = new NewJobForm())
+            using (NewProjectForm dial = new NewProjectForm())
             {
                 if (dial.ShowDialog() == DialogResult.OK)
                 {
-                    ProjectFile job = dial.NewJob;
+                    Project job = dial.NewProject;
                     if (m_Controller.OpenJob(job))
                         AddRecentJob(job.Name);
                 }
@@ -695,12 +677,11 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             s.SaveChanges();
         }
 
-        void OnMruFile(int number, string filename)
+        void OnMruFile(int number, string projectName)
         {
             try
             {
-                ProjectFile jf = new ProjectFile(filename);
-                if (!m_Controller.OpenJob(jf))
+                if (m_Controller.OpenProject(projectName) == null)
                     throw new ApplicationException();
 
                 m_MruMenu.SetFirstFile(number);
@@ -708,20 +689,21 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
             catch
             {
-                string msg = String.Format("Cannot access '{0}'", filename);
+                string msg = String.Format("Cannot access '{0}'", projectName);
                 MessageBox.Show(msg);
                 m_MruMenu.RemoveFile(number);
 
                 try
                 {
-                    if (m_Controller.OpenJob(null))
-                        m_MruMenu.AddString(m_Controller.Project.Name);
+                    Project p = m_Controller.OpenProject(null);
+                    if (p != null)
+                        m_MruMenu.AddString(p.Name);
                 }
 
-                catch (Exception ex2)
+                catch (Exception ex)
                 {
-                    // For now, you just get one extra shot at it
-                    MessageBox.Show(ex2.Message);
+                    // You just get one extra shot at it
+                    MessageBox.Show(ex.Message);
                     Close();
                 }
             }

@@ -50,5 +50,11 @@
     <Setting Name="AutoCadVersion" Type="System.String" Scope="User">
       <Value Profile="(Default)">2000</Value>
     </Setting>
+    <Setting Name="LastProjectId" Type="System.Guid" Scope="User">
+      <Value Profile="(Default)">00000000-0000-0000-0000-000000000000</Value>
+    </Setting>
+    <Setting Name="LastProjectName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
