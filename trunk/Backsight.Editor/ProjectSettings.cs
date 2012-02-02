@@ -227,17 +227,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The internal ID of the map layer the project relates to.
-        /// </summary>
-        [XmlElement]
-        [Obsolete("Get from the NewProjectEvent data")]
-        public int LayerId
-        {
-            get { return m_LayerId; }
-            set { m_LayerId = Set<int>(value); }
-        }
-
-        /// <summary>
         /// Information about the area that was last drawn.
         /// </summary>
         [XmlElement]

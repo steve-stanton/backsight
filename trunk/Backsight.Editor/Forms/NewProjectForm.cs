@@ -67,6 +67,13 @@ namespace Backsight.Editor.Forms
 
         #endregion
 
+        private void NewProjectForm_Load(object sender, EventArgs e)
+        {
+            // Load all defined editing layers
+            IEnvironmentContainer ec = EnvironmentContainer.Current;
+            layerComboBox.DataSource = ec.Layers;
+        }
+
         private void okButton_Click(object sender, EventArgs e)
         {
             string projectName = projectNameTextBox.Text.Trim();

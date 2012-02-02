@@ -96,10 +96,10 @@ namespace Backsight.Editor
         /// <summary>
         /// Identifies a map layer associated with the project.
         /// </summary>
-        internal int LayerId
-        {
-            get { return m_Info.LayerId; }
-        }
+        //internal int LayerId
+        //{
+        //    get { return m_Info.LayerId; }
+        //}
 
         /// <summary>
         /// Loads a map model with the content of this project.

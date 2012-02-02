@@ -13,13 +13,13 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Collections.Generic;
-
-using Backsight.Environment;
 using System;
+using System.Collections.Generic;
 using System.IO;
+
 using Backsight.Data;
 using Backsight.Editor.Properties;
+using Backsight.Environment;
 
 
 namespace Backsight.Editor
@@ -27,7 +27,6 @@ namespace Backsight.Editor
     /// <summary>
     /// A collection of Backsight projects (stored on the local file system).
     /// </summary>
-    /// c.f. JobCollectionFolder
     class ProjectDatabase
     {
         #region Class data
@@ -116,7 +115,6 @@ namespace Backsight.Editor
             // Write initial project settings to the data folder
             ProjectSettings ps = new ProjectSettings();
             ps.ConnectionString = ConnectionFactory.ConnectionString;
-            ps.LayerId = layer.Id;
 
             // Turn off auto-number if there's no database connection string
             if (String.IsNullOrEmpty(ps.ConnectionString))
@@ -128,15 +126,16 @@ namespace Backsight.Editor
             ps.DefaultPolygonType = layer.DefaultPolygonType.Id;
             ps.DefaultTextType = layer.DefaultTextType.Id;
 
-            Project result = new Project(m_Private, e, ps);
-            result.SaveSettings();
+            // Save the settings
+            string settingsFileName = Path.Combine(dataFolder, "settings.txt");
+            ps.WriteXML(settingsFileName);
 
             // Remember the newly created project as the default for the application
             Settings.Default.LastProjectId = e.ProjectId;
             Settings.Default.Save();
 
-            // Wrap the event data along with the initial project settings
-            return result;
+            // Open the new project
+            return OpenProject(projectName);
         }
 
         /// <summary>
@@ -210,7 +209,35 @@ namespace Backsight.Editor
             Settings.Default.LastProjectId = projectId;
             Settings.Default.Save();
 
-            return new Project(silo, e, ps);
+            return new Project(silo, ps);
+
+            // Now load the data
+        }
+
+        /// <summary>
+        /// Loads the edits in this session folder.
+        /// </summary>
+        /// <param name="editDeserializer"></param>
+        void LoadEdits(EditDeserializer editDeserializer)
+        {
+            /*
+            foreach (string editFile in Directory.EnumerateFiles(m_FolderName))
+            {
+                // Only consider those files that have names that are numbers (the edit sequence)
+                string name = Path.GetFileNameWithoutExtension(editFile);
+                uint seqNum;
+                if (UInt32.TryParse(name, out seqNum))
+                {
+                    using (TextReader tr = File.OpenText(editFile))
+                    {
+                        editDeserializer.SetReader(new TextEditReader(tr));
+                        Operation edit = Operation.Deserialize(editDeserializer);
+                        Debug.Assert(seqNum == edit.EditSequence);
+                        m_Operations.Add(edit);
+                    }
+                }
+            }
+             */
         }
 
         /// <summary>

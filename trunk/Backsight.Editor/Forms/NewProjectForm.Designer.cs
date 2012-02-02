@@ -112,6 +112,7 @@ namespace Backsight.Editor.Forms
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "NewProjectForm";
             this.Text = "Create New Project";
+            this.Load += new System.EventHandler(this.NewProjectForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

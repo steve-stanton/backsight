@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -23,6 +24,33 @@ namespace Backsight.Editor
     /// </summary>
     class Change : IPersistent
     {
+        #region Static
+
+        /// <summary>
+        /// Loads the content of an editing event.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <returns>The created editing event object</returns>
+        static internal Change Deserialize(EditDeserializer editDeserializer)
+        {
+            Change result = editDeserializer.ReadPersistent<Change>(DataField.Edit);
+
+            // Note that calculated geometry is NOT defined at this stage. That happens
+            // when the model is asked to index the data.
+
+            // Associate referenced features with the edit
+            result.AddReferences();
+
+            // If we're dealing with an update, exchange update items
+            UpdateOperation upo = (result as UpdateOperation);
+            if (upo != null)
+                upo.ApplyChanges();
+
+            return result;
+        }
+
+        #endregion
+
         #region Class data
 
         /// <summary>
@@ -74,6 +102,37 @@ namespace Backsight.Editor
         public uint EditSequence
         {
             get { return m_Sequence; }
+        }
+
+        /// <summary>
+        /// Adds references to existing features referenced by an editing event.
+        /// <para/>
+        /// Applies only to instances of <see cref="Operation"/>.
+        /// </summary>
+        public virtual void AddReferences()
+        {
+            // Do nothing
+        }
+
+        /// <summary>
+        /// The external ID of this edit is a concatenation of the
+        /// <see cref="Session.Id"/> and <see cref="EditSequence"/> properties
+        /// (seperated with a colon).
+        /// </summary>
+        [Obsolete("Should just be using EditSequence")]
+        internal string DataId
+        {
+            get { return "0."+ m_Sequence; }
+        }
+
+        /// <summary>
+        /// Does this edit come after the supplied edit?
+        /// </summary>
+        /// <param name="that">The edit to compare with</param>
+        /// <returns>True if this edit was performed after the supplied edit</returns>
+        internal bool IsAfter(Change that)
+        {
+            return (this.m_Sequence > that.m_Sequence);
         }
     }
 }

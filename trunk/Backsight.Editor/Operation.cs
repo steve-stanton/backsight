@@ -26,39 +26,8 @@ namespace Backsight.Editor
     /// <summary>
     /// Base class for any sort of editing operation.
     /// </summary>
-    abstract class Operation : IFeatureDependent, IPersistent
+    abstract class Operation : Change, IFeatureDependent
     {
-        #region Static
-
-        /// <summary>
-        /// Loads the content of an editing operation.
-        /// <para/>
-        /// Deprecated -- 
-        /// Prior to call, the current editing session
-        /// must be defined using the <see cref="Session.CurrentSession"/> property.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <returns>The created editing object</returns>
-        static internal Operation Deserialize(EditDeserializer editDeserializer)
-        {
-            Operation result = editDeserializer.ReadPersistent<Operation>(DataField.Edit);
-
-            // Note that calculated geometry is NOT defined at this stage. That happens
-            // when the model is asked to index the data.
-
-            // Associate referenced features with the edit
-            result.AddReferences();
-
-            // If we're dealing with an update, exchange update items
-            UpdateOperation upo = (result as UpdateOperation);
-            if (upo != null)
-                upo.ApplyChanges();
-
-            return result;
-        }
-
-        #endregion
-
         #region Class data
 
         /// <summary>
@@ -69,7 +38,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The item sequence number of this operation (starts at 1 for each session).
         /// </summary>
-        readonly uint m_Sequence;
+        //readonly uint m_Sequence;
 
         /// <summary>
         /// Flag bits
@@ -85,15 +54,13 @@ namespace Backsight.Editor
         /// included in the current editing session.
         /// </summary>
         protected Operation()
+            : base(EditingController.Current.Project.AllocateId())
         {
             m_Session = CadastralMapModel.Current.WorkingSession;
             if (m_Session == null)
                 throw new ArgumentNullException();
 
-            // The edit is now added to the session at the very end of SaveOperation
-            //m_Session.Add(this);
-
-            m_Sequence = m_Session.AllocateNextItem();
+            //m_Sequence = m_Session.AllocateNextItem();
         }
 
         /// <summary>
@@ -102,18 +69,19 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
         protected Operation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
         {
             editDeserializer.CurrentEdit = this;
             m_Session = editDeserializer.MapModel.LastSession;
             Debug.Assert(m_Session != null);
 
-            string id = editDeserializer.ReadString(DataField.Id);
-            uint sessionId;
-            InternalIdValue.Parse(id, out sessionId, out m_Sequence);
+            //string id = editDeserializer.ReadString(DataField.Id);
+            //uint sessionId;
+            //InternalIdValue.Parse(id, out sessionId, out m_Sequence);
 
             // Consistency check (mainly for debugging).
-            if (m_Session.Id != sessionId)
-                throw new ApplicationException();
+            //if (m_Session.Id != sessionId)
+            //    throw new ApplicationException();
         }
 
         #endregion
@@ -155,24 +123,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Operation sequence number.
-        /// </summary>
-        public uint EditSequence
-        {
-            get { return m_Sequence; }
-        }
-
-        /// <summary>
-        /// The external ID of this edit is a concatenation of the
-        /// <see cref="Session.Id"/> and <see cref="EditSequence"/> properties
-        /// (seperated with a colon).
-        /// </summary>
-        internal string DataId
-        {
-            get { return InternalIdValue.Format(m_Session.Id, m_Sequence); }
-        }
-
-        /// <summary>
         /// Parses a string that was returned by the <see cref="DataId"/> property.
         /// </summary>
         /// <param name="s">The string to parse</param>
@@ -180,7 +130,8 @@ namespace Backsight.Editor
         /// <param name="sequence">The creation sequence of the edit within the session</param>
         void ParseDataId(string s, out uint sessionId, out uint sequence)
         {
-            InternalIdValue.Parse(s, out sessionId, out sequence);
+            throw new NotImplementedException();
+            //InternalIdValue.Parse(s, out sessionId, out sequence);
         }
 
         /// <summary>
@@ -482,7 +433,7 @@ namespace Backsight.Editor
         /// <para/>
         /// The <see cref="DeletionOperation"/> and <see cref="UpdateOperation"/> classes provide overrides.
         /// </remarks>
-        public virtual void AddReferences()
+        public override void AddReferences()
         {
             Feature[] feats = GetRequiredFeatures();
 
@@ -677,23 +628,6 @@ namespace Backsight.Editor
             deps.Add(this);
             UnTouch();
             return true;
-        }
-
-        /// <summary>
-        /// Does this edit come after the supplied edit?
-        /// </summary>
-        /// <param name="that">The edit to compare with</param>
-        /// <returns>True if this edit was performed after the supplied edit</returns>
-        internal bool IsAfter(Operation that)
-        {
-            if (this.m_Session.Id > that.m_Session.Id)
-                return true;
-
-            if (this.m_Session.Id < that.m_Session.Id)
-                return false;
-
-            Debug.Assert(this.m_Session.Id == that.m_Session.Id);
-            return (this.m_Sequence > that.m_Sequence);
         }
 
         /// <summary>
