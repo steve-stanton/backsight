@@ -137,7 +137,6 @@
     <Compile Include="EnvironmentResource.cs" />
     <Compile Include="IdAllocationInfo.cs" />
     <Compile Include="IEditingJob.cs" />
-    <Compile Include="IProjectInfo.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="Change.cs" />
     <Compile Include="Project.cs" />
@@ -1323,9 +1322,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FileStore\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
