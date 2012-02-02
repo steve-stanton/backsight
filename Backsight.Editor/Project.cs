@@ -37,7 +37,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The data for the original project creation event.
         /// </summary>
-        readonly NewProjectEvent m_ProjectInfo;
+        NewProjectEvent m_ProjectInfo;
 
         /// <summary>
         /// The current user's project settings.
@@ -58,14 +58,11 @@ namespace Backsight.Editor
         /// upon creation of a brand new project.
         /// </summary>
         /// <param name="container">The container for this project.</param>
-        /// <param name="e">The data for the original project creation event.</param>
         /// <param name="ps">The initial project settings.</param>
-        internal Project(ProjectSilo container, NewProjectEvent e, ProjectSettings ps)
+        internal Project(ProjectSilo container, ProjectSettings ps)
         {
             m_Container = container;
-            m_ProjectInfo = e;
             m_Settings = ps;
-            m_LastItemId = 1;
         }
 
         #endregion
@@ -94,9 +91,12 @@ namespace Backsight.Editor
         /// </summary>
         internal void SaveSettings()
         {
-            string dataFolder = m_Container.CreateDataFolder(m_ProjectInfo.ProjectId);
-            string settingsFileName = Path.Combine(dataFolder, "settings.txt");
-            m_Settings.WriteXML(settingsFileName);
+            if (m_ProjectInfo != null)
+            {
+                string dataFolder = m_Container.CreateDataFolder(m_ProjectInfo.ProjectId);
+                string settingsFileName = Path.Combine(dataFolder, "settings.txt");
+                m_Settings.WriteXML(settingsFileName);
+            }
         }
 
         /// <summary>
