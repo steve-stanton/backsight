@@ -107,7 +107,7 @@ namespace Backsight.Editor
             //List<IdRange> ranges = CadastralMapModel.Current.IdRanges;
 
         	// Grab a hold of info we'll need to stick into the IdAllocation table.
-            User curuser = CadastralMapModel.Current.WorkingSession.User;
+            string curuser = CadastralMapModel.Current.WorkingSession.User;
             DateTime curtime = DateTime.Now;
 
 	        int ntoget = PacketSize;   // How many do we need to allocate?
@@ -169,6 +169,8 @@ namespace Backsight.Editor
                     }
                     */
 
+                    throw new NotImplementedException();
+                    /*
                     if (!isExtension)
                     {
                         // Create a new range object and append it to this group and to the map.
@@ -183,6 +185,7 @@ namespace Backsight.Editor
                         // Remember it as part of this group
                         AddIdPacket(ida);
                     }
+                    */
 
                     // Increment the number of ranges we've added (extensions
                     // count as additions too).

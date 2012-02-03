@@ -143,7 +143,6 @@
     <Compile Include="ProjectFile.cs" />
     <Compile Include="ProjectSettings.cs" />
     <Compile Include="ProjectSilo.cs" />
-    <Compile Include="SessionInfo.cs" />
     <Compile Include="TextEditReader.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
