@@ -17,6 +17,8 @@ using System;
 using System.IO;
 
 using Backsight.Environment;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Backsight.Editor
 {
@@ -35,6 +37,16 @@ namespace Backsight.Editor
         readonly ProjectSilo m_Container;
 
         /// <summary>
+        /// Has this project been published?
+        /// </summary>
+        readonly bool m_IsPublic;
+
+        /// <summary>
+        /// The unique ID for the project
+        /// </summary>
+        readonly Guid m_Id;
+
+        /// <summary>
         /// The data for the original project creation event.
         /// </summary>
         NewProjectEvent m_ProjectInfo;
@@ -49,6 +61,11 @@ namespace Backsight.Editor
         /// </summary>
         uint m_LastItemId;
 
+        /// <summary>
+        /// The data model for the map.
+        /// </summary>
+        readonly CadastralMapModel m_MapModel;
+
         #endregion
 
         #region Constructors
@@ -58,11 +75,16 @@ namespace Backsight.Editor
         /// upon creation of a brand new project.
         /// </summary>
         /// <param name="container">The container for this project.</param>
+        /// <param name="isPublic">Is this a public project?</param>
+        /// <param name="projectId">The unique ID for the project.</param>
         /// <param name="ps">The initial project settings.</param>
-        internal Project(ProjectSilo container, ProjectSettings ps)
+        internal Project(ProjectSilo container, bool isPublic, Guid projectId, ProjectSettings ps)
         {
             m_Container = container;
+            m_IsPublic = isPublic;
+            m_Id = projectId;
             m_Settings = ps;
+            m_MapModel = new CadastralMapModel();
         }
 
         #endregion
@@ -79,6 +101,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Records the highest internal ID for this project.
+        /// </summary>
+        /// <param name="maxItemId">The last internal ID used by this project</param>
+        internal void SetLastItem(uint maxItemId)
+        {
+            m_LastItemId = maxItemId;
+        }
+
+        /// <summary>
         /// The current user's project settings.
         /// </summary>
         internal ProjectSettings Settings
@@ -91,12 +122,9 @@ namespace Backsight.Editor
         /// </summary>
         internal void SaveSettings()
         {
-            if (m_ProjectInfo != null)
-            {
-                string dataFolder = m_Container.CreateDataFolder(m_ProjectInfo.ProjectId);
-                string settingsFileName = Path.Combine(dataFolder, "settings.txt");
-                m_Settings.WriteXML(settingsFileName);
-            }
+            string dataFolder = m_Container.CreateDataFolder(m_Id);
+            string settingsFileName = Path.Combine(dataFolder, "settings.txt");
+            m_Settings.WriteXML(settingsFileName);
         }
 
         /// <summary>
@@ -104,7 +132,21 @@ namespace Backsight.Editor
         /// </summary>
         internal string Name
         {
-            get { return m_ProjectInfo.ProjectName; }
+            get
+            {
+                if (m_ProjectInfo == null)
+                    return "Unknown";
+                else
+                    return m_ProjectInfo.ProjectName;
+            }
+        }
+
+        /// <summary>
+        /// A unique ID for the project.
+        /// </summary>
+        internal Guid Id
+        {
+            get { return m_Id; }
         }
 
         /// <summary>
@@ -112,7 +154,68 @@ namespace Backsight.Editor
         /// </summary>
         internal int LayerId
         {
-            get { return m_ProjectInfo.LayerId; }
+            get
+            {
+                if (m_ProjectInfo == null)
+                    return 0;
+                else
+                    return m_ProjectInfo.LayerId;
+            }
+        }
+
+        /// <summary>
+        /// The data model for the map.
+        /// </summary>
+        internal CadastralMapModel Model
+        {
+            get { return m_MapModel; }
+        }
+
+        /// <summary>
+        /// Has this project been published?
+        /// </summary>
+        internal bool IsPublic
+        {
+            get { return m_IsPublic; }
+        }
+
+        internal void LoadDataFiles(string[] files)
+        {
+            Trace.Write("Reading data...");
+            List<Change> changes = new List<Change>(files.Length);
+            EditDeserializer ed = new EditDeserializer(m_MapModel);
+
+            foreach (string editFile in files)
+            {
+                using (TextReader tr = File.OpenText(editFile))
+                {
+                    TextEditReader er = new TextEditReader(tr);
+
+                    // Ignore any empty files
+                    if (er.HasNext)
+                    {
+                        ed.SetReader(er);
+                        Change edit = Change.Deserialize(ed);
+                        changes.Add(edit);
+                    }
+                }
+            }
+
+            if (changes.Count == 0)
+                throw new ApplicationException("Could not deserialize any change events");
+
+            // The very first change should be the NewProjectEvent
+            m_ProjectInfo = (changes[0] as NewProjectEvent);
+            if (m_ProjectInfo == null)
+                throw new ApplicationException("First event is not the NewProjectEvent");
+
+            // Load session objects
+            for (int i = 1; i < changes.Count; i++)
+            {
+                Change c = changes[i];
+
+                //if (c is StartSessionEvent)
+            }
         }
     }
 }

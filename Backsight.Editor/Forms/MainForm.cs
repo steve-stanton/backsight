@@ -669,7 +669,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void FileSave(IUserAction action)
         {
-            ISession s = CadastralMapModel.Current.WorkingSession;
+            Session s = CadastralMapModel.Current.WorkingSession;
             Debug.Assert(s != null);
             s.SaveChanges();
         }
@@ -877,7 +877,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         {
             get
             {
-                ISession s = CadastralMapModel.Current.WorkingSession;
+                Session s = CadastralMapModel.Current.WorkingSession;
                 return (s==null ? true : s.LastOperation==null);
             }
         }
@@ -949,7 +949,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
             // Get the user to select an edit from the current session (restricted
             // to those edits that implement IRecallable)
-            ISession s = CadastralMapModel.Current.WorkingSession;
+            Session s = CadastralMapModel.Current.WorkingSession;
             Operation op = null;
 
             using (PickEditForm dial = new PickEditForm(s))

@@ -28,7 +28,7 @@ namespace Backsight.Editor
     /// <summary>
     /// An editing session.
     /// </summary>
-    class Session : ISession
+    class Session
     {
         #region Static
 
@@ -50,7 +50,7 @@ namespace Backsight.Editor
         */
 
         /*
-        internal static ISession WorkingSession
+        internal static Session WorkingSession
         {
             get { return CadastralMapModel.Current.WorkingSession; }
         }
@@ -137,7 +137,7 @@ namespace Backsight.Editor
             if (sessionData == null || user == null || job == null)
                 throw new ArgumentNullException();
 
-            Debug.Assert(user.UserId == sessionData.UserId);
+            //Debug.Assert(user.UserId == sessionData.UserId);
             //Debug.Assert(job.JobId == sessionData.JobId);
 
             m_Model = model;
@@ -153,7 +153,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Unique ID for the session.
         /// </summary>
-        uint ISession.Id
+        internal uint Id
         {
             get { return m_Data.Id; }
         }
@@ -168,7 +168,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The model that contains this session
         /// </summary>
-        CadastralMapModel ISession.MapModel
+        internal CadastralMapModel MapModel
         {
             get { return m_Model; }
         }
@@ -176,7 +176,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Deletes information about this session from the database.
         /// </summary>
-        void ISession.Delete()
+        internal void Delete()
         {
             m_Data.Delete();
         }
@@ -184,7 +184,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Updates the end-time (and item count) associated with this session
         /// </summary>
-        void ISession.UpdateEndTime()
+        internal void UpdateEndTime()
         {
             m_Data.UpdateEndTime();
         }
@@ -233,7 +233,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The user logged on for the session. 
         /// </summary>
-        User ISession.User
+        internal User User
         {
             get { return m_Who; }
         }
@@ -253,7 +253,7 @@ namespace Backsight.Editor
         /// <returns>-1 if last operation failed to roll back. 0 if no operation to rollback.
         /// Otherwise the sequence number of the edit that was rolled back.</returns>
         /// <exception cref="InvalidOperationException">If the session has been published</exception>
-        int ISession.Rollback()
+        internal int Rollback()
         {
             // Return if there is nothing to rollback.
             if (m_Operations.Count==0)
@@ -277,7 +277,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The last editing operation in this session (null if no edits have been performed)
         /// </summary>
-        Operation ISession.LastOperation
+        internal Operation LastOperation
         {
             get
             {
@@ -301,7 +301,7 @@ namespace Backsight.Editor
         /// This isn't exactly thorough (e.g. if the Editor really does crash, your
         /// changes will have been saved - so be glad).
         /// </summary>
-        bool ISession.IsSaved
+        internal bool IsSaved
         {
             get { return m_LastSavedItem == m_Data.NumItem; }
         }
@@ -310,7 +310,7 @@ namespace Backsight.Editor
         /// Records the fact that this session has been "saved". This doesn't actually
         /// save anything, since that happens each time you perform an edit.
         /// </summary>
-        void ISession.SaveChanges()
+        internal void SaveChanges()
         {
             // Update the number of the last saved item (as far as the user's session
             // is concerned). Note that m_Data.NumItem corresponds to what's already
@@ -324,7 +324,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Gets rid of edits that the user has not explicitly saved.
         /// </summary>
-        void ISession.DiscardChanges()
+        internal void DiscardChanges()
         {
             m_Data.DiscardEdits(m_LastSavedItem);
         }
@@ -348,7 +348,7 @@ namespace Backsight.Editor
         /// when an edit completes.
         /// </summary>
         /// <returns>The reserved item number</returns>
-        uint ISession.AllocateNextItem()
+        internal uint AllocateNextItem()
         {
             return m_Data.ReserveNextItem();
         }
@@ -375,7 +375,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The number of edits performed in this session
         /// </summary>
-        int ISession.OperationCount
+        internal int OperationCount
         {
             get { return m_Operations.Count; }
         }
@@ -383,7 +383,7 @@ namespace Backsight.Editor
         /// <summary>
         /// When was session started? 
         /// </summary>
-        DateTime ISession.StartTime
+        internal DateTime StartTime
         {
             get { return m_Data.StartTime; }
         }
@@ -391,7 +391,7 @@ namespace Backsight.Editor
         /// <summary>
         /// When was the last edit performed?
         /// </summary>
-        DateTime ISession.EndTime
+        internal DateTime EndTime
         {
             get { return m_Data.EndTime; }
         }
@@ -401,7 +401,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="editSequence">The sequence number of the edit to look for</param>
         /// <returns>The corresponding editing operation (null if not found)</returns>
-        Operation ISession.FindOperation(uint editSequence)
+        internal Operation FindOperation(uint editSequence)
         {
             return m_Operations.Find(delegate(Operation o) { return o.EditSequence == editSequence; });
         }
@@ -412,7 +412,7 @@ namespace Backsight.Editor
         /// <param name="deps">The dependent edits.</param>
         /// <param name="startOp">The first operation that should be touched (specify null
         /// for all edits in this session).</param>
-        void ISession.Touch(List<Operation> deps, Operation startOp)
+        internal void Touch(List<Operation> deps, Operation startOp)
         {
             // If a starting op has been specified, process only from there
             if (startOp != null)
@@ -451,7 +451,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The edits performed in this session.
         /// </summary>
-        Operation[] ISession.Edits
+        internal Operation[] Edits
         {
             get { return m_Operations.ToArray(); }
         }
@@ -460,7 +460,7 @@ namespace Backsight.Editor
         /// Saves an editing operation as part of this session.
         /// </summary>
         /// <param name="edit">The edit to save</param>
-        void ISession.SaveOperation(Operation edit)
+        internal void SaveOperation(Operation edit)
         {
             Trace.Write("Saving edit");
 

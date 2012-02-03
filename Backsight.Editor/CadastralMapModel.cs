@@ -70,7 +70,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Editing sessions.
         /// </summary>
-        readonly List<ISession> m_Sessions;
+        readonly List<Session> m_Sessions;
 
         /// <summary>
         /// Management of user-specified IDs (null if there is no ID provider).
@@ -81,7 +81,7 @@ namespace Backsight.Editor
         /// The session that we are currently appending to. Defined on a call to
         /// <see cref="AppendWorkingSession"/>
         /// </summary>
-        ISession m_WorkingSession;
+        Session m_WorkingSession;
 
         /// <summary>
         /// Spatial features that have been loaded (including features that may
@@ -113,7 +113,7 @@ namespace Backsight.Editor
         {
             m_Rotation = 0.0;
             m_Window = new Window();
-            m_Sessions = new List<ISession>();
+            m_Sessions = new List<Session>();
             m_Index = null; // new EditingIndex();
 
             // Create an ID manager only if a database can be reached
@@ -193,7 +193,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The editing sessions that define this model
         /// </summary>
-        internal ISession[] Sessions
+        internal Session[] Sessions
         {
             get { return m_Sessions.ToArray(); }
         }
@@ -302,7 +302,7 @@ namespace Backsight.Editor
 
         internal void Close()
         {
-            ISession s = m_WorkingSession;
+            Session s = m_WorkingSession;
             if (m_WorkingSession != null)
             {
                 if (m_WorkingSession.OperationCount == 0)
@@ -338,7 +338,7 @@ namespace Backsight.Editor
         /// The last editing session in this model (null if this is a freshly created model,
         /// and data is still being loaded)
         /// </summary>
-        internal ISession LastSession
+        internal Session LastSession
         {
             get
             {
@@ -874,7 +874,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="s">The session to rollback (all subsequent sessions must be empty)</param>
         /// <returns>True if rollback succeeded</returns>
-        internal bool Rollback(ISession s)
+        internal bool Rollback(Session s)
         {
             int editSequence = s.Rollback();
             if (editSequence <= 0)
@@ -1173,7 +1173,7 @@ namespace Backsight.Editor
         /// Remembers a session as part of this model
         /// </summary>
         /// <param name="s"></param>
-        internal void AddSession(ISession s)
+        internal void AddSession(Session s)
         {
             m_Sessions.Add(s);
         }
@@ -1184,7 +1184,7 @@ namespace Backsight.Editor
         /// session that is created during initial data loading).
         /// </summary>
         /// <returns>The created session</returns>
-        internal ISession AppendWorkingSession(ProjectFile job, User user)
+        internal Session AppendWorkingSession(ProjectFile job, User user)
         {
             //SessionData data = SessionDataFactory.Insert(job.JobId, user.UserId);
 
@@ -1206,7 +1206,7 @@ namespace Backsight.Editor
         {
             uint maxId = 0;
 
-            foreach (ISession s in m_Sessions)
+            foreach (Session s in m_Sessions)
                 maxId = Math.Max(maxId, s.Id);
 
             return maxId;
@@ -1225,7 +1225,7 @@ namespace Backsight.Editor
         /// The session that we are currently appending to. Defined on a call to
         /// <see cref="AppendWorkingSession"/>.
         /// </summary>
-        internal ISession WorkingSession
+        internal Session WorkingSession
         {
             get { return m_WorkingSession; }
         }
@@ -1327,7 +1327,7 @@ namespace Backsight.Editor
         /// <returns>The corresponding operation (null if not found)</returns>
         internal Operation FindOperation(InternalIdValue id)
         {
-            ISession s = FindSession(id.SessionId);
+            Session s = FindSession(id.SessionId);
 
             if (s == null)
                 return null;
@@ -1340,9 +1340,9 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="sessionId">The sequence number of the session to look for</param>
         /// <returns>The corresponding session (null if not found)</returns>
-        internal ISession FindSession(uint sessionId)
+        internal Session FindSession(uint sessionId)
         {
-            return m_Sessions.Find(delegate(ISession s) { return s.Id==sessionId; });
+            return m_Sessions.Find(delegate(Session s) { return s.Id==sessionId; });
         }
 
         /// <summary>
@@ -1493,7 +1493,7 @@ namespace Backsight.Editor
                 return new Operation[] { op };
 
             // Locate the session containing the edit
-            int sessionIndex = m_Sessions.FindIndex(delegate(ISession s)
+            int sessionIndex = m_Sessions.FindIndex(delegate(Session s)
             {
                 return object.ReferenceEquals(s, op.Session);
             });
@@ -1522,7 +1522,7 @@ namespace Backsight.Editor
         {
             List<Operation> result = new List<Operation>();
 
-            foreach (ISession s in m_Sessions)
+            foreach (Session s in m_Sessions)
                 result.AddRange(s.Edits);
 
             return result.ToArray();

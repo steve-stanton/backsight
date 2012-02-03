@@ -33,7 +33,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The session in which this operation was originally defined (not null)
         /// </summary>
-        readonly ISession m_Session;
+        readonly Session m_Session;
 
         /// <summary>
         /// The item sequence number of this operation (starts at 1 for each session).
@@ -137,7 +137,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The session in which this operation was originally defined (never null).
         /// </summary>        
-        internal ISession Session
+        internal Session Session
         {
             get { return m_Session; }
         }

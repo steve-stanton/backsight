@@ -164,6 +164,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Is more data available?
+        /// </summary>
+        internal bool HasNext
+        {
+            get { return (m_NextLine != null); }
+        }
+
+        /// <summary>
         /// Reads the next data value from the text storage medium (but does not attempt
         /// to parse it).
         /// </summary>
