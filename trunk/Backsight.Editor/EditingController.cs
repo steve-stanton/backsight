@@ -1229,7 +1229,7 @@ namespace Backsight.Editor
             if (IsSaved)
                 return;
 
-            ISession s = CadastralMapModel.Current.WorkingSession;
+            Session s = CadastralMapModel.Current.WorkingSession;
             Debug.Assert(s != null);
 
             if (MessageBox.Show("Do you want to save changes?", "Changes not saved", MessageBoxButtons.YesNo)
@@ -1251,7 +1251,7 @@ namespace Backsight.Editor
             get
             {
                 // The session probably SHOULD be defined
-                ISession s = CadastralMapModel.Current.WorkingSession;
+                Session s = CadastralMapModel.Current.WorkingSession;
                 if (s == null)
                     return true;
 

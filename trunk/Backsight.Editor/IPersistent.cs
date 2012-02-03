@@ -22,7 +22,7 @@ namespace Backsight.Editor
     /// <remarks>
     /// Classes that implement this interface are expected to handle deserialization by
     /// providing a constructor that accepts an instance of <see cref="EditDeserializer"/>
-    /// (the intention is to make it possible to tag class members are <c>readonly</c> where
+    /// (the intention is to make it possible to tag class members as <c>readonly</c> where
     /// that is applicable). Unfortunately, you can't specify constructors as part of an interface.
     /// </remarks>
     interface IPersistent

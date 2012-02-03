@@ -109,7 +109,7 @@ namespace Backsight.Editor
 
             // Serialize the event data to the data folder
             string s = EditSerializer.GetSerializedString<NewProjectEvent>(DataField.Edit, e);
-            string fileName = Path.Combine(dataFolder, String.Format("{0:X8}.txt", e.EditSequence));
+            string fileName = Path.Combine(dataFolder, GetDataFileName(e.EditSequence));
             File.WriteAllText(fileName, s);
 
             // Write initial project settings to the data folder
@@ -136,6 +136,16 @@ namespace Backsight.Editor
 
             // Open the new project
             return OpenProject(projectName);
+        }
+
+        /// <summary>
+        /// Obtains the name of the data file that corresponds to a file number.
+        /// </summary>
+        /// <param name="fileNumber">The file number</param>
+        /// <returns>The corresponding file name (without any directory specification).</returns>
+        string GetDataFileName(uint fileNumber)
+        {
+            return String.Format("{0:X8}.txt", fileNumber);
         }
 
         /// <summary>
@@ -188,6 +198,7 @@ namespace Backsight.Editor
             if (silo == null)
                 throw new ArgumentException("Cannot find project " + projectName);
 
+
             // Read the project ID from the silo
             string projectGuid = silo.FindProjectId(projectName);
             if (projectGuid == null)
@@ -197,9 +208,6 @@ namespace Backsight.Editor
             Guid projectId = Guid.Parse(projectGuid);
             string dataFolder = silo.CreateDataFolder(projectId);
             string creationFileName = Path.Combine(dataFolder, NewProjectEvent.FileName);
-            //EditDeserializer ed = new EditDeserializer();
-            //new TextEditReader();
-            NewProjectEvent e = null;
 
             // Read current project settings from the private silo (even if the project is now public)
             dataFolder = m_Private.CreateDataFolder(projectId);
@@ -209,35 +217,59 @@ namespace Backsight.Editor
             Settings.Default.LastProjectId = projectId;
             Settings.Default.Save();
 
-            return new Project(silo, ps);
-
             // Now load the data
+            bool isPublic = (silo == m_Public ? true : false);
+            Project result = new Project(silo, isPublic, projectId, ps);
+            LoadEdits(result);
+            return result;
         }
 
+
         /// <summary>
-        /// Loads the edits in this session folder.
+        /// Loads a new map model
         /// </summary>
-        /// <param name="editDeserializer"></param>
-        void LoadEdits(EditDeserializer editDeserializer)
+        /// <param name="p">The project containing the model</param>
+        void LoadEdits(Project p)
         {
-            /*
-            foreach (string editFile in Directory.EnumerateFiles(m_FolderName))
+            // If the project is public, we need to first load from the public silo (but no further than
+            // the last data file that existed on publication).
+            uint[] privateFiles = m_Private.GetFileNumbers(p.Id);
+            if (privateFiles.Length == 0)
+                throw new ArgumentException("Project doesn't have any private data files");
+
+            // If the first file isn't 00000001.txt, it means the project has been published, so we
+            // need to initially load stuff from the public silo.
+
+            List<string> files = new List<string>();
+
+            if (privateFiles[0] > 1)
             {
-                // Only consider those files that have names that are numbers (the edit sequence)
-                string name = Path.GetFileNameWithoutExtension(editFile);
-                uint seqNum;
-                if (UInt32.TryParse(name, out seqNum))
+                uint[] publicFiles = m_Public.GetFileNumbers(p.Id);
+                string publicFolder = m_Public.CreateDataFolder(p.Id);
+
+                foreach (uint fileNum in publicFiles)
                 {
-                    using (TextReader tr = File.OpenText(editFile))
+                    if (fileNum < privateFiles[0])
                     {
-                        editDeserializer.SetReader(new TextEditReader(tr));
-                        Operation edit = Operation.Deserialize(editDeserializer);
-                        Debug.Assert(seqNum == edit.EditSequence);
-                        m_Operations.Add(edit);
+                        string fileName = Path.Combine(publicFolder, GetDataFileName(fileNum));
+                        files.Add(fileName);
                     }
                 }
             }
-             */
+
+            // Append all private files
+            string privateFolder = m_Private.CreateDataFolder(p.Id);
+            foreach (uint fileNum in privateFiles)
+            {
+                string fileName = Path.Combine(privateFolder, GetDataFileName(fileNum));
+                files.Add(fileName);
+            }
+
+            // Now load the files
+            p.LoadDataFiles(files.ToArray());
+
+            // Remember the highest internal ID used by the project
+            p.SetLastItem(privateFiles[privateFiles.Length - 1]);
         }
 
         /// <summary>

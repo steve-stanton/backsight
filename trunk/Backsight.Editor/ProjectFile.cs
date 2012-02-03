@@ -24,23 +24,6 @@ namespace Backsight.Editor
     /// </summary>
     class ProjectFile
     {
-        #region Static
-
-        /// <summary>
-        /// Writes a new project file
-        /// </summary>
-        /// <param name="fileName">The name of the project file to create</param>
-        /// <param name="info">The information to write out</param>
-        /// <returns>An object representing the resultant file</returns>
-        internal static ProjectFile SaveProjectFile(string fileName, ProjectSettings info)
-        {
-            // Write out the info, then read it back in
-            info.WriteXML(fileName);
-            return new ProjectFile(fileName);
-        }
-
-        #endregion
-
         #region Class data
 
         /// <summary>
@@ -150,7 +133,7 @@ namespace Backsight.Editor
         /// <param name="sessionId">The ID to assign to the new session</param>
         /// <returns>The newly created session</returns>
         /*
-        internal ISession AppendWorkingSession(uint sessionId)
+        internal Session AppendWorkingSession(uint sessionId)
         {
             string jobFolder = Path.GetDirectoryName(m_FileName);
             string sessionsFolder = Path.Combine(jobFolder, "Sessions");

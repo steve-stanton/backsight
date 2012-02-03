@@ -57,7 +57,7 @@ namespace Backsight.Editor
 
             // Strip off the path
             for (int i = 0; i < result.Length; i++)
-                result[i] = Path.GetFileName(result[i]);
+                result[i] = Path.GetFileNameWithoutExtension(result[i]);
 
             return result;
         }
@@ -107,6 +107,38 @@ namespace Backsight.Editor
         internal string FolderName
         {
             get { return m_FolderName; }
+        }
+
+        /// <summary>
+        /// Obtains the number of the data files for a specific project that exist in this silo.
+        /// </summary>
+        /// <param name="projectId">The unique ID of the project of interest</param>
+        /// <returns>The data file numbers (sorted). An empty array if the project data folder does not exist.</returns>
+        internal uint[] GetFileNumbers(Guid projectId)
+        {
+            string dataFolder = Path.Combine(m_FolderName, projectId.ToString());
+            if (!Directory.Exists(dataFolder))
+                return new uint[0];
+
+            List<uint> result = new List<uint>(100);
+
+            foreach (string s in Directory.GetFiles(dataFolder))
+            {
+                string name = Path.GetFileNameWithoutExtension(s);
+                if (name.Length == 8)
+                {
+                    try
+                    {
+                        uint n = Convert.ToUInt32(name, 16);
+                        result.Add(n);
+                    }
+
+                    catch { }
+                }
+            }
+
+            result.Sort();
+            return result.ToArray();
         }
     }
 }

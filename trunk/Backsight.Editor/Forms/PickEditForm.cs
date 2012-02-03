@@ -34,7 +34,7 @@ namespace Backsight.Editor.Forms
         /// <summary>
         /// The session of interest
         /// </summary>
-        readonly ISession m_Session;
+        readonly Session m_Session;
 
         /// <summary>
         /// The currently select edit
@@ -45,7 +45,7 @@ namespace Backsight.Editor.Forms
 
         #region Constructors
 
-        internal PickEditForm(ISession s)
+        internal PickEditForm(Session s)
         {
             InitializeComponent();
 

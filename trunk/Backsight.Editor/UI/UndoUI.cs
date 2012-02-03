@@ -62,7 +62,7 @@ namespace Backsight.Editor.UI
 
                 // Ask the map to rollback the last operation (restricting 
                 // to the current editing session).
-                ISession s = CadastralMapModel.Current.WorkingSession;
+                Session s = CadastralMapModel.Current.WorkingSession;
                 if (CadastralMapModel.Current.Rollback(s))
                 {
                     c.FinishCommand(this);

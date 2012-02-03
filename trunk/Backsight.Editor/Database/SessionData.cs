@@ -14,15 +14,9 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
 
 using Backsight.Data;
-using Backsight.Environment;
 
 namespace Backsight.Editor.Database
 {
@@ -34,19 +28,19 @@ namespace Backsight.Editor.Database
         #region Class data
 
         /// <summary>
+        /// The project this session is part of.
+        /// </summary>
+        readonly Project m_Project;
+
+        /// <summary>
         /// Unique ID for the session.
         /// </summary>
         readonly uint m_SessionId;
 
         /// <summary>
-        /// The ID of the job the session is part of
+        /// The user running the session
         /// </summary>
-        readonly uint m_JobId;
-
-        /// <summary>
-        /// The ID of the user running the session
-        /// </summary>
-        readonly uint m_UserId;
+        readonly string m_User;
 
         /// <summary>
         /// When was session started? 
@@ -70,17 +64,17 @@ namespace Backsight.Editor.Database
         /// <summary>
         /// Creates a new <c>SessionData</c> using information selected from the database
         /// </summary>
+        /// <param name="project">The project this session is part of.</param>
         /// <param name="sessionId">Unique ID for the session.</param>
-        /// <param name="jobId">The ID of the job the session is part of</param>
-        /// <param name="userId">The ID of the user running the session</param>
+        /// <param name="userName">The name of the user running the session</param>
         /// <param name="start">When was session started? </param>
         /// <param name="end">When was the last edit performed?</param>
         /// <param name="numItem">TThe number of items (objects) created by the session</param>
-        internal SessionData(uint sessionId, uint jobId, uint userId, DateTime start, DateTime end, uint numItem)
+        internal SessionData(Project project, uint sessionId, string userName, DateTime start, DateTime end, uint numItem)
         {
+            m_Project = project;
             m_SessionId = sessionId;
-            m_JobId = jobId;
-            m_UserId = userId;
+            m_User = userName;
             m_Start = start;
             m_End = end;
             m_NumItem = numItem;
@@ -94,22 +88,6 @@ namespace Backsight.Editor.Database
         internal uint Id
         {
             get { return m_SessionId; }
-        }
-
-        /// <summary>
-        /// The ID of the user running the session
-        /// </summary>
-        internal uint UserId
-        {
-            get { return m_UserId; }
-        }
-
-        /// <summary>
-        /// The ID of the job the session is part of
-        /// </summary>
-        internal uint JobId
-        {
-            get { return m_JobId; }
         }
 
         /// <summary>
@@ -179,9 +157,7 @@ namespace Backsight.Editor.Database
         /// <returns>The reserved item number</returns>
         internal uint ReserveNextItem()
         {
-            Debug.Assert(m_SessionId == CadastralMapModel.Current.WorkingSession.Id);
-            m_NumItem++;
-            return m_NumItem;
+            return m_Project.AllocateId();
         }
 
         /// <summary>
