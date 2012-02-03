@@ -75,7 +75,7 @@ namespace Backsight.Editor.Forms
                 row.Cells["opIdColumn"].Value = op.DataId;
                 row.Cells["operationColumn"].Value = op.Name;
                 row.Cells["createdColumn"].Value = op.Session.StartTime.ToShortDateString();
-                row.Cells["editorColumn"].Value = op.Session.User.Name;
+                row.Cells["editorColumn"].Value = op.Session.User;
 
                 // If the line was created by a connection path, display the precision.
                 if (op is PathOperation)

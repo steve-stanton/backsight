@@ -91,24 +91,19 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The model that contains this session
+        /// The project the session is part of.
         /// </summary>
-        readonly CadastralMapModel m_Model;
+        readonly Project m_Project;
+
+        /// <summary>
+        /// The user logged on for the session. 
+        /// </summary>
+        readonly string m_Who;
 
         /// <summary>
         /// Information about the session (corresponds to a row in the <c>Sessions</c> table)
         /// </summary>
         readonly SessionData m_Data;
-
-        /// <summary>
-        /// The user logged on for the session. 
-        /// </summary>
-        readonly User m_Who;
-
-        /// <summary>
-        /// The job the session is associated with
-        /// </summary>
-        readonly ProjectFile m_Job;
 
         /// <summary>
         /// Operations (if any) that were performed during the session. 
@@ -130,20 +125,19 @@ namespace Backsight.Editor
         /// <param name="model">The object model containing this session</param>
         /// <param name="sessionData">The information selected from the database</param>
         /// <param name="user">The user who performed the session</param>
-        /// <param name="job">The job the session is associated with</param>
+        /// <param name="project">The project the session is part of</param>
         /// <remarks>To be called only by <see cref="CreateCurrentSessoon"/></remarks>
-        Session(CadastralMapModel model, SessionData sessionData, User user, ProjectFile job)
+        Session(SessionData sessionData, string user, Project project)
         {
-            if (sessionData == null || user == null || job == null)
+            if (sessionData == null || user == null || project == null)
                 throw new ArgumentNullException();
 
             //Debug.Assert(user.UserId == sessionData.UserId);
             //Debug.Assert(job.JobId == sessionData.JobId);
 
-            m_Model = model;
             m_Data = sessionData;
             m_Who = user;
-            m_Job = job;
+            m_Project = project;
             m_Operations = new List<Operation>();
             m_LastSavedItem = 0;
         }
@@ -170,7 +164,7 @@ namespace Backsight.Editor
         /// </summary>
         internal CadastralMapModel MapModel
         {
-            get { return m_Model; }
+            get { return m_Project.Model; }
         }
 
         /// <summary>
@@ -231,9 +225,9 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The user logged on for the session. 
+        /// The login name of the user logged on for the session. 
         /// </summary>
-        internal User User
+        internal string User
         {
             get { return m_Who; }
         }
@@ -241,9 +235,9 @@ namespace Backsight.Editor
         /// <summary>
         /// The job the session is associated with
         /// </summary>
-        internal ProjectFile Job
+        internal Project Project
         {
-            get { return m_Job; }
+            get { return m_Project; }
         }
 
         /// <summary>
