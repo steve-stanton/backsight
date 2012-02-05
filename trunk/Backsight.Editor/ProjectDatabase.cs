@@ -107,8 +107,9 @@ namespace Backsight.Editor
             // Create the private data folder
             string dataFolder = m_Private.CreateDataFolder(e.ProjectId);
 
-            // Serialize the event data to the data folder
-            string s = EditSerializer.GetSerializedString<NewProjectEvent>(DataField.Edit, e);
+            // Serialize the event data to the data folder. Specify <Change> so that
+            // the class name will be included in the output file.
+            string s = EditSerializer.GetSerializedString<Change>(DataField.Edit, e);
             string fileName = Path.Combine(dataFolder, GetDataFileName(e.EditSequence));
             File.WriteAllText(fileName, s);
 
@@ -130,10 +131,6 @@ namespace Backsight.Editor
             string settingsFileName = Path.Combine(dataFolder, "settings.txt");
             ps.WriteXML(settingsFileName);
 
-            // Remember the newly created project as the default for the application
-            Settings.Default.LastProjectId = e.ProjectId;
-            Settings.Default.Save();
-
             // Open the new project
             return OpenProject(projectName);
         }
@@ -143,7 +140,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="fileNumber">The file number</param>
         /// <returns>The corresponding file name (without any directory specification).</returns>
-        string GetDataFileName(uint fileNumber)
+        internal static string GetDataFileName(uint fileNumber)
         {
             return String.Format("{0:X8}.txt", fileNumber);
         }
@@ -198,7 +195,6 @@ namespace Backsight.Editor
             if (silo == null)
                 throw new ArgumentException("Cannot find project " + projectName);
 
-
             // Read the project ID from the silo
             string projectGuid = silo.FindProjectId(projectName);
             if (projectGuid == null)
@@ -214,16 +210,39 @@ namespace Backsight.Editor
             string settingsFileName = Path.Combine(dataFolder, "settings.txt");
             ProjectSettings ps = ProjectSettings.CreateInstance(settingsFileName);
 
-            Settings.Default.LastProjectId = projectId;
+            Settings.Default.LastProjectName = projectName;
             Settings.Default.Save();
 
             // Now load the data
             bool isPublic = (silo == m_Public ? true : false);
             Project result = new Project(silo, isPublic, projectId, ps);
+
+            // The Load method will end up calling software that requires access to the
+            // current map model, so we need to set it no
+            // -- not sure if this is still true
+            EditingController.Current.SetMapModel(result.Model, null);
+
+            // Doing it here versus there is historical...
             LoadEdits(result);
+            result.Model.Load();
+
+            // Create a new editing session
+            uint sessionId = result.AllocateId();
+            NewSessionEvent s = new NewSessionEvent(sessionId)
+            {
+                UserName = System.Environment.UserName,
+                MachineName = System.Environment.MachineName,
+                StartTime = DateTime.Now,
+                EndTime = DateTime.Now
+            };
+
+            string sessionFile = Path.Combine(dataFolder, GetDataFileName(sessionId));
+            Session session = new Session(result, s, sessionFile);
+            session.WriteFile();
+            result.Model.WorkingSession = session;
+
             return result;
         }
-
 
         /// <summary>
         /// Loads a new map model
@@ -300,6 +319,28 @@ namespace Backsight.Editor
         {
             ProjectSilo silo = FindProjectSilo(projectName);
             return (silo != null);
+        }
+
+        internal void CloseProject(Project p)
+        {
+            Session s = p.Model.WorkingSession;
+
+            if (s != null)
+            {
+                string projectFolder = Path.Combine(m_Private.FolderName, p.Id.ToString());
+                string sessionFile = Path.Combine(projectFolder, GetDataFileName(s.Id));
+
+                if (s.OperationCount == 0)
+                {
+                    File.Delete(sessionFile);
+                }
+                else
+                {
+                    s.UpdateEndTime();
+                }
+            }
+
+            p.SaveSettings();
         }
     }
 }

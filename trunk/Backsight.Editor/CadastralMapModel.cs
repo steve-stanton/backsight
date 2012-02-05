@@ -300,21 +300,6 @@ namespace Backsight.Editor
              */
         }
 
-        internal void Close()
-        {
-            Session s = m_WorkingSession;
-            if (m_WorkingSession != null)
-            {
-                if (m_WorkingSession.OperationCount == 0)
-                    m_WorkingSession.Delete();
-                else
-                    m_WorkingSession.UpdateEndTime();
-
-                m_Sessions.Clear();
-                //Session.ClearCurrentSession();
-            }
-        }
-
         /// <summary>
         /// The sequence number of the last edit in the working session (0 if no edits have
         /// been performed)
@@ -1093,12 +1078,8 @@ namespace Backsight.Editor
         /// <summary>
         /// Loads this model from the database
         /// </summary>
-        /// <param name="job">The job to load</param>
-        internal void Load(ProjectFile job, User user)
+        internal void Load()
         {
-            m_Sessions.Clear();
-            job.LoadModel(this);
-
             Trace.Write("Attaching attributes...");
             AttributeData.Load(GetFeatureIds());
 
@@ -1131,12 +1112,13 @@ namespace Backsight.Editor
 
             // Initialize ID handling. This associates ID allocations with their
             // corresponding ID group.
+            /*
             if (m_IdManager != null)
-                m_IdManager.Load(this, job, user);
+                m_IdManager.Load(this, project, user);
 
             // Now go through the sessions to notify the ID manager about IDs
             // that have been used
-            /*
+
             foreach (Session s in m_Sessions)
             {
                 if (s.Job.JobId == job.JobId && s.User.UserId == user.UserId)
@@ -1228,6 +1210,7 @@ namespace Backsight.Editor
         internal Session WorkingSession
         {
             get { return m_WorkingSession; }
+            set { m_WorkingSession = value; }
         }
 
         /// <summary>

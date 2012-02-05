@@ -122,9 +122,6 @@
     <Compile Include="Database\DbUtil.cs" />
     <Compile Include="Database\IdAllocation.cs" />
     <Compile Include="Database\IdFree.cs" />
-    <Compile Include="Database\SessionData.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="DataField.cs" />
     <Compile Include="DeserializationFactory.cs" />
     <Compile Include="DxfWriter.cs" />
@@ -138,6 +135,7 @@
     <Compile Include="IdAllocationInfo.cs" />
     <Compile Include="IEditingJob.cs" />
     <Compile Include="Change.cs" />
+    <Compile Include="NewSessionEvent.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="ProjectDatabase.cs" />
     <Compile Include="ProjectFile.cs" />

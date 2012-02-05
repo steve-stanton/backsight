@@ -127,8 +127,6 @@ namespace Backsight.Editor.Forms
                 if (waitTime > 0)
                     System.Threading.Thread.Sleep(waitTime);
 
-                Settings.Default.LastProjectName = projectName;
-                Settings.Default.Save();
                 return p;
             }
 

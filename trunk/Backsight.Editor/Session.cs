@@ -15,13 +15,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
-
-using Backsight.Data;
-using Backsight.Editor.Database;
 
 namespace Backsight.Editor
 {
@@ -30,64 +25,6 @@ namespace Backsight.Editor
     /// </summary>
     class Session
     {
-        #region Static
-
-        /// <summary>
-        /// The current editing session
-        /// </summary>
-        //static Session s_CurrentSession = null;
-
-        /*
-        /// <summary>
-        /// The current editing session. During initial data loading, this may actually refer
-        /// to a historical session. To obtain the session to which brand new edits should
-        /// be appended, you should use the <see cref="WorkingSession"/> property.
-        /// </summary>
-        internal static Session CurrentSession
-        {
-            get { return s_CurrentSession; }
-        }
-        */
-
-        /*
-        internal static Session WorkingSession
-        {
-            get { return CadastralMapModel.Current.WorkingSession; }
-        }
-        */
-
-        /*
-        /// <summary>
-        /// Creates a new session and remembers it as the "current" session.
-        /// </summary>
-        /// <param name="model">The object model containing this session. The newly created session will
-        /// be appended to this model.</param>
-        /// <param name="sessionData">The information selected from the database</param>
-        /// <param name="user">The user who performed the session</param>
-        /// <param name="job">The job the session is associated with</param>
-        /// <returns>The created session (can also be subsequently accessed through the
-        /// <see cref="CurrentSession"/> property</returns>
-        internal static Session CreateCurrentSession(CadastralMapModel model, SessionData sessionData, IUser user, ProjectFile job)
-        {
-            s_CurrentSession = new Session(model, sessionData, user, job);
-            model.AddSession(s_CurrentSession);
-            return s_CurrentSession;
-        }
-        */
-
-        /*
-        /// <summary>
-        /// Nulls out the <see cref="CurrentSession"/> property. This should be called only when
-        /// the editing application is shuting down.
-        /// </summary>
-        internal static void ClearCurrentSession()
-        {
-            s_CurrentSession = null;
-        }
-        */
-
-        #endregion
-
         #region Class data
 
         /// <summary>
@@ -96,14 +33,14 @@ namespace Backsight.Editor
         readonly Project m_Project;
 
         /// <summary>
-        /// The user logged on for the session. 
+        /// The name of the file holding the session event data.
         /// </summary>
-        readonly string m_Who;
+        readonly string m_FileName;
 
         /// <summary>
         /// Information about the session (corresponds to a row in the <c>Sessions</c> table)
         /// </summary>
-        readonly SessionData m_Data;
+        readonly NewSessionEvent m_Data;
 
         /// <summary>
         /// Operations (if any) that were performed during the session. 
@@ -111,8 +48,9 @@ namespace Backsight.Editor
         readonly List<Operation> m_Operations;
 
         /// <summary>
-        /// The item count when the session was last saved
+        /// The item count when the session was last saved (as far as the user is concerned)
         /// </summary>
+        // This should probably be in the EditingController class
         uint m_LastSavedItem;
 
         #endregion
@@ -122,24 +60,19 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>Session</c> and defines it as the "current" session
         /// </summary>
-        /// <param name="model">The object model containing this session</param>
-        /// <param name="sessionData">The information selected from the database</param>
-        /// <param name="user">The user who performed the session</param>
         /// <param name="project">The project the session is part of</param>
-        /// <remarks>To be called only by <see cref="CreateCurrentSessoon"/></remarks>
-        Session(SessionData sessionData, string user, Project project)
+        /// <param name="sessionData">Information about the session</param>
+        /// <param name="sessionFile">The name of the file holding the session data</param>
+        internal Session(Project project, NewSessionEvent sessionData, string sessionFile)
         {
-            if (sessionData == null || user == null || project == null)
+            if (sessionData == null || project == null)
                 throw new ArgumentNullException();
 
-            //Debug.Assert(user.UserId == sessionData.UserId);
-            //Debug.Assert(job.JobId == sessionData.JobId);
-
             m_Data = sessionData;
-            m_Who = user;
+            m_FileName = sessionFile;
             m_Project = project;
             m_Operations = new List<Operation>();
-            m_LastSavedItem = 0;
+            m_LastSavedItem = sessionData.EditSequence;
         }
 
         #endregion
@@ -149,14 +82,14 @@ namespace Backsight.Editor
         /// </summary>
         internal uint Id
         {
-            get { return m_Data.Id; }
+            get { return m_Data.EditSequence; }
         }
 
         // TODO: I think the output was dedicated to a list of sessions to be shown
         // to the user - probably not a good idea
         public override string ToString()
         {
-            return String.Format("{0} ({1})", m_Data.StartTime, m_Who);
+            return String.Format("{0} ({1})", m_Data.StartTime, m_Data.UserName);
         }
 
         /// <summary>
@@ -168,43 +101,22 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Deletes information about this session from the database.
-        /// </summary>
-        internal void Delete()
-        {
-            m_Data.Delete();
-        }
-
-        /// <summary>
-        /// Updates the end-time (and item count) associated with this session
+        /// Updates the end-time associated with this session
         /// </summary>
         internal void UpdateEndTime()
         {
-            m_Data.UpdateEndTime();
+            m_Data.EndTime = DateTime.Now;
+            WriteFile();
         }
 
-        /*
         /// <summary>
-        /// Adds an editing operation to this session.
+        /// Serializes session data to file.
         /// </summary>
-        /// <param name="o">The operation to append to this session.</param>
-        void Add(Operation o) // move to SaveOperation?
+        internal void WriteFile()
         {
-            Debug.Assert(object.ReferenceEquals(s_CurrentSession,this));
-            m_Operations.Add(o);
+            string s = EditSerializer.GetSerializedString<Change>(DataField.Edit, m_Data);
+            File.WriteAllText(m_FileName, s);
         }
-        */
-
-        ///// <summary>
-        ///// Removes an editing operation from this session. This should be called
-        ///// if a new edit has failed to execute as expected.
-        ///// </summary>
-        ///// <param name="o">The edit that has failed</param>
-        ///// <returns>True if operation removed</returns>
-        //internal bool Remove(Operation o)
-        //{
-        //    return m_Operations.Remove(o);
-        //}
 
         /// <summary>
         /// Cuts an operation from this session.
@@ -229,7 +141,7 @@ namespace Backsight.Editor
         /// </summary>
         internal string User
         {
-            get { return m_Who; }
+            get { return m_Data.UserName; }
         }
 
         /// <summary>
@@ -246,7 +158,6 @@ namespace Backsight.Editor
         /// </summary>
         /// <returns>-1 if last operation failed to roll back. 0 if no operation to rollback.
         /// Otherwise the sequence number of the edit that was rolled back.</returns>
-        /// <exception cref="InvalidOperationException">If the session has been published</exception>
         internal int Rollback()
         {
             // Return if there is nothing to rollback.
@@ -297,11 +208,11 @@ namespace Backsight.Editor
         /// </summary>
         internal bool IsSaved
         {
-            get { return m_LastSavedItem == m_Data.NumItem; }
+            get { return m_LastSavedItem == m_Project.LastItemId; }
         }
 
         /// <summary>
-        /// Records the fact that this session has been "saved". This doesn't actually
+        /// Records the fact that this project has been "saved". This doesn't actually
         /// save anything, since that happens each time you perform an edit.
         /// </summary>
         internal void SaveChanges()
@@ -309,10 +220,11 @@ namespace Backsight.Editor
             // Update the number of the last saved item (as far as the user's session
             // is concerned). Note that m_Data.NumItem corresponds to what's already
             // been saved in the database (well, it should).
-            m_LastSavedItem = m_Data.NumItem;
+            Project p = EditingController.Current.Project;
+            m_LastSavedItem = p.LastItemId;
 
             // Save the project settings for good measure.
-            EditingController.Current.Project.SaveSettings();
+            p.SaveSettings();
         }
 
         /// <summary>
@@ -320,21 +232,21 @@ namespace Backsight.Editor
         /// </summary>
         internal void DiscardChanges()
         {
-            m_Data.DiscardEdits(m_LastSavedItem);
-        }
+            string dataFolder = Path.GetDirectoryName(m_FileName);
+            string[] files = Directory.GetFiles(dataFolder, "*.txt");
 
-        /*
-        /// <summary>
-        /// Reserves an item number for use with the current session. It is a lightweight
-        /// request, because it just increments a counter. The database gets updated
-        /// when an edit completes.
-        /// </summary>
-        /// <returns>The reserved item number</returns>
-        internal static uint ReserveNextItem()
-        {
-            return s_CurrentSession.m_Data.ReserveNextItem();
+            foreach (string s in files)
+            {
+                string name = Path.GetFileNameWithoutExtension(s);
+                uint fileNum;
+                if (UInt32.TryParse(name, out fileNum) && fileNum > m_LastSavedItem)
+                    File.Delete(s);
+            }
+
+            // Go back to the old item count (and update session time)
+            UpdateEndTime();
+            m_Project.SetLastItem(m_LastSavedItem);
         }
-        */
 
         /// <summary>
         /// Reserves an item number for use with the current session. It is a lightweight
@@ -344,7 +256,7 @@ namespace Backsight.Editor
         /// <returns>The reserved item number</returns>
         internal uint AllocateNextItem()
         {
-            return m_Data.ReserveNextItem();
+            return m_Project.AllocateId();
         }
 
         /// <summary>
@@ -461,30 +373,12 @@ namespace Backsight.Editor
             // Save the last edit in a file
             string editString = edit.GetEditString();
 
-            // Dump the file out (to help with debugging)
-            using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
-            {
-                sw.Write(editString);
-            }
+            string dataFolder = Path.GetDirectoryName(m_FileName);
+            string editFileName = Path.Combine(dataFolder, ProjectDatabase.GetDataFileName(m_Project.LastItemId));
+            File.WriteAllText(editFileName, editString);
 
-            Transaction.Execute(delegate
-            {
-                // Insert the edit
-                SqlCommand c = new SqlCommand();
-                c.Connection = Transaction.Connection.Value;
-                c.CommandText = "INSERT INTO [ced].[Edits] ([SessionId], [EditSequence], [Data])" +
-                                    " VALUES (@sessionId, @editSequence, @data)";
-                c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
-                c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));
-                c.Parameters.Add(new SqlParameter("@data", SqlDbType.Text));
-                c.Parameters[0].Value = CadastralMapModel.Current.WorkingSession.Id;
-                c.Parameters[1].Value = edit.EditSequence;
-                c.Parameters[2].Value = editString;
-                c.ExecuteNonQuery();
-
-                // Update the end-time associated with the session
-                m_Data.UpdateEndTime();
-            });
+            // Update the end-time associated with the session
+            UpdateEndTime();
 
             // Remember the edit as part of the session
             m_Operations.Add(edit);

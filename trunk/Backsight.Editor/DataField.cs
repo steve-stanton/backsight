@@ -127,5 +127,7 @@ namespace Backsight.Editor
         CoordinateSystem,
         When,
         LayerId,
+        StartTime,
+        EndTime,
     }
 }

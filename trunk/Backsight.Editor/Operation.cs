@@ -160,11 +160,6 @@ namespace Backsight.Editor
             get { return m_Session.MapModel; }
         }
 
-        //public void OnMove(Feature f)
-        //{
-        //    throw new NotImplementedException("Operation.OnMove");
-        //}
-
         /// <summary>
         /// Convenience method that marks a line as "moved" (first checks whether
         /// the specified line is null). This is normally called by implementations
