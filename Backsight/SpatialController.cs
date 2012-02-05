@@ -90,10 +90,10 @@ namespace Backsight
                 return m_Data;
             }
 
-            set { SetMapModel(value, null); }
+            //set { SetMapModel(value, null); }
         }
 
-        protected void SetMapModel(ISpatialModel model, IWindow initialDrawExtent)
+        public void SetMapModel(ISpatialModel model, IWindow initialDrawExtent)
         {
             m_Data = model;
             SetSelection(null);

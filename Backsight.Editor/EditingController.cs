@@ -141,14 +141,12 @@ namespace Backsight.Editor
                 m_Inverse = null;
             }
 
-            // Close down the model
-            CadastralMapModel cmm = this.CadastralMapModel;
-            if (cmm!=null)
-                cmm.Close();
-
             // Write out the project settings
             if (m_Project != null)
-                m_Project.SaveSettings();
+            {
+                new ProjectDatabase().CloseProject(m_Project);
+                m_Project = null;
+            }
         }
 
         public CadastralMapModel CadastralMapModel
@@ -1234,10 +1232,7 @@ namespace Backsight.Editor
 
             if (MessageBox.Show("Do you want to save changes?", "Changes not saved", MessageBoxButtons.YesNo)
                 == DialogResult.Yes)
-            {
-                m_Project.SaveSettings();
                 s.SaveChanges();
-            }
             else
                 s.DiscardChanges();
         }

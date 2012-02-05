@@ -132,7 +132,7 @@ namespace Backsight.Editor.Forms
             // If the model is currently empty, we'll want to draw an overview upon
             // completion of the import (otherwise we'll refresh using the currently
             // displayed extent).
-            bool wasEmpty = CadastralMapModel.Current.IsEmpty;
+            //bool wasEmpty = CadastralMapModel.Current.IsEmpty;
 
             ImportOperation i = null;
             EditingController c = EditingController.Current;
@@ -152,10 +152,11 @@ namespace Backsight.Editor.Forms
 
             // Re-assigning the current model has the desired effect of causing
             // an overview display...
-            if (wasEmpty)
-                c.MapModel = CadastralMapModel.Current;
-            else
-                c.RefreshAllDisplays();
+            //if (wasEmpty)
+            //    c.MapModel = CadastralMapModel.Current;
+            //else
+            //    c.RefreshAllDisplays();
+            c.RefreshAllDisplays();
 
             SaveTranslations();
         }

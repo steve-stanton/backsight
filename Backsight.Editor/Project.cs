@@ -14,11 +14,9 @@
 // </remarks>
 
 using System;
-using System.IO;
-
-using Backsight.Environment;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace Backsight.Editor
 {
@@ -107,6 +105,14 @@ namespace Backsight.Editor
         internal void SetLastItem(uint maxItemId)
         {
             m_LastItemId = maxItemId;
+        }
+
+        /// <summary>
+        /// The last internal ID value assigned by the project.
+        /// </summary>
+        internal uint LastItemId
+        {
+            get { return m_LastItemId; }
         }
 
         /// <summary>
@@ -214,7 +220,14 @@ namespace Backsight.Editor
             {
                 Change c = changes[i];
 
-                //if (c is StartSessionEvent)
+                if (c is NewSessionEvent)
+                {
+                    // where is the session file?
+                    //Session s = new Session(thus, (NewSessionEvent)c,
+
+                }
+
+
             }
         }
     }
