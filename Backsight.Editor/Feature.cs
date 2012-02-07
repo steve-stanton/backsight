@@ -46,10 +46,11 @@ namespace Backsight.Editor
         readonly Operation m_Creator;
 
         /// <summary>
-        /// The 1-based creation sequence of this feature within the session that
-        /// created it. A value of 0 means the sequence still needs to be defined.
+        /// The internal ID of this feature (holds the 1-based creation sequence
+        /// of this feature within the project that created it).
         /// </summary>
-        readonly uint m_SessionSequence;
+        /// <remarks>The sequence value could be 0 if not yet defined (not sure if that still applies).</remarks>
+        readonly InternalIdValue m_InternalId;
 
         /// <summary>
         /// The type of real-world object that the feature corresponds to.
@@ -89,14 +90,14 @@ namespace Backsight.Editor
         /// as part of the map model.
         /// </summary>
         /// <param name="creator">The editing operation that created the feature (never null).</param>
-        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
-        /// session that created it. Specify 0 for a temporary feature that should not be added
+        /// <param name="id">The internal of this feature within the
+        /// project that created it. Specify an internal ID value of 0 for a temporary feature that should not be added
         /// to the model.</param>
         /// <param name="entityType">The type of real-world object that the feature corresponds to.</param>
         /// <param name="featureId">The user-perceived ID (if any) for the feature. This is the ID that
         /// is used to associate the feature with any miscellaneous attributes
         /// that may be held in a database.</param>
-        protected Feature(Operation creator, uint sessionSequence, IEntity entityType, FeatureId featureId)
+        protected Feature(Operation creator, InternalIdValue id, IEntity entityType, FeatureId featureId)
         {
             if (creator == null)
                 throw new ArgumentNullException("Creating operation must be defined");
@@ -108,7 +109,7 @@ namespace Backsight.Editor
             //    throw new ArgumentException("Session sequence must be defined");
 
             m_Creator = creator;
-            m_SessionSequence = sessionSequence;
+            m_InternalId = id;
             m_What = entityType;
             m_References = null;
             m_Flag = 0;
@@ -119,7 +120,7 @@ namespace Backsight.Editor
                 m_Id.AddReference(this);
 
             // Remember this feature as part of the model
-            if (sessionSequence > 0)
+            if (!m_InternalId.IsEmpty)
                 m_Creator.MapModel.AddFeature(this);
         }
 
@@ -129,7 +130,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="f">Basic information for the feature (not null)</param>
         protected Feature(IFeature f)
-            : this(f.Creator, f.SessionSequence, f.EntityType, f.FeatureId)
+            : this(f.Creator, f.InternalId, f.EntityType, f.FeatureId)
         {
         }
 
@@ -142,7 +143,7 @@ namespace Backsight.Editor
         {
             m_Creator = editDeserializer.CurrentEdit;
             Debug.Assert(m_Creator != null);
-            ReadData(editDeserializer, out m_SessionSequence, out m_What, out m_Id);
+            ReadData(editDeserializer, out m_InternalId, out m_What, out m_Id);
             m_References = null;
             m_Flag = 0;
 
@@ -157,17 +158,8 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// The 1-based creation sequence of this feature within the session that
-        /// created it. A value of 0 means the sequence still needs to be defined
-        /// (during initial creation of features, the <see cref="Operation.Complete"/>
-        /// method is responsible for defining the sequence number).
+        /// A code that identifies the spatial object type of this feature.
         /// </summary>
-        public uint SessionSequence
-        {
-            get { return m_SessionSequence; }
-            //internal set { m_SessionSequence = value; }
-        }
-
         abstract public SpatialType SpatialType { get; }
 
         /// <summary>
@@ -176,39 +168,26 @@ namespace Backsight.Editor
         /// <returns>The <c>DataId</c> property</returns>
         public override string ToString()
         {
-            return DataId;
+            return m_InternalId.ToString();
         }
 
         /// <summary>
-        /// The formatted ID of the unique identifier for this feature
+        /// The internal ID of this feature (holds the 1-based creation sequence
+        /// of this feature within the project that created it).
         /// </summary>
-        public string DataId
-        {
-            get
-            {
-                uint sessionId = m_Creator.Session.Id;
-                return InternalIdValue.Format(sessionId, m_SessionSequence);
-            }
-        }
-
         public InternalIdValue InternalId
         {
-            get
-            {
-                uint sessionId = m_Creator.Session.Id;
-                return new InternalIdValue(sessionId, m_SessionSequence);
-            }
+            get { return m_InternalId; }
         }
 
         /// <summary>
-        /// Hash code (for use with Dictionary) is the session ID shifted over 16 bits,
-        /// OR'd with the 16 low-order bits of the item number. This will produce unique
-        /// values so long as the item number and session ID are both less than 65536.
+        /// Hash code (for use with Dictionary) is the hash code of the <see cref="InternalId"/> property
+        /// (unique within an editing project).
         /// </summary>
         /// <returns>The value to use for indexing IDs</returns>
         public override int GetHashCode()
         {
-            return ((int)(m_Creator.Session.Id<<16) | (int)(m_SessionSequence&0x0000FFFF));
+            return m_InternalId.GetHashCode();
         }
 
         /// <summary>
@@ -928,7 +907,7 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public virtual void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WriteUInt32(DataField.Id, m_SessionSequence);
+            editSerializer.WriteInternalId(DataField.Id, m_InternalId);
             editSerializer.WriteEntity(DataField.Entity, m_What);
             editSerializer.WriteFeatureId(m_Id);
         }
@@ -937,12 +916,12 @@ namespace Backsight.Editor
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="ss">The 1-based creation sequence of the feature within the session that created it.</param>
+        /// <param name="id">The internal ID of the feature within the project that created it.</param>
         /// <param name="entity">The type of real-world object that the feature corresponds to.</param>
         /// <param name="fid">The ID of the feature (may be null).</param>
-        static void ReadData(EditDeserializer editDeserializer, out uint ss, out IEntity entity, out FeatureId fid)
+        static void ReadData(EditDeserializer editDeserializer, out InternalIdValue id, out IEntity entity, out FeatureId fid)
         {
-            ss = editDeserializer.ReadUInt32(DataField.Id);
+            id = editDeserializer.ReadInternalId(DataField.Id);
             entity = editDeserializer.ReadEntity(DataField.Entity);
             fid = editDeserializer.ReadFeatureId();
         }

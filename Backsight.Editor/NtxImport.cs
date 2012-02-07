@@ -221,8 +221,8 @@ namespace Backsight.Editor
             // Determine which way the arc is directed
             bool iscw = LineStringGeometry.IsClockwise(pts, center);
 
-            uint ss = CadastralMapModel.Current.WorkingSession.AllocateNextItem();
-            ArcFeature arc = new ArcFeature(creator, ss, what, c, ps, pe, iscw);
+            InternalIdValue id = CadastralMapModel.Current.WorkingSession.AllocateNextId();
+            ArcFeature arc = new ArcFeature(creator, id, what, c, ps, pe, iscw);
 
             if (line.IsTopologicalArc)
                 arc.SetTopology(true);
@@ -325,12 +325,12 @@ namespace Backsight.Editor
                 pts = CheckMultiSegmentEnds(pts);
 
             LineFeature result;
-            uint ss = CadastralMapModel.Current.WorkingSession.AllocateNextItem();
+            InternalIdValue id = CadastralMapModel.Current.WorkingSession.AllocateNextId();
 
             if (pts.Length==2)
-                result = new LineFeature(creator, ss, what, ps, pe);
+                result = new LineFeature(creator, id, what, ps, pe);
             else
-                result = new LineFeature(creator, ss, what, ps, pe, pts);
+                result = new LineFeature(creator, id, what, ps, pe, pts);
 
             if (line.IsTopologicalArc)
                 result.SetTopology(true);
@@ -414,8 +414,8 @@ namespace Backsight.Editor
             if (result==null)
             {
                 IEntity e = creator.MapModel.DefaultPointType;
-                uint ss = CadastralMapModel.Current.WorkingSession.AllocateNextItem();
-                result = new PointFeature(creator, ss, e, p);
+                InternalIdValue id = CadastralMapModel.Current.WorkingSession.AllocateNextId();
+                result = new PointFeature(creator, id, e, p);
                 m_Index.Add(result);
                 m_Result.Add(result);
             }
@@ -525,8 +525,8 @@ namespace Backsight.Editor
                 // Create key text
                 string keystr = name.Text;
                 KeyTextGeometry kt = new KeyTextGeometry(topleft, font, height, width, rotation);
-                uint ss = CadastralMapModel.Current.WorkingSession.AllocateNextItem();
-                result = new TextFeature(creator, ss, entity, kt);
+                InternalIdValue id = CadastralMapModel.Current.WorkingSession.AllocateNextId();
+                result = new TextFeature(creator, id, entity, kt);
                 kt.Label = result;
                 result.SetTopology(true);
 
@@ -544,8 +544,8 @@ namespace Backsight.Editor
             {
                 // Create a miscellaneous text label.
                 MiscTextGeometry mt = new MiscTextGeometry(text, topleft, font, height, width, rotation);
-                uint ss = CadastralMapModel.Current.WorkingSession.AllocateNextItem();
-                result = new TextFeature(creator, ss, entity, mt);
+                InternalIdValue id = CadastralMapModel.Current.WorkingSession.AllocateNextId();
+                result = new TextFeature(creator, id, entity, mt);
                 result.SetTopology(false);
             }
 
@@ -564,8 +564,8 @@ namespace Backsight.Editor
             if (g.Easting.Microns==0 && g.Northing.Microns==0)
                 return null;
 
-            uint ss = CadastralMapModel.Current.WorkingSession.AllocateNextItem();
-            PointFeature p = new PointFeature(creator, ss, what, g);
+            InternalIdValue id = CadastralMapModel.Current.WorkingSession.AllocateNextId();
+            PointFeature p = new PointFeature(creator, id, what, g);
             /*
 
 	static LOGICAL warned=FALSE;	// debug

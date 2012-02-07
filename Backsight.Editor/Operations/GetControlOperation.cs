@@ -261,7 +261,8 @@ namespace Backsight.Editor.Operations
 
                 // Locate the specific point that was modified
                 string id = data.GetValue<string>(DataField.Id);
-                PointFeature p = this.MapModel.Find<PointFeature>(id);
+                InternalIdValue iid = new InternalIdValue(id);
+                PointFeature p = this.MapModel.Find<PointFeature>(iid);
 
                 double x = data.ExchangeValue<double>(DataField.X, p.Easting.Meters);
                 double y = data.ExchangeValue<double>(DataField.Y, p.Northing.Meters);

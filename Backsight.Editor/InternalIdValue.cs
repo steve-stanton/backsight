@@ -19,15 +19,8 @@ namespace Backsight.Editor
 {
     /// <written by="Steve Stanton" on="22-AUG-2007" />
     /// <summary>
-    /// An internal ID is used by Backsight as a persistent handle for objects, in situations
-    /// where the data needs to be stored in something like a relational database. It is expected
-    /// to be globally unique (within the world known to Backsight). To allow for this, the ID
-    /// consists of two parts:
-    /// <para/>
-    /// 1. A session ID is a number that identifies a specific editing session.
-    /// <para/>
-    /// 2. An item number provides the item creation sequence within the session.
-    /// The session itself is regarded as item number 0.
+    /// An internal ID is used by Backsight as a persistent handle for objects. For each project, ID
+    /// values start with number 1.
     /// <para/>
     /// An internal ID should not be confused with the <see cref="FeatureId"/> class. An
     /// internal ID will generally be hidden from users, whereas <c>FeatureId</c> is a user-
@@ -35,50 +28,16 @@ namespace Backsight.Editor
     /// </summary>
     struct InternalIdValue : IEquatable<InternalIdValue>, IComparable<InternalIdValue>
     {
-        #region Static
-
         /// <summary>
-        /// Parses a string that was generated using <see cref="Format"/>
+        /// An undefined internal ID.
         /// </summary>
-        /// <param name="s">The string to parse</param>
-        /// <param name="sessionId">The ID of the session in which an item was created</param>
-        /// <param name="creationSequence">The sequence number indicating the order in which
-        /// the item was created in the session</param>
-        /// <exception cref="ArgumentException">If the supplied string is not in the correct format</exception>
-        internal static void Parse(string s, out uint sessionId, out uint creationSequence)
-        {
-            int cIndex = s.IndexOf(':');
-            if (cIndex < 0)
-                throw new ArgumentException();
-
-            sessionId = uint.Parse(s.Substring(0, cIndex));
-            creationSequence = uint.Parse(s.Substring(cIndex+1));
-        }
-
-        /// <summary>
-        /// A formatted representation of an internal ID
-        /// </summary>
-        /// <param name="sessionId">The ID of the session in which an item was created</param>
-        /// <param name="creationSequence">The sequence number indicating the order in which
-        /// the item was created in the session</param>
-        /// <returns>The formatted version of an internal ID</returns>
-        internal static string Format(uint sessionId, uint creationSequence)
-        {
-            return String.Format("{0}:{1}", sessionId, creationSequence);
-        }
-
-        #endregion
+        public static readonly InternalIdValue Empty = new InternalIdValue(0);
 
         #region data
 
         /// <summary>
-        /// The 1-based sequence number of the session.
-        /// </summary>
-        uint m_Session;
-
-        /// <summary>
-        /// The sequence number of the item (0 if the ID refers to the session).
-        /// For each distinct session, the values start at 1.
+        /// The sequence number of the item (0 if the ID is undefined).
+        /// For each editing project, the values start at 1.
         /// </summary>
         uint m_Item;
 
@@ -87,18 +46,11 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Creates a new <c>InternalIdValue</c> for an editing session.
+        /// Creates a new <c>InternalIdValue</c>.
         /// </summary>
-        /// <param name="sessionId">An ID for the editing session</param>
-        /// <param name="itemSequence">The order in which an associated session was instantiated.
-        /// Must be greater than zero.
-        /// </param>
-        internal InternalIdValue(uint sessionId, uint itemSequence)
+        /// <param name="itemSequence">A sequence number for an item within an editing project</param>
+        internal InternalIdValue(uint itemSequence)
         {
-            if (sessionId==0)
-                throw new ArgumentOutOfRangeException("Session ID must be greater than zero");
-
-            m_Session = sessionId;
             m_Item = itemSequence;
         }
 
@@ -109,22 +61,13 @@ namespace Backsight.Editor
         /// by a call to <see cref="InternalIdValue.ToString"/>)</param>
         internal InternalIdValue(string s)
         {
-            Parse(s, out m_Session, out m_Item);
+            m_Item = uint.Parse(s);
         }
 
         #endregion
 
         /// <summary>
-        /// The sequence number of the session
-        /// </summary>
-        internal uint SessionId
-        {
-            get { return m_Session; }
-            set { m_Session = value; }
-        }
-
-        /// <summary>
-        /// The creation sequence number of the item (0 if the ID refers to the session).
+        /// The creation sequence number of the item (increasing through the lifetime of a project).
         /// </summary>
         internal uint ItemSequence
         {
@@ -133,40 +76,36 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Is this an "empty" ID (with session ID and item sequence both zero).
+        /// Is this an "empty" ID (with item sequence of zero).
         /// </summary>
         internal bool IsEmpty
         {
-            get { return (m_Session==0 && m_Item==0); }
+            get { return (m_Item==0); }
         }
 
         /// <summary>
-        /// Override returns a concatenation of the job registration ID & the
-        /// creation sequence value.
+        /// Override returns the creation sequence value.
         /// </summary>
-        /// <returns>A string taking the form #:#, where the number prior to the colon is the
-        /// session ID, and the number after the colon is the item sequence.</returns>
+        /// <returns>A string version of the item sequence number.</returns>
         public override string ToString()
         {
-            return Format(m_Session, m_Item);
+            return m_Item.ToString();
         }
 
         /// <summary>
-        /// Hash code (for use with Dictionary) is the session ID shifted over 16 bits,
-        /// OR'd with the 16 low-order bits of the item number. This will produce unique
-        /// values so long as the item number and session ID are both less than 65536.
+        /// Hash code (for use with Dictionary) is the value of the internal ID, cast to an int.
         /// </summary>
         /// <returns>The value to use for indexing IDs</returns>
         public override int GetHashCode()
         {
-            return ((int)(m_Session<<16) | (int)(m_Item&0x0000FFFF));
+            return (int)m_Item;
         }
 
         #region IEquatable<InternalIdValue> Members
 
         public bool Equals(InternalIdValue that)
         {
-            return (this.m_Session==that.m_Session && this.m_Item==that.m_Item);
+            return (this.m_Item == that.m_Item);
         }
 
         #endregion
@@ -185,11 +124,7 @@ namespace Backsight.Editor
         /// </returns>
         public int CompareTo(InternalIdValue that)
         {
-            int order = this.m_Session.CompareTo(that.m_Session);
-            if (order == 0)
-                order = this.m_Item.CompareTo(that.m_Item);
-
-            return order;
+            return this.m_Item.CompareTo(that.m_Item);
         }
 
         #endregion
@@ -203,7 +138,7 @@ namespace Backsight.Editor
         /// or equal to the second ID.</returns>
         public static bool operator<(InternalIdValue a, InternalIdValue b)
         {
-            return (a.CompareTo(b) < 0);
+            return (a.m_Item < b.m_Item);
         }
 
         /// <summary>
@@ -215,7 +150,7 @@ namespace Backsight.Editor
         /// or equal to the second ID.</returns>
         public static bool operator>(InternalIdValue a, InternalIdValue b)
         {
-            return (a.CompareTo(b) > 0);
+            return (a.m_Item > b.m_Item);
         }
     }
 }

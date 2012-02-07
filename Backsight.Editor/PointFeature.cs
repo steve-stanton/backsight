@@ -49,12 +49,11 @@ namespace Backsight.Editor
         /// with any other point.
         /// </summary>
         /// <param name="creator">The operation that created the feature (not null)</param>
-        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
-        /// session that created it.</param>
+        /// <param name="id">The internal ID of this feature within the project that created it.</param>
         /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="g">The geometry for the point (may be null)</param>
-        internal PointFeature(Operation creator, uint sessionSequence, IEntity e, PointGeometry g)
-            : base(creator, sessionSequence, e, null)
+        internal PointFeature(Operation creator, InternalIdValue id, IEntity e, PointGeometry g)
+            : base(creator, id, e, null)
         {
             if (g == null)
                 m_Geom = null;
@@ -330,7 +329,7 @@ namespace Backsight.Editor
         /// <returns>Formatted position of this point.</returns>
         public override string ToString()
         {
-            return String.Format("{0} {1}", DataId, m_Geom.ToString());
+            return String.Format("{0} {1}", InternalId, m_Geom.ToString());
         }
 
         /// <summary>

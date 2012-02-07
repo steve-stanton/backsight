@@ -699,7 +699,7 @@ namespace Backsight.Editor.Forms
         internal static string GetPointString(PointFeature p)
         {
             string s = p.FormattedKey;
-            return (s.Length == 0 ? p.DataId : s);
+            return (s.Length == 0 ? p.InternalId.ToString() : s);
         }
     }
 }

@@ -175,13 +175,13 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Loads ID information for the specified job and user. This should be called
+        /// Loads ID information for the specified project and user. This should be called
         /// after edits have been loaded into the map model.
         /// </summary>
         /// <param name="map">The loaded model</param>
-        /// <param name="job">The job to load</param>
+        /// <param name="project">The project to load</param>
         /// <param name="user">The user who is doing the load</param>
-        internal void Load(CadastralMapModel map, ProjectFile job, User user)
+        internal void Load(CadastralMapModel map, Project project, User user)
         {
             // Grab all defined allocations for the job and user
             //IdAllocation[] allocs = IdAllocation.FindByJobUser(job, user);

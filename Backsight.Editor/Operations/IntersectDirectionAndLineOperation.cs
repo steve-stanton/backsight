@@ -542,10 +542,10 @@ namespace Backsight.Editor.Operations
                 editSerializer.WritePersistent<FeatureStub>(DataField.DirLine, new FeatureStub(m_DirLine));
 
             if (m_LineA != null)
-                editSerializer.WriteString(DataField.SplitBefore, m_LineA.DataId);
+                editSerializer.WriteInternalId(DataField.SplitBefore, m_LineA.InternalId);
 
             if (m_LineB != null)
-                editSerializer.WriteString(DataField.SplitAfter, m_LineB.DataId);
+                editSerializer.WriteInternalId(DataField.SplitAfter, m_LineB.InternalId);
         }
 
         /// <summary>

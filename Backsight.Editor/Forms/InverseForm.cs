@@ -167,7 +167,7 @@ namespace Backsight.Editor.Forms
                 return String.Empty;
 
             string result = p.FormattedKey;
-            return (result.Length > 0 ? result : p.DataId);
+            return (result.Length > 0 ? result : p.InternalId.ToString());
         }
 
         /// <summary>

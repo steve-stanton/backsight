@@ -80,7 +80,7 @@ namespace Backsight.Editor
         {
             if (oldValue != null || newValue != null)
             {
-                if (oldValue == null || newValue == null || oldValue.DataId.Equals(newValue.DataId) == false)
+                if (oldValue == null || newValue == null || oldValue.InternalId.Equals(newValue.InternalId) == false)
                 {
                     Add(new UpdateItem(field, newValue));
                     return true;

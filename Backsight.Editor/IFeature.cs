@@ -31,10 +31,10 @@ namespace Backsight.Editor
         Operation Creator { get; }
 
         /// <summary>
-        /// The 1-based creation sequence of this feature within the session that
-        /// created it.
+        /// The internal ID of this feature (holds the 1-based creation sequence
+        /// of this feature within the project that created it).
         /// </summary>
-        uint SessionSequence { get; }
+        InternalIdValue InternalId { get; }
 
         /// <summary>
         /// The type of real-world object that the feature corresponds to.

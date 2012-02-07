@@ -118,6 +118,7 @@ namespace Backsight.Editor
             File.WriteAllText(m_FileName, s);
         }
 
+        /*
         /// <summary>
         /// Cuts an operation from this session.
         /// </summary>
@@ -135,6 +136,7 @@ namespace Backsight.Editor
 
             return (index>=0);
         }
+        */
 
         /// <summary>
         /// The login name of the user logged on for the session. 
@@ -176,6 +178,7 @@ namespace Backsight.Editor
                 return -1;
 
             m_Operations.RemoveAt(index);
+            this.MapModel.RemoveEdit(op);
             return (int)editSequence;
         }
 
@@ -249,14 +252,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Reserves an item number for use with the current session. It is a lightweight
-        /// request, because it just increments a counter. The database gets updated
+        /// Allocates the next available internal ID for the project that this session belongs to.
+        /// This is a lightweight request, because it just increments a counter. The database gets updated
         /// when an edit completes.
         /// </summary>
-        /// <returns>The reserved item number</returns>
-        internal uint AllocateNextItem()
+        /// <returns>The allocated internal ID</returns>
+        internal InternalIdValue AllocateNextId()
         {
-            return m_Project.AllocateId();
+            return new InternalIdValue(m_Project.AllocateId());
         }
 
         /// <summary>
@@ -300,16 +303,6 @@ namespace Backsight.Editor
         internal DateTime EndTime
         {
             get { return m_Data.EndTime; }
-        }
-
-        /// <summary>
-        /// Attempts to locate an edit within this session
-        /// </summary>
-        /// <param name="editSequence">The sequence number of the edit to look for</param>
-        /// <returns>The corresponding editing operation (null if not found)</returns>
-        internal Operation FindOperation(uint editSequence)
-        {
-            return m_Operations.Find(delegate(Operation o) { return o.EditSequence == editSequence; });
         }
 
         /// <summary>
@@ -381,7 +374,18 @@ namespace Backsight.Editor
             UpdateEndTime();
 
             // Remember the edit as part of the session
+            AddOperation(edit);
+        }
+
+        /// <summary>
+        /// Remembers an edit created as part of this editing session (and index as part of
+        /// the map model that contains this session).
+        /// </summary>
+        /// <param name="edit"></param>
+        internal void AddOperation(Operation edit)
+        {
             m_Operations.Add(edit);
+            MapModel.AddEdit(edit);
         }
     }
 }

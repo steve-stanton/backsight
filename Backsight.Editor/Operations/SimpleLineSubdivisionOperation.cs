@@ -277,15 +277,14 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Creates a section for this subdivision op.
         /// </summary>
-        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
-        /// session that created it.</param>
+        /// <param name="id">The internal of this feature within the project that created it.</param>
         /// <param name="start">The point at the start of the section</param>
         /// <param name="end">The point at the end of the section</param>
         /// <returns>The created section</returns>
-        internal LineFeature MakeSection(uint sessionSequence, PointFeature start, PointFeature end)
+        internal LineFeature MakeSection(InternalIdValue id, PointFeature start, PointFeature end)
         {
             SectionGeometry section = new SectionGeometry(m_Line, start, end);
-            LineFeature newLine = m_Line.MakeSubSection(this, sessionSequence, section);
+            LineFeature newLine = m_Line.MakeSubSection(this, id, section);
             //MapModel.EditingIndex.Add(newLine);
             return newLine;
         }
@@ -488,8 +487,8 @@ LOGICAL CePointOnLine::GetCircles ( CeObjectList& clist
             editSerializer.WritePersistent<Distance>(DataField.Distance, m_Distance);
             editSerializer.WriteBool(DataField.EntryFromEnd, m_IsFromEnd);
             editSerializer.WritePersistent<FeatureStub>(DataField.NewPoint, new FeatureStub(m_NewPoint));
-            editSerializer.WriteString(DataField.NewLine1, m_NewLine1.DataId);
-            editSerializer.WriteString(DataField.NewLine2, m_NewLine2.DataId);
+            editSerializer.WriteInternalId(DataField.NewLine1, m_NewLine1.InternalId);
+            editSerializer.WriteInternalId(DataField.NewLine2, m_NewLine2.InternalId);
         }
     }
 }

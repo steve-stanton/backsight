@@ -106,7 +106,7 @@ namespace Backsight.Editor.Forms
                 Project p = pd.OpenProject(projectName);
 
                 // Remember the project the user is now working with
-                EditingController.Current.SetProject(p);
+                //EditingController.Current.SetProject(p);
 
                 // Update splashscreen metrics. This is perhaps a little premature, since
                 // the original splash screen implementation waited until the screen had
@@ -126,6 +126,23 @@ namespace Backsight.Editor.Forms
                 int waitTime = (int)(2000 - sw.ElapsedMilliseconds);
                 if (waitTime > 0)
                     System.Threading.Thread.Sleep(waitTime);
+
+                // Need to first initialize overview extent before defining center and scale
+                // ...but first pick up the last draw info before defining the overview extent (really,
+                // should modify SetMapModel so it accepts the DrawInfo rather than an extent).
+                // ...I think initialization of the overview extent will adjust the last draw
+                // data that's saved in the project settings
+
+                DrawInfo drawInfo = p.Settings.LastDraw;
+                EditingController.Current.SetMapModel(p.Model, null);
+
+                if (drawInfo.MapScale > 0)
+                {
+                    double cx = drawInfo.CenterX;
+                    double cy = drawInfo.CenterY;
+                    double mapScale = drawInfo.MapScale;
+                    (EditingController.Current.ActiveDisplay as MapControl).SetCenterAndScale(cx, cy, mapScale, true);
+                }
 
                 return p;
             }

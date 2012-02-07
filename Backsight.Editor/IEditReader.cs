@@ -90,6 +90,13 @@ namespace Backsight.Editor
         DateTime ReadDateTime(string name);
 
         /// <summary>
+        /// Reads an internal ID.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The ID that was read.</returns>
+        InternalIdValue ReadInternalId(string name);
+
+        /// <summary>
         /// Reads any text that precedes the data values for an object.
         /// </summary>
         void ReadBeginObject();

@@ -204,6 +204,16 @@ namespace Backsight.Editor
             WriteValue(name, value.ToString("s"));
         }
 
+        /// <summary>
+        /// Writes an internal ID to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="id">The internal ID to write</param>
+        public void WriteInternalId(string name, InternalIdValue id)
+        {
+            WriteValue(name, id.ToString());
+        }
+
         #endregion
 
         /// <summary>

@@ -387,7 +387,7 @@ namespace Backsight.Editor
                 {
                     IDivider bad = GetDuplicateFace(result).Divider;
                     string msg = String.Format("Topology.GetPolygonDividers - Duplicate face from ({0}) to ({1}) [Line {2}]",
-                                                bad.From.ToString(), bad.To.ToString(), bad.Line.DataId);
+                                                bad.From.ToString(), bad.To.ToString(), bad.Line.InternalId);
                     DumpFaces(msg, result);
                     throw new Exception(msg);
                 }

@@ -188,8 +188,8 @@ namespace Backsight.Editor
         internal void LoadDataFiles(string[] files)
         {
             Trace.Write("Reading data...");
-            List<Change> changes = new List<Change>(files.Length);
             EditDeserializer ed = new EditDeserializer(m_MapModel);
+            Session lastSession = null;
 
             foreach (string editFile in files)
             {
@@ -202,33 +202,28 @@ namespace Backsight.Editor
                     {
                         ed.SetReader(er);
                         Change edit = Change.Deserialize(ed);
-                        changes.Add(edit);
+
+                        if (edit is NewProjectEvent)
+                        {
+                            m_ProjectInfo = (NewProjectEvent)edit;
+                        }
+                        else if (edit is NewSessionEvent)
+                        {
+                            lastSession = new Session(this, (NewSessionEvent)edit, editFile);
+                            m_MapModel.AddSession(lastSession);
+                        }
+                        else
+                        {
+                            Debug.Assert(edit is Operation);
+                            Debug.Assert(lastSession != null);
+                            lastSession.AddOperation((Operation)edit);
+                        }
                     }
                 }
             }
 
-            if (changes.Count == 0)
-                throw new ApplicationException("Could not deserialize any change events");
-
-            // The very first change should be the NewProjectEvent
-            m_ProjectInfo = (changes[0] as NewProjectEvent);
             if (m_ProjectInfo == null)
-                throw new ApplicationException("First event is not the NewProjectEvent");
-
-            // Load session objects
-            for (int i = 1; i < changes.Count; i++)
-            {
-                Change c = changes[i];
-
-                if (c is NewSessionEvent)
-                {
-                    // where is the session file?
-                    //Session s = new Session(thus, (NewSessionEvent)c,
-
-                }
-
-
-            }
+                throw new ApplicationException("Could not locate the project creation event");
         }
     }
 }

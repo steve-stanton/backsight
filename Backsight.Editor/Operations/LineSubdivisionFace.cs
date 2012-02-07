@@ -362,7 +362,7 @@ namespace Backsight.Editor.Operations
             {
                 result = m_Sections.Find(delegate(LineFeature t)
                 {
-                    return (t.DataId == dataId);
+                    return (t.InternalId.ToString() == dataId);
                 });
             }
 

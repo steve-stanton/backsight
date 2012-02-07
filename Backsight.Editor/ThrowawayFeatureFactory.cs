@@ -46,7 +46,7 @@ namespace Backsight.Editor
         /// <returns>The new feature (never null)</returns>
         internal override PointFeature CreatePointFeature(string itemName)
         {
-            IFeature f = new FeatureStub(this.Creator, 0, this.PointType, null);
+            IFeature f = new FeatureStub(this.Creator, InternalIdValue.Empty, this.PointType, null);
             return new PointFeature(f, null);
         }
 
@@ -61,7 +61,7 @@ namespace Backsight.Editor
         internal override LineFeature CreateSection(string itemName, LineFeature baseLine,
                                                             PointFeature from, PointFeature to)
         {
-            IFeature f = new FeatureStub(this.Creator, 0, baseLine.EntityType, null);
+            IFeature f = new FeatureStub(this.Creator, InternalIdValue.Empty, baseLine.EntityType, null);
             return new LineFeature(f, baseLine, from, to, false);
         }
 
