@@ -484,16 +484,16 @@ namespace Backsight.Editor.Operations
             editSerializer.WritePersistent<FeatureStub>(DataField.To, new FeatureStub(m_Intersection));
 
             if (m_Line1a != null)
-                editSerializer.WriteString(DataField.SplitBefore1, m_Line1a.DataId);
+                editSerializer.WriteInternalId(DataField.SplitBefore1, m_Line1a.InternalId);
 
             if (m_Line1b != null)
-                editSerializer.WriteString(DataField.SplitAfter1, m_Line1b.DataId);
+                editSerializer.WriteInternalId(DataField.SplitAfter1, m_Line1b.InternalId);
 
             if (m_Line2a != null)
-                editSerializer.WriteString(DataField.SplitBefore2, m_Line2a.DataId);
+                editSerializer.WriteInternalId(DataField.SplitBefore2, m_Line2a.InternalId);
 
             if (m_Line2b != null)
-                editSerializer.WriteString(DataField.SplitAfter2, m_Line2b.DataId);
+                editSerializer.WriteInternalId(DataField.SplitAfter2, m_Line2b.InternalId);
         }
 
         /// <summary>

@@ -44,7 +44,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeserializationFactory"/> class that
-        /// contains the supplied feature stubs (each stub will be identified by the <see cref="FeatureStub.DataId"/>
+        /// contains the supplied feature stubs (each stub will be identified by the <see cref="FeatureStub.InternalId"/>
         /// property).
         /// </summary>
         /// <param name="op">The editing operation that needs to create features (not null).</param>
@@ -53,7 +53,7 @@ namespace Backsight.Editor
             : base(op)
         {
             foreach (FeatureStub stub in stubs)
-                AddFeatureDescription(stub.DataId, stub);
+                AddFeatureDescription(stub.InternalId.ToString(), stub);
         }
 
         #endregion
@@ -76,9 +76,8 @@ namespace Backsight.Editor
             if (dataId == null)
                 return false;
 
-            uint sessionId, ss;
-            InternalIdValue.Parse(dataId, out sessionId, out ss);
-            AddFeatureDescription(field, new FeatureStub(Creator, ss, parentLine.EntityType, null));
+            InternalIdValue id = new InternalIdValue(dataId);
+            AddFeatureDescription(field, new FeatureStub(Creator, id, parentLine.EntityType, null));
             return true;
         }
 

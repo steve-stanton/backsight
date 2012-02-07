@@ -412,11 +412,11 @@ namespace Backsight.Editor
         /// </remarks>
         internal T ReadFeatureRef<T>(DataField field) where T : Feature
         {
-            string dataId = m_Reader.ReadString(field.ToString());
-            if (dataId == null)
+            InternalIdValue id = m_Reader.ReadInternalId(field.ToString());
+            if (id.IsEmpty)
                 return default(T);
 
-            return m_MapModel.Find<T>(dataId);
+            return m_MapModel.Find<T>(id);
         }
 
         /// <summary>
@@ -432,7 +432,8 @@ namespace Backsight.Editor
 
             for (int i=0; i<result.Length; i++)
             {
-                result[i] = m_MapModel.Find<T>(ids[i]);
+                InternalIdValue id = new InternalIdValue(ids[i]);
+                result[i] = m_MapModel.Find<T>(id);
                 Debug.Assert(result[i] != null);                 
             }
 
@@ -616,7 +617,6 @@ namespace Backsight.Editor
         /// <summary>
         /// Reads a timestamp.
         /// </summary>
-        /// <param name="field"></param>
         /// <param name="field">A tag associated with the value</param>
         /// <returns>The timestamp that was read</returns>
         internal DateTime ReadDateTime(DataField field)
@@ -624,6 +624,15 @@ namespace Backsight.Editor
             return m_Reader.ReadDateTime(field.ToString());
         }
 
+        /// <summary>
+        /// Reads an internal ID.
+        /// </summary>
+        /// <param name="field">A tag associated with the value</param>
+        /// <returns>The ID that was read</returns>
+        internal InternalIdValue ReadInternalId(DataField field)
+        {
+            return m_Reader.ReadInternalId(field.ToString());
+        }
 
         /// <summary>
         /// Checks whether the next data item has a specific field tag. Make a call to any

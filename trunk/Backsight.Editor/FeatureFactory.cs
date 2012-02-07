@@ -237,8 +237,8 @@ namespace Backsight.Editor
 
             if (f == null)
             {
-                uint ss = MapModel.WorkingSession.AllocateNextItem();
-                result = new PointFeature(m_Operation, ss, PointType, null);
+                InternalIdValue id = MapModel.WorkingSession.AllocateNextId();
+                result = new PointFeature(m_Operation, id, PointType, null);
                 result.SetNextId();
             }
             else
@@ -277,8 +277,8 @@ namespace Backsight.Editor
 
             if (f == null)
             {
-                uint ss = MapModel.WorkingSession.AllocateNextItem();
-                result = new LineFeature(m_Operation, ss, LineType, from, to);
+                InternalIdValue id = MapModel.WorkingSession.AllocateNextId();
+                result = new LineFeature(m_Operation, id, LineType, from, to);
                 result.SetNextId();
             }
             else
@@ -317,8 +317,8 @@ namespace Backsight.Editor
 
             if (f == null)
             {
-                uint ss = MapModel.WorkingSession.AllocateNextItem();
-                result = new ArcFeature(m_Operation, ss, LineType, null, from, to, true);
+                InternalIdValue id = MapModel.WorkingSession.AllocateNextId();
+                result = new ArcFeature(m_Operation, id, LineType, null, from, to, true);
                 result.SetNextId();
             }
             else
@@ -342,8 +342,8 @@ namespace Backsight.Editor
             IFeature f = FindFeatureDescription(itemName);
             if (f == null)
             {
-                uint ss = MapModel.WorkingSession.AllocateNextItem();
-                f = new FeatureStub(m_Operation, ss, baseLine.EntityType, baseLine.FeatureId);
+                InternalIdValue id = MapModel.WorkingSession.AllocateNextId();
+                f = new FeatureStub(m_Operation, id, baseLine.EntityType, baseLine.FeatureId);
             }
 
             return new LineFeature(f, baseLine, from, to, baseLine.IsTopological);
@@ -404,7 +404,7 @@ namespace Backsight.Editor
                 throw new InvalidOperationException();
 
             SectionGeometry section = new SectionGeometry(baseLine, from, to);
-            return baseLine.MakeSubSection(m_Operation, f.SessionSequence, section);
+            return baseLine.MakeSubSection(m_Operation, f.InternalId, section);
         }
 
         /// <summary>

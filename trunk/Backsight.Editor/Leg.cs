@@ -88,19 +88,15 @@ namespace Backsight.Editor
         /// features don't have any geometry.
         /// </summary>
         /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="maxSequence">The highest sequence number assigned to features
-        /// preceding this leg</param>
         /// <param name="startPoint">The point (if any) at the start of this leg. May be
         /// null in a situation where the preceding leg ended with an "omit point" directive.</param>
         /// <param name="lastPoint">The point that should be used for the very end
         /// of the leg (specify null if a point should be created at the end of the leg).</param>
         /// <returns>The sequence number assigned to the last feature that was created</returns>
-        internal uint CreateFeatures(FeatureFactory ff, uint maxSequence,
-                                       PointFeature startPoint, PointFeature lastPoint)
+        internal void CreateFeatures(FeatureFactory ff, PointFeature startPoint, PointFeature lastPoint)
         {
             PointFeature from = startPoint;
             PointFeature to = null;
-            InternalIdValue itemId = new InternalIdValue(ff.Creator.Session.Id, maxSequence);
 
             // If we're dealing with a circular arc, create the underlying circle (and a
             // center point). The radius of the circle is undefined at this stage, but the
@@ -111,11 +107,10 @@ namespace Backsight.Editor
             // the same connection path).
 
             CircularLeg cLeg = (this as CircularLeg);
+            Session session = EditingController.Current.CadastralMapModel.WorkingSession;
+
             if (cLeg != null)
-            {
-                itemId.ItemSequence++;
-                cLeg.CreateCircle(ff, itemId.ToString());
-            }
+                cLeg.CreateCircle(ff, session.AllocateNextId().ToString());
 
             int nSpan = m_Spans.Length;
             for (int i = 0; i < nSpan; i++, from = to)
@@ -132,10 +127,7 @@ namespace Backsight.Editor
                         to = lastPoint;
 
                     if (to == null)
-                    {
-                        itemId.ItemSequence++;
-                        to = ff.CreatePointFeature(itemId.ToString());
-                    }
+                        to = ff.CreatePointFeature(session.AllocateNextId().ToString());
 
                     Debug.Assert(to != null);
                 }
@@ -146,8 +138,7 @@ namespace Backsight.Editor
 
                 if (span.HasLine && from != null)
                 {
-                    itemId.ItemSequence++;
-                    LineFeature line = CreateLine(ff, itemId.ToString(), from, to);
+                    LineFeature line = CreateLine(ff, session.AllocateNextId().ToString(), from, to);
                     line.ObservedLength = span.ObservedDistance;
                     span.CreatedFeature = line;
                 }
@@ -156,8 +147,6 @@ namespace Backsight.Editor
                     span.CreatedFeature = to;
                 }
             }
-
-            return itemId.ItemSequence;
         }
 
         /// <summary>

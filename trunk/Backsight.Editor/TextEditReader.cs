@@ -290,6 +290,17 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Reads an internal ID.
+        /// </summary>
+        /// <param name="name">A name tag associated with the value</param>
+        /// <returns>The ID that was read.</returns>
+        public InternalIdValue ReadInternalId(string name)
+        {
+            string s = ReadString(name);
+            return new InternalIdValue(s);
+        }
+
+        /// <summary>
         /// Checks whether the next line of text refers to a specific name tag. Make a call to
         /// <see cref="ReadNextLine"/> to actually advance.
         /// </summary>

@@ -73,13 +73,17 @@ namespace Backsight.Editor
         readonly List<Session> m_Sessions;
 
         /// <summary>
+        /// The edits that have been performed in the editing sessions.
+        /// </summary>
+        readonly Dictionary<InternalIdValue, Operation> m_Edits;
+
+        /// <summary>
         /// Management of user-specified IDs (null if there is no ID provider).
         /// </summary>
         IdManager m_IdManager;
 
         /// <summary>
-        /// The session that we are currently appending to. Defined on a call to
-        /// <see cref="AppendWorkingSession"/>
+        /// The session that we are currently appending to.
         /// </summary>
         Session m_WorkingSession;
 
@@ -114,6 +118,7 @@ namespace Backsight.Editor
             m_Rotation = 0.0;
             m_Window = new Window();
             m_Sessions = new List<Session>();
+            m_Edits = new Dictionary<InternalIdValue, Operation>();
             m_Index = null; // new EditingIndex();
 
             // Create an ID manager only if a database can be reached
@@ -351,8 +356,8 @@ namespace Backsight.Editor
         internal PointFeature AddPoint(IPosition p, IEntity e, Operation creator)
         {
             PointGeometry g = PointGeometry.Create(p);
-            uint ss = m_WorkingSession.AllocateNextItem();
-            PointFeature f = new PointFeature(creator, ss, e, g);
+            InternalIdValue id = m_WorkingSession.AllocateNextId();
+            PointFeature f = new PointFeature(creator, id, e, g);
             //m_Window.Union(p);
             //m_Index.Add(f);
             return f;
@@ -402,8 +407,8 @@ namespace Backsight.Editor
         /// <returns>The created line segment.</returns>
         internal LineFeature AddLine(PointFeature from, PointFeature to, IEntity e, Operation creator)
         {
-            uint ss = m_WorkingSession.AllocateNextItem();
-            LineFeature f = new LineFeature(creator, ss, e, from, to);
+            InternalIdValue id = m_WorkingSession.AllocateNextId();
+            LineFeature f = new LineFeature(creator, id, e, from, to);
             //m_Window.Union(f.Extent);
             //m_Index.Add(f);
 
@@ -803,8 +808,8 @@ namespace Backsight.Editor
         internal LineFeature AddCircularArc(Circle circle, PointFeature start, PointFeature end,
             bool clockwise, IEntity lineEnt, Operation creator)
         {
-            uint ss = m_WorkingSession.AllocateNextItem();
-            ArcFeature result = new ArcFeature(creator, ss, lineEnt, circle, start, end, clockwise);
+            InternalIdValue id = m_WorkingSession.AllocateNextId();
+            ArcFeature result = new ArcFeature(creator, id, lineEnt, circle, start, end, clockwise);
             //m_Window.Union(result.Extent);
             //m_Index.Add(result);
 
@@ -853,6 +858,28 @@ namespace Backsight.Editor
             return 0;
         }
         */
+
+        /// <summary>
+        /// Remembers an edit as part of this model (should be done when the edit is recorded
+        /// as part of the edit session).
+        /// </summary>
+        /// <param name="edit">The edit to include as part of this model.</param>
+        internal void AddEdit(Operation edit)        
+        {
+            m_Edits.Add(new InternalIdValue(edit.EditSequence), edit);
+        }
+
+        /// <summary>
+        /// Removes an edit that is part of this model (for use when undoing the last edit).
+        /// </summary>
+        /// <param name="edit">The edit to remove</param>
+        /// <returns>True if the edit was removed, false if the supplied edit did not appear as part
+        /// of this model.</returns>
+        internal bool RemoveEdit(Operation edit)
+        {
+            InternalIdValue id = new InternalIdValue(edit.EditSequence);
+            return m_Edits.Remove(id);
+        }
 
         /// <summary>
         /// Rolls back the last operation known to this map.
@@ -944,8 +971,8 @@ namespace Backsight.Editor
                 throw new Exception("CadastralMapModel.AddMiscText - Unspecified entity type.");
 
             // Do standard stuff for adding a label.
-            uint ss = m_WorkingSession.AllocateNextItem();
-            return new TextFeature(creator, ss, newEnt, text);
+            InternalIdValue id = m_WorkingSession.AllocateNextId();
+            return new TextFeature(creator, id, newEnt, text);
         }
 
         /// <summary>
@@ -970,8 +997,8 @@ namespace Backsight.Editor
             IEntity ent = polygonId.Entity;
             PointGeometry p = PointGeometry.Create(vtx);
             KeyTextGeometry text = new KeyTextGeometry(p, ent.Font, height, width, (float)rotation);
-            uint ss = m_WorkingSession.AllocateNextItem();
-            TextFeature label = new TextFeature(creator, ss, ent, text);
+            InternalIdValue id = m_WorkingSession.AllocateNextId();
+            TextFeature label = new TextFeature(creator, id, ent, text);
 
             // Define the label's ID
       		polygonId.CreateId(label);
@@ -998,8 +1025,8 @@ namespace Backsight.Editor
             KeyTextGeometry text = new KeyTextGeometry(pos, ent.Font, height, width, (float)rotation);
 
             // Do standard stuff for adding a label
-            uint ss = m_WorkingSession.AllocateNextItem();
-            TextFeature result = new TextFeature(creator, ss, ent, text);
+            InternalIdValue id = m_WorkingSession.AllocateNextId();
+            TextFeature result = new TextFeature(creator, id, ent, text);
             text.Label = result;
             return result;
         }
@@ -1011,24 +1038,24 @@ namespace Backsight.Editor
         /// <param name="creator">The editing operation creating the text</param>
         /// <param name="ent">The entity type for the label.</param>
         /// <param name="vtx">The reference position of the label</param>
-        /// <param name="id">The user-perceived ID for the label</param>
+        /// <param name="fid">The user-perceived ID for the label</param>
         /// <param name="row">The row to attach to the label.</param>
         /// <param name="atemplate">The template for the row text.</param>
         /// <param name="height">The height of the text, in meters on the ground.</param>
         /// <param name="width">The width of the text, in meters on the ground.</param>
         /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
         /// <returns>The newly created text</returns>
-        internal TextFeature AddRowLabel(Operation creator, IEntity ent, IPosition vtx, FeatureId id,
+        internal TextFeature AddRowLabel(Operation creator, IEntity ent, IPosition vtx, FeatureId fid,
                                             DataRow row, ITemplate atemplate,
                                             double height, double width, double rotation)
         {
             // Add the label with null geometry for now (chicken and egg -- need Feature in order
             // to create the Row object that's needed for the RowTextGeometry)
-            uint ss = m_WorkingSession.AllocateNextItem();
-            TextFeature label = new TextFeature(creator, ss, ent, null);
+            InternalIdValue id = m_WorkingSession.AllocateNextId();
+            TextFeature label = new TextFeature(creator, id, ent, null);
 
             // Define the label's ID and attach the row to it
-            Row r = new Row(id, atemplate.Schema, row);
+            Row r = new Row(fid, atemplate.Schema, row);
 
             // Attach the geometry
             PointGeometry p = PointGeometry.Create(vtx);
@@ -1060,12 +1087,12 @@ namespace Backsight.Editor
             // Add the label with null geometry for now (chicken and egg -- need Feature in order
             // to create the Row object that's needed for the RowTextGeometry)
             IEntity ent = polygonId.Entity;
-            uint ss = m_WorkingSession.AllocateNextItem();
-            TextFeature label = new TextFeature(creator, ss, ent, null);
+            InternalIdValue id = m_WorkingSession.AllocateNextId();
+            TextFeature label = new TextFeature(creator, id, ent, null);
 
             // Define the label's ID and attach the row to it
-            FeatureId id = polygonId.CreateId(label);
-            Row r = new Row(id, atemplate.Schema, row);
+            FeatureId fid = polygonId.CreateId(label);
+            Row r = new Row(fid, atemplate.Schema, row);
 
             // Attach the geometry
             PointGeometry p = PointGeometry.Create(vtx);
@@ -1161,40 +1188,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new editing session and appends to this model. This is called by
-        /// the editing controller to represent the latest session (as opposed to a historical
-        /// session that is created during initial data loading).
-        /// </summary>
-        /// <returns>The created session</returns>
-        internal Session AppendWorkingSession(ProjectFile job, User user)
-        {
-            //SessionData data = SessionDataFactory.Insert(job.JobId, user.UserId);
-
-            // Create the session (and remember as part of this model)
-            //Session s = Session.CreateCurrentSession(this, data, user, job);
-
-            uint sessionId = GetMaxSessionId() + 1;
-            throw new NotImplementedException();
-            //m_WorkingSession = job.AppendWorkingSession(sessionId);
-            AddSession(m_WorkingSession);
-            return m_WorkingSession;
-        }
-
-        /// <summary>
-        /// Scans the sessions in this model to obtain the highest session ID.
-        /// </summary>
-        /// <returns>The max session ID</returns>
-        internal uint GetMaxSessionId()
-        {
-            uint maxId = 0;
-
-            foreach (Session s in m_Sessions)
-                maxId = Math.Max(maxId, s.Id);
-
-            return maxId;
-        }
-
-        /// <summary>
         /// The object that manages assignment of user-specified IDs (null if there
         /// is no ID provider).
         /// </summary>
@@ -1204,8 +1197,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The session that we are currently appending to. Defined on a call to
-        /// <see cref="AppendWorkingSession"/>.
+        /// The session that we are currently appending to.
         /// </summary>
         internal Session WorkingSession
         {
@@ -1287,20 +1279,8 @@ namespace Backsight.Editor
             if (f != null)
             {
                 try { m_Features.Add(f.InternalId, f); }
-                catch { throw new Exception("Failed to index feature " + f.DataId); }
+                catch { throw new Exception("Failed to index feature " + f.InternalId); }
             }
-        }
-
-        /// <summary>
-        /// Attempts to locate an editing operation based on its internal ID.
-        /// </summary>
-        /// <param name="s">The formatted version of an internal ID (as produced
-        /// by a prior call to <see cref="InternalIdValue.Format"/>)</param>
-        /// <returns>The corresponding operation (null if not found)</returns>
-        internal Operation FindOperation(string s)
-        {
-            InternalIdValue id = new InternalIdValue(s);
-            return FindOperation(id);
         }
 
         /// <summary>
@@ -1310,35 +1290,11 @@ namespace Backsight.Editor
         /// <returns>The corresponding operation (null if not found)</returns>
         internal Operation FindOperation(InternalIdValue id)
         {
-            Session s = FindSession(id.SessionId);
-
-            if (s == null)
-                return null;
+            Operation result;
+            if (m_Edits.TryGetValue(id, out result))
+                return result;
             else
-                return s.FindOperation(id.ItemSequence);
-        }
-
-        /// <summary>
-        /// Attempts to locate an editing session within this model
-        /// </summary>
-        /// <param name="sessionId">The sequence number of the session to look for</param>
-        /// <returns>The corresponding session (null if not found)</returns>
-        internal Session FindSession(uint sessionId)
-        {
-            return m_Sessions.Find(delegate(Session s) { return s.Id==sessionId; });
-        }
-
-        /// <summary>
-        /// Attempts to locate a spatial feature based on its internal ID.
-        /// This is an indexed lookup.
-        /// </summary>
-        /// <param name="s">The formatted version of an internal ID (as produced
-        /// by a prior call to <see cref="InternalIdValue.Format"/>)</param>
-        /// <returns>The corresponding feature (null if not found)</returns>
-        public T Find<T>(string s) where T : Feature
-        {
-            InternalIdValue id = new InternalIdValue(s);
-            return Find<T>(id);
+                return null;
         }
 
         /// <summary>

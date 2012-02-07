@@ -713,9 +713,9 @@ namespace Backsight.Editor
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
         /// <param name="editSerializer">The mechanism for storing content.</param>
-        public virtual void WriteData(EditSerializer editSerializer)
+        public override void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WriteString(DataField.Id, DataId);
+            base.WriteData(editSerializer);
         }
     }
 }

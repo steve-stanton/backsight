@@ -105,6 +105,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The internal ID for the event.
+        /// </summary>
+        public InternalIdValue InternalId
+        {
+            get { return new InternalIdValue(m_Sequence); }
+        }
+
+        /// <summary>
         /// Adds references to existing features referenced by an editing event.
         /// <para/>
         /// Applies only to instances of <see cref="Operation"/>.

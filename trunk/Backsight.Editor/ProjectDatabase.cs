@@ -220,11 +220,13 @@ namespace Backsight.Editor
             // The Load method will end up calling software that requires access to the
             // current map model, so we need to set it no
             // -- not sure if this is still true
-            EditingController.Current.SetMapModel(result.Model, null);
+            //EditingController.Current.SetMapModel(result.Model, null);
+            EditingController.Current.SetProject(result);
 
             // Doing it here versus there is historical...
             LoadEdits(result);
             result.Model.Load();
+            EditingController.Current.SetMapModel(result.Model, null);
 
             // Create a new editing session
             uint sessionId = result.AllocateId();
@@ -239,6 +241,7 @@ namespace Backsight.Editor
             string sessionFile = Path.Combine(dataFolder, GetDataFileName(sessionId));
             Session session = new Session(result, s, sessionFile);
             session.WriteFile();
+            result.Model.AddSession(session);
             result.Model.WorkingSession = session;
 
             return result;

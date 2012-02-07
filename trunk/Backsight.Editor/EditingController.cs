@@ -466,60 +466,6 @@ namespace Backsight.Editor
             m_Project = p;
         }
 
-        /// <summary>
-        /// Attempts to open a job
-        /// </summary>
-        /// <param name="jobInfo">The job info (null if the user should be asked)</param>
-        /// <exception cref="Exception">If a job could not be opened</exception>
-        /// <returns>True if the job was opened. False if there was some problem opening it.</returns>
-        internal bool OpenJob(Project jobInfo)
-        {
-            // Initialize the model
-
-            CadastralMapModel cmm = null;
-
-            try
-            {
-                cmm = new CadastralMapModel();
-
-                throw new NotImplementedException();
-                /*
-                // The Load method will end up calling software that requires access to the
-                // current map model, so we need to set it now (we'll set it once more after
-                // the model has been loaded)
-                SetMapModel(cmm, null);
-
-                cmm.Load(m_Project, m_User);
-                cmm.AppendWorkingSession(m_Project, m_User);
-                */
-                return true;
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.StackTrace, ex.Message);
-            }
-
-            finally
-            {
-                // Need to first initialize overview extent before defining center and scale
-                if (cmm != null)
-                {
-                    // Pick up the last draw info before defining the overview extent (really,
-                    // should modify SetMapModel so it accepts the DrawInfo rather than an extent).
-                    DrawInfo drawInfo = m_Project.Settings.LastDraw;
-                    SetMapModel(cmm, null);
-
-                    double cx = drawInfo.CenterX;
-                    double cy = drawInfo.CenterY;
-                    double mapScale = drawInfo.MapScale;
-                    (ActiveDisplay as MapControl).SetCenterAndScale(cx, cy, mapScale, true);
-                }
-            }
-
-            return false;
-        }
-
         internal bool AutoSelect
         {
             get { return (m_IsAutoSelect==1); }

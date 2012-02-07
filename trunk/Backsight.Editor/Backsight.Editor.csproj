@@ -138,7 +138,6 @@
     <Compile Include="NewSessionEvent.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="ProjectDatabase.cs" />
-    <Compile Include="ProjectFile.cs" />
     <Compile Include="ProjectSettings.cs" />
     <Compile Include="ProjectSilo.cs" />
     <Compile Include="TextEditReader.cs" />

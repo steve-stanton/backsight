@@ -34,9 +34,11 @@ namespace Backsight.Editor
         readonly Operation m_Creator;
 
         /// <summary>
-        /// The 1-based creation sequence of the feature within the session that created it.
+        /// The internal ID of the feature (holds the 1-based creation sequence
+        /// of this feature within the project that created it).
         /// </summary>
-        readonly uint m_SessionSequence;
+        /// <remarks>The sequence value could be 0 if not yet defined (not sure if that still applies).</remarks>
+        readonly InternalIdValue m_InternalId;
 
         /// <summary>
         /// The type of real-world object that the feature corresponds to.
@@ -61,12 +63,12 @@ namespace Backsight.Editor
         {
             m_Creator = editDeserializer.CurrentEdit;
             Debug.Assert(m_Creator != null);
-            ReadData(editDeserializer, out m_SessionSequence, out m_What, out m_Id);
+            ReadData(editDeserializer, out m_InternalId, out m_What, out m_Id);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeatureStub"/> class with the
-        /// next available item sequence number.
+        /// next available internal ID.
         /// </summary>
         /// <param name="creator">The editing operation that created the feature.</param>
         /// <param name="ent">The entity type for the feature (not null)</param>
@@ -74,7 +76,7 @@ namespace Backsight.Editor
         /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
         /// <paramref name="creator"/> is null.</exception>
         internal FeatureStub(Operation creator, IEntity ent, FeatureId fid)
-            : this(creator, creator.Session.AllocateNextItem(), ent, fid)
+            : this(creator, creator.Session.AllocateNextId(), ent, fid)
         {
         }
 
@@ -82,19 +84,19 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="FeatureStub"/> class
         /// </summary>
         /// <param name="creator">The editing operation that created the feature.</param>
-        /// <param name="sessionSequence">The 1-based creation sequence of the feature within
-        /// the session that created it.</param>
+        /// <param name="id">The internal ID of the feature within
+        /// the project that created it.</param>
         /// <param name="ent">The entity type for the feature (not null)</param>
         /// <param name="fid">The (optional) user-perceived ID for the feature.</param>
         /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
         /// <paramref name="creator"/> is null.</exception>
-        internal FeatureStub(Operation creator, uint sessionSequence, IEntity ent, FeatureId fid)
+        internal FeatureStub(Operation creator, InternalIdValue id, IEntity ent, FeatureId fid)
         {
             if (creator == null || ent == null)
                 throw new ArgumentNullException();
 
             m_Creator = creator;
-            m_SessionSequence = sessionSequence;
+            m_InternalId = id;
             m_What = ent;
             m_Id = fid;
         }
@@ -111,7 +113,7 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             m_Creator = f.Creator;
-            m_SessionSequence = f.SessionSequence;
+            m_InternalId = f.InternalId;
             m_What = f.EntityType;
             m_Id = f.FeatureId;
         }
@@ -129,11 +131,12 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The 1-based creation sequence of the feature within the session that created it.
+        /// The internal ID of this feature (holds the 1-based creation sequence
+        /// of this feature within the project that created it).
         /// </summary>
-        public uint SessionSequence
+        public InternalIdValue InternalId
         {
-            get { return m_SessionSequence; }
+            get { return m_InternalId; }
         }
 
         /// <summary>
@@ -155,24 +158,12 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
-        /// The formatted ID of the unique identifier for the feature
-        /// </summary>
-        public string DataId
-        {
-            get
-            {
-                uint sessionId = m_Creator.Session.Id;
-                return InternalIdValue.Format(sessionId, m_SessionSequence);
-            }
-        }
-
-        /// <summary>
         /// Writes the content of this instance to a persistent storage area.
         /// </summary>
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WriteUInt32(DataField.Id, m_SessionSequence);
+            editSerializer.WriteInternalId(DataField.Id, m_InternalId);
             editSerializer.WriteEntity(DataField.Entity, m_What);
             editSerializer.WriteFeatureId(m_Id);
         }
@@ -181,12 +172,12 @@ namespace Backsight.Editor
         /// Reads data that was previously written using <see cref="WriteData"/>
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="ss">The 1-based creation sequence of the feature within the session that created it.</param>
+        /// <param name="id">The internal of the feature within the project that created it.</param>
         /// <param name="entity">The type of real-world object that the feature corresponds to.</param>
         /// <param name="fid">The ID of the feature (may be null).</param>
-        static void ReadData(EditDeserializer editDeserializer, out uint ss, out IEntity entity, out FeatureId fid)
+        static void ReadData(EditDeserializer editDeserializer, out InternalIdValue id, out IEntity entity, out FeatureId fid)
         {
-            ss = editDeserializer.ReadUInt32(DataField.Id);
+            id = editDeserializer.ReadInternalId(DataField.Id);
             entity = editDeserializer.ReadEntity(DataField.Entity);
             fid = editDeserializer.ReadFeatureId();
         }

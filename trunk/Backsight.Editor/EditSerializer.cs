@@ -247,7 +247,7 @@ namespace Backsight.Editor
         /// <param name="feature">The feature that is referenced.</param>
         internal void WriteFeatureRef<T>(DataField field, T feature) where T : Feature
         {
-            m_Writer.WriteString(field.ToString(), feature.DataId);
+            m_Writer.WriteInternalId(field.ToString(), feature.InternalId);
         }
 
         /// <summary>
@@ -259,8 +259,8 @@ namespace Backsight.Editor
         internal void WriteFeatureRefArray<T>(DataField field, T[] features) where T : Feature
         {
             string[] ids = new string[features.Length];
-            for (int i=0; i<ids.Length; i++)
-                ids[i] = features[i].DataId;
+            for (int i = 0; i < ids.Length; i++)
+                ids[i] = features[i].InternalId.ToString();
 
             WriteSimpleArray<string>(field, ids);
         }
@@ -431,6 +431,16 @@ namespace Backsight.Editor
         internal void WriteDateTime(DataField field, DateTime when)
         {
             m_Writer.WriteDateTime(field.ToString(), when);
+        }
+
+        /// <summary>
+        /// Writes an internal ID to a storage medium.
+        /// </summary>
+        /// <param name="field">The tag that identifies the item.</param>
+        /// <param name="id">The internal ID to write</param>
+        internal void WriteInternalId(DataField field, InternalIdValue id)
+        {
+            m_Writer.WriteInternalId(field.ToString(), id);
         }
 
         /// <summary>

@@ -67,13 +67,12 @@ namespace Backsight.Editor
         /// Creates a <c>LineFeature</c> consisting of a simple line segment.
         /// </summary>
         /// <param name="creator">The operation that created the feature (not null)</param>
-        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
-        /// session that created it.</param>
+        /// <param name="id">The internal ID of this feature within the project that created it.</param>
         /// <param name="e">The entity type for the feature.</param>
         /// <param name="start">The point at the start of the line</param>
         /// <param name="end">The point at the end of the line</param>
-        internal LineFeature(Operation creator, uint sessionSequence, IEntity e, PointFeature start, PointFeature end)
-            : this(creator, sessionSequence, e, start, end, new SegmentGeometry(start, end))
+        internal LineFeature(Operation creator, InternalIdValue id, IEntity e, PointFeature start, PointFeature end)
+            : this(creator, id, e, start, end, new SegmentGeometry(start, end))
         {
         }
 
@@ -108,25 +107,24 @@ namespace Backsight.Editor
         /// Creates a <c>LineFeature</c> consisting of a series of connected line segments.
         /// </summary>
         /// <param name="creator">The operation that created the feature (not null)</param>
-        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
-        /// session that created it.</param>
+        /// <param name="id">The internal ID of this feature within the project that created it.</param>
         /// <param name="e">The entity type for the feature.</param>
         /// <param name="start">The point at the start of the line</param>
         /// <param name="end">The point at the end of the line</param>
         /// <param name="data">The positions defining the shape of the line. The first position must
         /// coincide precisely with the supplied <paramref name="start"/>, and the last position
         /// must coincide precisely with <paramref name="end"/>. Expected to be more than two positions.</param>
-        internal LineFeature(Operation creator, uint sessionSequence, IEntity e,
+        internal LineFeature(Operation creator, InternalIdValue id, IEntity e,
                                             PointFeature start, PointFeature end, IPointGeometry[] data)
-            : this(creator, sessionSequence, e, start, end, new MultiSegmentGeometry(start, end, data))
+            : this(creator, id, e, start, end, new MultiSegmentGeometry(start, end, data))
         {
             Debug.Assert(data.Length>2);
             Debug.Assert(start.Geometry.IsCoincident(data[0]));
             Debug.Assert(end.Geometry.IsCoincident(data[data.Length-1]));
         }
 
-        internal LineFeature(Operation creator, uint sessionSequence, SectionGeometry section)
-            : this(creator, sessionSequence, section.BaseLine.EntityType, (PointFeature)section.Start,
+        internal LineFeature(Operation creator, InternalIdValue id, SectionGeometry section)
+            : this(creator, id, section.BaseLine.EntityType, (PointFeature)section.Start,
                     (PointFeature)section.End, section)
         {
         }
@@ -135,14 +133,14 @@ namespace Backsight.Editor
         /// Creates a new <c>LineFeature</c>
         /// </summary>
         /// <param name="creator">The operation that created the feature (not null)</param>
-        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
-        /// session that created it.</param>
+        /// <param name="id">The internal ID of this feature within the
+        /// project that created it.</param>
         /// <param name="e">The entity type for the feature (not null)</param>
         /// <param name="g">The geometry defining the shape of the line (not null)</param>
         /// <note>To ensure that the start and end of all lines are instances of <see cref="PointFeature"/>,
         /// this constructor should always remain private.</note>
-        protected LineFeature(Operation creator, uint sessionSequence, IEntity e, PointFeature start, PointFeature end, LineGeometry g)
-            : base(creator, sessionSequence, e, null)
+        protected LineFeature(Operation creator, InternalIdValue id, IEntity e, PointFeature start, PointFeature end, LineGeometry g)
+            : base(creator, id, e, null)
         {
             if (g==null)
                 throw new ArgumentNullException();
@@ -204,7 +202,7 @@ namespace Backsight.Editor
             m_Topology = null;
 
             // Don't cross-reference if we're dealing with a temporary feature
-            if (f.SessionSequence > 0)
+            if (!f.InternalId.IsEmpty)
                 AddReferences();
 
             if (isTopological)
@@ -743,13 +741,12 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// Make a new line that corresponds to a sub-section of this line.
         /// </summary>
         /// <param name="creator">The operation that should be noted as the creator of the new line.</param>
-        /// <param name="sessionSequence">The 1-based creation sequence of this feature within the
-        /// session that created it.</param>
+        /// <param name="id">The internal ID to assign to the sub-section.</param>
         /// <param name="section">The geometry for the new line.</param>
         /// <returns>The new line</returns>
-        internal LineFeature MakeSubSection(Operation creator, uint sessionSequence, SectionGeometry section)
+        internal LineFeature MakeSubSection(Operation creator, InternalIdValue id, SectionGeometry section)
         {
-            LineFeature result = new LineFeature(creator, sessionSequence, section);
+            LineFeature result = new LineFeature(creator, id, section);
 
             //PointFeature start = (PointFeature)section.Start;
             //PointFeature end = (PointFeature)section.End;
@@ -949,7 +946,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             if (!(m_Topology is LineTopology))
             {
                 string msg = String.Format("LineFeature.Split - Line {0} is associated with the wrong type of topology ({1})",
-                    DataId, m_Topology.GetType().Name);
+                    InternalId, m_Topology.GetType().Name);
                 throw new Exception(msg);
             }
             LineTopology lineTop = (LineTopology)m_Topology;

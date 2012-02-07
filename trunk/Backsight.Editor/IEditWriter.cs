@@ -98,6 +98,13 @@ namespace Backsight.Editor
         void WriteDateTime(string name, DateTime when);
 
         /// <summary>
+        /// Writes an internal ID to a storage medium.
+        /// </summary>
+        /// <param name="name">A name tag for the item</param>
+        /// <param name="id">The internal ID to write</param>
+        void WriteInternalId(string name, InternalIdValue id);
+
+        /// <summary>
         /// Writes any text that precedes the data values for an object.
         /// </summary>
         void WriteBeginObject();

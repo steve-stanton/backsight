@@ -197,7 +197,7 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteString(DataField.RevisedEdit, m_Edit.DataId);
+            editSerializer.WriteInternalId(DataField.RevisedEdit, m_Edit.InternalId);
             (m_Edit as IRevisable).WriteUpdateItems(editSerializer, m_Changes);
         }
 
@@ -209,8 +209,8 @@ namespace Backsight.Editor.Operations
         internal UpdateOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            string dataId = editDeserializer.ReadString(DataField.RevisedEdit);
-            m_Edit = editDeserializer.MapModel.FindOperation(dataId);
+            InternalIdValue id = editDeserializer.ReadInternalId(DataField.RevisedEdit);
+            m_Edit = editDeserializer.MapModel.FindOperation(id);
             m_Changes = (m_Edit as IRevisable).ReadUpdateItems(editDeserializer);
         }
     }

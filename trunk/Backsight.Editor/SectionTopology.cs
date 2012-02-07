@@ -137,7 +137,7 @@ namespace Backsight.Editor
         /// <returns>A sting indicating the internal ID of the line involved, plus the two terminals.</returns>
         public override string ToString()
         {
-            return String.Format("Section on line {0} from {1}-{2}", m_Line.DataId, m_From.ToString(), m_To.ToString());
+            return String.Format("Section on line {0} from {1}-{2}", m_Line.InternalId, m_From.ToString(), m_To.ToString());
         }
     }
 }
