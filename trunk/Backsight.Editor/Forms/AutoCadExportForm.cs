@@ -123,19 +123,15 @@ namespace Backsight.Editor.Forms
             }
 
             // Get the output file spec
-            string jobSpec = EditingController.Current.Project.Name;
-            string fileName = Path.ChangeExtension(jobSpec, ".dxf");
+            string projectName = EditingController.Current.Project.Name;
+            string fileName = null;
 
             using (SaveFileDialog dial = new SaveFileDialog())
             {
                 dial.Title = "Save AutoCad file";
                 dial.Filter = "AutoCAD DXF (.dxf)|*.dxf|All files (*.*)|*.*";
                 dial.DefaultExt = "dxf";
-                dial.FileName = Path.GetFileName(fileName);
-
-                string dir = Path.GetDirectoryName(fileName);
-                if (Directory.Exists(dir))
-                    dial.InitialDirectory = dir;
+                dial.FileName = projectName + ".dxf";
 
                 if (dial.ShowDialog(this) != DialogResult.OK)
                     return;

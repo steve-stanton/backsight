@@ -399,13 +399,7 @@ namespace Backsight.Editor.UI
         /// </summary>
         protected bool IsTextDrawn
         {
-            get
-            {
-                return EditingController.Current.AreLabelsDrawn;
-                //EditingController ec = EditingController.Current;
-                //ISpatialDisplay display = ActiveDisplay;
-                //return (display!=null && display.MapScale <= ec.JobInfo.ShowLabelScale);
-            }
+            get { return EditingController.Current.AreLabelsDrawn; }
         }
 
         /// <summary>

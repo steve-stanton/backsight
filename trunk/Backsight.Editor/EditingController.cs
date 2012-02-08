@@ -440,20 +440,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates (and opens) a brand new project.
-        /// </summary>
-        /// <param name="projectName">The user-perceived name for the project.</param>
-        /// <param name="layer">The map layer the project is for (not null)</param>
-        /// <returns>The newly created project (null if a project was not actually created).</returns>
-        internal Project CreateProject(string projectName, ILayer layer)
-        {
-            ProjectDatabase pd = new ProjectDatabase();
-            m_Project = pd.CreateProject(projectName, layer);
-            m_ActiveLayer = layer;
-            return m_Project;
-        }
-
-        /// <summary>
         /// Records the active project.
         /// </summary>
         /// <param name="p">The project the user is working with</param>
@@ -1041,7 +1027,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Perform any processing whenever a display has changed the drawn extent
-        /// of a map. This saves the extent as part of the job data.
+        /// of a map. This saves the extent as part of the project settings.
         /// </summary>
         /// <param name="sender">The display that has changed</param>
         public override void OnSetExtent(ISpatialDisplay sender)
@@ -1162,7 +1148,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Checks whether the current job file needs to be saved or not.
+        /// Checks whether the current project needs to be saved or not.
         /// If it hasn't been saved, the user will be asked. If the user
         /// decided not to save, any edits performed since the last save
         /// will be discarded. This should be called when the Editor
@@ -1170,6 +1156,10 @@ namespace Backsight.Editor
         /// </summary>
         internal void CheckSave()
         {
+            // Always save project settings
+            if (m_Project != null)
+                m_Project.SaveSettings();
+
             if (IsSaved)
                 return;
 
@@ -1184,19 +1174,21 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Have all changes been saved? This refers to editing operations, as well
-        /// as more minor changes that are recorded in the project settings.
+        /// Have all edits been saved?
         /// </summary>
         internal bool IsSaved
         {
             get
             {
-                // The session probably SHOULD be defined
-                Session s = CadastralMapModel.Current.WorkingSession;
+                CadastralMapModel model = CadastralMapModel.Current;
+                if (model == null)
+                    return true;
+
+                Session s = model.WorkingSession;
                 if (s == null)
                     return true;
 
-                return (s.IsSaved && m_Project.Settings.IsSaved);
+                return s.IsSaved;
             }
         }
 

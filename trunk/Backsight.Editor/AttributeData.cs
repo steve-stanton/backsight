@@ -78,7 +78,7 @@ namespace Backsight.Editor
         /// make any attribute data easily available to the user, since that may well
         /// guide the user regarding the relevance of spatial edits.
         /// <para/>
-        /// This method will be called after the spatial features for a job have been
+        /// This method will be called after the spatial features for a project have been
         /// loaded from the database. It takes a very simple-minded approach, by attempting
         /// to match features with every table associated with Backsight via the
         /// Environment Editor application (hopefully there aren't TOO many).

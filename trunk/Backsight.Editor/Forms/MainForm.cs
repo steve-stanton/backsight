@@ -85,6 +85,9 @@ namespace Backsight.Editor.Forms
             if (ps == null)
                 return null;
 
+            // Close any currently open project or dialog.
+            OnProjectOpening();
+
             ForwardingTraceListener trace = new ForwardingTraceListener(ShowLoadProgress);
             Stopwatch sw = Stopwatch.StartNew();
 
@@ -110,7 +113,7 @@ namespace Backsight.Editor.Forms
 
                 // Update splashscreen metrics. This is perhaps a little premature, since
                 // the original splash screen implementation waited until the screen had
-                // completely faded away. The drawback with that is that the job file would
+                // completely faded away. The drawback with that is that the project settings would
                 // then be rewritten on another thread, which could trample on things that
                 // are happening here.
                 SplashScreen ss = SplashScreen.SplashForm;
@@ -133,8 +136,9 @@ namespace Backsight.Editor.Forms
                 // ...I think initialization of the overview extent will adjust the last draw
                 // data that's saved in the project settings
 
-                DrawInfo drawInfo = p.Settings.LastDraw;
-                EditingController.Current.SetMapModel(p.Model, null);
+                //DrawInfo drawInfo = p.Settings.LastDraw;
+                DrawInfo drawInfo = ps.LastDraw;
+                //EditingController.Current.SetMapModel(p.Model, null);
 
                 if (drawInfo.MapScale > 0)
                 {
@@ -179,8 +183,8 @@ namespace Backsight.Editor.Forms
             }
 
             // If the user double-clicked on a file, it may not be in the MRU list, so add it now.
-            string jobName = m_Controller.CadastralMapModel.Name;
-            m_MruMenu.AddString(jobName);
+            string projectName = m_Controller.Project.Name;
+            m_MruMenu.AddFile(projectName, projectName);
 
             // Don't define the model until the screen gets shown for the first time. Otherwise
             // the map control may end up saving an incorrect screen image.
@@ -467,14 +471,14 @@ namespace Backsight.Editor.Forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            CadastralMapModel mapModel = CadastralMapModel.Current;
-            if (mapModel != null)
-            {
-                AddRecentProject(mapModel.Name);
-                EditingController.Current.CheckSave();
-            }
+            // Should probably do this when project is opened
+            Project p = m_Controller.Project;
+            if (p != null)
+                AddRecentProject(p.Name);
 
+            m_Controller.CheckSave();
             m_Controller.Close();
+
             Application.Idle -= OnIdle;
         }
 
@@ -641,8 +645,10 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             {
                 if (dial.ShowDialog() == DialogResult.OK)
                 {
-                    Project p = dial.NewProject;
-                    AddRecentProject(p.Name);
+                    string projectName = dial.NewProjectName;
+                    OnProjectOpening();
+                    Project p = new ProjectDatabase().OpenProject(projectName);
+                    AddRecentProject(projectName);
                 }
             }
         }
@@ -673,7 +679,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         void AddRecentProject(string projectName)
         {
-            m_MruMenu.AddString(projectName);
+            m_MruMenu.AddFile(projectName, projectName);
             m_MruMenu.SaveToRegistry();
         }
 
@@ -1469,12 +1475,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private bool ArePointsDrawn
         {
-            get
-            {
-                return m_Controller.ArePointsDrawn;
-                //ISpatialDisplay display = m_Controller.ActiveDisplay;
-                //return (display!=null && display.MapScale <= m_Controller.JobInfo.ShowPointScale);
-            }
+            get { return m_Controller.ArePointsDrawn; }
         }
 
         private bool IsPointEnlargeEnabled()
@@ -1789,12 +1790,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
         /// </summary>
         bool IsTextDrawn
         {
-            get
-            {
-                return m_Controller.AreLabelsDrawn;
-                //ISpatialDisplay display = m_Controller.ActiveDisplay;
-                //return (display!=null && display.MapScale <= m_Controller.JobInfo.Settings.ShowLabelScale);
-            }
+            get { return m_Controller.AreLabelsDrawn; }
         }
 
         private bool IsTextAddPolygonLabelsEnabled()
@@ -2162,6 +2158,15 @@ OPTION (MAXRECURSION 0)
                 MessageBox.Show("No attributes for selected polygon.");
             else
                 AttributeData.Update(r);
+        }
+
+        /// <summary>
+        /// Perform any processing when a different project is about to be opened.
+        /// </summary>
+        internal void OnProjectOpening()
+        {
+            m_Controller.CheckSave();
+            m_Controller.Close();
         }
     }
 }

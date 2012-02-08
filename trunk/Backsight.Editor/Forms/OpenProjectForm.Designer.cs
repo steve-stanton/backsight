@@ -68,7 +68,7 @@ namespace Backsight.Editor.Forms
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
-            // GetJobForm
+            // OpenProjectForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -79,7 +79,7 @@ namespace Backsight.Editor.Forms
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "GetJobForm";
+            this.Name = "OpenProjectForm";
             this.Text = "Open Project";
             this.Shown += new System.EventHandler(this.OpenProjectForm_Shown);
             this.ResumeLayout(false);

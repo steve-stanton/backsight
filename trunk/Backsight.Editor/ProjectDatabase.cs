@@ -75,12 +75,12 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a brand new project.
+        /// Creates a brand new project. If this completes without any exception, you can
+        /// call <see cref="OpenProject"/> to activate the project.
         /// </summary>
         /// <param name="projectName">The user-perceived name for the project.</param>
         /// <param name="layer">The map layer the project is for (not null)</param>
-        /// <returns>Information describing the state of the project.</returns>
-        internal Project CreateProject(string projectName, ILayer layer)
+        internal void CreateProject(string projectName, ILayer layer)
         {
             if (String.IsNullOrWhiteSpace(projectName) || layer == null)
                 throw new ArgumentNullException();
@@ -130,9 +130,6 @@ namespace Backsight.Editor
             // Save the settings
             string settingsFileName = Path.Combine(dataFolder, "settings.txt");
             ps.WriteXML(settingsFileName);
-
-            // Open the new project
-            return OpenProject(projectName);
         }
 
         /// <summary>
@@ -228,6 +225,13 @@ namespace Backsight.Editor
             EditingController.Current.SetMapModel(result.Model, null);
             result.Model.Load();
 
+            // Get rid of any empty sessions
+            result.Model.RemoveEmptySessions();
+
+            // Need to set it again (need to find out why)... if you don't you get a null
+            // ref on opening last project at startup
+            EditingController.Current.SetMapModel(result.Model, null);
+
             // Create a new editing session
             uint sessionId = result.AllocateId();
             NewSessionEvent s = new NewSessionEvent(sessionId)
@@ -243,6 +247,7 @@ namespace Backsight.Editor
             session.WriteFile();
             result.Model.AddSession(session);
             result.Model.WorkingSession = session;
+            result.SetLastItem(session.Id);
 
             return result;
         }
@@ -324,17 +329,21 @@ namespace Backsight.Editor
             return (silo != null);
         }
 
+        /// <summary>
+        /// Closes a open project. If no edits have been performed, this will delete the file that
+        /// records the session. Otherwise the timestamp stored in the session file will be updated.
+        /// Local project settings will also be saved for luck.
+        /// </summary>
+        /// <param name="p">The project to close</param>
         internal void CloseProject(Project p)
         {
             Session s = p.Model.WorkingSession;
 
             if (s != null)
             {
-                string projectFolder = Path.Combine(m_Private.FolderName, p.Id.ToString());
-                string sessionFile = Path.Combine(projectFolder, GetDataFileName(s.Id));
-
                 if (s.OperationCount == 0)
                 {
+                    string sessionFile = s.FileName;
                     File.Delete(sessionFile);
                 }
                 else
