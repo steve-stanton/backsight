@@ -225,8 +225,8 @@ namespace Backsight.Editor
 
             // Doing it here versus there is historical...
             LoadEdits(result);
-            result.Model.Load();
             EditingController.Current.SetMapModel(result.Model, null);
+            result.Model.Load();
 
             // Create a new editing session
             uint sessionId = result.AllocateId();
