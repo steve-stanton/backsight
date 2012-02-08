@@ -62,7 +62,6 @@ namespace Backsight.Editor.Forms
             if (canOpen)
             {
                 openLastButton.Text = "&Open " + lastProjectName;
-                openLastButton.BackColor = SystemColors.Control;
                 this.AcceptButton = openLastButton;
             }
             else
@@ -87,7 +86,7 @@ namespace Backsight.Editor.Forms
             Close();
         }
 
-        private void newJobButton_Click(object sender, EventArgs e)
+        private void newProjectButton_Click(object sender, EventArgs e)
         {
             try
             {
@@ -96,7 +95,11 @@ namespace Backsight.Editor.Forms
                 using (NewProjectForm dial = new NewProjectForm())
                 {
                     if (dial.ShowDialog() == DialogResult.OK)
-                        p = dial.NewProject;
+                    {
+                        string projectName = dial.NewProjectName;
+                        m_Parent.OnProjectOpening();
+                        p = new ProjectDatabase().OpenProject(projectName);
+                    }
                 }
 
                 if (p != null)

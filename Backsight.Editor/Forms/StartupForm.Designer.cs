@@ -91,10 +91,10 @@ namespace Backsight.Editor.Forms
             this.newProjectButton.TabIndex = 6;
             this.newProjectButton.TabStop = false;
             this.newProjectButton.Text = "Create a &new project";
-            this.toolTip.SetToolTip(this.newProjectButton, "Look at all jobs that have been registered in the database (with option to create" +
-                    " new jobs)");
+            this.toolTip.SetToolTip(this.newProjectButton, "Look at all projects that have been registered in the database (with option to create" +
+                    " new projects)");
             this.newProjectButton.UseVisualStyleBackColor = true;
-            this.newProjectButton.Click += new System.EventHandler(this.newJobButton_Click);
+            this.newProjectButton.Click += new System.EventHandler(this.newProjectButton_Click);
             // 
             // exitButton
             // 

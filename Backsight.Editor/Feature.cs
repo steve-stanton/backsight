@@ -846,16 +846,6 @@ namespace Backsight.Editor
         }
         */
 
-        /*
-        /// <summary>
-        /// The ID of the layer that was active when this feature was created
-        /// </summary>
-        internal int BaseLayerId
-        {
-            get { return m_Creator.Session.Job.LayerId; }
-        }
-        */
-
         /// <summary>
         /// Is this feature considered to be "void". This status is used to mark
         /// lines along staggered faces in a connection path. Lines that are marked

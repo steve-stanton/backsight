@@ -18,7 +18,7 @@ using System;
 namespace Backsight.Editor
 {
     /// <summary>
-    /// Information about an ID allocation that has been made to a user for a specific editing job.
+    /// Information about an ID allocation that has been made to a user for a specific editing project.
     /// </summary>
     public class IdAllocationInfo
     {
@@ -40,7 +40,7 @@ namespace Backsight.Editor
         public int HighestId { get; set; }
 
         /// <summary>
-        /// The ID of the job that the allocation is for
+        /// The ID of the project that the allocation is for
         /// </summary>
         public int JobId { get; set; }
 

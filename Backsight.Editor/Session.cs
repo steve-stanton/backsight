@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 
 namespace Backsight.Editor
 {
@@ -147,7 +148,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The job the session is associated with
+        /// The project the session is associated with
         /// </summary>
         internal Project Project
         {
@@ -242,9 +243,17 @@ namespace Backsight.Editor
             {
                 string name = Path.GetFileNameWithoutExtension(s);
                 uint fileNum;
-                if (UInt32.TryParse(name, out fileNum) && fileNum > m_LastSavedItem)
+                if (UInt32.TryParse(name, NumberStyles.HexNumber, null, out fileNum) && fileNum > m_LastSavedItem)
                     File.Delete(s);
             }
+
+            // Locate the objects that represent the edits to discard, and remove them from the model.
+            List<Operation> discards = m_Operations.FindAll(o => o.EditSequence > m_LastSavedItem);
+            foreach (Operation edit in discards)
+                MapModel.RemoveEdit(edit);
+
+            // And remove from the session
+            m_Operations.RemoveAll(o => o.EditSequence > m_LastSavedItem);
 
             // Go back to the old item count (and update session time)
             UpdateEndTime();
@@ -386,6 +395,14 @@ namespace Backsight.Editor
         {
             m_Operations.Add(edit);
             MapModel.AddEdit(edit);
+        }
+
+        /// <summary>
+        /// The name of the file holding the session event data.
+        /// </summary>
+        internal string FileName
+        {
+            get { return m_FileName; }
         }
     }
 }

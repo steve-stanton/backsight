@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 
 using Backsight.Data;
 using Backsight.Editor.Properties;
@@ -144,7 +145,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The user-name of the model (including the path).
+        /// The user-name of the model
         /// </summary>
         public string Name
         {
@@ -201,6 +202,28 @@ namespace Backsight.Editor
         internal Session[] Sessions
         {
             get { return m_Sessions.ToArray(); }
+        }
+
+        /// <summary>
+        /// Removes all empty sessions (including the files that hold the session data).
+        /// </summary>
+        internal int RemoveEmptySessions()
+        {
+            // Locate any empty sessions
+            List<Session> emptySessions = m_Sessions.FindAll(s => s.OperationCount == 0);
+            if (emptySessions.Count == 0)
+                return 0;
+
+            // Remove the files that record the sessions
+            foreach (Session s in emptySessions)
+            {
+                string sessionFile = s.FileName;
+                File.Delete(sessionFile);
+            }
+
+            // Remove from the model
+            m_Sessions.RemoveAll(s => s.OperationCount == 0);
+            return emptySessions.Count;
         }
 
         #region ISpatialModel Members

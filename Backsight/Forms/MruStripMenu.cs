@@ -700,8 +700,9 @@ namespace Backsight.Forms // was JWC
 					{
 						string filename = (string)regKey.GetValue("File" + number.ToString());
 						if (filename != null)
-							AddFile(filename);
-					}
+							//ss AddFile(filename);
+                            AddFile(filename, filename); // don't expand to a full file name
+                    }
 
 					regKey.Close();
 				}

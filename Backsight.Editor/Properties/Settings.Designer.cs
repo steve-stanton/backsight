@@ -25,18 +25,6 @@ namespace Backsight.Editor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastJobName {
-            get {
-                return ((string)(this["LastJobName"]));
-            }
-            set {
-                this["LastJobName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public uint MaxBackup {
             get {
                 return ((uint)(this["MaxBackup"]));

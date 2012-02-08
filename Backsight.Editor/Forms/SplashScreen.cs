@@ -30,7 +30,7 @@ namespace Backsight.Editor.Forms
 	public class SplashScreen : System.Windows.Forms.Form
 	{
         /// <summary>
-        /// Information about the job being opened while splash screen displayed
+        /// Information about the project being opened while splash screen displayed
         /// </summary>
         static string ms_Increment = null;
         static string ms_Percents = null;
@@ -260,7 +260,7 @@ namespace Backsight.Editor.Forms
 		// launch the SplashScreen.
 		static public void ShowSplashScreen(string increment, string percents)
 		{
-            // Remember information about the job that's being loaded
+            // Remember information about the project that's being loaded
             if (String.IsNullOrEmpty(increment))
                 ms_Increment = "0.0015";
             else

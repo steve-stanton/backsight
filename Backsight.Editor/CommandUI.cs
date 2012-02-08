@@ -547,9 +547,6 @@ namespace Backsight.Editor
         internal bool ArePointsDrawn()
         {
             return EditingController.Current.ArePointsDrawn;
-            //ISpatialDisplay display = ActiveDisplay;
-            //EditingController ec = EditingController.Current;
-            //return (display.MapScale < ec.JobInfo.ShowPointScale);
         }
     }
 }

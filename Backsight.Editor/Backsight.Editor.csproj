@@ -133,7 +133,6 @@
     <Compile Include="EditSerializer.cs" />
     <Compile Include="EnvironmentResource.cs" />
     <Compile Include="IdAllocationInfo.cs" />
-    <Compile Include="IEditingJob.cs" />
     <Compile Include="Change.cs" />
     <Compile Include="NewSessionEvent.cs" />
     <Compile Include="Project.cs" />

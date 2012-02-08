@@ -88,7 +88,7 @@ namespace Backsight.Editor
         /// <param name="row">The row that contains the information to format</param>
         /// <param name="content">The content placeholder read from the database</param>
         /// <remarks>This constructor is utilized during deserialization from the database, which
-        /// occurs when an editing job is opened.</remarks>
+        /// occurs when an editing project is opened.</remarks>
         internal RowTextGeometry(Row row, RowTextContent content)
             : base(content)
         {

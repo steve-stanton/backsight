@@ -21,7 +21,9 @@ using Backsight.Environment;
 namespace Backsight.Editor.Forms
 {
     /// <summary>
-    /// Dialog for defining a new editing project.
+    /// Dialog for defining a new editing project. If the user exits with OK, the project
+    /// will get created, but it is not open (use <see cref="ProjectDatabase.OpenProject"/>
+    /// to open the new project after closing this dialog).
     /// </summary>
     public partial class NewProjectForm : Form
     {
@@ -33,9 +35,9 @@ namespace Backsight.Editor.Forms
         readonly ProjectDatabase m_Container;
 
         /// <summary>
-        /// Information for the newly created project (defined when user clicks the OK button)
+        /// The user-perceived name of the newly created project (defined when user clicks the OK button)
         /// </summary>
-        Project m_NewProject;
+        string m_NewProjectName;
 
         #endregion
 
@@ -99,11 +101,13 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
-            // Create the project and open it
+            // Create the project
 
             try
             {
-                m_NewProject = EditingController.Current.CreateProject(projectName, layer);
+                m_Container.CreateProject(projectName, layer);
+                //EditingController.Current.CreateProject(projectName, layer);
+                m_NewProjectName = projectName;
                 DialogResult = DialogResult.OK;
                 Close();
             }
@@ -115,11 +119,12 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// The new project (created and opened when user clicks on OK)
+        /// The user-perceived name of the newly created project (defined when user clicks the OK button).
+        /// Null if the user cancelled from this dialog.
         /// </summary>
-        internal Project NewProject
+        internal string NewProjectName
         {
-            get { return m_NewProject; }
+            get { return m_NewProjectName; }
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
