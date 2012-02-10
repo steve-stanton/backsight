@@ -32,12 +32,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The database that contains this project.
         /// </summary>
-        readonly ProjectSilo m_Container;
-
-        /// <summary>
-        /// Has this project been published?
-        /// </summary>
-        readonly bool m_IsPublic;
+        readonly ProjectDatabase m_Container;
 
         /// <summary>
         /// The unique ID for the project
@@ -73,13 +68,11 @@ namespace Backsight.Editor
         /// upon creation of a brand new project.
         /// </summary>
         /// <param name="container">The container for this project.</param>
-        /// <param name="isPublic">Is this a public project?</param>
         /// <param name="projectId">The unique ID for the project.</param>
         /// <param name="ps">The initial project settings.</param>
-        internal Project(ProjectSilo container, bool isPublic, Guid projectId, ProjectSettings ps)
+        internal Project(ProjectDatabase container, Guid projectId, ProjectSettings ps)
         {
             m_Container = container;
-            m_IsPublic = isPublic;
             m_Id = projectId;
             m_Settings = ps;
             m_MapModel = new CadastralMapModel();
@@ -177,28 +170,22 @@ namespace Backsight.Editor
             get { return m_MapModel; }
         }
 
-        /// <summary>
-        /// Has this project been published?
-        /// </summary>
-        internal bool IsPublic
-        {
-            get { return m_IsPublic; }
-        }
-
-        internal void LoadDataFiles(string[] files)
+        internal void LoadDataFiles(string folderName, uint[] fileNums)
         {
             Trace.Write("Reading data...");
             EditDeserializer ed = new EditDeserializer(m_MapModel);
             Session lastSession = null;
 
-            foreach (string editFile in files)
+            foreach (uint fileNum in fileNums)
             {
+                string editFile = Path.Combine(folderName, ProjectDatabase.GetDataFileName(fileNum));
+
                 using (TextReader tr = File.OpenText(editFile))
                 {
                     TextEditReader er = new TextEditReader(tr);
 
-                    // Ignore any empty files
-                    if (er.HasNext)
+                    // Ignore any empty files altogether
+                    while (er.HasNext)
                     {
                         ed.SetReader(er);
                         Change edit = Change.Deserialize(ed);
@@ -212,6 +199,11 @@ namespace Backsight.Editor
                             lastSession = new Session(this, (NewSessionEvent)edit, editFile);
                             m_MapModel.AddSession(lastSession);
                         }
+                        else if (edit is EndSessionEvent)
+                        {
+                            Debug.Assert(lastSession != null);
+                            lastSession.EndTime = edit.When;
+                        }
                         else
                         {
                             Debug.Assert(edit is Operation);
@@ -224,6 +216,9 @@ namespace Backsight.Editor
 
             if (m_ProjectInfo == null)
                 throw new ApplicationException("Could not locate the project creation event");
+
+            // Remember the highest internal ID used by the project
+            SetLastItem(fileNums[fileNums.Length - 1]);
         }
     }
 }

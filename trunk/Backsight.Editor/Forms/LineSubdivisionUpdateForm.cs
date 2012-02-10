@@ -200,7 +200,7 @@ namespace Backsight.Editor.Forms
 
             using (DistForm dist = new DistForm(dCopy, false))
             {
-                if (dist.ShowDialog() == DialogResult.OK)
+                if (dist.ShowDialog(this) == DialogResult.OK)
                 {
                     // Change the displayed distance
                     m_CurrentFace[listBox.SelectedIndex] = new Distance(dist.Distance);

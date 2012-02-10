@@ -100,6 +100,7 @@
     <Compile Include="AttributeData.cs" />
     <Compile Include="AutoCad\AcLayerEntitySet.cs" />
     <Compile Include="BasicList.cs" />
+    <Compile Include="EndSessionEvent.cs" />
     <Compile Include="Forms\NewProjectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -138,7 +139,6 @@
     <Compile Include="Project.cs" />
     <Compile Include="ProjectDatabase.cs" />
     <Compile Include="ProjectSettings.cs" />
-    <Compile Include="ProjectSilo.cs" />
     <Compile Include="TextEditReader.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
