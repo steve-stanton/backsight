@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 using Backsight.Data;
@@ -32,14 +33,9 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The folder structure for public projects.
+        /// The path for the root folder (should always refers to a folder that exists).
         /// </summary>
-        readonly ProjectSilo m_Public;
-
-        /// <summary>
-        /// The folder structure for private projects.
-        /// </summary>
-        readonly ProjectSilo m_Private;
+        readonly string m_FolderName;
 
         #endregion
 
@@ -51,25 +47,109 @@ namespace Backsight.Editor
         /// </summary>
         internal ProjectDatabase()
         {
-            m_Public = new ProjectSilo(@"C:\Backsight\public");
-            m_Private = new ProjectSilo(@"C:\Backsight\private");
+            m_FolderName = @"C:\Backsight";
+
+            // Ensure the folder structure is complete
+            if (!Directory.Exists(IndexFolderName))
+                Directory.CreateDirectory(IndexFolderName);
         }
 
         #endregion
 
         /// <summary>
+        /// The path for the root folder of this database.
+        /// </summary>
+        internal string FolderName
+        {
+            get { return m_FolderName; }
+        }
+
+        /// <summary>
+        /// The path for the directory holding project index entries.
+        /// </summary>
+        string IndexFolderName
+        {
+            get { return Path.Combine(m_FolderName, "index"); }
+        }
+
+        /// <summary>
         /// Obtains a list of all previously created editing projects.
         /// </summary>
-        /// <returns>The names of all editing projects in this database (sorted alphabetically).</returns>
+        /// <returns>The names of all editing projects in this database.</returns>
         /// <remarks>The result relates to projects that exist on the local file system. It excludes
         /// any published projects that have not been downloaded.</remarks>
         internal string[] FindAllProjectNames()
         {
             List<string> result = new List<string>();
 
-            result.AddRange(m_Public.FindAllProjectNames());
-            result.AddRange(m_Private.FindAllProjectNames());
+            foreach (string s in Directory.GetFiles(IndexFolderName, "*.txt"))
+                result.Add(Path.GetFileNameWithoutExtension(s));
 
+            result.Sort();
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Attempts to obtain the internal ID for a project
+        /// </summary>
+        /// <param name="projectName">The user-perceived name of the project</param>
+        /// <returns>The corresponding GUID string for the project (null if not found)</returns>
+        internal string FindProjectId(string projectName)
+        {
+            string indexFileName = Path.Combine(IndexFolderName, projectName + ".txt");
+            if (File.Exists(indexFileName))
+                return File.ReadAllText(indexFileName);
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Creates an index entry for a new project.
+        /// </summary>
+        /// <param name="projectName">The user-perceived name for the new project.</param>
+        /// <param name="projectId">The unique ID for the project.</param>
+        internal void CreateIndexEntry(string projectName, Guid projectId)
+        {
+            string fileName = Path.Combine(IndexFolderName, projectName + ".txt");
+            File.WriteAllText(fileName, projectId.ToString());
+        }
+
+        /// <summary>
+        /// Creates a data folder for a project.
+        /// </summary>
+        /// <param name="projectId">The internal ID for the project</param>
+        /// <returns>The corresponding data folder (created if necessary)</returns>
+        internal string CreateDataFolder(Guid projectId)
+        {
+            string folderName = Path.Combine(m_FolderName, projectId.ToString());
+            if (!Directory.Exists(folderName))
+                Directory.CreateDirectory(folderName);
+
+            return folderName;
+        }
+
+        /// <summary>
+        /// Obtains the number of the data files for a specific project that exist in this silo.
+        /// </summary>
+        /// <param name="projectId">The unique ID of the project of interest</param>
+        /// <returns>The data file numbers (sorted). An empty array if the project data folder does not exist.</returns>
+        internal uint[] GetFileNumbers(Guid projectId)
+        {
+            string dataFolder = Path.Combine(m_FolderName, projectId.ToString());
+            if (!Directory.Exists(dataFolder))
+                return new uint[0];
+
+            List<uint> result = new List<uint>(100);
+
+            foreach (string s in Directory.GetFiles(dataFolder))
+            {
+                string name = Path.GetFileNameWithoutExtension(s);
+                uint n;
+                if (name.Length == 8 && UInt32.TryParse(name, NumberStyles.HexNumber, null, out n))
+                    result.Add(n);
+            }
+
+            // There's a good chance the files will already be sorted, but just in case
             result.Sort();
             return result.ToArray();
         }
@@ -86,7 +166,7 @@ namespace Backsight.Editor
                 throw new ArgumentNullException();
 
             // Confirm that the project name is unique
-            if (m_Public.FindProjectId(projectName) != null || m_Private.FindProjectId(projectName) != null)
+            if (FindProjectId(projectName) != null)
                 throw new ArgumentException("Specified project already exists");
 
             // Define the event data
@@ -94,7 +174,6 @@ namespace Backsight.Editor
             {
                 ProjectId = Guid.NewGuid(),
                 ProjectName = projectName,
-                CreationTime = DateTime.Now,
                 LayerId = layer.Id,
                 DefaultSystem = String.Empty,
                 UserName = System.Environment.UserName,
@@ -102,10 +181,10 @@ namespace Backsight.Editor
             };
 
             // Create the private index entry
-            m_Private.CreateIndexEntry(projectName, e.ProjectId);
+            CreateIndexEntry(projectName, e.ProjectId);
 
-            // Create the private data folder
-            string dataFolder = m_Private.CreateDataFolder(e.ProjectId);
+            // Create the data folder
+            string dataFolder = CreateDataFolder(e.ProjectId);
 
             // Serialize the event data to the data folder. Specify <Change> so that
             // the class name will be included in the output file.
@@ -152,17 +231,13 @@ namespace Backsight.Editor
             if (String.IsNullOrWhiteSpace(projectName))
                 return null;
 
-            ProjectSilo silo = FindProjectSilo(projectName);
-            if (silo == null)
-                return null;
-
-            // Read the project ID from the silo
-            string projectGuid = silo.FindProjectId(projectName);
+            // Obtain the project ID
+            string projectGuid = FindProjectId(projectName);
             if (projectGuid == null)
                 return null;
 
             // Load local project settings
-            string settingsFolderName = Path.Combine(m_Private.FolderName, projectGuid);
+            string settingsFolderName = Path.Combine(m_FolderName, projectGuid);
             if (!Directory.Exists(settingsFolderName))
                 return null;
 
@@ -187,23 +262,18 @@ namespace Backsight.Editor
             if (String.IsNullOrWhiteSpace(projectName))
                 throw new ArgumentNullException();
 
-            // Are we dealing with a public or a private project?
-            ProjectSilo silo = FindProjectSilo(projectName);
-            if (silo == null)
-                throw new ArgumentException("Cannot find project " + projectName);
-
-            // Read the project ID from the silo
-            string projectGuid = silo.FindProjectId(projectName);
+            // Obtain the project ID
+            string projectGuid = FindProjectId(projectName);
             if (projectGuid == null)
                 throw new ApplicationException();
 
             // Load the project creation event
             Guid projectId = Guid.Parse(projectGuid);
-            string dataFolder = silo.CreateDataFolder(projectId);
+            string dataFolder = CreateDataFolder(projectId);
             string creationFileName = Path.Combine(dataFolder, NewProjectEvent.FileName);
 
             // Read current project settings from the private silo (even if the project is now public)
-            dataFolder = m_Private.CreateDataFolder(projectId);
+            dataFolder = CreateDataFolder(projectId);
             string settingsFileName = Path.Combine(dataFolder, "settings.txt");
             ProjectSettings ps = ProjectSettings.CreateInstance(settingsFileName);
 
@@ -211,8 +281,7 @@ namespace Backsight.Editor
             Settings.Default.Save();
 
             // Now load the data
-            bool isPublic = (silo == m_Public ? true : false);
-            Project result = new Project(silo, isPublic, projectId, ps);
+            Project result = new Project(this, projectId, ps);
 
             // The Load method will end up calling software that requires access to the
             // current map model, so we need to set it no
@@ -238,13 +307,13 @@ namespace Backsight.Editor
             {
                 UserName = System.Environment.UserName,
                 MachineName = System.Environment.MachineName,
-                StartTime = DateTime.Now,
-                EndTime = DateTime.Now
             };
 
             string sessionFile = Path.Combine(dataFolder, GetDataFileName(sessionId));
+            string sessionText = EditSerializer.GetSerializedString<Change>(DataField.Edit, s);
+            File.WriteAllText(sessionFile, sessionText);
+
             Session session = new Session(result, s, sessionFile);
-            session.WriteFile();
             result.Model.AddSession(session);
             result.Model.WorkingSession = session;
             result.SetLastItem(session.Id);
@@ -258,64 +327,13 @@ namespace Backsight.Editor
         /// <param name="p">The project containing the model</param>
         void LoadEdits(Project p)
         {
-            // If the project is public, we need to first load from the public silo (but no further than
-            // the last data file that existed on publication).
-            uint[] privateFiles = m_Private.GetFileNumbers(p.Id);
-            if (privateFiles.Length == 0)
-                throw new ArgumentException("Project doesn't have any private data files");
-
-            // If the first file isn't 00000001.txt, it means the project has been published, so we
-            // need to initially load stuff from the public silo.
-
-            List<string> files = new List<string>();
-
-            if (privateFiles[0] > 1)
-            {
-                uint[] publicFiles = m_Public.GetFileNumbers(p.Id);
-                string publicFolder = m_Public.CreateDataFolder(p.Id);
-
-                foreach (uint fileNum in publicFiles)
-                {
-                    if (fileNum < privateFiles[0])
-                    {
-                        string fileName = Path.Combine(publicFolder, GetDataFileName(fileNum));
-                        files.Add(fileName);
-                    }
-                }
-            }
-
-            // Append all private files
-            string privateFolder = m_Private.CreateDataFolder(p.Id);
-            foreach (uint fileNum in privateFiles)
-            {
-                string fileName = Path.Combine(privateFolder, GetDataFileName(fileNum));
-                files.Add(fileName);
-            }
+            // Note the file numbers of the data files to load
+            uint[] fileNums = GetFileNumbers(p.Id);
+            if (fileNums.Length == 0)
+                throw new ArgumentException("Project doesn't have any data files");
 
             // Now load the files
-            p.LoadDataFiles(files.ToArray());
-
-            // Remember the highest internal ID used by the project
-            p.SetLastItem(privateFiles[privateFiles.Length - 1]);
-        }
-
-        /// <summary>
-        /// Attempts to locate the silo for a specific project.
-        /// </summary>
-        /// <param name="projectName">The user-perceived name for the project</param>
-        /// <returns>The corresponding silo (null if not found)</returns>
-        ProjectSilo FindProjectSilo(string projectName)
-        {
-            string projectId = m_Private.FindProjectId(projectName);
-            if (projectId != null)
-                return m_Private;
-
-            projectId = m_Public.FindProjectId(projectName);
-            if (projectId != null)
-                return m_Public;
-
-            return null;
-                throw new ArgumentException("Cannot find project " + projectName);
+            p.LoadDataFiles(m_FolderName, fileNums);
         }
 
         /// <summary>
@@ -325,8 +343,8 @@ namespace Backsight.Editor
         /// <returns>True if the project appears to exist. False if it cannot be found on the local machine.</returns>
         internal bool CanOpen(string projectName)
         {
-            ProjectSilo silo = FindProjectSilo(projectName);
-            return (silo != null);
+            string projectId = FindProjectId(projectName);
+            return (projectId != null);
         }
 
         /// <summary>
@@ -348,7 +366,8 @@ namespace Backsight.Editor
                 }
                 else
                 {
-                    s.UpdateEndTime();
+                    // Rollup the edits in the session
+                    s.EndSession();
                 }
             }
 

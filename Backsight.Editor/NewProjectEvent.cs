@@ -46,11 +46,6 @@ namespace Backsight.Editor
         internal string ProjectName { get; set; }
 
         /// <summary>
-        /// The time when the project was created.
-        /// </summary>
-        internal DateTime CreationTime { get; set; }
-
-        /// <summary>
         /// The ID of the map layer the project is associated with.
         /// </summary>
         internal int LayerId { get; set; }
@@ -95,7 +90,6 @@ namespace Backsight.Editor
         {
             this.ProjectId = new Guid(ed.ReadString(DataField.ProjectId));
             this.ProjectName = ed.ReadString(DataField.ProjectName);
-            this.CreationTime = ed.ReadDateTime(DataField.When);
             this.LayerId = ed.ReadInt32(DataField.LayerId);
             this.DefaultSystem = ed.ReadString(DataField.CoordinateSystem);
             this.UserName = ed.ReadString(DataField.UserName);
@@ -114,7 +108,6 @@ namespace Backsight.Editor
 
             es.WriteString(DataField.ProjectId, this.ProjectId.ToString());
             es.WriteString(DataField.ProjectName, this.ProjectName);
-            es.WriteDateTime(DataField.When, this.CreationTime);
             es.WriteInt32(DataField.LayerId, this.LayerId);
             es.WriteString(DataField.CoordinateSystem, this.DefaultSystem);
             es.WriteString(DataField.UserName, this.UserName);

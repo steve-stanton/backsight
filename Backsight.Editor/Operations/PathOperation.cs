@@ -335,13 +335,14 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating any spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
+            uint maxSequence = this.EditSequence;
             PointFeature startPoint = m_From;
 
             for (int i=0; i<m_Legs.Count; i++)
             {
                 Leg leg = m_Legs[i];
                 PointFeature lastPoint = (i < (m_Legs.Count-1) ? null : m_To);
-                leg.CreateFeatures(ff, startPoint, lastPoint);
+                maxSequence = leg.CreateFeatures(ff, maxSequence, startPoint, lastPoint);
                 startPoint = leg.GetEndPoint(this);
             }
         }

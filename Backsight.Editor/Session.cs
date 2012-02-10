@@ -90,7 +90,7 @@ namespace Backsight.Editor
         // to the user - probably not a good idea
         public override string ToString()
         {
-            return String.Format("{0} ({1})", m_Data.StartTime, m_Data.UserName);
+            return String.Format("{0} ({1})", m_Data.When, m_Data.UserName);
         }
 
         /// <summary>
@@ -99,24 +99,6 @@ namespace Backsight.Editor
         internal CadastralMapModel MapModel
         {
             get { return m_Project.Model; }
-        }
-
-        /// <summary>
-        /// Updates the end-time associated with this session
-        /// </summary>
-        internal void UpdateEndTime()
-        {
-            m_Data.EndTime = DateTime.Now;
-            WriteFile();
-        }
-
-        /// <summary>
-        /// Serializes session data to file.
-        /// </summary>
-        internal void WriteFile()
-        {
-            string s = EditSerializer.GetSerializedString<Change>(DataField.Edit, m_Data);
-            File.WriteAllText(m_FileName, s);
         }
 
         /*
@@ -255,9 +237,67 @@ namespace Backsight.Editor
             // And remove from the session
             m_Operations.RemoveAll(o => o.EditSequence > m_LastSavedItem);
 
-            // Go back to the old item count (and update session time)
-            UpdateEndTime();
+            // Go back to the old item count
             m_Project.SetLastItem(m_LastSavedItem);
+        }
+
+        /// <summary>
+        /// Concludes this editing session by combining all data files, finishing off with an
+        /// instance of <see cref="EndSessionEvent"/>.
+        /// </summary>
+        internal void EndSession()
+        {
+            // Pick up the files that relate to the session
+            string endFolder = Path.GetDirectoryName(m_FileName);
+            uint[] fileNumbers = GetFileNumbers(endFolder, m_Data.EditSequence);
+
+            // Create an end session event
+            EndSessionEvent endEvent = new EndSessionEvent(m_Project.AllocateId());
+            string endFile = Path.Combine(endFolder, ProjectDatabase.GetDataFileName(endEvent.EditSequence));
+
+            using (StreamWriter sw = File.CreateText(endFile))
+            {
+                foreach (uint fileNum in fileNumbers)
+                {
+                    string fileName = Path.Combine(endFolder, ProjectDatabase.GetDataFileName(fileNum));
+                    string s = File.ReadAllText(fileName);
+                    sw.Write(s);
+                }
+
+                // And finish off with the end event
+                string endText = EditSerializer.GetSerializedString<Change>(DataField.Edit, endEvent);
+                sw.Write(endText);
+            }
+
+            // Get rid of the files that we've just combined
+            foreach (uint fileNum in fileNumbers)
+            {
+                string fileName = Path.Combine(endFolder, ProjectDatabase.GetDataFileName(fileNum));
+                File.Delete(fileName);
+            }
+        }
+
+        /// <summary>
+        /// Obtains the numbers of data files in a specific folder
+        /// </summary>
+        /// <param name="folderName">The name of the folder to look in</param>
+        /// <param name="startFileNumber">The earliest file number to pick up</param>
+        /// <returns>The numbers of data files in the specified folder, starting with the specified starting
+        /// file (sorted ascending).</returns>
+        uint[] GetFileNumbers(string folderName, uint startFileNumber)
+        {
+            List<uint> result = new List<uint>(100);
+
+            foreach (string s in Directory.GetFiles(folderName))
+            {
+                string name = Path.GetFileNameWithoutExtension(s);
+                uint n;
+                if (name.Length == 8 && UInt32.TryParse(name, NumberStyles.HexNumber, null, out n) && n >= startFileNumber)
+                    result.Add(n);
+            }
+
+            result.Sort();
+            return result.ToArray();
         }
 
         /// <summary>
@@ -303,16 +343,13 @@ namespace Backsight.Editor
         /// </summary>
         internal DateTime StartTime
         {
-            get { return m_Data.StartTime; }
+            get { return m_Data.When; }
         }
 
         /// <summary>
         /// When was the last edit performed?
         /// </summary>
-        internal DateTime EndTime
-        {
-            get { return m_Data.EndTime; }
-        }
+        internal DateTime EndTime { get; set; }
 
         /// <summary>
         /// Obtains dependent edits within this session.
@@ -378,9 +415,6 @@ namespace Backsight.Editor
             string dataFolder = Path.GetDirectoryName(m_FileName);
             string editFileName = Path.Combine(dataFolder, ProjectDatabase.GetDataFileName(m_Project.LastItemId));
             File.WriteAllText(editFileName, editString);
-
-            // Update the end-time associated with the session
-            UpdateEndTime();
 
             // Remember the edit as part of the session
             AddOperation(edit);

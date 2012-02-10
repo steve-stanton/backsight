@@ -58,6 +58,11 @@ namespace Backsight.Editor
         /// </summary>
         readonly uint m_Sequence;
 
+        /// <summary>
+        /// The time when the change occurred.
+        /// </summary>
+        readonly DateTime m_When;
+
         #endregion
 
         #region Constructors
@@ -73,6 +78,7 @@ namespace Backsight.Editor
                 throw new ArgumentException();
 
             m_Sequence = editSequence;
+            m_When = DateTime.Now;
         }
 
         /// <summary>
@@ -83,6 +89,12 @@ namespace Backsight.Editor
         protected Change(EditDeserializer ed)
         {
             m_Sequence = ed.ReadUInt32(DataField.Id);
+
+            // Handle old files
+            if (ed.IsNextField(DataField.When))
+                m_When = ed.ReadDateTime(DataField.When);
+            else
+                m_When = DateTime.Now; // could perhaps grab the session start time
         }
 
         #endregion
@@ -94,6 +106,7 @@ namespace Backsight.Editor
         public virtual void WriteData(EditSerializer editSerializer)
         {
             editSerializer.WriteUInt32(DataField.Id, m_Sequence);
+            editSerializer.WriteDateTime(DataField.When, m_When);
         }
 
         /// <summary>
@@ -123,17 +136,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The external ID of this edit is a concatenation of the
-        /// <see cref="Session.Id"/> and <see cref="EditSequence"/> properties
-        /// (seperated with a colon).
-        /// </summary>
-        [Obsolete("Should just be using EditSequence")]
-        internal string DataId
-        {
-            get { return "0."+ m_Sequence; }
-        }
-
-        /// <summary>
         /// Does this edit come after the supplied edit?
         /// </summary>
         /// <param name="that">The edit to compare with</param>
@@ -141,6 +143,14 @@ namespace Backsight.Editor
         internal bool IsAfter(Change that)
         {
             return (this.m_Sequence > that.m_Sequence);
+        }
+
+        /// <summary>
+        /// The time when the change occurred.
+        /// </summary>
+        internal DateTime When
+        {
+            get { return m_When; }
         }
     }
 }

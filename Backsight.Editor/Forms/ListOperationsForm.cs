@@ -63,7 +63,7 @@ namespace Backsight.Editor.Forms
                 DataGridViewRow row = grid.Rows[i];
 
                 row.Tag = op;
-                row.Cells["opIdColumn"].Value = op.DataId;
+                row.Cells["opIdColumn"].Value = op.InternalId;
                 row.Cells["operationColumn"].Value = op.Name;
                 row.Cells["createdColumn"].Value = op.Session.StartTime.ToShortDateString();
                 row.Cells["editorColumn"].Value = op.Session.User;

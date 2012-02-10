@@ -192,7 +192,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// The lengths for each subdivision section.
         /// </summary>
-        readonly Distance[] m_Distances;
+        Distance[] m_Distances;
 
         /// <summary>
         /// Are the distances observed from the end of the line?
@@ -265,7 +265,7 @@ namespace Backsight.Editor.Operations
 
             m_Sections = new List<LineFeature>(m_Distances.Length);
             PointFeature start = parentLine.StartPoint;
-            InternalIdValue item = new InternalIdValue(ff.Creator.DataId);
+            InternalIdValue item = new InternalIdValue(ff.Creator.EditSequence);
 
             for (int i = 0; i < m_Distances.Length; i++)
             {
@@ -406,6 +406,7 @@ namespace Backsight.Editor.Operations
                 section.ObservedLength = newDistances[i];
             }
 
+            m_Distances = newDistances;
             item.Value = oldDistances;
         }
 

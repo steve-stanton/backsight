@@ -36,11 +36,6 @@ namespace Backsight.Editor
         internal string MachineName { get; set; }
 
         /// <summary>
-        /// When was session started? 
-        /// </summary>
-        internal DateTime StartTime { get; set; }
-
-        /// <summary>
         /// When was the last edit performed?
         /// </summary>
         internal DateTime EndTime { get; set; }
@@ -66,8 +61,6 @@ namespace Backsight.Editor
         {
             this.UserName = ed.ReadString(DataField.UserName);
             this.MachineName = ed.ReadString(DataField.MachineName);
-            this.StartTime = ed.ReadDateTime(DataField.StartTime);
-            this.EndTime = ed.ReadDateTime(DataField.EndTime);
         }
 
         #endregion
@@ -82,8 +75,6 @@ namespace Backsight.Editor
 
             es.WriteString(DataField.UserName, this.UserName);
             es.WriteString(DataField.MachineName, this.MachineName);
-            es.WriteDateTime(DataField.StartTime, this.StartTime);
-            es.WriteDateTime(DataField.EndTime, this.EndTime);
         }
     }
 }
