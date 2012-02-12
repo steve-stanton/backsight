@@ -98,25 +98,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-            // Nothing to do
-
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
-        }
-
-        /// <summary>
         /// Executes the edit.
         /// </summary>
         internal void Execute()

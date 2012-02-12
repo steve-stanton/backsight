@@ -100,18 +100,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-
-            // Rollforward the base class.
-            //return base.OnRollforward();
-        }
-
-        /// <summary>
         /// Executes this edit
         /// </summary>
         /// <param name="p1">The first point to be used in orienting the labels.</param>

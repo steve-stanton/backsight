@@ -153,6 +153,16 @@ namespace Backsight.Editor
             int index = m_Operations.Count-1;
             Operation op = m_Operations[index];
 
+            // Move the data file to the project undo folder
+            uint fileNum = op.FileNumber;
+            if (fileNum == 0)
+                throw new ApplicationException("Edit does not appear to belong to the current editing session");
+
+            string name = ProjectDatabase.GetDataFileName(fileNum);
+            string sourceFileName = Path.Combine(m_Project.ProjectFolder, name);
+            string destFileName = Path.Combine(m_Project.GetUndoFolder(), name);
+            File.Move(sourceFileName, destFileName);
+
             // Remember the sequence number of the edit we're rolling back
             uint editSequence = op.EditSequence;
 
@@ -162,6 +172,7 @@ namespace Backsight.Editor
 
             m_Operations.RemoveAt(index);
             this.MapModel.RemoveEdit(op);
+
             return (int)editSequence;
         }
 
@@ -417,6 +428,7 @@ namespace Backsight.Editor
             File.WriteAllText(editFileName, editString);
 
             // Remember the edit as part of the session
+            edit.FileNumber = m_Project.LastItemId;
             AddOperation(edit);
         }
 

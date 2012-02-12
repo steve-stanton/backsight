@@ -36,14 +36,18 @@ namespace Backsight.Editor
         readonly Session m_Session;
 
         /// <summary>
-        /// The item sequence number of this operation (starts at 1 for each session).
-        /// </summary>
-        //readonly uint m_Sequence;
-
-        /// <summary>
         /// Flag bits
         /// </summary>
         OperationFlag m_Flag;
+
+        /// <summary>
+        /// The number of the data file that was used to initially store this edit.
+        /// This will be defined only for edits in the current working session (for
+        /// edits that are part of historic sessions, this will always be zero).
+        /// </summary>
+        /// <remarks>The file number is the same as the internal ID of the change, plus
+        /// the number of further IDs used by the edit.</remarks>
+        internal uint FileNumber { get; set; }
 
         #endregion
 
@@ -59,8 +63,6 @@ namespace Backsight.Editor
             m_Session = CadastralMapModel.Current.WorkingSession;
             if (m_Session == null)
                 throw new ArgumentNullException();
-
-            //m_Sequence = m_Session.AllocateNextItem();
         }
 
         /// <summary>
@@ -74,14 +76,6 @@ namespace Backsight.Editor
             editDeserializer.CurrentEdit = this;
             m_Session = editDeserializer.MapModel.LastSession;
             Debug.Assert(m_Session != null);
-
-            //string id = editDeserializer.ReadString(DataField.Id);
-            //uint sessionId;
-            //InternalIdValue.Parse(id, out sessionId, out m_Sequence);
-
-            // Consistency check (mainly for debugging).
-            //if (m_Session.Id != sessionId)
-            //    throw new ApplicationException();
         }
 
         #endregion
@@ -120,18 +114,6 @@ namespace Backsight.Editor
         public virtual uint FeatureCount
         {
             get { return (uint)Features.Length; }
-        }
-
-        /// <summary>
-        /// Parses a string that was returned by the <see cref="DataId"/> property.
-        /// </summary>
-        /// <param name="s">The string to parse</param>
-        /// <param name="sessionId">The ID of the session</param>
-        /// <param name="sequence">The creation sequence of the edit within the session</param>
-        void ParseDataId(string s, out uint sessionId, out uint sequence)
-        {
-            throw new NotImplementedException();
-            //InternalIdValue.Parse(s, out sessionId, out sequence);
         }
 
         /// <summary>
@@ -262,31 +244,6 @@ namespace Backsight.Editor
                 m_Flag &= (~flag);
         }
 
-        /*
-        /// <summary>
-        /// Has this operation been marked as changed. This indicates whether the
-        /// operation needs to be re-executed as part of rollforward processing.
-        /// </summary>
-        internal bool IsChanged
-        {
-            get { return IsFlagSet(OperationFlag.Changed); }
-            set { SetFlag(OperationFlag.Changed, value); }
-        }
-        */
-
-        /*
-        /// <summary>
-        /// Clears the "changed" status for this operation. All derived classes should
-        /// call this function at the end of their implementation of <c>Rollforward</c>.
-        /// </summary>
-        /// <returns>True (always)</returns>
-        protected bool OnRollforward()
-        {
-            SetFlag(OperationFlag.Changed, false);
-	        return true;
-        }
-        */
-
         #region IFeatureDependent Members
 
         public void OnPreMove(Feature f)
@@ -328,20 +285,6 @@ namespace Backsight.Editor
                 MapModel.AddFeatureIds(feats);
             }
 
-            //// Assign 1-based creation sequence to each created feature
-            //uint numItem = m_Session.NumItem;
-            //for (uint i = 0; i < feats.Length; i++)
-            //{
-            //    numItem++;
-            //    feats[i].SessionSequence = numItem;
-
-            //    // Remember the feature as part of the map model
-            //    MapModel.AddFeature(feats[i]);
-            //}
-
-            //// Ensure the item count for the session has been updated
-            //m_Session.NumItem = numItem;
-
             // Point referenced features to this editing operation
             AddReferences();
 
@@ -369,49 +312,6 @@ namespace Backsight.Editor
             es.WritePersistent<Operation>(DataField.Edit, this);
             return es.ToSerializedString();
         }
-
-        /*
-    /// <summary>
-    /// Saves an editing operation in the database. This writes to the <c>Edits</c>
-    /// table and updates the timestamp in the <c>Sessions</c> table.
-    /// </summary>
-    /// <param name="op">The edit to save</param>
-    internal void SaveOperation()
-    {
-        Trace.Write("Saving to database");
-
-        // Save the last edit in the database
-        string editString = GetEditString();
-
-        // Dump the file out (to help with debugging)
-        using (StreamWriter sw = File.CreateText(@"C:\Temp\LastEdit.txt"))
-        {
-            sw.Write(editString);
-        }
-
-        Transaction.Execute(delegate
-        {
-            // Insert the edit
-            SqlCommand c = new SqlCommand();
-            c.Connection = Transaction.Connection.Value;
-            c.CommandText = "INSERT INTO [ced].[Edits] ([SessionId], [EditSequence], [Data])" +
-                                " VALUES (@sessionId, @editSequence, @data)";
-            c.Parameters.Add(new SqlParameter("@sessionId", SqlDbType.Int));
-            c.Parameters.Add(new SqlParameter("@editSequence", SqlDbType.Int));
-            c.Parameters.Add(new SqlParameter("@data", SqlDbType.Text));
-            c.Parameters[0].Value = CadastralMapModel.Current.WorkingSession.Id;
-            c.Parameters[1].Value = m_Sequence;
-            c.Parameters[2].Value = editString;
-            c.ExecuteNonQuery();
-
-            // Update the end-time associated with the session
-            CadastralMapModel.Current.WorkingSession.UpdateEndTime();
-        });
-
-        // Remember the edit as part of the session
-        CadastralMapModel.Current.WorkingSession.Add(this);
-    }
-         */
 
         /// <summary>
         /// Adds references to existing features referenced by this operation (including features
@@ -671,6 +571,14 @@ namespace Backsight.Editor
             m_Session.SaveOperation(this);
         }
 
+        /// <summary>
+        /// Exchanges update items that were previously generated.
+        /// </summary>
+        /// <param name="data">The update data to apply to this edit (modified to
+        /// hold the values that were previously defined for this edit)</param>
+        /// <exception cref="NotImplementedException">Thrown always. Derived classes that are
+        /// update capable must override (I'm not sure why this isn't part of the IRevisable
+        /// interface)</exception>
         public virtual void ExchangeData(UpdateItemCollection data)
         {
             throw new NotImplementedException();

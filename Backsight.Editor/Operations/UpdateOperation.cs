@@ -109,18 +109,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>
-        /// True if operation has been re-executed successfully
-        /// </returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            //return true;
-        }
-
-        /// <summary>
         /// Adds references to existing features referenced by this operation (including features
         /// that are indirectly referenced by observation classes).
         /// <para/>

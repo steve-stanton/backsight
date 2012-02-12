@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 
 namespace Backsight.Editor
@@ -79,6 +80,46 @@ namespace Backsight.Editor
         }
 
         #endregion
+
+        /// <summary>
+        /// Loads a new map model
+        /// </summary>
+        /// <param name="dataFolder">The folder containing the data files</param>
+        internal void LoadEdits(string dataFolder)
+        {
+            // Note the file numbers of the data files to load
+            uint[] fileNums = GetFileNumbers(dataFolder);
+            if (fileNums.Length == 0)
+                throw new ArgumentException("Project doesn't have any data files");
+
+            // Now load the files
+            LoadDataFiles(dataFolder, fileNums);
+        }
+
+        /// <summary>
+        /// Obtains the number of the data files in the project data folder.
+        /// </summary>
+        /// <param name="dataFolder">The folder containing the data files</param>
+        /// <returns>The data file numbers (sorted). An empty array if the project data folder does not exist.</returns>
+        uint[] GetFileNumbers(string dataFolder)
+        {
+            if (!Directory.Exists(dataFolder))
+                return new uint[0];
+
+            List<uint> result = new List<uint>(100);
+
+            foreach (string s in Directory.GetFiles(dataFolder))
+            {
+                string name = Path.GetFileNameWithoutExtension(s);
+                uint n;
+                if (name.Length == 8 && UInt32.TryParse(name, NumberStyles.HexNumber, null, out n))
+                    result.Add(n);
+            }
+
+            // There's a good chance the files will already be sorted, but just in case
+            result.Sort();
+            return result.ToArray();
+        }
 
         /// <summary>
         /// Allocates a single internal ID for this project. This is a lightweight request that
@@ -170,7 +211,7 @@ namespace Backsight.Editor
             get { return m_MapModel; }
         }
 
-        internal void LoadDataFiles(string folderName, uint[] fileNums)
+        void LoadDataFiles(string folderName, uint[] fileNums)
         {
             Trace.Write("Reading data...");
             EditDeserializer ed = new EditDeserializer(m_MapModel);
@@ -219,6 +260,46 @@ namespace Backsight.Editor
 
             // Remember the highest internal ID used by the project
             SetLastItem(fileNums[fileNums.Length - 1]);
+        }
+
+        /// <summary>
+        /// The data folder for this project.
+        /// </summary>
+        internal string ProjectFolder
+        {
+            get { return Path.Combine(m_Container.FolderName, m_Id.ToString().ToUpper()); }
+        }
+
+        /// <summary>
+        /// The project undo folder (may not exist).
+        /// </summary>
+        internal string UndoFolder
+        {
+            get { return Path.Combine(ProjectFolder, "undo"); }
+        }
+
+        /// <summary>
+        /// Obtains the path of the project undo folder (creating it if it does not already exist).
+        /// </summary>
+        /// <returns></returns>
+        internal string GetUndoFolder()
+        {
+            string undoFolder = this.UndoFolder;
+            if (!Directory.Exists(undoFolder))
+                Directory.CreateDirectory(undoFolder);
+
+            return undoFolder;
+        }
+
+        /// <summary>
+        /// Ensures any undo folder for this project has been removed (usually done when an
+        /// editing session is being closed).
+        /// </summary>
+        internal void DeleteUndoFolder()
+        {
+            string undoFolder = this.UndoFolder;
+            if (Directory.Exists(undoFolder))
+                Directory.Delete(undoFolder, true);
         }
     }
 }

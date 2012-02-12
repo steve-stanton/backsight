@@ -112,27 +112,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-            // Nothing to do... I wonder if the enclosing polygon
-            // needs to be recalculated (what if the reference position
-            // is real close to a line that has moved)?
-
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
-        }
-
-        /// <summary>
         /// Obtains the features that are referenced by this operation (including features
         /// that are indirectly referenced by observation classes).
         /// </summary>

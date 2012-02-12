@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 
 using Backsight.Data;
@@ -111,7 +110,7 @@ namespace Backsight.Editor
         internal void CreateIndexEntry(string projectName, Guid projectId)
         {
             string fileName = Path.Combine(IndexFolderName, projectName + ".txt");
-            File.WriteAllText(fileName, projectId.ToString());
+            File.WriteAllText(fileName, projectId.ToString().ToUpper());
         }
 
         /// <summary>
@@ -121,37 +120,11 @@ namespace Backsight.Editor
         /// <returns>The corresponding data folder (created if necessary)</returns>
         internal string CreateDataFolder(Guid projectId)
         {
-            string folderName = Path.Combine(m_FolderName, projectId.ToString());
+            string folderName = Path.Combine(m_FolderName, projectId.ToString().ToUpper());
             if (!Directory.Exists(folderName))
                 Directory.CreateDirectory(folderName);
 
             return folderName;
-        }
-
-        /// <summary>
-        /// Obtains the number of the data files for a specific project that exist in this silo.
-        /// </summary>
-        /// <param name="projectId">The unique ID of the project of interest</param>
-        /// <returns>The data file numbers (sorted). An empty array if the project data folder does not exist.</returns>
-        internal uint[] GetFileNumbers(Guid projectId)
-        {
-            string dataFolder = Path.Combine(m_FolderName, projectId.ToString());
-            if (!Directory.Exists(dataFolder))
-                return new uint[0];
-
-            List<uint> result = new List<uint>(100);
-
-            foreach (string s in Directory.GetFiles(dataFolder))
-            {
-                string name = Path.GetFileNameWithoutExtension(s);
-                uint n;
-                if (name.Length == 8 && UInt32.TryParse(name, NumberStyles.HexNumber, null, out n))
-                    result.Add(n);
-            }
-
-            // There's a good chance the files will already be sorted, but just in case
-            result.Sort();
-            return result.ToArray();
         }
 
         /// <summary>
@@ -180,7 +153,7 @@ namespace Backsight.Editor
                 MachineName = System.Environment.MachineName
             };
 
-            // Create the private index entry
+            // Create the index entry
             CreateIndexEntry(projectName, e.ProjectId);
 
             // Create the data folder
@@ -272,7 +245,7 @@ namespace Backsight.Editor
             string dataFolder = CreateDataFolder(projectId);
             string creationFileName = Path.Combine(dataFolder, NewProjectEvent.FileName);
 
-            // Read current project settings from the private silo (even if the project is now public)
+            // Read current project settings
             dataFolder = CreateDataFolder(projectId);
             string settingsFileName = Path.Combine(dataFolder, "settings.txt");
             ProjectSettings ps = ProjectSettings.CreateInstance(settingsFileName);
@@ -283,6 +256,9 @@ namespace Backsight.Editor
             // Now load the data
             Project result = new Project(this, projectId, ps);
 
+            // Get rid of any undo folder that may be left over from a crashed editing session
+            result.DeleteUndoFolder();
+
             // The Load method will end up calling software that requires access to the
             // current map model, so we need to set it no
             // -- not sure if this is still true
@@ -290,7 +266,7 @@ namespace Backsight.Editor
             EditingController.Current.SetProject(result);
 
             // Doing it here versus there is historical...
-            LoadEdits(result);
+            result.LoadEdits(dataFolder);
             EditingController.Current.SetMapModel(result.Model, null);
             result.Model.Load();
 
@@ -319,21 +295,6 @@ namespace Backsight.Editor
             result.SetLastItem(session.Id);
 
             return result;
-        }
-
-        /// <summary>
-        /// Loads a new map model
-        /// </summary>
-        /// <param name="p">The project containing the model</param>
-        void LoadEdits(Project p)
-        {
-            // Note the file numbers of the data files to load
-            uint[] fileNums = GetFileNumbers(p.Id);
-            if (fileNums.Length == 0)
-                throw new ArgumentException("Project doesn't have any data files");
-
-            // Now load the files
-            p.LoadDataFiles(m_FolderName, fileNums);
         }
 
         /// <summary>
@@ -368,6 +329,9 @@ namespace Backsight.Editor
                 {
                     // Rollup the edits in the session
                     s.EndSession();
+
+                    // Get rid of any undo folder
+                    p.DeleteUndoFolder();
                 }
             }
 

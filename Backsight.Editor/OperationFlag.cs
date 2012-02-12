@@ -24,36 +24,20 @@ namespace Backsight.Editor
     enum OperationFlag : byte
     {
         /// <summary>
-        /// Operation marked for deletion
-        /// </summary>
-        Deleted=0x01,
-
-        /// <summary>
         /// Geometry which this operation refers to has been changed
         /// </summary>
-        Changed=0x02,
-
-        /// <summary>
-        /// Geometry of a sub-operation has been changed (probably not used)
-        /// </summary>
-        SubChanged=0x04,
+        Changed=0x01,
 
         /// <summary>
         /// Operation has been "touched" by a change. Set either by SetTouch(), or via Touch().
         /// </summary>
-        Touched=0x08,
-
-        /// <summary>
-        /// Splits have been revealed to the user. Applies only to CeSplit operations (may
-        /// now be irrelevant)
-        /// </summary>
-        Revealed=0x10,
+        Touched=0x02,
 
         /// <summary>
         /// Operation still needs to be calculated. Used to determine the
         /// order in which calls to <see cref="Operation.CalculateGeometry"/>
         /// should be made.
         /// </summary>
-        ToCalculate=0x20,
+        ToCalculate=0x04,
     }
 }
