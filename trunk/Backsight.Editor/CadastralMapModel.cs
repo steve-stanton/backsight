@@ -916,23 +916,6 @@ namespace Backsight.Editor
                 return false;
 
             CleanEdit();
-
-            /*
-             * When dealing with SessionFolder, this gets done by the Rollback call done above
-             * 
-            // Remove the edit from the database
-            using (IConnection ic = ConnectionFactory.Create())
-            {
-                string sql = String.Format("DELETE FROM [ced].[Edits] WHERE [SessionId]={0} AND [EditSequence]={1}",
-                                s.Id, editSequence);
-                SqlCommand cmd = new SqlCommand(sql, ic.Value);
-                cmd.ExecuteNonQuery();
-            }
-
-            // If the session is now empty, and it's not the working session, remove it from the model
-            if (s.OperationCount==0 && !Object.ReferenceEquals(s, m_WorkingSession))
-                m_Sessions.Remove(s);
-            */
             return true;
         }
 

@@ -165,27 +165,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollforward this edit in response to some sort of update.
-        /// </summary>
-        /// <returns>True if operation has been re-executed successfully</returns>
-        internal override bool Rollforward()
-        {
-            throw new NotImplementedException();
-            /*
-            // Return if this operation has not been marked as changed.
-            if (!IsChanged)
-                return base.OnRollforward();
-
-            // Re-calculate the position of the attached point & move it.
-            IPosition xpos = Calculate();
-            m_Point.MovePoint(uc, xpos);
-
-            // Rollforward the base class.
-            return base.OnRollforward();
-             */
-        }
-
-        /// <summary>
         /// Calculates the position of the attached point.
         /// </summary>
         /// <returns></returns>

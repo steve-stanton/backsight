@@ -106,7 +106,7 @@ namespace Backsight.Editor
         {
             base.WriteData(es);
 
-            es.WriteString(DataField.ProjectId, this.ProjectId.ToString());
+            es.WriteString(DataField.ProjectId, this.ProjectId.ToString().ToUpper());
             es.WriteString(DataField.ProjectName, this.ProjectName);
             es.WriteInt32(DataField.LayerId, this.LayerId);
             es.WriteString(DataField.CoordinateSystem, this.DefaultSystem);
