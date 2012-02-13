@@ -24,6 +24,7 @@ using Backsight.Editor.Properties;
 using Backsight.Editor.UI;
 using Backsight.Environment;
 using Backsight.Forms;
+using Backsight.Data;
 
 namespace Backsight.Editor
 {
@@ -109,6 +110,11 @@ namespace Backsight.Editor
         /// </summary>
         bool m_HasSelectionChanged;
 
+        /// <summary>
+        /// The database server (null if a database has not been specified).
+        /// </summary>
+        IDataServer m_DataServer;
+
         #endregion
 
         #region Constructors
@@ -128,6 +134,7 @@ namespace Backsight.Editor
             m_Check = null;
             m_Sel = null;
             m_HasSelectionChanged = false;
+            m_DataServer = null;
         }
 
         #endregion

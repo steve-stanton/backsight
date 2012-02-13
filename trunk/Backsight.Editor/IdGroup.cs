@@ -115,7 +115,8 @@ namespace Backsight.Editor
 	        int maxid=0;               // The high end of a new range.
 	        uint nadd=0;               // The number of ranges added.
 
-            Transaction.Execute(delegate
+            DataServer ds = new DataServer(ConnectionFactory.ConnectionString);
+            ds.RunTransaction(delegate
             {
                 // Create ranges based on what's in the free list. We keep creating until we've got
                 // the packet size demanded by this group. To keep things simple, just grab all rows

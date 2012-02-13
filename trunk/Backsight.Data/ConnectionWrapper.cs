@@ -21,13 +21,13 @@ namespace Backsight.Data
     /// <summary>
     /// Wrapper on a database connection.
     /// </summary>
-    /// <remarks>This class is utilized by <see cref="AdapterFactory.GetConnection"/> to help avoid
+    /// <remarks>This class is utilized by <see cref="ConnectionFactory.GetConnection"/> to help avoid
     /// premature disposal of the connection. If you call <c>GetConnection</c> while a transaction
     /// is running, you get back a wrapper on a non-disposable connection. If there's no transaction,
     /// you get back a disposable wrapper. Consider the following:
     /// <code>
     /// 
-    ///   using (IConnection conn = AdapterFactory.GetConnection())
+    ///   using (IConnection conn = ConnectionFactory.GetConnection())
     ///   {
     ///     SqlCommand cmd = new SqlCommand("UPDATE STUFF SET THING=123", conn.Value);
     ///     cmd.ExecuteNonQuery();

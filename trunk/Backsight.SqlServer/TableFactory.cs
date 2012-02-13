@@ -96,7 +96,7 @@ namespace Backsight.SqlServer
 
         /// <summary>
         /// Creates a new <c>TableFactory</c> for the database that is defined through
-        /// the <see cref="AdapterFactory.ConnectionString"/> property.
+        /// the <see cref="ConnectionFactory.ConnectionString"/> property.
         /// </summary>
         public TableFactory()
             : this(ConnectionFactory.ConnectionString)
@@ -521,7 +521,14 @@ namespace Backsight.SqlServer
             string[] tables = GetCedTableNames();
             string checkClause = (enable ? "CHECK" : "NOCHECK");
 
-            using (IConnection ic = ConnectionFactory.Create())
+            IDataServer ds = GetDataServer();
+            foreach (string tableName in tables)
+            {
+                string sql = String.Format("ALTER TABLE [ced].[{0}] {1} CONSTRAINT ALL", tableName, checkClause);
+                ds.ExecuteNonQuery(sql);
+            }
+            /*
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 SqlConnection c = ic.Value;
 
@@ -532,6 +539,7 @@ namespace Backsight.SqlServer
                     cmd.ExecuteNonQuery();
                 }
             }
+             */
         }
 
         /// <summary>
@@ -541,20 +549,6 @@ namespace Backsight.SqlServer
         string[] GetCedTableNames()
         {
             List<string> result = new List<string>();
-
-            /*
-            using (IConnection ic = AdapterFactory.GetConnection())
-            {
-                string sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_SCHEMA='ced'";
-                SqlCommand cmd = new SqlCommand(sql, ic.Value);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                        result.Add(reader.GetString(0));
-                }
-            }
-             */
 
             foreach (Smo.Table table in m_Database.Tables)
             {
@@ -574,8 +568,17 @@ namespace Backsight.SqlServer
         public void RemoveAll()
         {
             BacksightDataSet ds = new BacksightDataSet();
+            IDataServer db = GetDataServer();
 
-            using (IConnection ic = ConnectionFactory.Create())
+            foreach (DataTable dt in ds.Tables)
+            {
+                // Assume the "ced" schema, since I don't see any DataTable.SchemaName property.
+                string tableName = GetTableName(dt);
+                string sql = String.Format("DELETE FROM [ced].[{0}]", tableName);
+                db.ExecuteNonQuery(sql);
+            }
+/*
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 SqlConnection c = ic.Value;
 
@@ -588,6 +591,7 @@ namespace Backsight.SqlServer
                     cmd.ExecuteNonQuery();
                 }
             }
+ */
         }
 
         /// <summary>
@@ -597,7 +601,7 @@ namespace Backsight.SqlServer
         /// <param name="ds">The dataset to import</param>
         public void Import(BacksightDataSet ds)
         {
-            using (IConnection ic = ConnectionFactory.Create())
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 SqlConnection c = ic.Value;
 
@@ -713,6 +717,15 @@ namespace Backsight.SqlServer
         public Smo.Table FindTableByName(string tableName)
         {
             return m_Database.Tables[tableName];
+        }
+
+        /// <summary>
+        /// Obtains the database server.
+        /// </summary>
+        /// <returns>Database access methods</returns>
+        IDataServer GetDataServer()
+        {
+            return new DataServer(ConnectionString);
         }
     }
 }

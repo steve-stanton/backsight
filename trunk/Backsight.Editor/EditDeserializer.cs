@@ -94,20 +94,6 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EditDeserializer"/> class
-        /// with an empty map model.
-        /// </summary>
-        /// <remarks>
-        /// While this constructor is good for testing, the empty map model that gets utilized may not
-        /// be complete unless the environment has been properly initialized (e.g. have ID groups been
-        /// loaded from the database?).
-        /// </remarks>
-        internal EditDeserializer()
-            : this(new CadastralMapModel())
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="EditDeserializer"/> class by
         /// scanning the current assembly to look for constructors that accept an instance of
         /// <see cref="EditDeserializer"/>. Before attempting to deserialize anything,

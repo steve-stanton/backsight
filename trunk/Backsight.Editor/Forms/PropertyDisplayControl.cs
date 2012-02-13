@@ -14,12 +14,9 @@
 // </remarks>
 
 using System;
-using System.Windows.Forms;
-using System.Data;
 using System.Collections.Generic;
 using System.Diagnostics;
-
-using Backsight.Editor.Database;
+using System.Windows.Forms;
 
 namespace Backsight.Editor.Forms
 {

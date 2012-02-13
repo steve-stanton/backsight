@@ -83,7 +83,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdapterFactory.cs" />
     <Compile Include="BacksightDataSet.Designer.cs">
       <DependentUpon>BacksightDataSet.xsd</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -97,6 +96,7 @@
     </Compile>
     <Compile Include="ConnectionFactory.cs" />
     <Compile Include="ConnectionWrapper.cs" />
+    <Compile Include="DataServer.cs" />
     <Compile Include="DomainTableRow.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -121,6 +121,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="IConnection.cs" />
+    <Compile Include="IDataServer.cs" />
     <Compile Include="IdGroupDataTable.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -168,7 +169,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Transaction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

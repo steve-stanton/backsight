@@ -129,7 +129,7 @@ namespace Backsight.Editor
 
             int nFound = 0;
 
-            using (IConnection ic = ConnectionFactory.Create())
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 SqlConnection c = ic.Value;
                 const string KEYS_TABLE_NAME = "#Ids";
@@ -188,7 +188,7 @@ namespace Backsight.Editor
 
             List<DataRow> result = new List<DataRow>();
 
-            using (IConnection ic = ConnectionFactory.Create())
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 SqlConnection c = ic.Value;
 
@@ -215,7 +215,7 @@ namespace Backsight.Editor
         /// key of the table.</returns>
         internal static DataRow[] FindByKey(ITable table, string key)
         {
-            using (IConnection ic = ConnectionFactory.Create())
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 string sql = String.Format("SELECT * FROM {0} WHERE [{1}]='{2}'",
                                 table.TableName, table.IdColumnName, key);

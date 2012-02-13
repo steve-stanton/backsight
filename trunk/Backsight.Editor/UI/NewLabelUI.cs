@@ -15,17 +15,16 @@
 
 using System;
 using System.Data;
-using System.Windows.Forms;
-using System.Drawing;
 using System.Diagnostics;
+using System.Drawing;
+using System.Windows.Forms;
 
-using Backsight.Environment;
-using Backsight.Editor.Forms;
-using Backsight.Forms;
-using Backsight.Editor.Properties;
-using Backsight.Geometry;
-using Backsight.Editor.Operations;
 using Backsight.Editor.Database;
+using Backsight.Editor.Forms;
+using Backsight.Editor.Operations;
+using Backsight.Editor.Properties;
+using Backsight.Environment;
+using Backsight.Forms;
 
 namespace Backsight.Editor.UI
 {
