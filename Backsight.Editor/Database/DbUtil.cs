@@ -75,7 +75,7 @@ namespace Backsight.Editor.Database
         /// <returns>The number of rows affected by the statement</returns>
         public static int ExecuteNonQuery(string sql)
         {
-            using (IConnection ic = ConnectionFactory.Create())
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 Trace.WriteLine(sql);
                 SqlCommand cmd = new SqlCommand(sql, ic.Value);
@@ -92,7 +92,7 @@ namespace Backsight.Editor.Database
         /// <returns>The assigned row ID</returns>
         public static uint ExecuteIdentityInsert(string sql)
         {
-            using (IConnection ic = ConnectionFactory.Create())
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 Trace.WriteLine(sql);
                 SqlConnection c = ic.Value;
@@ -112,7 +112,7 @@ namespace Backsight.Editor.Database
         /// all columns)</returns>
         internal static DataRow CreateNewRow(ITable t)
         {
-            using (IConnection ic = ConnectionFactory.Create())
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 string sql = String.Format("SELECT * FROM {0} WHERE 1=0", t.TableName);
                 SqlDataAdapter adapter = new SqlDataAdapter(sql, ic.Value);
@@ -148,7 +148,7 @@ namespace Backsight.Editor.Database
             if (String.IsNullOrEmpty(tableName))
                 throw new ArgumentException("Table name for row is not defined");
 
-            using (IConnection ic = ConnectionFactory.Create())
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 SqlDataAdapter a = new SqlDataAdapter("SELECT * FROM " + tableName, ic.Value);
                 SqlCommandBuilder cb = new SqlCommandBuilder(a);

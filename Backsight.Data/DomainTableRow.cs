@@ -100,7 +100,7 @@ namespace Backsight.Data
             {
                 Dictionary<string, string> result = new Dictionary<string, string>();
 
-                using (IConnection ic = ConnectionFactory.Create())
+                using (IConnection ic = ConnectionFactory.GetConnection())
                 {
                     string sql = "SELECT [ShortValue], [LongValue] FROM " + TableName;
                     SqlCommand cmd = new SqlCommand(sql, ic.Value);

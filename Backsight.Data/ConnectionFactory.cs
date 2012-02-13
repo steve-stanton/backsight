@@ -47,7 +47,7 @@ namespace Backsight.Data
 
             try
             {
-                using (IConnection c = Create())
+                using (IConnection c = GetConnection())
                 {
                 }
 
@@ -67,9 +67,9 @@ namespace Backsight.Data
         /// the transaction. Otherwise you get a wrapper on a new connection object based on the
         /// <c>ConnectionString</c> property setting. In either case, the connection is open at return.
         /// </returns>
-        public static IConnection Create()
+        public static IConnection GetConnection()
         {
-            IConnection c = Transaction.Connection;
+            IConnection c = null; // Transaction.Connection;
             if (c != null)
                 return c;
 

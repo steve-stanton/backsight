@@ -71,7 +71,7 @@ namespace Backsight.Editor.Database
         internal static IdAllocationInfo Insert(IdGroup idGroup, int lowestId, int highestId,
                                                 int jobId, User user, DateTime insertTime, int numUsed)
         {
-            using (IConnection ic = ConnectionFactory.Create())
+            using (IConnection ic = ConnectionFactory.GetConnection())
             {
                 StringBuilder sb = new StringBuilder(200);
                 sb.AppendFormat("INSERT INTO [ced].[IdAllocations] ({0}) VALUES ", GetColumns());
