@@ -30,6 +30,17 @@ namespace Backsight.Data
     public interface IDataServer
     {
         /// <summary>
+        /// The database connection string.
+        /// </summary>
+        string ConnectionString { get; }
+
+        /// <summary>
+        /// Checks whether it is possible to connect to the database.
+        /// </summary>
+        /// <returns>True if a database connection can be established.</returns>
+        bool CanConnect();
+
+        /// <summary>
         /// Executes a SELECT statement.
         /// </summary>
         /// <param name="sql">The select statement</param>

@@ -167,7 +167,9 @@ namespace Backsight.Editor
 
             // Write initial project settings to the data folder
             ProjectSettings ps = new ProjectSettings();
-            ps.ConnectionString = ConnectionFactory.ConnectionString;
+            IDataServer ds = EditingController.Current.DataServer;
+            if (ds != null)
+                ps.ConnectionString = ds.ConnectionString;
 
             // Turn off auto-number if there's no database connection string
             if (String.IsNullOrEmpty(ps.ConnectionString))

@@ -1042,7 +1042,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
 
         private void EditAutoNumber(IUserAction action)
         {
-            if (m_Controller.IsAutoNumber == false && ConnectionFactory.CanConnect() == false)
+            if (m_Controller.IsAutoNumber == false && EditingController.Current.DataServer == null)
                 MessageBox.Show("Cannot switch auto-number on because a database connection is not available.");
             else
                 m_Controller.ToggleAutoNumber();
