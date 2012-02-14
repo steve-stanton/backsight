@@ -115,7 +115,10 @@ namespace Backsight.Editor
 	        int maxid=0;               // The high end of a new range.
 	        uint nadd=0;               // The number of ranges added.
 
-            DataServer ds = new DataServer(ConnectionFactory.ConnectionString);
+            IDataServer ds = EditingController.Current.DataServer;
+            if (ds == null)
+                throw new ApplicationException("Database not available");
+
             ds.RunTransaction(delegate
             {
                 // Create ranges based on what's in the free list. We keep creating until we've got

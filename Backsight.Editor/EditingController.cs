@@ -119,6 +119,10 @@ namespace Backsight.Editor
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditingController"/> class.
+        /// </summary>
+        /// <param name="main">The main dialog for the Cadastral Editor application</param>
         internal EditingController(MainForm main)
             : base()
         {
@@ -135,6 +139,11 @@ namespace Backsight.Editor
             m_Sel = null;
             m_HasSelectionChanged = false;
             m_DataServer = null;
+
+            // If we know of a database, create the access class
+            string cs = LastDatabase.ConnectionString;
+            if (!String.IsNullOrWhiteSpace(cs))
+                m_DataServer = new DataServer(cs);
         }
 
         #endregion
@@ -1302,6 +1311,30 @@ namespace Backsight.Editor
             }
 
             return Settings.Default.LastSystemText;
+        }
+
+        /// <summary>
+        /// The database server (null if a database has not been specified).
+        /// </summary>
+        internal IDataServer DataServer
+        {
+            get { return m_DataServer; }
+        }
+
+        /// <summary>
+        /// Defines (or clears) a database server.
+        /// </summary>
+        /// <param name="connectionString">The database connection string (specify null if you want
+        /// to clear a previously defined database).</param>
+        /// <returns>The database server (null if a null connection string was supplied).</returns>
+        internal IDataServer SetDataServer(string connectionString)
+        {
+            if (String.IsNullOrWhiteSpace(connectionString))
+                m_DataServer = null;
+            else
+                m_DataServer = new DataServer(connectionString);
+
+            return m_DataServer;
         }
     }
 }

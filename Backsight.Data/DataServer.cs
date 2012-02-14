@@ -60,6 +60,30 @@ namespace Backsight.Data
         #endregion
 
         /// <summary>
+        /// The database connection string.
+        /// </summary>
+        public string ConnectionString
+        {
+            get { return m_ConnectionString; }
+        }
+
+        /// <summary>
+        /// Checks whether it is possible to connect to the database.
+        /// </summary>
+        /// <returns>True if a database connection can be established.</returns>
+        public bool CanConnect()
+        {
+            try
+            {
+                using (IConnection c = GetConnection()) { }
+                return true;
+            }
+
+            catch { }
+            return false;
+        }
+
+        /// <summary>
         /// Creates a new adapter and associates it with a database connection.
         /// </summary>
         /// <typeparam name="T">The type of adapter to create</typeparam>

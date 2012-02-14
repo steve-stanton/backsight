@@ -37,28 +37,6 @@ namespace Backsight.Data
         }
 
         /// <summary>
-        /// Checks whether it is possible to connect to the database.
-        /// </summary>
-        /// <returns></returns>
-        public static bool CanConnect()
-        {
-            if (String.IsNullOrEmpty(s_ConnectionString))
-                return false;
-
-            try
-            {
-                using (IConnection c = GetConnection())
-                {
-                }
-
-                return true;
-            }
-
-            catch { }
-            return false;
-        }
-
-        /// <summary>
         /// Returns a database connection based on the connection string defined
         /// via the <see cref="ConnectionString"/> property.
         /// </summary>
