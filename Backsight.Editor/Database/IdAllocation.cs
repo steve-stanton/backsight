@@ -68,32 +68,30 @@ namespace Backsight.Editor.Database
         /// <param name="user">The user who made the allocation</param>
         /// <param name="insertTime"></param>
         /// <param name="numUsed">The number of IDs already used</param>
+        /// <exception cref="InvalidOperationException">If a database is not available</exception>
         internal static IdAllocationInfo Insert(IdGroup idGroup, int lowestId, int highestId,
                                                 int jobId, User user, DateTime insertTime, int numUsed)
         {
-            using (IConnection ic = ConnectionFactory.GetConnection())
+            IDataServer ds = EditingController.Current.DataServer;
+            if (ds == null)
+                throw new InvalidOperationException("No database available");
+
+            StringBuilder sb = new StringBuilder(200);
+            sb.AppendFormat("INSERT INTO [ced].[IdAllocations] ({0}) VALUES ", GetColumns());
+            sb.AppendFormat("({0}, {1}, {2}, {3}, {4}, {5}, {6})",
+                idGroup.Id, lowestId, highestId, jobId, user.UserId,
+                DbUtil.GetDateTimeString(insertTime), numUsed);
+            ds.ExecuteNonQuery(sb.ToString());
+
+            return new IdAllocationInfo()
             {
-                StringBuilder sb = new StringBuilder(200);
-                sb.AppendFormat("INSERT INTO [ced].[IdAllocations] ({0}) VALUES ", GetColumns());
-                sb.AppendFormat("({0}, {1}, {2}, {3}, {4}, {5}, {6})",
-                    idGroup.Id, lowestId, highestId, jobId, user.UserId,
-                    DbUtil.GetDateTimeString(insertTime), numUsed);
-                SqlCommand cmd = new SqlCommand(sb.ToString(), ic.Value);
-                cmd.ExecuteNonQuery();
-
-                //return new IdAllocation(idGroup.Id, lowestId, highestId, jobId, (int)user.UserId,
-                //                            insertTime, numUsed);
-
-                return new IdAllocationInfo()
-                {
-                    GroupId = idGroup.Id,
-                    LowestId = lowestId,
-                    HighestId = highestId,
-                    JobId = jobId,
-                    UserId = (int)user.UserId,
-                    TimeAllocated = insertTime
-                };
-            }
+                GroupId = idGroup.Id,
+                LowestId = lowestId,
+                HighestId = highestId,
+                JobId = jobId,
+                UserId = (int)user.UserId,
+                TimeAllocated = insertTime
+            };
         }
 
         /*

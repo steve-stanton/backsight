@@ -35,13 +35,15 @@ namespace Backsight.Environment
         /// <summary>
         /// Performs a lookup on the domain table
         /// </summary>
+        /// <param name="connectionString">The connection string to the database holding domain data.</param>
         /// <param name="shortValue">The abbreviated code to lookup</param>
         /// <returns>The expanded value for the lookup (blank if not found)</returns>
-        string Lookup(string shortValue);
+        string Lookup(string connectionString, string shortValue);
 
         /// <summary>
-        /// The lookup values in the domain table
+        /// Retrieves the lookup values in the domain table.
         /// </summary>
-        string[] LookupValues { get; }
+        /// <param name="connectionString">The connection string to the database holding domain data.</param>
+        string[] GetLookupValues(string connectionString);
     }
 }

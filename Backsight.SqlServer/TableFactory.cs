@@ -96,10 +96,11 @@ namespace Backsight.SqlServer
 
         /// <summary>
         /// Creates a new <c>TableFactory</c> for the database that is defined through
-        /// the <see cref="ConnectionFactory.ConnectionString"/> property.
+        /// the <see cref="LastDatabase.ConnectionString"/> property.
         /// </summary>
-        public TableFactory()
-            : this(ConnectionFactory.ConnectionString)
+        public TableFactory()            
+            : this(LastDatabase.ConnectionString)
+
         {
         }
 
@@ -598,10 +599,11 @@ namespace Backsight.SqlServer
         /// Imports environment data from the specified dataset. Prior to call, you should
         /// first call <see cref="RemoveAll"/>.
         /// </summary>
+        /// <param name="server">The server holding the data</param>
         /// <param name="ds">The dataset to import</param>
-        public void Import(BacksightDataSet ds)
+        public void Import(IDataServer server, BacksightDataSet ds)
         {
-            using (IConnection ic = ConnectionFactory.GetConnection())
+            using (IConnection ic = server.GetConnection())
             {
                 SqlConnection c = ic.Value;
 

@@ -15,7 +15,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using System.Data;
 
 using Backsight.Data;
 
@@ -36,22 +36,21 @@ namespace Backsight.Editor.Database
         /// the group has never been used)</returns>
         internal static IdFree[] FindByGroupId(int groupId)
         {
-            using (IConnection ic = ConnectionFactory.GetConnection())
-            {
-                List<IdFree> result = new List<IdFree>(1000);
-                string sql = String.Format("{0} WHERE [GroupId]={1}", GetSelectString(), groupId);
-                SqlCommand cmd = new SqlCommand(sql, ic.Value);
+            IDataServer ds = EditingController.Current.DataServer;
+            if (ds == null)
+                throw new InvalidOperationException("No database available");
 
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        IdFree item = ParseSelect(reader);
-                        result.Add(item);
-                    }
-                }
-                return result.ToArray();
+            List<IdFree> result = new List<IdFree>(1000);
+            string sql = String.Format("{0} WHERE [GroupId]={1}", GetSelectString(), groupId);
+            DataTable table = ds.ExecuteSelect(sql);
+
+            foreach (DataRow row in table.Select())
+            {
+                IdFree item = ParseSelect(row);
+                result.Add(item);
             }
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -74,15 +73,14 @@ namespace Backsight.Editor.Database
         /// <returns>The inserted free range entry</returns>
         internal static IdFree Insert(IdGroup idGroup, int lowestId, int highestId)
         {
-            using (IConnection ic = ConnectionFactory.GetConnection())
-            {
-                string sql = String.Format("INSERT INTO [ced].[IdFree] ([GroupId], [LowestId], [HighestId])" +
-                                            " VALUES ({0}, {1}, {2})", idGroup.Id, lowestId, highestId);
-                SqlCommand cmd = new SqlCommand(sql, ic.Value);
-                cmd.ExecuteNonQuery();
+            IDataServer ds = EditingController.Current.DataServer;
+            if (ds == null)
+                throw new InvalidOperationException("No database available");
 
-                return new IdFree(idGroup.Id, lowestId, highestId);
-            }
+            string sql = String.Format("INSERT INTO [ced].[IdFree] ([GroupId], [LowestId], [HighestId])" +
+                                        " VALUES ({0}, {1}, {2})", idGroup.Id, lowestId, highestId);
+            ds.ExecuteNonQuery(sql);
+            return new IdFree(idGroup.Id, lowestId, highestId);
         }
 
         #endregion
@@ -104,6 +102,11 @@ namespace Backsight.Editor.Database
         /// </summary>
         int m_HighestId;
 
+        /// <summary>
+        /// The database holding ID data.
+        /// </summary>
+        readonly IDataServer m_DataServer;
+
         #endregion
 
         #region Constructors
@@ -114,11 +117,16 @@ namespace Backsight.Editor.Database
         /// <param name="groupId"></param>
         /// <param name="lowestId"></param>
         /// <param name="highestId"></param>
+        /// <exception cref="InvalidOperationException">If a database is not available</exception>
         IdFree(int groupId, int lowestId, int highestId)
         {
             m_GroupId = groupId;
             m_LowestId = lowestId;
             m_HighestId = highestId;
+
+            m_DataServer = EditingController.Current.DataServer;
+            if (m_DataServer == null)
+                throw new InvalidOperationException("No database available");
         }
 
         #endregion
@@ -138,14 +146,13 @@ namespace Backsight.Editor.Database
         /// Parses a selection that refers to the columns identified via a prior call to
         /// <see cref="GetSelectString"/>
         /// </summary>
-        /// <param name="reader">The database reader, positioned at the row that needs to
-        /// be parsed</param>
+        /// <param name="row">The row selected from the database</param>
         /// <returns>Data corresponding to the content of the row</returns>
-        static IdFree ParseSelect(SqlDataReader reader)
+        static IdFree ParseSelect(DataRow row)
         {
-            int groupId = reader.GetInt32(0);
-            int lowestId = reader.GetInt32(1);
-            int highestId = reader.GetInt32(2);
+            int groupId = (int)row[0];
+            int lowestId = (int)row[1];
+            int highestId = (int)row[2];
 
             return new IdFree(groupId, lowestId, highestId);
         }
@@ -166,14 +173,9 @@ namespace Backsight.Editor.Database
             get { return m_LowestId; }
             set
             {
-                using (IConnection ic = ConnectionFactory.GetConnection())
-                {
-                    string sql = String.Format("UPDATE [ced].[IdFree] SET [LowestId]={0} WHERE [GroupId]={1} AND [LowestId]={2}",
-                                                value, m_GroupId, m_LowestId);
-                    SqlCommand cmd = new SqlCommand(sql, ic.Value);
-                    cmd.ExecuteNonQuery();
-                }
-
+                string sql = String.Format("UPDATE [ced].[IdFree] SET [LowestId]={0} WHERE [GroupId]={1} AND [LowestId]={2}",
+                                            value, m_GroupId, m_LowestId);
+                m_DataServer.ExecuteNonQuery(sql);
                 m_LowestId = value;
             }
         }
@@ -191,13 +193,9 @@ namespace Backsight.Editor.Database
         /// </summary>
         internal void Delete()
         {
-            using (IConnection ic = ConnectionFactory.GetConnection())
-            {
-                string sql = String.Format("DELETE FROM [ced].[IdFree] WHERE [GroupId]={0} AND [LowestId]={1}",
-                                            m_GroupId, m_LowestId);
-                SqlCommand cmd = new SqlCommand(sql, ic.Value);
-                cmd.ExecuteNonQuery();
-            }
+            string sql = String.Format("DELETE FROM [ced].[IdFree] WHERE [GroupId]={0} AND [LowestId]={1}",
+                                        m_GroupId, m_LowestId);
+            m_DataServer.ExecuteNonQuery(sql);
         }
     }
 }

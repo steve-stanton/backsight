@@ -43,7 +43,6 @@ namespace Backsight.SqlServer
                 throw new ArgumentNullException("No database connection string");
 
             m_ConnectionString = connectionString;
-            ConnectionFactory.ConnectionString = m_ConnectionString;
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(connectionString);
             this.Name = String.Format(@"{0}\{1}", csb.DataSource, csb.InitialCatalog);
             Read();
@@ -55,7 +54,7 @@ namespace Backsight.SqlServer
 
         public void Read()
         {
-            this.Data.Load();
+            this.Data.Load(m_ConnectionString);
         }
 
         public void Write()
@@ -71,7 +70,7 @@ namespace Backsight.SqlServer
         /// <param name="ed">The environment data to copy into this database</param>
         public void Replace(EnvironmentData ed)
         {
-            ConnectionFactory.ConnectionString = m_ConnectionString;
+            //ConnectionFactory.ConnectionString = m_ConnectionString;
             TableFactory tf = new TableFactory();
 
             try
@@ -86,11 +85,11 @@ namespace Backsight.SqlServer
                     tf.RemoveAll();
 
                     // Add the entire content of the specified container
-                    tf.Import(ed.Data);
+                    tf.Import(ds, ed.Data);
                 });
 
                 Data.Clear();
-                Data.Load();
+                Data.Load(m_ConnectionString);
             }
 
             finally

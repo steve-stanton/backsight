@@ -19,6 +19,7 @@ using System.Data;
 
 using Backsight.Forms;
 using Backsight.Environment;
+using Backsight.Data;
 
 namespace Backsight.Editor.Forms
 {
@@ -29,6 +30,11 @@ namespace Backsight.Editor.Forms
     partial class PropertyPage : TabPage
     {
         #region Class data
+
+        /// <summary>
+        /// The database holding the attribute data (not null).
+        /// </summary>
+        readonly IDataServer m_DataServer;
 
         /// <summary>
         /// The database row that's being displayed
@@ -44,10 +50,16 @@ namespace Backsight.Editor.Forms
         /// </summary>
         /// <param name="row">The database row that's being displayed (not null)</param>
         /// <exception cref="ArgumentNullException">If the supplied row is null</exception>
+        /// <exception cref="InvalidOperationException">If no database is available</exception>
         internal PropertyPage(Row row)
             : base()
         {
             InitializeComponent();
+
+            m_DataServer = EditingController.Current.DataServer;
+            if (m_DataServer == null)
+                throw new InvalidOperationException("No database available");
+
             SetRow(row);
         }
 
@@ -112,7 +124,7 @@ namespace Backsight.Editor.Forms
                 if (cd != null)
                 {
                     string shortValue = items[i].ToString();
-                    string longValue = cd.Domain.Lookup(shortValue);
+                    string longValue = cd.Domain.Lookup(m_DataServer.ConnectionString, shortValue);
                     item.Description = longValue;
                 }
 
