@@ -94,7 +94,6 @@
     <Compile Include="ColumnDomainRow.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ConnectionFactory.cs" />
     <Compile Include="ConnectionWrapper.cs" />
     <Compile Include="DataServer.cs" />
     <Compile Include="DomainTableRow.cs">

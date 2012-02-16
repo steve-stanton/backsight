@@ -62,39 +62,26 @@ namespace Backsight.Data
             }
         }
 
-        public void Load()
+        public void Load(string connectionString)
         {
-            using (IConnection ic = ConnectionFactory.GetConnection())
-            {
-                ColumnDomainTableAdapter columnDomain = new ColumnDomainTableAdapter();
-                DomainTableTableAdapter domainTable = new DomainTableTableAdapter();
-                FontTableAdapter font = new FontTableAdapter();
-                IdGroupTableAdapter idGroup = new IdGroupTableAdapter();
-                EntityTypeTableAdapter entity = new EntityTypeTableAdapter();
-                ThemeTableAdapter theme = new ThemeTableAdapter();
-                LayerTableAdapter layer = new LayerTableAdapter();
-                SysIdTableAdapter sysid = new SysIdTableAdapter();
-                PropertyTableAdapter prop = new PropertyTableAdapter();
-                SchemaTableAdapter schema = new SchemaTableAdapter();
-                TemplateTableAdapter template = new TemplateTableAdapter();
-                SchemaTemplateTableAdapter schemaTemplate = new SchemaTemplateTableAdapter();
-                EntityTypeSchemaTableAdapter entityTypeSchema = new EntityTypeSchemaTableAdapter();
-                ZoneTableAdapter zone = new ZoneTableAdapter();
+            IDataServer ds = new DataServer(connectionString);
 
-                columnDomain.Connection =
-                domainTable.Connection =
-                font.Connection =
-                idGroup.Connection =
-                entity.Connection =
-                theme.Connection =
-                layer.Connection =
-                sysid.Connection =
-                prop.Connection =
-                schema.Connection =
-                template.Connection =
-                schemaTemplate.Connection =
-                entityTypeSchema.Connection =
-                zone.Connection = ic.Value;
+            ds.RunTransaction(delegate
+            {
+                ColumnDomainTableAdapter columnDomain = ds.CreateAdapter<ColumnDomainTableAdapter>();
+                DomainTableTableAdapter domainTable = ds.CreateAdapter<DomainTableTableAdapter>();
+                FontTableAdapter font = ds.CreateAdapter<FontTableAdapter>();
+                IdGroupTableAdapter idGroup = ds.CreateAdapter<IdGroupTableAdapter>();
+                EntityTypeTableAdapter entity = ds.CreateAdapter<EntityTypeTableAdapter>();
+                ThemeTableAdapter theme = ds.CreateAdapter<ThemeTableAdapter>();
+                LayerTableAdapter layer = ds.CreateAdapter<LayerTableAdapter>();
+                SysIdTableAdapter sysid = ds.CreateAdapter<SysIdTableAdapter>();
+                PropertyTableAdapter prop = ds.CreateAdapter<PropertyTableAdapter>();
+                SchemaTableAdapter schema = ds.CreateAdapter<SchemaTableAdapter>();
+                TemplateTableAdapter template = ds.CreateAdapter<TemplateTableAdapter>();
+                SchemaTemplateTableAdapter schemaTemplate = ds.CreateAdapter<SchemaTemplateTableAdapter>();
+                EntityTypeSchemaTableAdapter entityTypeSchema = ds.CreateAdapter<EntityTypeSchemaTableAdapter>();
+                ZoneTableAdapter zone = ds.CreateAdapter<ZoneTableAdapter>();
 
                 columnDomain.Fill(this.ColumnDomain);
                 domainTable.Fill(this.DomainTable);
@@ -110,7 +97,7 @@ namespace Backsight.Data
                 schemaTemplate.Fill(this.SchemaTemplate);
                 entityTypeSchema.Fill(this.EntityTypeSchema);
                 zone.Fill(this.Zone);
-            }
+            });
         }
 
         /// <summary>

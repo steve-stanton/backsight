@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Data;
 
 using Backsight.Environment;
+using Backsight.Data;
 
 namespace Backsight.Editor
 {
@@ -258,9 +259,14 @@ namespace Backsight.Editor
             if (cd == null)
                 return shortValue;
 
+            // Obtain the database server
+            IDataServer ds = EditingController.Current.DataServer;
+            if (ds == null)
+                return shortValue;
+
             // Perform a lookup on the domain
             IDomainTable dt = cd.Domain;
-            string longValue = dt.Lookup(shortValue);
+            string longValue = dt.Lookup(ds.ConnectionString, shortValue);
 
             // If it's not there, it SHOULD be blank
             if (String.IsNullOrEmpty(longValue))

@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Data;
 
 using Backsight.Environment;
@@ -77,12 +76,13 @@ namespace Backsight.Data
             /// <summary>
             /// Performs a lookup on the domain table
             /// </summary>
+            /// <param name="connectionString">The connection string for the database holding domain data.</param>
             /// <param name="shortValue">The abbreviated code to lookup</param>
             /// <returns>The expanded value for the lookup (blank if not found)</returns>
-            public string Lookup(string shortValue)
+            public string Lookup(string connectionString, string shortValue)
             {
                 if (m_Data == null)
-                    m_Data = LoadDomainTable();
+                    m_Data = LoadDomainTable(connectionString);
 
                 string result;
 
@@ -95,25 +95,19 @@ namespace Backsight.Data
             /// <summary>
             /// Loads the domain table from the database
             /// </summary>
+            /// <param name="connectionString">The connection string for the database holding domain data.</param>
             /// <returns>A index of the domain table, keyed by the short value</returns>
-            Dictionary<string, string> LoadDomainTable()
+            Dictionary<string, string> LoadDomainTable(string connectionString)
             {
+                IDataServer ds = new DataServer(connectionString);
                 Dictionary<string, string> result = new Dictionary<string, string>();
+                DataTable table = ds.ExecuteSelect("SELECT [ShortValue], [LongValue] FROM " + TableName);
 
-                using (IConnection ic = ConnectionFactory.GetConnection())
+                foreach (DataRow row in table.Select())
                 {
-                    string sql = "SELECT [ShortValue], [LongValue] FROM " + TableName;
-                    SqlCommand cmd = new SqlCommand(sql, ic.Value);
-
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            string key = reader.GetString(0);
-                            string val = reader.GetString(1);
-                            result.Add(key, val);
-                        }
-                    }
+                    string key = row[0].ToString();
+                    string val = row[1].ToString();
+                    result.Add(key, val);
                 }
 
                 return result;
@@ -122,24 +116,21 @@ namespace Backsight.Data
             /// <summary>
             /// The lookup values in the domain table
             /// </summary>
-            public string[] LookupValues
+            public string[] GetLookupValues(string connectionString)
             {
-                get
+                if (m_Data == null)
+                    m_Data = LoadDomainTable(connectionString);
+
+                string[] result = new string[m_Data.Count];
+
+                int i = 0;
+                foreach (string s in m_Data.Keys)
                 {
-                    if (m_Data == null)
-                        m_Data = LoadDomainTable();
-
-                    string[] result = new string[m_Data.Count];
-
-                    int i = 0;
-                    foreach (string s in m_Data.Keys)
-                    {
-                        result[i] = s;
-                        i++;
-                    }
-
-                    return result;
+                    result[i] = s;
+                    i++;
                 }
+
+                return result;
             }
         }
     }

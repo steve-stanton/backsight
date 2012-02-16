@@ -124,12 +124,16 @@ namespace Backsight.Editor
             if (tables.Length == 0)
                 return -1;
 
+            IDataServer ds = EditingController.Current.DataServer;
+            if (ds == null)
+                return -1;
+
             // Copy the required keys into a temp table
             Trace.WriteLine(String.Format("Locating attributes for {0} feature IDs in {1} tables", keyIds.Count, tables.Length));
 
             int nFound = 0;
 
-            using (IConnection ic = ConnectionFactory.GetConnection())
+            using (IConnection ic = ds.GetConnection())
             {
                 SqlConnection c = ic.Value;
                 const string KEYS_TABLE_NAME = "#Ids";
@@ -186,20 +190,19 @@ namespace Backsight.Editor
             if (tables.Length == 0)
                 return new DataRow[0];
 
+            IDataServer ds = EditingController.Current.DataServer;
+            if (ds == null)
+                return new DataRow[0];
+
             List<DataRow> result = new List<DataRow>();
 
-            using (IConnection ic = ConnectionFactory.GetConnection())
+            foreach (ITable t in tables)
             {
-                SqlConnection c = ic.Value;
-
-                foreach (ITable t in tables)
-                {
-                    string sql = String.Format("SELECT * FROM {0} WHERE [{1}]='{2}'",
-                                    t.TableName, t.IdColumnName, key);
-                    DataTable tab = DbUtil.ExecuteSelect(c, sql);
-                    tab.TableName = t.TableName;
-                    result.AddRange(tab.Select());
-                }
+                string sql = String.Format("SELECT * FROM {0} WHERE [{1}]='{2}'",
+                                t.TableName, t.IdColumnName, key);
+                DataTable tab = ds.ExecuteSelect(sql);
+                tab.TableName = t.TableName;
+                result.AddRange(tab.Select());
             }
 
             return result.ToArray();
@@ -215,14 +218,15 @@ namespace Backsight.Editor
         /// key of the table.</returns>
         internal static DataRow[] FindByKey(ITable table, string key)
         {
-            using (IConnection ic = ConnectionFactory.GetConnection())
-            {
-                string sql = String.Format("SELECT * FROM {0} WHERE [{1}]='{2}'",
-                                table.TableName, table.IdColumnName, key);
-                DataTable tab = DbUtil.ExecuteSelect(ic.Value, sql);
-                tab.TableName = table.TableName;
-                return tab.Select();
-            }
+            IDataServer ds = EditingController.Current.DataServer;
+            if (ds == null)
+                return new DataRow[0];
+
+            string sql = String.Format("SELECT * FROM {0} WHERE [{1}]='{2}'",
+                            table.TableName, table.IdColumnName, key);
+            DataTable tab = ds.ExecuteSelect(sql);
+            tab.TableName = table.TableName;
+            return tab.Select();
         }
 
         /// <summary>

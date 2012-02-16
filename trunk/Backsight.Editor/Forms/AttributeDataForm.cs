@@ -21,6 +21,7 @@ using System.Windows.Forms;
 
 using Backsight.Editor.Database;
 using Backsight.Environment;
+using Backsight.Data;
 
 namespace Backsight.Editor.Forms
 {
@@ -42,6 +43,11 @@ namespace Backsight.Editor.Forms
         #endregion
 
         #region Class data
+        
+        /// <summary>
+        /// The database holding the attribute data (not null).
+        /// </summary>
+        readonly IDataServer m_DataServer;
 
         /// <summary>
         /// The table the attribute data is for
@@ -67,6 +73,7 @@ namespace Backsight.Editor.Forms
         /// </summary>
         /// <param name="t">The table the attribute data is for</param>
         /// <param name="id">The ID that will be assigned to the new label</param>
+        /// <exception cref="InvalidOperationException">If no database is available</exception>
         public AttributeDataForm(ITable t, string id)
         {
             InitializeComponent();
@@ -77,6 +84,10 @@ namespace Backsight.Editor.Forms
             m_Table = t;
             m_Id = id;
             m_Data = null;
+            m_DataServer = EditingController.Current.DataServer;
+
+            if (m_DataServer == null)
+                throw new InvalidOperationException("No database available");
         }
 
         /// <summary>
@@ -163,7 +174,7 @@ namespace Backsight.Editor.Forms
 
                     if (cd != null)
                     {
-                        string[] vals = cd.Domain.LookupValues;
+                        string[] vals = cd.Domain.GetLookupValues(m_DataServer.ConnectionString);
                         if (vals.Length > 0)
                             data[dc] = vals[0];
                     }
@@ -346,7 +357,7 @@ namespace Backsight.Editor.Forms
                 DataGridViewCell currentCell = null;
 
                 IDomainTable domainTable = cd.Domain;
-                string[] lookups = domainTable.LookupValues;
+                string[] lookups = domainTable.GetLookupValues(m_DataServer.ConnectionString);
                 domainGrid.RowCount = lookups.Length;
                 for (int i=0; i<lookups.Length; i++)
                 {
@@ -354,7 +365,7 @@ namespace Backsight.Editor.Forms
                     DataGridViewRow r = domainGrid.Rows[i];
                     r.Tag = shortValue;
                     r.Cells["dgcShortValue"].Value = shortValue;
-                    r.Cells["dgcLongValue"].Value = domainTable.Lookup(shortValue);
+                    r.Cells["dgcLongValue"].Value = domainTable.Lookup(m_DataServer.ConnectionString, shortValue);
 
                     // If we have just defined the current data value, remember the cell so
                     // that we can set it once the grid has been loaded.
