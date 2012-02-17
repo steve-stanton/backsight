@@ -175,6 +175,7 @@ CREATE TABLE [ced].[IdGroups]
 	[PacketSize] [int] NOT NULL,
 	[CheckDigit] [char](1) NOT NULL,
 	[KeyFormat] [varchar](8) NOT NULL,
+	[MaxUsedId] [int] NOT NULL, 
 
 	CONSTRAINT [PK_IdGroups] PRIMARY KEY CLUSTERED ([GroupId] ASC)
 		WITH (PAD_INDEX  = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]

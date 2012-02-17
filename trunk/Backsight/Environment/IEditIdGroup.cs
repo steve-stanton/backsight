@@ -25,5 +25,6 @@ namespace Backsight.Environment
         new int PacketSize { get; set; }
         new string KeyFormat { get; set; }
         new bool HasCheckDigit { get; set; }
+        new int MaxUsedId { get; set;  }
     }
 }

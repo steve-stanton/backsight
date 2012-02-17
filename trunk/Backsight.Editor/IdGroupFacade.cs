@@ -49,6 +49,11 @@ namespace Backsight.Editor
             get { return (this.Data==null ? 0 : this.Data.HighestId); }
         }
 
+        public int MaxUsedId
+        {
+            get { return (this.Data == null ? 0 : this.Data.MaxUsedId); }
+        }
+
         public int PacketSize
         {
             get { return (this.Data==null ? 0 : this.Data.PacketSize); }
