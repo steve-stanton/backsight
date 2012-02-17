@@ -21,7 +21,7 @@ using System.Diagnostics;
 using Backsight.Data;
 using Backsight.Environment;
 
-namespace Backsight.Editor.Database
+namespace Backsight.Editor
 {
     /// <summary>
     /// Miscellaneous helper methods that relate to the database.

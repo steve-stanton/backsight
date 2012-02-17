@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Backsight.Data;
-using Backsight.Editor.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor
@@ -187,8 +186,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Reserves a specific ID in this ID group. This function is called by IdRange.ReserveId,
-        /// which makes an initial check to confirm that the ID is available as far as it is concerned.
+        /// Reserves a specific ID in this ID group.
         /// </summary>
         /// <param name="id">The ID to reserve.</param>
         /// <returns>True if the ID was reserved ok. False if it is already reserved.</returns>

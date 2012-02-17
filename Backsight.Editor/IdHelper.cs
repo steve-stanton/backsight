@@ -14,8 +14,8 @@
 // </remarks>
 
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 using Backsight.Environment;
 
@@ -23,63 +23,6 @@ namespace Backsight.Editor
 {
     class IdHelper
     {
-        /// <summary>
-        /// Load an ID combo box with all the available IDs for a specific entity type & map layer.
-        /// </summary>
-        /// <param name="box">The combo box (not null)</param>
-        /// <param name="ent">The entity type that the combo is for (not null)</param>
-        /// <param name="canAllocate">Allocate IDs if nothing available?</param>
-        /// <returns>The number of IDs that were loaded into the combo (if any). A value of
-        /// zero could mean that the entity type isn't meant to have IDs (so the caller should
-        /// probably go on to disable the ID combo).</returns>
-        /*
-        internal static int LoadIdCombo(ComboBox box, IEntity ent, bool canAllocate)
-        {
-            if (box==null || ent==null)
-                throw new ArgumentNullException();
-
-            // Clear out anything that was in the combo before.
-            box.Items.Clear();
-
-            // Get a list of all the available IDs for the specified entity type...
-
-            // Get the ID group for the specified entity type.
-            IdManager idMan = IdManager.Current;
-            IdGroup group = idMan.GetGroup(ent);
-            if (group==null)
-                return 0;
-
-            // Get the ID ranges for the group
-            List<IdRange> ranges = group.IdRanges;
-            List<uint> avail = new List<uint>(128);
-
-            foreach (IdRange range in ranges)
-            {
-                avail.Clear();
-                if (range.GetAvailIds(avail, group)==0)
-                    continue;
-
-                DisplayId[] ids = new DisplayId[avail.Count];
-                for (int i=0; i<ids.Length; i++)
-                    ids[i] = new DisplayId(range, avail[i]);
-
-                box.Items.AddRange(ids);
-            }
-
-            // If we didn't find anything, try it again! Don't try to
-            // allocate again, just in case we go into an infinite loop.
-
-            int nid = box.Items.Count;
-            if (nid==0  && canAllocate)
-            {
-                idMan.GetAllocation(group, true); // with announcement
-                nid = IdHelper.LoadIdCombo(box, ent, false);
-            }
-
-            return nid;
-        }
-         */
-
         /// <summary>
         /// Load an ID combo box with all the available IDs for a specific entity type.
         /// </summary>

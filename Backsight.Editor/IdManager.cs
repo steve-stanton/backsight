@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-using Backsight.Editor.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor
