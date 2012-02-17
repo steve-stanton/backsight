@@ -1903,6 +1903,8 @@ namespace Backsight.Data {
             
             private global::System.Data.DataColumn columnKeyFormat;
             
+            private global::System.Data.DataColumn columnMaxUsedId;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public IdGroupDataTable() {
@@ -1994,6 +1996,14 @@ namespace Backsight.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn MaxUsedIdColumn {
+                get {
+                    return this.columnMaxUsedId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -2029,7 +2039,7 @@ namespace Backsight.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public IdGroupRow AddIdGroupRow(int GroupId, string Name, int LowestId, int HighestId, int PacketSize, string CheckDigit, string KeyFormat) {
+            public IdGroupRow AddIdGroupRow(int GroupId, string Name, int LowestId, int HighestId, int PacketSize, string CheckDigit, string KeyFormat, int MaxUsedId) {
                 IdGroupRow rowIdGroupRow = ((IdGroupRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         GroupId,
@@ -2038,7 +2048,8 @@ namespace Backsight.Data {
                         HighestId,
                         PacketSize,
                         CheckDigit,
-                        KeyFormat};
+                        KeyFormat,
+                        MaxUsedId};
                 rowIdGroupRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowIdGroupRow);
                 return rowIdGroupRow;
@@ -2075,6 +2086,7 @@ namespace Backsight.Data {
                 this.columnPacketSize = base.Columns["PacketSize"];
                 this.columnCheckDigit = base.Columns["CheckDigit"];
                 this.columnKeyFormat = base.Columns["KeyFormat"];
+                this.columnMaxUsedId = base.Columns["MaxUsedId"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2094,6 +2106,8 @@ namespace Backsight.Data {
                 base.Columns.Add(this.columnCheckDigit);
                 this.columnKeyFormat = new global::System.Data.DataColumn("KeyFormat", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnKeyFormat);
+                this.columnMaxUsedId = new global::System.Data.DataColumn("MaxUsedId", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnMaxUsedId);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnGroupId}, true));
                 this.columnGroupId.AllowDBNull = false;
@@ -2107,6 +2121,7 @@ namespace Backsight.Data {
                 this.columnCheckDigit.MaxLength = 1;
                 this.columnKeyFormat.AllowDBNull = false;
                 this.columnKeyFormat.MaxLength = 8;
+                this.columnMaxUsedId.AllowDBNull = false;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -5618,6 +5633,17 @@ namespace Backsight.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public int MaxUsedId {
+                get {
+                    return ((int)(this[this.tableIdGroup.MaxUsedIdColumn]));
+                }
+                set {
+                    this[this.tableIdGroup.MaxUsedIdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public EntityTypeRow[] GetEntityTypesRows() {
                 if ((this.Table.ChildRelations["FK_EntityType_IdGroup"] == null)) {
                     return new EntityTypeRow[0];
@@ -8076,10 +8102,11 @@ SELECT FontId, TypeFace, PointSize, IsBold, IsItalic, IsUnderline, FontFile FROM
             tableMapping.ColumnMappings.Add("PacketSize", "PacketSize");
             tableMapping.ColumnMappings.Add("CheckDigit", "CheckDigit");
             tableMapping.ColumnMappings.Add("KeyFormat", "KeyFormat");
+            tableMapping.ColumnMappings.Add("MaxUsedId", "MaxUsedId");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [ced].[IdGroups] WHERE (([GroupId] = @Original_GroupId) AND ([Name] = @Original_Name) AND ([LowestId] = @Original_LowestId) AND ([HighestId] = @Original_HighestId) AND ([PacketSize] = @Original_PacketSize) AND ([CheckDigit] = @Original_CheckDigit) AND ([KeyFormat] = @Original_KeyFormat))";
+            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [ced].[IdGroups] WHERE (([GroupId] = @Original_GroupId) AND ([Name] = @Original_Name) AND ([LowestId] = @Original_LowestId) AND ([HighestId] = @Original_HighestId) AND ([PacketSize] = @Original_PacketSize) AND ([CheckDigit] = @Original_CheckDigit) AND ([KeyFormat] = @Original_KeyFormat) AND ([MaxUsedId] = @Original_MaxUsedId))";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_GroupId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "GroupId", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Name", global::System.Data.SqlDbType.VarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
@@ -8088,10 +8115,11 @@ SELECT FontId, TypeFace, PointSize, IsBold, IsItalic, IsUnderline, FontFile FROM
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_PacketSize", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "PacketSize", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_CheckDigit", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CheckDigit", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_KeyFormat", global::System.Data.SqlDbType.VarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "KeyFormat", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_MaxUsedId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "MaxUsedId", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = @"INSERT INTO [ced].[IdGroups] ([GroupId], [Name], [LowestId], [HighestId], [PacketSize], [CheckDigit], [KeyFormat]) VALUES (@GroupId, @Name, @LowestId, @HighestId, @PacketSize, @CheckDigit, @KeyFormat);
-SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FROM ced.IdGroups WHERE (GroupId = @GroupId)";
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [ced].[IdGroups] ([GroupId], [Name], [LowestId], [HighestId], [PacketSize], [CheckDigit], [KeyFormat], [MaxUsedId]) VALUES (@GroupId, @Name, @LowestId, @HighestId, @PacketSize, @CheckDigit, @KeyFormat, @MaxUsedId);
+SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat, MaxUsedId FROM ced.IdGroups WHERE (GroupId = @GroupId)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@GroupId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "GroupId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Name", global::System.Data.SqlDbType.VarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Name", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -8100,10 +8128,11 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@PacketSize", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "PacketSize", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CheckDigit", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CheckDigit", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@KeyFormat", global::System.Data.SqlDbType.VarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "KeyFormat", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@MaxUsedId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "MaxUsedId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [ced].[IdGroups] SET [GroupId] = @GroupId, [Name] = @Name, [LowestId] = @LowestId, [HighestId] = @HighestId, [PacketSize] = @PacketSize, [CheckDigit] = @CheckDigit, [KeyFormat] = @KeyFormat WHERE (([GroupId] = @Original_GroupId) AND ([Name] = @Original_Name) AND ([LowestId] = @Original_LowestId) AND ([HighestId] = @Original_HighestId) AND ([PacketSize] = @Original_PacketSize) AND ([CheckDigit] = @Original_CheckDigit) AND ([KeyFormat] = @Original_KeyFormat));
-SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FROM ced.IdGroups WHERE (GroupId = @GroupId)";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [ced].[IdGroups] SET [GroupId] = @GroupId, [Name] = @Name, [LowestId] = @LowestId, [HighestId] = @HighestId, [PacketSize] = @PacketSize, [CheckDigit] = @CheckDigit, [KeyFormat] = @KeyFormat, [MaxUsedId] = @MaxUsedId WHERE (([GroupId] = @Original_GroupId) AND ([Name] = @Original_Name) AND ([LowestId] = @Original_LowestId) AND ([HighestId] = @Original_HighestId) AND ([PacketSize] = @Original_PacketSize) AND ([CheckDigit] = @Original_CheckDigit) AND ([KeyFormat] = @Original_KeyFormat) AND ([MaxUsedId] = @Original_MaxUsedId));
+SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat, MaxUsedId FROM ced.IdGroups WHERE (GroupId = @GroupId)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@GroupId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "GroupId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Name", global::System.Data.SqlDbType.VarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Name", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -8112,6 +8141,7 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@PacketSize", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "PacketSize", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CheckDigit", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CheckDigit", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@KeyFormat", global::System.Data.SqlDbType.VarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "KeyFormat", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@MaxUsedId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "MaxUsedId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_GroupId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "GroupId", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Name", global::System.Data.SqlDbType.VarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_LowestId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "LowestId", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
@@ -8119,13 +8149,14 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_PacketSize", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "PacketSize", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_CheckDigit", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CheckDigit", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_KeyFormat", global::System.Data.SqlDbType.VarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "KeyFormat", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_MaxUsedId", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "MaxUsedId", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::Backsight.Data.Properties.Settings.Default.BacksightConnectionString;
+            this._connection.ConnectionString = global::Backsight.Data.Properties.Settings.Default.BacksightConnectionString1;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -8134,8 +8165,8 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FROM" +
-                " ced.IdGroups";
+            this._commandCollection[0].CommandText = "SELECT     GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat," +
+                " MaxUsedId\r\nFROM         ced.IdGroups";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -8196,7 +8227,7 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(int Original_GroupId, string Original_Name, int Original_LowestId, int Original_HighestId, int Original_PacketSize, string Original_CheckDigit, string Original_KeyFormat) {
+        public virtual int Delete(int Original_GroupId, string Original_Name, int Original_LowestId, int Original_HighestId, int Original_PacketSize, string Original_CheckDigit, string Original_KeyFormat, int Original_MaxUsedId) {
             this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_GroupId));
             if ((Original_Name == null)) {
                 throw new global::System.ArgumentNullException("Original_Name");
@@ -8219,6 +8250,7 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
             else {
                 this.Adapter.DeleteCommand.Parameters[6].Value = ((string)(Original_KeyFormat));
             }
+            this.Adapter.DeleteCommand.Parameters[7].Value = ((int)(Original_MaxUsedId));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
             if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -8239,7 +8271,7 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(int GroupId, string Name, int LowestId, int HighestId, int PacketSize, string CheckDigit, string KeyFormat) {
+        public virtual int Insert(int GroupId, string Name, int LowestId, int HighestId, int PacketSize, string CheckDigit, string KeyFormat, int MaxUsedId) {
             this.Adapter.InsertCommand.Parameters[0].Value = ((int)(GroupId));
             if ((Name == null)) {
                 throw new global::System.ArgumentNullException("Name");
@@ -8262,6 +8294,7 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
             else {
                 this.Adapter.InsertCommand.Parameters[6].Value = ((string)(KeyFormat));
             }
+            this.Adapter.InsertCommand.Parameters[7].Value = ((int)(MaxUsedId));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -8282,7 +8315,23 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(int GroupId, string Name, int LowestId, int HighestId, int PacketSize, string CheckDigit, string KeyFormat, int Original_GroupId, string Original_Name, int Original_LowestId, int Original_HighestId, int Original_PacketSize, string Original_CheckDigit, string Original_KeyFormat) {
+        public virtual int Update(
+                    int GroupId, 
+                    string Name, 
+                    int LowestId, 
+                    int HighestId, 
+                    int PacketSize, 
+                    string CheckDigit, 
+                    string KeyFormat, 
+                    int MaxUsedId, 
+                    int Original_GroupId, 
+                    string Original_Name, 
+                    int Original_LowestId, 
+                    int Original_HighestId, 
+                    int Original_PacketSize, 
+                    string Original_CheckDigit, 
+                    string Original_KeyFormat, 
+                    int Original_MaxUsedId) {
             this.Adapter.UpdateCommand.Parameters[0].Value = ((int)(GroupId));
             if ((Name == null)) {
                 throw new global::System.ArgumentNullException("Name");
@@ -8305,28 +8354,30 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
             else {
                 this.Adapter.UpdateCommand.Parameters[6].Value = ((string)(KeyFormat));
             }
-            this.Adapter.UpdateCommand.Parameters[7].Value = ((int)(Original_GroupId));
+            this.Adapter.UpdateCommand.Parameters[7].Value = ((int)(MaxUsedId));
+            this.Adapter.UpdateCommand.Parameters[8].Value = ((int)(Original_GroupId));
             if ((Original_Name == null)) {
                 throw new global::System.ArgumentNullException("Original_Name");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[8].Value = ((string)(Original_Name));
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((string)(Original_Name));
             }
-            this.Adapter.UpdateCommand.Parameters[9].Value = ((int)(Original_LowestId));
-            this.Adapter.UpdateCommand.Parameters[10].Value = ((int)(Original_HighestId));
-            this.Adapter.UpdateCommand.Parameters[11].Value = ((int)(Original_PacketSize));
+            this.Adapter.UpdateCommand.Parameters[10].Value = ((int)(Original_LowestId));
+            this.Adapter.UpdateCommand.Parameters[11].Value = ((int)(Original_HighestId));
+            this.Adapter.UpdateCommand.Parameters[12].Value = ((int)(Original_PacketSize));
             if ((Original_CheckDigit == null)) {
                 throw new global::System.ArgumentNullException("Original_CheckDigit");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[12].Value = ((string)(Original_CheckDigit));
+                this.Adapter.UpdateCommand.Parameters[13].Value = ((string)(Original_CheckDigit));
             }
             if ((Original_KeyFormat == null)) {
                 throw new global::System.ArgumentNullException("Original_KeyFormat");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[13].Value = ((string)(Original_KeyFormat));
+                this.Adapter.UpdateCommand.Parameters[14].Value = ((string)(Original_KeyFormat));
             }
+            this.Adapter.UpdateCommand.Parameters[15].Value = ((int)(Original_MaxUsedId));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -8347,8 +8398,8 @@ SELECT GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat FRO
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string Name, int LowestId, int HighestId, int PacketSize, string CheckDigit, string KeyFormat, int Original_GroupId, string Original_Name, int Original_LowestId, int Original_HighestId, int Original_PacketSize, string Original_CheckDigit, string Original_KeyFormat) {
-            return this.Update(Original_GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat, Original_GroupId, Original_Name, Original_LowestId, Original_HighestId, Original_PacketSize, Original_CheckDigit, Original_KeyFormat);
+        public virtual int Update(string Name, int LowestId, int HighestId, int PacketSize, string CheckDigit, string KeyFormat, int MaxUsedId, int Original_GroupId, string Original_Name, int Original_LowestId, int Original_HighestId, int Original_PacketSize, string Original_CheckDigit, string Original_KeyFormat, int Original_MaxUsedId) {
+            return this.Update(Original_GroupId, Name, LowestId, HighestId, PacketSize, CheckDigit, KeyFormat, MaxUsedId, Original_GroupId, Original_Name, Original_LowestId, Original_HighestId, Original_PacketSize, Original_CheckDigit, Original_KeyFormat, Original_MaxUsedId);
         }
     }
     

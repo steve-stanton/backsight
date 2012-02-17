@@ -101,6 +101,7 @@ CREATE TABLE [IdGroups]
 	[PacketSize] [int] NOT NULL,
 	[CheckDigit] [nchar](1) NOT NULL,
 	[KeyFormat] [nvarchar](8) NOT NULL,
+	[MaxUsedId] [int] NOT NULL,
 
 	CONSTRAINT [PK_IdGroups] PRIMARY KEY ([GroupId])		
 )

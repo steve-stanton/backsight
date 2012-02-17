@@ -26,5 +26,6 @@ namespace Backsight.Environment
         string KeyFormat { get; }
         bool HasCheckDigit { get; }
         IEntity[] EntityTypes { get; }
+        int MaxUsedId { get; }
     }
 }

@@ -33,5 +33,15 @@ namespace Backsight.Data.Properties {
                 return ((string)(this["BacksightConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=FIAR;Initial Catalog=Backsight;Integrated Security=True")]
+        public string BacksightConnectionString1 {
+            get {
+                return ((string)(this["BacksightConnectionString1"]));
+            }
+        }
     }
 }
