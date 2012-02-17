@@ -59,7 +59,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The formatted version of the raw ID.
         /// </summary>
-        /// <returns>The result of a call to <c>IdRange.FormatId(RawId)</c></returns>
+        /// <returns>The result of a call to <c>IdGroup.FormatId(RawId)</c></returns>
         public override string ToString()
         {
             return m_Packet.IdGroup.FormatId(m_Id);
