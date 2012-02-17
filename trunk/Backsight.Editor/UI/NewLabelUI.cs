@@ -19,7 +19,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Backsight.Editor.Database;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Operations;
 using Backsight.Editor.Properties;

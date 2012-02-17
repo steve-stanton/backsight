@@ -21,7 +21,6 @@ using System.Diagnostics;
 using System.Windows.Forms;
 
 using Backsight.Data;
-using Backsight.Editor.Database;
 using Backsight.Editor.Forms;
 using Backsight.Environment;
 

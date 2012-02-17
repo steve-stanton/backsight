@@ -16,14 +16,11 @@
 using System;
 using System.Collections.Generic;
 
-using Backsight.Editor.Database;
-
 namespace Backsight.Editor
 {
     /// <summary>
     /// A packet of user-perceived IDs.
     /// </summary>
-    /// <remarks>This class should hopefully replace <c>IdRange</c></remarks>
     class IdPacket
     {
         #region Class data
@@ -350,37 +347,6 @@ namespace Backsight.Editor
             }
 
             return navail;
-        }
-
-        /// <summary>
-        /// Checks whether this packet can be extended with an additional range.
-        /// </summary>
-        /// <param name="minid">The low end of the proposed extension.</param>
-        /// <param name="maxid">The high end of the proposed extension.</param>
-        /// <returns>True if the packet has been extended.</returns>
-        internal bool Extend(int minid, int maxid)
-        {
-            throw new NotImplementedException();
-            /*
-            // The beginning of the extension MUST follow the existing range.
-            if (Max + 1 != minid)
-                return false;
-
-            // The extension must be valid!
-            if (maxid < minid)
-                return false;
-
-            // Update the allocation recorded in the database. We do not
-            // worry about the timestamp, or who made the allocation.
-            if (m_Allocation.UpdateHighestId(maxid) != 1)
-                return false;
-
-            // Extend the allocation of pointers that we have.
-            int nextra = maxid - minid + 1;
-            int nalloc = m_Ids.Length + nextra;
-            Array.Resize<NativeId>(ref m_Ids, nalloc);
-            return true;
-             */
         }
 
         /// <summary>

@@ -339,13 +339,6 @@ namespace Backsight.Editor
 
                 if (m_Packet==null)
                     m_Packet = CadastralMapModel.Current.IdManager.FindPacket(nid); 
-                /*
-                if (m_Range==null)
-                {
-                    List<IdRange> ranges = CadastralMapModel.Current.IdRanges;
-                    m_Range = ranges.Find(delegate(IdRange r) { return r.IsReferredTo(m_FeatureId); });
-                }
-                */
 
                 // If we still don't know the ID packet, issue an error message and return.
                 if (m_Packet==null)
@@ -358,8 +351,6 @@ namespace Backsight.Editor
                 // If the range has not been released, tell it to "delete"
                 // the pointer it has to the ID.
                 m_Packet.DeleteId(nid);
-                //if (!m_Range.IsReleased)
-                //    m_Range.DeleteId(m_FeatureId);
             }
             else
             {

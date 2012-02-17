@@ -100,6 +100,7 @@
     <Compile Include="AttributeData.cs" />
     <Compile Include="AutoCad\AcLayerEntitySet.cs" />
     <Compile Include="BasicList.cs" />
+    <Compile Include="DbUtil.cs" />
     <Compile Include="EndSessionEvent.cs" />
     <Compile Include="Forms\NewProjectForm.cs">
       <SubType>Form</SubType>
@@ -120,9 +121,6 @@
     <Compile Include="ClosedShape.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
-    <Compile Include="Database\DbUtil.cs" />
-    <Compile Include="Database\IdAllocation.cs" />
-    <Compile Include="Database\IdFree.cs" />
     <Compile Include="DataField.cs" />
     <Compile Include="DeserializationFactory.cs" />
     <Compile Include="DxfWriter.cs" />
@@ -1312,7 +1310,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Database\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
