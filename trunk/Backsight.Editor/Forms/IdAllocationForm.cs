@@ -109,44 +109,6 @@ namespace Backsight.Editor.Forms
 	        SetChanged();
         }
 
-        /*
-        private void releaseButton_Click(object sender, EventArgs e)
-        {
-            DataGridViewSelectedRowCollection sel = grid.SelectedRows;
-
-            if (sel==null || sel.Count==0)
-            {
-                if (MessageBox.Show("Return unused portions of every allocation?", "No selection", MessageBoxButtons.YesNo)
-                        == DialogResult.No)
-                {
-                    MessageBox.Show("Then you must first select the group(s) you want.");
-                    return;
-                }
-
-                // Go through each group, releasing the allocation of every range.
-                m_IdMan.Release();
-            }
-            else
-            {
-                foreach (DataGridViewRow row in sel)
-                {
-                    IdRange r = (IdRange)row.Tag;
-
-                    // The range will be null if the user selected a group that didn't have
-                    // any allocated ranges
-                    if (r!=null)
-                    {
-                        IdGroup g = (IdGroup)row.Cells["dgcGroupName"].Value;
-                        g.Release(r.Min, r.Max);
-                    }
-                }
-            }
-
-            RefreshList();
-            SetChanged();
-        }
-        */
-
         private void grid_DoubleClick(object sender, EventArgs e)
         {
 	        // Return if more than one thing is selected (how we got a
@@ -178,15 +140,7 @@ namespace Backsight.Editor.Forms
                 foreach (IdPacket packet in packets)
                 {
                     row.Cells["dgcAllocation"].Value = String.Format("{0}-{1}", packet.Min, packet.Max);
-
-                    //string s;
-                    //if (range.IsReleased)
-                    //    s = String.Format("{0} (released)", range.NumUsed);
-                    //else
-                    //    s = String.Format("{0} of {1}", range.NumUsed, range.Size);
-
                     string s = String.Format("{0} of {1}", packet.NumUsed, packet.Size);
-
                     row.Cells["dgcNumUsed"].Value = s;
                     row.Tag = packet;
                 }

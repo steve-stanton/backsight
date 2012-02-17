@@ -203,68 +203,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Performs initialization that is required each time a different map is
-        /// opened for editing.
-        /// </summary>
-        /// <param name="map">The map to do the setup for (null to reset).</param>
-        /*
-        internal void MapOpen(CadastralMapModel map)
-        {
-            // Cross-reference each ID group with the applicable ID ranges.
-            SetGroupRanges(map);
-        }
-        */
-
-        /// <summary>
-        /// Resets stuff when a map is closed.
-        /// </summary>
-        /*
-        void MapClose()
-        {
-            MapOpen(null);
-        }
-         */
-
-        /// <summary>
-        /// Cross-references each ID group with the ID ranges that are stored in a specific map.
-        /// </summary>
-        /// <param name="map">The map to do the setup for.</param>
-        /*
-        void SetGroupRanges(CadastralMapModel map)
-        {
-            // Eliminate any ID ranges that may be known to each ID group.
-            foreach (IdGroup g in m_IdGroups)
-                g.KillRanges();
-
-            // Return if there is no map.
-            if (map==null)
-                return;
-
-            // Associate each group with the ID ranges that are already
-            // known to the map.
-
-            List<IdRange> ranges = map.IdRanges;
-            foreach (IdRange r in ranges)
-            {
-                // Loop through the ID groups to find the group that encloses the range.
-                IdGroup group = Array.Find<IdGroup>(m_IdGroups,
-                    delegate(IdGroup g) { return g.IsOwnerOf(r); });
-                Debug.Assert(group!=null);
-                bool rangeAdded = group.AddIdRange(r);
-                Debug.Assert(rangeAdded==true);
-            }
-        }
-         */
-
-        /// <summary>
         /// Gets a new allocation for a specific ID group.
         /// </summary>
         /// <param name="group">The group to get the allocation for.</param>
         /// <param name="announce">Should the new range be announced to the user? Default=TRUE.
         /// The only time when it's not appropriate to announce is when the user is explicitly
         /// allocating ID ranges.</param>
-        /// <returns>The number of ranges that were added.</returns>
-        internal uint GetAllocation(IdGroup group, bool announce)
+        /// <returns>Information about the allocated range.</returns>
+        internal IdAllocationInfo GetAllocation(IdGroup group, bool announce)
         {
             // I assume that the specified group is actually
             // one of the groups known to this ID manager.
@@ -275,30 +221,22 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Gets a new allocation for every ID group. This function is used only when the
-        /// user is explicitly allocating ID ranges.
+        /// user is explicitly allocating ID ranges (through the dialog that lists the allocations).
         /// </summary>
-        /// <returns>The number of ranges that were added.</returns>
-        internal uint GetAllocation()
+        /// <returns>Information about the allocations made.</returns>
+        internal IdAllocationInfo[] GetAllocation()
         {
-	        uint nadd=0;
+            List<IdAllocationInfo> allocs = new List<IdAllocationInfo>();
 
             foreach (IdGroup g in m_IdGroups)
-                nadd += GetAllocation(g, false);
+            {
+                IdAllocationInfo a = GetAllocation(g, false);
+                if (a != null)
+                    allocs.Add(a);
+            }
 
-	        return nadd;
+            return allocs.ToArray();
         }
-
-        /// <summary>
-        /// Releases the unused portion of all ID ranges known to all ID groups.
-        /// </summary>
-        /*
-        internal void Release()
-        {
-            // Tell each group to truncate all ID ranges.
-            foreach (IdGroup g in m_IdGroups)
-                g.ReleaseAll();
-        }
-        */
 
         /// <summary>
         /// Returns the ID group that corresponds to a specific entity type.

@@ -40,24 +40,9 @@ namespace Backsight.Editor
         public int HighestId { get; set; }
 
         /// <summary>
-        /// The ID of the project that the allocation is for
-        /// </summary>
-        public int JobId { get; set; }
-
-        /// <summary>
-        /// The ID of the user who made the allocation
-        /// </summary>
-        public int UserId { get; set; }
-
-        /// <summary>
         /// When was the allocation inserted into the database?
         /// </summary>
         public DateTime TimeAllocated { get; set; }
-
-        /// <summary>
-        /// The number of IDs that have been used
-        /// </summary>
-        //public int NumUsed { get; set; }
 
         /// <summary>
         /// The number of IDs in this allocation

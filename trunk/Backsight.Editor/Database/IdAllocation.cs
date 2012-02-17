@@ -88,8 +88,6 @@ namespace Backsight.Editor.Database
                 GroupId = idGroup.Id,
                 LowestId = lowestId,
                 HighestId = highestId,
-                JobId = jobId,
-                UserId = (int)user.UserId,
                 TimeAllocated = insertTime
             };
         }
