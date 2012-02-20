@@ -68,6 +68,15 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Change"/> class that has the
+        /// next available internal ID for the currently active project.
+        /// </summary>
+        protected Change()
+            : this(EditingController.Current.Project.AllocateId())
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Change"/> class.
         /// </summary>
         /// <param name="editSequence">The sequence number of this change (greater than zero).</param>

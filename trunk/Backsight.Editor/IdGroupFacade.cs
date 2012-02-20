@@ -73,11 +73,5 @@ namespace Backsight.Editor
         {
             get { return (this.Data==null ? null : this.Data.EntityTypes); }
         }
-
-        //[OnDeserialized]
-        //void GetEnvironmentData(StreamingContext context)
-        //{
-        //    this.Data = EnvironmentContainer.FindIdGroupById(this.Id);
-        //}
     }
 }

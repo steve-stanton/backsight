@@ -184,12 +184,12 @@ namespace Backsight.Editor
         {
             // Grab all defined allocations for the job and user
             //IdAllocation[] allocs = IdAllocation.FindByJobUser(job, user);
-            //IdAllocationInfo[] allocs = job.GetIdAllocations();
+            //IdAllocation[] allocs = job.GetIdAllocations();
             throw new NotImplementedException();
 
             /*
             // Attach each allocation to its group
-            foreach (IdAllocationInfo a in allocs)
+            foreach (IdAllocation a in allocs)
             {
                 IdGroup g = Array.Find<IdGroup>(m_IdGroups, delegate(IdGroup t)
                                 { return t.Id==a.GroupId; });
@@ -209,7 +209,7 @@ namespace Backsight.Editor
         /// The only time when it's not appropriate to announce is when the user is explicitly
         /// allocating ID ranges.</param>
         /// <returns>Information about the allocated range.</returns>
-        internal IdAllocationInfo GetAllocation(IdGroup group, bool announce)
+        internal IdAllocation GetAllocation(IdGroup group, bool announce)
         {
             // I assume that the specified group is actually
             // one of the groups known to this ID manager.
@@ -223,13 +223,13 @@ namespace Backsight.Editor
         /// user is explicitly allocating ID ranges (through the dialog that lists the allocations).
         /// </summary>
         /// <returns>Information about the allocations made.</returns>
-        internal IdAllocationInfo[] GetAllocation()
+        internal IdAllocation[] GetAllocation()
         {
-            List<IdAllocationInfo> allocs = new List<IdAllocationInfo>();
+            List<IdAllocation> allocs = new List<IdAllocation>();
 
             foreach (IdGroup g in m_IdGroups)
             {
-                IdAllocationInfo a = GetAllocation(g, false);
+                IdAllocation a = GetAllocation(g, false);
                 if (a != null)
                     allocs.Add(a);
             }

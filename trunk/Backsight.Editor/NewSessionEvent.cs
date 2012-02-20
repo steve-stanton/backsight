@@ -35,11 +35,6 @@ namespace Backsight.Editor
         /// </summary>
         internal string MachineName { get; set; }
 
-        /// <summary>
-        /// When was the last edit performed?
-        /// </summary>
-        internal DateTime EndTime { get; set; }
-
         #endregion
 
         #region Constructors
@@ -47,6 +42,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Initializes a new instance of the <see cref="NewSessionEvent"/> class.
         /// </summary>
+        /// <param name="id">The sequence number of this change (greater than zero).</param>
         internal NewSessionEvent(uint id)
             : base(id)
         {

@@ -20,7 +20,7 @@ namespace Backsight.Editor
     /// <summary>
     /// Information about an ID allocation that has been made to a user for a specific editing project.
     /// </summary>
-    public class IdAllocationInfo
+    class IdAllocation : Change
     {
         #region Class data
 
@@ -39,10 +39,44 @@ namespace Backsight.Editor
         /// </summary>
         public int HighestId { get; set; }
 
+        #endregion
+
+        #region Constructors
+
         /// <summary>
-        /// When was the allocation inserted into the database?
+        /// Initializes a new instance of the <see cref="IdAllocation"/> class.
         /// </summary>
-        public DateTime TimeAllocated { get; set; }
+        internal IdAllocation()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IdAllocation"/> class.
+        /// </summary>
+        /// <param name="ed">The mechanism for reading back content.</param>
+        internal IdAllocation(EditDeserializer ed)
+            : base(ed)
+        {
+            this.GroupId = ed.ReadInt32(DataField.GroupId);
+            this.LowestId = ed.ReadInt32(DataField.LowestId);
+            this.HighestId = ed.ReadInt32(DataField.HighestId);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="es">The mechanism for storing content.</param>
+        public override void WriteData(EditSerializer es)
+        {
+            base.WriteData(es);
+
+            es.WriteInt32(DataField.GroupId, this.GroupId);
+            es.WriteInt32(DataField.LowestId, this.LowestId);
+            es.WriteInt32(DataField.HighestId, this.HighestId);
+        }
 
         /// <summary>
         /// The number of IDs in this allocation
@@ -51,7 +85,5 @@ namespace Backsight.Editor
         {
             get { return (HighestId - LowestId + 1); }
         }
-
-        #endregion
     }
 }

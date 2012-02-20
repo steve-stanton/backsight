@@ -33,7 +33,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The database information about the allocation
         /// </summary>
-        readonly IdAllocationInfo m_Allocation;
+        readonly IdAllocation m_Allocation;
 
         /// <summary>
         /// References to allocated IDs. The  first element corresponds to m_LowestId,
@@ -54,7 +54,7 @@ namespace Backsight.Editor
         /// <param name="alloc">The allocation associated with the group (not null)</param>
         /// <exception cref="ArgumentNullException">If either parameter is null</exception>
         /// <exception cref="ArgumentException">If the allocation does not refer to the supplied group</exception>
-        internal IdPacket(IdGroup group, IdAllocationInfo alloc)
+        internal IdPacket(IdGroup group, IdAllocation alloc)
         {
             if (group==null || alloc==null)
                 throw new ArgumentNullException();

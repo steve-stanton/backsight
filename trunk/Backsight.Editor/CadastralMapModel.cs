@@ -1144,8 +1144,18 @@ namespace Backsight.Editor
             // Now build the topology for the map
             BuildPolygons();
 
-            // Initialize ID handling. This associates ID allocations with their
-            // corresponding ID group.
+            // Initialize ID handling. This associates ID allocations with their corresponding ID packet.
+            int nDone = 0;
+            foreach (NativeId nid in m_NativeIds.Values)
+            {
+                IdPacket p = nid.IdGroup.FindPacket(nid);
+                Debug.Assert(p != null);
+                p.SetId(nid);
+                nDone++;
+            }
+
+            //System.Windows.Forms.MessageBox.Show("Number done = " + nDone);
+
             /*
             if (m_IdManager != null)
                 m_IdManager.Load(this, project, user);

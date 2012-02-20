@@ -72,9 +72,9 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="announce">Should the allocation be announced to the user?</param>
         /// <returns>Information about the allocated range.</returns>
-        internal IdAllocationInfo GetAllocation(bool announce)
+        internal IdAllocation GetAllocation(bool announce)
         {
-            IdAllocationInfo alloc = null;
+            IdAllocation alloc = null;
 
             IDataServer ds = EditingController.Current.DataServer;
             if (ds == null)
@@ -87,6 +87,7 @@ namespace Backsight.Editor
                 int oldMaxUsedId = m_MaxUsedId;
                 int newMaxUsedId = (oldMaxUsedId == 0 ? LowestId + PacketSize - 1 : oldMaxUsedId + PacketSize);
 
+                /*
                 // The following should be covered by the implementation of the ID server (for a personal ID server,
                 // there should be nothing to do).
                 string sql = String.Format("UPDATE [ced].[IdGroups] SET [MaxUsedId]={0} WHERE [GroupId]={1} AND [MaxUsedId]={2}",
@@ -95,20 +96,21 @@ namespace Backsight.Editor
 
                 if (nRows != 1)
                     throw new ApplicationException("Allocation failed");
+                */
 
                 // Remember the allocation as as part of this group
-                alloc = new IdAllocationInfo()
+                alloc = new IdAllocation()
                 {
                     GroupId = this.Id,
                     LowestId = newMaxUsedId - PacketSize + 1,
                     HighestId = newMaxUsedId,
-                    TimeAllocated = DateTime.Now,
                 };
 
                 AddIdPacket(alloc);
                 m_MaxUsedId = newMaxUsedId;
 
-                // TODO: Write event data for the allocation
+                // Write event data for the allocation
+                EditingController.Current.Project.WriteChange(alloc);
             });
 
             // If the user should be informed, list out any ranges we created.
@@ -354,15 +356,14 @@ namespace Backsight.Editor
         /// Associates an ID allocation with this group
         /// </summary>
         /// <param name="a">The allocation associated with this group</param>
-        internal void AddIdPacket(IdAllocationInfo a)
+        internal void AddIdPacket(IdAllocation a)
         {
             m_Packets.Add(new IdPacket(this, a));
             m_MaxUsedId = Math.Max(m_MaxUsedId, a.HighestId);
         }
 
         /// <summary>
-        /// Exhaustive search for the ID packet that refers to a specific ID. This method
-        /// should only be called in situations where something has gone astray.
+        /// Exhaustive search for the ID packet that refers to a specific ID.
         /// </summary>
         /// <param name="fid">The ID to search for</param>
         /// <returns>The packet that contains the specified object (null if not found)</returns>
