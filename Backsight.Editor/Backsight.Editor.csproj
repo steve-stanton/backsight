@@ -114,6 +114,7 @@
     <Compile Include="Forms\OpenProjectForm.designer.cs">
       <DependentUpon>OpenProjectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="IdAllocation.cs" />
     <Compile Include="NewProjectEvent.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
@@ -131,7 +132,6 @@
     </Compile>
     <Compile Include="EditSerializer.cs" />
     <Compile Include="EnvironmentResource.cs" />
-    <Compile Include="IdAllocationInfo.cs" />
     <Compile Include="Change.cs" />
     <Compile Include="NewSessionEvent.cs" />
     <Compile Include="Project.cs" />

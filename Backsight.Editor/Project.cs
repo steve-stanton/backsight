@@ -216,6 +216,7 @@ namespace Backsight.Editor
             Trace.Write("Reading data...");
             EditDeserializer ed = new EditDeserializer(m_MapModel);
             Session lastSession = null;
+            IdManager idMan = m_MapModel.IdManager;
 
             foreach (uint fileNum in fileNums)
             {
@@ -244,6 +245,16 @@ namespace Backsight.Editor
                         {
                             Debug.Assert(lastSession != null);
                             lastSession.EndTime = edit.When;
+                        }
+                        else if (edit is IdAllocation)
+                        {
+                            if (idMan != null)
+                            {
+                                IdAllocation alloc = (IdAllocation)edit;
+                                IdGroup g = idMan.FindGroupById(alloc.GroupId);
+                                g.AddIdPacket(alloc);
+                            }
+
                         }
                         else
                         {
@@ -300,6 +311,18 @@ namespace Backsight.Editor
             string undoFolder = this.UndoFolder;
             if (Directory.Exists(undoFolder))
                 Directory.Delete(undoFolder, true);
+        }
+
+        /// <summary>
+        /// Writes the data for some sort of change to this project's data folder.
+        /// </summary>
+        /// <param name="c">The change to write</param>
+        internal void WriteChange(Change c)
+        {
+            string dataFolder = Path.Combine(m_Container.FolderName, m_Id.ToString().ToUpper());
+            string dataFile = Path.Combine(dataFolder, ProjectDatabase.GetDataFileName(c.EditSequence));
+            string changeText = EditSerializer.GetSerializedString<Change>(DataField.Edit, c);
+            File.WriteAllText(dataFile, changeText);
         }
     }
 }

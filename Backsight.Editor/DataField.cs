@@ -129,5 +129,8 @@ namespace Backsight.Editor
         LayerId,
         StartTime,
         EndTime,
+        GroupId,
+        LowestId,
+        HighestId,
     }
 }

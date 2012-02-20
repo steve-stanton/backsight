@@ -58,15 +58,6 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Create a metric distance unit.
-        /// </summary>
-        /*
-        internal DistanceUnit() : this(DistanceUnitType.Meters)
-        {
-        }
-        */
-
-        /// <summary>
         /// Create a distance unit with the specified type.
         /// </summary>
         /// <param name="unitType">The type of unit to create.</param>
@@ -229,24 +220,5 @@ namespace Backsight.Editor
         {
             return m_UnitName;
         }
-
-        /// <summary>
-        /// Method that is called upon deserialization, used to load the
-        /// class using the information known to the controller.
-        /// </summary>
-        //[OnDeserialized]
-        //void GetControllerData(StreamingContext context)
-        //{
-        //    // The only thing that we have upon deserialization is the
-        //    // enum that declares the unit type. Grab the associated info
-        //    // from the controller.
-
-        //    DistanceUnit du = EditingController.Current.GetUnits(m_UnitCode);
-        //    m_UnitName = du.m_UnitName;
-        //    m_Abbreviation = du.m_Abbreviation;
-        //    m_Multiplier = du.m_Multiplier;
-        //    m_Colour = du.m_Colour;
-        //}
-
     }
 }
