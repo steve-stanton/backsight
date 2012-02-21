@@ -127,7 +127,8 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Executes this operation. 
         /// </summary>
-        /// <param name="cps">The points to save</param>
+        /// <param name="cps">The points to save (none of these should correspond to previously created
+        /// features in the map model, otherwise an exception will be raised).</param>
         /// <param name="ent">The entity type to assign to control points</param>
         internal void Execute(ControlPoint[] cps, IEntity ent)
         {
@@ -137,9 +138,11 @@ namespace Backsight.Editor.Operations
             {
                 // Add a new point to the map & define it's ID
                 PointFeature p = mapModel.AddPoint(cp, ent, this);
-                IdHandle idh = new IdHandle(p);
+
+                // Create the new ID (and point the ID and feature to each other).
                 string keystr = cp.ControlId.ToString();
-                idh.CreateForeignId(keystr);
+                ForeignId fid = new ForeignId(keystr);
+                fid.Add(p);
 
                 m_Features.Add(p);
             }

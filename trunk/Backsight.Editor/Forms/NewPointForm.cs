@@ -101,16 +101,19 @@ namespace Backsight.Editor.Forms
             ShowPosition();
             elevationTextBox.Enabled = (Math.Abs(m_Elevation) > Double.Epsilon);
 
-	        // Disable the entity combo box
+            // Disable the entity combo box (ensure that entityTypeComboBox_SelectedValueChanged won't
+            // do anything with the ID combo)
+            entityTypeComboBox.SelectedValueChanged -= entityTypeComboBox_SelectedValueChanged;
             entityTypeComboBox.Enabled = false;
 
         	// Select the defined entity type (if any).
             IEntity curEnt = upt.EntityType;
             if (curEnt!=null)
-                entityTypeComboBox.SelectedItem = curEnt.Name; // not sure if this will work
+                entityTypeComboBox.SelectedItem = curEnt;
 
         	// Display the point key (if any) and disable it.
-            idComboBox.Text = m_PointId.FormattedKey;
+            idComboBox.Items.Add(upt.FormattedKey);
+            idComboBox.Text = upt.FormattedKey;
             idComboBox.Enabled = false;
 
             return true;
@@ -124,17 +127,14 @@ namespace Backsight.Editor.Forms
 
             ILayer layer = m_Cmd.ActiveLayer;
             IEntity[] entities = EnvironmentContainer.EntityTypes(SpatialType.Point, layer);
-            Array.Sort<IEntity>(entities, delegate(IEntity a, IEntity b)
-                                    { return a.Name.CompareTo(b.Name); });
+            Array.Sort<IEntity>(entities, delegate(IEntity a, IEntity b) { return a.Name.CompareTo(b.Name); });
             entityTypeComboBox.DataSource = entities;
 
 	        // If it's not an update ...
 	        if (!InitUpdate())
             {
-                // Pick any default entity type for the currently active map layer (the
-                // change handler for the entity type combo will go on to load the
-                // ID combo)
-                IEntity defEnt = (layer==null ? null : layer.DefaultPointType);
+                // Pick any default entity type (the change handler for the entity type combo will go on to load the ID combo)
+                IEntity defEnt = CadastralMapModel.Current.DefaultPointType;
                 if (defEnt!=null)
                 {
                     entityTypeComboBox.SelectedItem = defEnt;

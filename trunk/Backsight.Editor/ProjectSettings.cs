@@ -49,11 +49,6 @@ namespace Backsight.Editor
         string m_ConnectionString;
 
         /// <summary>
-        /// The ID of the map layer the project relates to.
-        /// </summary>
-        int m_LayerId;
-
-        /// <summary>
         /// Information about the area that was last drawn.
         /// </summary>
         DrawInfo m_DrawInfo;
@@ -146,7 +141,6 @@ namespace Backsight.Editor
         public ProjectSettings()
         {
             m_ConnectionString = String.Empty;
-            m_LayerId = 0;
             m_DrawInfo = new DrawInfo(0.0, 0.0, 0.0);
             m_DisplayUnit = DistanceUnitType.AsEntered;
             m_EntryUnit = DistanceUnitType.Meters;

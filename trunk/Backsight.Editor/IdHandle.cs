@@ -152,10 +152,12 @@ namespace Backsight.Editor
             get { return (m_Id>0); }
         }
 
+        /*
         bool IsDefined
         {
             get { return (m_FeatureId!=null || m_Id!=0); }
         }
+        */
 
         /// <summary>
         /// A formatted string representing the key (if any) for this ID handle.
@@ -189,6 +191,7 @@ namespace Backsight.Editor
                 m_Group.FreeId(m_Id);
         }
 
+        /*
         /// <summary>
         /// Reserves the next available ID for the specified entity type.
         /// Any ID previously reserved by this ID handle will be released.
@@ -199,6 +202,7 @@ namespace Backsight.Editor
         {
             return ReserveId(ent, 0);
         }
+        */
 
         /// <summary>
         /// Reserves a feature ID. Any ID previously reserved by this ID handle will
@@ -330,12 +334,9 @@ namespace Backsight.Editor
                 // accepts a Feature). It might not be if one of three
                 // things happened:
 
-                // 1. Some software frigged around with the entity type
-                //	  without changing the ID.
-                // 2. The ID group was made obsolete after the ID was
-                //    created.
-                // 3. The calling function did not check whether the ID
-                //    was foreign.
+                // 1. Some software frigged around with the entity type without changing the ID.
+                // 2. The ID group was made obsolete after the ID was created.
+                // 3. The calling function did not check whether the ID was foreign.
 
                 if (m_Packet==null)
                     m_Packet = CadastralMapModel.Current.IdManager.FindPacket(nid); 
@@ -394,6 +395,7 @@ namespace Backsight.Editor
             return true;
         }
 
+        /*
         /// <summary>
         /// Loads a list with all the IDs that are available for a specific entity type.
         /// </summary>
@@ -405,6 +407,7 @@ namespace Backsight.Editor
             IdManager idMan = CadastralMapModel.Current.IdManager;
             return (idMan==null ? 0 : idMan.GetAvailIds(ent, avail));
         }
+        */
 
         /// <summary>
         /// Checks whether this ID handle is valid for a specific entity type.
@@ -459,170 +462,6 @@ namespace Backsight.Editor
         {
             get { return m_Entity; }
             set { m_Entity = value; }
-        }
-
-        /// <summary>
-        /// Creates an ID out of some miscellaneous string. This function should be called
-        /// only when importing data from an externally defined file format.
-        /// <para/>
-        /// This is needed because there is no guarantee that a foreign key is numeric. It
-        /// might even be completely alphabetic, so it would be impossible to relate it
-        /// to any ID range.
-        /// <para/>
-        /// In order to use this function, you must initially construct the ID handle with
-        /// a reference to the feature that the ID will be for. If you don't, you'll get an
-        /// error message. Given that you have done things correctly, the feature will be
-        /// modified in 2 ways:
-        /// <para/>
-        /// 1. It will be marked as having a foreign ID.
-        /// 2. It will be modified to point to the ID.
-        /// </summary>
-        /// <param name="keystr">The foreign key to assign.</param>
-        /// <returns>The feature ID that has been created (null on error).</returns>
-        internal FeatureId CreateForeignId(string keystr)
-        {
-            // If the feature was not supplied to the constructor, say it can't be done!
-            if (m_Feature==null)
-            {
-                MessageBox.Show("IdHandle.CreateForeignId - Attempt to create un-attached ID");
-                return null;
-            }
-
-            m_Id = 0;	// NOT a reserved ID.
-
-            // Create the new ID (and point it to the feature).
-            m_FeatureId = new ForeignId(keystr);
-            m_FeatureId.Add(m_Feature);
-
-            // Make sure we have the latest entity type for the feature (it
-            // could conceivably have changed since the constructor was
-            // called).
-            m_Entity = m_Feature.EntityType;
-
-            IdManager idMan = CadastralMapModel.Current.IdManager;
-            if (idMan==null)
-                m_Group = null;
-            else
-            {
-                // Try to find the ID group that applies to the feature's
-                // entity type (this will be null if the entity type was
-                // not originally listed in the IdEntity table, or the
-                // group is considered to be obsolete).
-                m_Group = idMan.GetGroup(m_Entity);
-            }
-
-            // Foreign IDs cannot fall in ANY packet.
-            m_Packet = null;
-
-            return m_FeatureId;
-        }
-
-        /// <summary>
-        /// Deletes the ID for the feature that was specified in this ID handle's
-        /// constructor. The ID will only be deleted if nothing else is currently
-        /// referenced by the ID.
-        /// </summary>
-        /// <returns>True if the ID has been successfully deleted. False if it
-        /// could not be deleted.</returns>
-        bool DeleteId()
-        {
-            // Confirm that the ID refers to an existing feature.
-            if (m_Feature==null)
-            {
-                MessageBox.Show("IdHandle.DeleteId - Attempt to delete non-persistent ID");
-                return false;
-            }
-
-            // Confirm that the feature's ID has not changed somehow.
-            if (!Object.ReferenceEquals(m_FeatureId, m_Feature.FeatureId))
-            {
-                MessageBox.Show("IdHandle.DeleteId - Inconsistent ID");
-                return false;
-            }
-
-            // Ensure that the reference the ID makes to the feature
-            // has been cut (it may have been done already).
-            m_FeatureId.CutReference(m_Feature);
-
-            // And null the pointer from the feature to the ID, declaring
-            // that it no longer has "foreign ID" status.
-            bool isForeign = m_Feature.IsForeignId;
-            m_Feature.SetId(null);
-
-            // If the ID still refers to anything, it can't be deleted.
-            if (!m_FeatureId.IsInactive)
-                return false;
-
-            // If the ID is not foreign, get the ID manager to get rid
-            // of the pointer to it.
-            if (!isForeign)
-            {
-                IdManager idMan = CadastralMapModel.Current.IdManager;
-                if (idMan==null)
-                    return false;
-
-                if (!idMan.DeleteId((m_FeatureId as NativeId), m_Entity))
-                    return false;
-            }
-
-            // Delete the ID ... this can only be done for foreign IDs.
-            // For official CED-style IDs, you can NEVER delete a feature
-            // ID, because it may have been in use before the current
-            // feature made use of it. So if you rollback the operation
-            // that re-used the ID, and then rolled back the operation
-            // that had originally used it, it would be pointing to an
-            // area of deleted memory!
-
-            //if (isForeign) delete m_pId;
-
-            m_FeatureId = null;
-            return true;
-        }
-
-        /// <summary>
-        /// Restores the ID for the feature attached to this handle. This function is
-        /// called when a user-perceived deletion is being rolled back.
-        ///
-        /// You should not call this function for features that have foreign IDs.
-        /// </summary>
-        /// <returns>True if the ID has been successfully restored. False if the ID
-        /// involved is a foreign ID.</returns>
-        internal bool RestoreId()
-        {
-	        // Confirm that the ID refers to an existing feature.
-	        if (m_Feature==null)
-            {
-		        MessageBox.Show("IdHandle.RestoreId - Attempt to restore non-persistent ID");
-		        return false;
-	        }
-
-	        // Confirm that the feature's ID has not changed somehow.
-	        if (!Object.ReferenceEquals(m_FeatureId, m_Feature.FeatureId))
-            {
-		        MessageBox.Show("IdHandle.RestoreId - Inconsistent ID");
-		        return false;
-	        }
-
-	        // Ensure that the ID is cross-referenced to the feature.
-	        m_FeatureId.AddReference(m_Feature);
-
-	        // That's it. When a feature is de-activated, only the back
-	        // pointer from the ID is nulled out. The feature retained
-	        // it's pointer to the ID, and the ID itself was left in
-	        // place as part of the IdRange object ... oops, the
-	        // range needs to be told to decrement the number of free
-	        // IDs. It should already be known via the constructor.
-
-	        // Foreign IDs don't count.
-	        if (m_Feature.IsForeignId)
-                return true;
-
-	        if (m_Packet==null)
-                throw new Exception("IdHandle.RestoreId - ID range not found");
-
-	        // Tell the packet that the ID has been restored (this just
-	        // decrements the free count).
-	        return m_Packet.RestoreId(m_FeatureId);
         }
     }
 }

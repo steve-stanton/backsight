@@ -261,14 +261,9 @@ namespace Backsight.Editor
             // Get rid of any undo folder that may be left over from a crashed editing session
             result.DeleteUndoFolder();
 
-            // The Load method will end up calling software that requires access to the
-            // current map model, so we need to set it no
-            // -- not sure if this is still true
-            //EditingController.Current.SetMapModel(result.Model, null);
-            EditingController.Current.SetProject(result);
-
-            // Doing it here versus there is historical...
+            // Bit jumbled up here (historical reasons), should tidy up...
             result.LoadEdits(dataFolder);
+            EditingController.Current.SetProject(result);
             EditingController.Current.SetMapModel(result.Model, null);
             result.Model.Load();
 

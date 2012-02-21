@@ -287,6 +287,7 @@ namespace Backsight.Editor
 	        return fid;
         }
 
+        /*
         /// <summary>
         /// Loads a list with all the IDs that are available for this group.
         /// </summary>
@@ -303,6 +304,7 @@ namespace Backsight.Editor
 
         	return nid;
         }
+        */
 
         /// <summary>
         /// Counts the number of reserved IDs within a specific range.
