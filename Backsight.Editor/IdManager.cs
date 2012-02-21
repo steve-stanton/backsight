@@ -254,6 +254,7 @@ namespace Backsight.Editor
                 return null;
         }
 
+        /*
         /// <summary>
         /// Loads a list with all the IDs that are available for a specific entity type.
         /// </summary>
@@ -280,6 +281,7 @@ namespace Backsight.Editor
 
             return navail;
         }
+        */
 
         /// <summary>
         /// Gets rid of a pointer to a feature ID.

@@ -709,8 +709,39 @@ namespace Backsight.Editor
             // If this feature referred to an ID, restore it.
             if (m_Id!=null)
             {
-                IdHandle idh = new IdHandle(this);
-                idh.RestoreId();
+                // Ensure that the ID is cross-referenced to this feature.
+                m_Id.AddReference(this);
+
+                // That's pretty well it. When a feature is de-activated, only the back
+                // pointer from the ID is nulled out. The feature retained it's pointer to the ID,
+                // and the ID itself was left in place as part of the IdPacket to which it belongs.
+                // For native IDs, the packet needs to be told to decrement the number of free
+                // IDs.
+
+                // TODO: This may be irrelevant (need to also review the logic when something is
+                // de-activated).
+
+                if (m_Id is NativeId)
+                {
+                    IdManager idMan = MapModel.IdManager;
+                    if (idMan != null)
+                    {
+                        // Find the ID group that applies to the feature's
+                        // entity type (this will be null if the entity type was
+                        // not originally listed in the IdEntity table, or the
+                        // group is considered to be obsolete).
+                        IdGroup g = idMan.GetGroup(this.EntityType);
+
+                        // If we got a group (and the ID if not foreign) try to find
+                        // the ID packet that refers to the feature's ID.
+                        if (g != null)
+                        {
+                            NativeId nid = (m_Id as NativeId);
+                            IdPacket p = g.FindPacket(nid);
+                            p.RestoreId(m_Id);
+                        }
+                    }
+                }
             }
 
             // Add back into the map index.

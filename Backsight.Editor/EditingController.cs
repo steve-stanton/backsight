@@ -611,13 +611,7 @@ namespace Backsight.Editor
 
             return null;
         }
-        /*
-        internal Operation CurrentEdit
-        {
-            get { return m_CurrentEdit; }
-            set { m_CurrentEdit = value; }
-        }
-        */
+
         internal ILayer ActiveLayer
         {
             get { return m_ActiveLayer; }
