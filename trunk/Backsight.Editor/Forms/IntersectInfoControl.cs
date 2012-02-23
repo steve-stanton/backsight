@@ -14,11 +14,11 @@
 // </remarks>
 
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
-using Backsight.Environment;
 using Backsight.Editor.Operations;
-using System.Drawing;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Forms
 {
@@ -31,7 +31,7 @@ namespace Backsight.Editor.Forms
         #region Class data
 
         /// <summary>
-        /// ID and entity type for the intersection point (should never be null)
+        /// ID and entity type for the intersection point (null when doing an update)
         /// </summary>
         IdHandle m_PointId;
 
@@ -107,7 +107,7 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// ID and entity type for the intersection point (should never be null)
+        /// ID and entity type for the intersection point (null when doing an update)
         /// </summary>
         internal IdHandle PointId
         {
@@ -155,28 +155,26 @@ namespace Backsight.Editor.Forms
             }
             else
             {
+                pointTypeComboBox.SelectedValueChanged -= pointTypeComboBox_SelectedValueChanged;
+                pointIdComboBox.SelectedValueChanged -= pointIdComboBox_SelectedValueChanged;
+
                 pointTypeComboBox.Enabled = false;
                 pointIdComboBox.Enabled = false;
 
-                // Select the entity type previously defined for the 
-                // intersection point.
-                PointFeature feat = op.IntersectionPoint;
-                m_PointId = new IdHandle(feat);
-
-                // Load the entity combo box with a list for point features
-                // and disable it.
+                // Load the entity combo box with a list for point features and disable it.
                 ILayer layer = EditingController.Current.ActiveLayer;
                 pointTypeComboBox.Load(SpatialType.Point, layer);
-                //pointTypeComboBox.Load(SpatialType.Point, feat.BaseLayer);
 
                 // Scroll the entity combo to the previously defined
                 // entity type for the intersection point.
+                PointFeature feat = op.IntersectionPoint;
                 IEntity curEnt = feat.EntityType;
                 if (curEnt!=null)
                     pointTypeComboBox.SelectEntity(curEnt);
 
-                // Display the point key (if any) and disable it.
-                pointIdComboBox.Text = m_PointId.FormattedKey;
+                // Display the point key (if any)
+                pointIdComboBox.DropDownStyle = ComboBoxStyle.DropDown;
+                pointIdComboBox.Text = feat.FormattedKey;
 
                 // Intersects involving line features...
                 m_CloseTo = op.ClosePoint;
@@ -197,8 +195,8 @@ namespace Backsight.Editor.Forms
             // reload the ID combo (reserving a different ID).
             if (!m_PointId.IsValidFor(ent))
                 IdHelper.LoadIdCombo(pointIdComboBox, ent, m_PointId);
-            //else
-            //    m_PointId.Entity = ent;
+            else
+                m_PointId.Entity = ent;
         }
 
         private void pointIdComboBox_SelectedValueChanged(object sender, EventArgs e)

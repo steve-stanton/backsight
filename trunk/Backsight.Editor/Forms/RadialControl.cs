@@ -131,7 +131,7 @@ namespace Backsight.Editor.Forms
         private bool m_WantLine;
 
         /// <summary>
-        /// The ID handle (+entity) for the point.
+        /// The ID handle (+entity) for the point (null when doing an update).
         /// </summary>
         private IdHandle m_PointId;
 
@@ -155,6 +155,7 @@ namespace Backsight.Editor.Forms
 	        m_Cmd = cmd;
 	        m_From = from;
             m_Recall = (RadialOperation)cmd.Recall;
+            m_PointId = new IdHandle();
         	InitOp(m_Recall);
         }
 
@@ -200,13 +201,9 @@ namespace Backsight.Editor.Forms
 	        if (!InitOp(pop) )
                 return false;
 
-	        // Get the sideshot point and note its entity type and key.
+	        // Get the position of the sideshot point
 	        PointFeature point = pop.Point;
-	        if (point!=null)
-            {
-		        m_PointId = new IdHandle(point);
-		        m_To = new Position(point);
-	        }
+            m_To = new Position(point);
 
 	        return true;
         }
@@ -218,7 +215,8 @@ namespace Backsight.Editor.Forms
                 m_Cmd.DialFinish(m_DialOff);
 
             // Release any reserved ID
-            m_PointId.DiscardReservedId();
+            if (m_PointId != null)
+                m_PointId.DiscardReservedId();
 
             // Abort the command.
             m_Cmd.DialAbort(this);
@@ -246,7 +244,7 @@ namespace Backsight.Editor.Forms
             m_WantLine = false;
             m_WantCentre = false;
             m_IsStatic = false;
-            m_PointId = new IdHandle();
+            m_PointId = null;
         }
 
         bool InitOp(RadialOperation pop)
@@ -1165,6 +1163,9 @@ namespace Backsight.Editor.Forms
             get { return m_WantLine; }
         }
 
+        /// <summary>
+        /// The ID handle (+entity) for the point (null when doing an update).
+        /// </summary>
         internal IdHandle PointId
         {
             get { return m_PointId; }

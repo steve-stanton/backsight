@@ -65,6 +65,7 @@ namespace Backsight.Editor.Forms
             // 
             // pointIdComboBox
             // 
+            this.pointIdComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.pointIdComboBox.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pointIdComboBox.FormattingEnabled = true;
             this.pointIdComboBox.Location = new System.Drawing.Point(295, 50);
@@ -140,6 +141,7 @@ namespace Backsight.Editor.Forms
             this.pointTypeComboBox.FormattingEnabled = true;
             this.pointTypeComboBox.Location = new System.Drawing.Point(272, 17);
             this.pointTypeComboBox.Name = "pointTypeComboBox";
+            this.pointTypeComboBox.ShowBlankEntityType = true;
             this.pointTypeComboBox.Size = new System.Drawing.Size(178, 24);
             this.pointTypeComboBox.TabIndex = 20;
             this.pointTypeComboBox.SelectedValueChanged += new System.EventHandler(this.pointTypeComboBox_SelectedValueChanged);
@@ -152,8 +154,8 @@ namespace Backsight.Editor.Forms
             this.closestPointExplanationLabel.Size = new System.Drawing.Size(353, 59);
             this.closestPointExplanationLabel.TabIndex = 21;
             this.closestPointExplanationLabel.Text = "The closest point (in red) is used to relocate the intersection in the event that" +
-    " the intersection moves due to subsequent edits. Specify an alternative point if" +
-    " desired.";
+                " the intersection moves due to subsequent edits. Specify an alternative point if" +
+                " desired.";
             this.closestPointExplanationLabel.Visible = false;
             // 
             // closestPointTrimLabel
