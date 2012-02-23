@@ -226,7 +226,9 @@ namespace Backsight.Editor.Operations
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            // Do nothing - see comments in NewPointOperation.ExchangeData
+            // Only exchange if the model is being loaded - see comments in NewPointOperation.ExchangeData
+            if (MapModel.WorkingSession == null)
+                ApplyUpdateItems(null, data);
         }
 
         /// <summary>
@@ -240,18 +242,26 @@ namespace Backsight.Editor.Operations
             if (ctx is UpdateEditingContext)
             {
                 UpdateEditingContext uec = (ctx as UpdateEditingContext);
-                UpdateItemCollection data = uec.UpdateSource.Changes;
-
-                // Locate the specific point that was modified
-                string id = data.GetValue<string>(DataField.Id);
-                InternalIdValue iid = new InternalIdValue(id);
-                PointFeature p = this.MapModel.Find<PointFeature>(iid);
-
-                double x = data.ExchangeValue<double>(DataField.X, p.Easting.Meters);
-                double y = data.ExchangeValue<double>(DataField.Y, p.Northing.Meters);
-                PointGeometry pg = new PointGeometry(x, y);
-                p.ApplyPointGeometry(ctx, pg);
+                ApplyUpdateItems(ctx, uec.UpdateSource.Changes);
             }
+        }
+
+        /// <summary>
+        /// Applies changes to this editing operation.
+        /// </summary>
+        /// <param name="ctx">The editing context (null if the model is being deserialized)</param>
+        /// <param name="data">The changes to apply</param>
+        void ApplyUpdateItems(EditingContext ctx, UpdateItemCollection data)
+        {
+            // Locate the specific point that was modified
+            //string id = data.GetValue<string>(DataField.Id);
+            //InternalIdValue iid = new InternalIdValue(id);
+            //PointFeature p = this.MapModel.Find<PointFeature>(iid);
+            PointFeature p = data.GetValue<PointFeature>(DataField.UpdatedPoint);
+            double x = data.ExchangeValue<double>(DataField.X, p.Easting.Meters);
+            double y = data.ExchangeValue<double>(DataField.Y, p.Northing.Meters);
+            PointGeometry pg = new PointGeometry(x, y);
+            p.ApplyPointGeometry(ctx, pg);
         }
 
         /// <summary>

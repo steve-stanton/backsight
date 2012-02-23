@@ -89,12 +89,15 @@ namespace Backsight.Editor
 
                     // Convert the supplied List to an array, since we may cut refs in
                     // the loop below.
-                    IFeatureDependent[] deps = point.Dependents.ToArray();
-
-                    if (deps != null)
+                    if (point.Dependents != null)
                     {
-                        foreach (IFeatureDependent fd in deps)
-                            fd.OnPreMove(point);
+                        IFeatureDependent[] deps = point.Dependents.ToArray();
+
+                        if (deps != null)
+                        {
+                            foreach (IFeatureDependent fd in deps)
+                                fd.OnPreMove(point);
+                        }
                     }
                 }
             }

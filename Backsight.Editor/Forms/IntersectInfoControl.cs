@@ -146,7 +146,7 @@ namespace Backsight.Editor.Forms
                 IEntity ent = pointTypeComboBox.Load(SpatialType.Point);
 
                 // Load the ID combo (reserving the first available ID).
-                IdHelper.LoadIdCombo(pointIdComboBox, ent, m_PointId, true);
+                IdHelper.LoadIdCombo(pointIdComboBox, ent, m_PointId);
 
                 // If we are auto-numbering, disable the ID combo.
                 EditingController controller = EditingController.Current;
@@ -196,9 +196,9 @@ namespace Backsight.Editor.Forms
             // If the current ID does not apply to the new point type,
             // reload the ID combo (reserving a different ID).
             if (!m_PointId.IsValidFor(ent))
-                IdHelper.LoadIdCombo(pointIdComboBox, ent, m_PointId, true);
-            else
-                m_PointId.Entity = ent;
+                IdHelper.LoadIdCombo(pointIdComboBox, ent, m_PointId);
+            //else
+            //    m_PointId.Entity = ent;
         }
 
         private void pointIdComboBox_SelectedValueChanged(object sender, EventArgs e)

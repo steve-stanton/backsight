@@ -43,6 +43,11 @@ namespace Backsight.Editor
         /// </summary>
         NativeId[] m_Ids;
 
+        /// <summary>
+        /// Any IDs that have been reserved (but not yet allocated).
+        /// </summary>
+        readonly List<uint> m_ReservedIds;
+
         #endregion
 
         #region Constructors
@@ -65,6 +70,7 @@ namespace Backsight.Editor
             m_Group = group;
             m_Allocation = alloc;
             m_Ids = new NativeId[m_Allocation.Size];
+            m_ReservedIds = new List<uint>();
         }
 
         #endregion
@@ -173,6 +179,7 @@ namespace Backsight.Editor
                 return result;
             }
         }
+
         /// <summary>
         /// The number of IDs that are currently free. This is the total number of null
         /// references in m_Ids PLUS the number of references to inactive IDs.
@@ -218,8 +225,42 @@ namespace Backsight.Editor
                     throw new Exception("IdPacket.ReserveId - ID already used");
             }
 
+            AddReversedId(id);
+            return true;
             // Get the group to reserve the ID.
-            return m_Group.ReserveId(id);
+            //return m_Group.ReserveId(id);
+        }
+
+        void AddReversedId(uint id)
+        {
+            // Return if the specified ID is already reserved.
+            if (IsReserved(id))
+                throw new Exception("IdPacket.AddReservedId - ID previously reserved");
+
+            // Remember the specified ID in the reserve list.
+            m_ReservedIds.Add(id);
+        }
+
+        /// <summary>
+        /// Checks whether a specific ID has been reserved.
+        /// </summary>
+        /// <param name="id">The ID to check.</param>
+        /// <returns>True if the ID is reserved.</returns>
+        bool IsReserved(uint id)
+        {
+            return (FindReservedId(id) >= 0);
+        }
+
+        /// <summary>
+        /// Tries to get the index of an ID that may have been reserved.
+        /// </summary>
+        /// <param name="id">The ID to find.</param>
+        /// <returns>List index of the reserved ID (refers to m_ReservedIds). A value less than
+        /// zero means the ID is not reserved.</returns>
+        int FindReservedId(uint id)
+        {
+            return m_ReservedIds.FindIndex(r => r == id);
+            //return m_ReservedIds.FindIndex(delegate(uint r) { return r == id; });
         }
 
         /// <summary>
@@ -246,16 +287,20 @@ namespace Backsight.Editor
                 if (m_Ids[i] == null)
                 {
                     uint keynum = (uint)Min + i;
-                    if (m_Group.ReserveId(keynum))
-                        return keynum;
+                    AddReversedId(keynum);
+                    return keynum;
+                    //if (m_Group.ReserveId(keynum))
+                    //    return keynum;
                 }
                 else
                 {
                     if (hasInactive && m_Ids[i].IsInactive)
                     {
                         uint keynum = (uint)Min + i;
-                        if (m_Group.ReserveId(keynum))
-                            return keynum;
+                        AddReversedId(keynum);
+                        return keynum;
+                        //if (m_Group.ReserveId(keynum))
+                        //    return keynum;
                     }
                 }
             }
@@ -281,10 +326,7 @@ namespace Backsight.Editor
 
             uint navail = 0; // Nothing found so far.
 
-            // Check if the group has any reserved IDs in THIS range.
-
-            uint nres = m_Group.GetReserveCount((uint)Min, (uint)Max);
-            if (nres == 0)
+            if (m_ReservedIds.Count == 0)
             {
                 // No reserves, so just scan though the array of ID pointers,
                 // appending every free slot to the return array.
@@ -308,10 +350,6 @@ namespace Backsight.Editor
             }
             else
             {
-                // Get the reserves
-                List<uint> reserves = new List<uint>((int)nres);
-                m_Group.GetReserveIds((uint)Min, (uint)Max, reserves);
-
                 // As above, scan through the array of ID pointers, looking
                 // for a free slot. But don't add in any IDs that have been
                 // reserved.
@@ -329,14 +367,16 @@ namespace Backsight.Editor
 
                     if (tnum != 0)
                     {
+                        bool isReserved = m_ReservedIds.Exists(j => j == keynum);
+                        /*
                         bool isReserved = false;
 
-                        for (int j = 0; j < nres && !isReserved; j++)
+                        for (int j = 0; j < m_ReservedIds.Count && !isReserved; j++)
                         {
-                            if (keynum == reserves[j])
+                            if (keynum == m_ReservedIds[j])
                                 isReserved = true;
                         }
-
+                        */
                         if (!isReserved)
                         {
                             avail.Add(keynum);
@@ -371,16 +411,20 @@ namespace Backsight.Editor
                 if (m_Ids[i] == null)
                 {
                     uint keynum = (uint)Min + i;
-                    if (!m_Group.IsReserved(keynum))
+                    if (!IsReserved(keynum))
                         return true;
+                    //if (!m_Group.IsReserved(keynum))
+                    //    return true;
                 }
                 else
                 {
                     if (hasInactive && m_Ids[i].IsInactive)
                     {
                         uint keynum = (uint)Min + i;
-                        if (!m_Group.IsReserved(keynum))
+                        if (!IsReserved(keynum))
                             return true;
+                        //if (!m_Group.IsReserved(keynum))
+                        //    return true;
                     }
                 }
             }
@@ -422,7 +466,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new feature ID.
+        /// Creates a new feature ID that doesn't reference anything (and does not add it to the map model).
         /// </summary>
         /// <param name="id">The ID to create.</param>
         /// <returns>The created feature ID.</returns>
@@ -431,6 +475,15 @@ namespace Backsight.Editor
             // Confirm that the specified ID falls within this range.
             if (id<(uint)Min || id>(uint)Max)
                 throw new Exception("IdPacket.CreateId - New ID is not in range!");
+
+            // Confirm that the specified ID was previously reserved (if not,
+            // see if it has already been created).
+            int reserveIndex = FindReservedId(id);
+            if (reserveIndex < 0)
+            {
+                string msg = String.Format("ID {0} d was not properly reserved.", id);
+                throw new ApplicationException(msg);
+            }
 
             // Confirm that the packet does not already refer to an active ID.
             int index = (int)id - Min;
@@ -472,6 +525,9 @@ namespace Backsight.Editor
                 m_Ids[index] = fid;
             }
 
+            // Clear the reserve status
+            m_ReservedIds.RemoveAt(reserveIndex);
+
             return fid;
         }
 
@@ -499,6 +555,48 @@ namespace Backsight.Editor
         internal bool Contains(uint rawId)
         {
             return (Min <= rawId && rawId <= Max);
+        }
+
+        // TODO
+        internal NativeId ReplaceReservedId(ReservedId reservedId)
+        {
+            int index = GetIndex(reservedId.RawId);
+            if (index < 0)
+                throw new ArgumentException();
+
+            // Will the reserved ID refer to any features & rows? (should they be copied over)?
+
+            NativeId result = new NativeId(reservedId.Packet.IdGroup, reservedId.RawId);
+            m_Ids[index] = result;
+            return result;
+        }
+
+        /*
+        internal void Clean()
+        {
+            for (int i = 0; i < m_Ids.Length; i++)
+            {
+                if (m_Ids[i] is ReservedId)
+                    m_Ids[i] = null;
+            }
+        }
+         */
+
+        /// <summary>
+        /// Frees an ID that was previously reserved.
+        /// </summary>
+        /// <param name="id">The ID to free.</param>
+        /// <returns>True if the ID was freed. False if it could not be found.</returns>
+        internal bool FreeId(uint id)
+        {
+            int index = FindReservedId(id);
+            if (index >= 0)
+            {
+                m_ReservedIds.RemoveAt(index);
+                return true;
+            }
+
+            return false;
         }
     }
 }

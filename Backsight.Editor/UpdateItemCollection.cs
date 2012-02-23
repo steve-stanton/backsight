@@ -413,15 +413,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Exchanges the currently stored change values with the revised edit.
-        /// </summary>
-        /// <param name="edit">The edit the changes relate to (not null).</param>
-        internal void ExchangeData(IRevisable edit)
-        {
-            edit.ExchangeData(this);
-        }
-
-        /// <summary>
         /// Obtains the features that are referenced by the items in this collection (including
         /// features that are indirectly referenced by observation classes).
         /// </summary>
@@ -468,36 +459,5 @@ namespace Backsight.Editor
         {
             get { return m_Changes.Count; }
         }
-
-        /*
-        public void WriteData(EditSerializer editSerializer)
-        {
-            IEditWriter writer = editSerializer.Writer;
-            writer.WriteInt32("Length", m_Changes.Count);
-
-            foreach (KeyValuePair<string, object> kvp in m_Changes)
-            {
-                object o = kvp.Value;
-
-                if (o is Feature)
-                {
-                    editSerializer.WriteFeatureRef<Feature>(kvp.Key, (Feature)o);
-                }
-                else if (o is Observation)
-                {
-                    editSerializer.WritePersistent<Observation>(kvp.Key, (Observation)o);
-                }
-                else if (o is IConvertible)
-                {
-                    // Just write it as a string
-                    TypeCode typeCode = Type.GetTypeCode(o.GetType());
-
-                    switch (typeCode)
-                    {
-                    }
-                }
-            }
-        }
-             */
     }
 }

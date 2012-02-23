@@ -15,13 +15,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 
-using Backsight.Environment;
-using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Operations;
 using Backsight.Editor.UI;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Forms
 {
@@ -168,8 +168,6 @@ namespace Backsight.Editor.Forms
 
         internal void Draw()
         {
-            //MessageBox.Show("start Draw");
-
             ISpatialDisplay view = m_Cmd.ActiveDisplay;
             DrawPoints();
 
@@ -184,8 +182,6 @@ namespace Backsight.Editor.Forms
                 style.LineColor = Color.Magenta;
                 style.Render(view, new IPosition[] { m_From, m_To });
             }
-
-            //MessageBox.Show("end Draw");
         }
 
         RadialOperation UpdateOp
@@ -627,14 +623,14 @@ namespace Backsight.Editor.Forms
             // load the original info.
             if (IsUpdate)
             {
+                entityTypeComboBox.SelectedIndexChanged -= entityTypeComboBox_SelectedValueChanged;
+                pointIdComboBox.SelectedValueChanged -= pointIdComboBox_SelectedValueChanged;
+
                 // Load the entity combo box with a list for point features.
                 entityTypeComboBox.Load(SpatialType.Point);
 
                 ShowUpdate();
-
-                // Disable the ID combo.
-                pointIdLabel.Enabled = false;
-                pointIdComboBox.Enabled = false;
+                newPointGroupBox.Enabled = false;
             }
             else
             {
@@ -650,7 +646,7 @@ namespace Backsight.Editor.Forms
                     EnableAngleDirection(false);
 
                 // Load the ID combo (reserving the first available ID).
-                IdHelper.LoadIdCombo(pointIdComboBox, ent, m_PointId, true);
+                IdHelper.LoadIdCombo(pointIdComboBox, ent, m_PointId);
 
                 // If we are auto-numbering, disable the ID combo.
                 EditingController controller = m_Cmd.Controller;
@@ -940,7 +936,7 @@ namespace Backsight.Editor.Forms
             // If the current ID does not apply to the new point type,
             // reload the ID combo (reserving a different ID).
             if (!m_PointId.IsValidFor(ent))
-                IdHelper.LoadIdCombo(pointIdComboBox, ent, m_PointId, true);
+                IdHelper.LoadIdCombo(pointIdComboBox, ent, m_PointId);
             else
                 m_PointId.Entity = ent;
         }
@@ -1214,9 +1210,6 @@ namespace Backsight.Editor.Forms
         	// Resume in the point type field.
             entityTypeComboBox.Focus();
 
-	        // THIS dialog should be in the foreground.
-	        //this->SetForegroundWindow();
-
 	        return true;
         }
 
@@ -1274,11 +1267,12 @@ namespace Backsight.Editor.Forms
             if (op==null)
                 return;
 
+            Form parent = ParentForm;
+            parent.Text = "Update Sideshot";
+
             // Ensure OnChange handlers do nothing when we set the
             // text in various edit boxes.
             m_IsStatic = true;
-
-            //SetWindowText("Update Sideshot");
 
             // Display the key of the backsight (if any).
             if (m_Backsight!=null)
@@ -1326,15 +1320,15 @@ namespace Backsight.Editor.Forms
                 entityTypeComboBox.SelectEntity(ent);
             entityTypeComboBox.Enabled = false;
 
-            // Display the point key (if any) and disable it.
-            pointIdComboBox.Text = m_PointId.FormattedKey;
-            pointIdComboBox.Enabled = false;
+            // Display the point key (if any)
+            pointIdComboBox.DropDownStyle = ComboBoxStyle.DropDown;
+            pointIdComboBox.Text = op.Point.FormattedKey;
 
             // Set the check box that says whether a line was added.
             addLineCheckBox.Checked = m_WantLine;
 
             // And disable it too.
-            addLineCheckBox.Enabled = false;
+            //addLineCheckBox.Enabled = false;
 
             // If the from point lies on at least one circle, show the "use centre" checkbox.
             centreOfCurveCheckBox.Visible = (m_Circles.Count>0);

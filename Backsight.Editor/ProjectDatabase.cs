@@ -288,7 +288,7 @@ namespace Backsight.Editor
 
             Session session = new Session(result, s, sessionFile);
             result.Model.AddSession(session);
-            result.Model.WorkingSession = session;
+            result.Model.SetWorkingSession(session);
             result.SetLastItem(session.Id);
 
             return result;

@@ -209,7 +209,7 @@ namespace Backsight.Editor
         /// The only time when it's not appropriate to announce is when the user is explicitly
         /// allocating ID ranges.</param>
         /// <returns>Information about the allocated range.</returns>
-        internal IdAllocation GetAllocation(IdGroup group, bool announce)
+        internal IdPacket GetAllocation(IdGroup group, bool announce)
         {
             // I assume that the specified group is actually
             // one of the groups known to this ID manager.
@@ -223,15 +223,15 @@ namespace Backsight.Editor
         /// user is explicitly allocating ID ranges (through the dialog that lists the allocations).
         /// </summary>
         /// <returns>Information about the allocations made.</returns>
-        internal IdAllocation[] GetAllocation()
+        internal IdPacket[] GetAllocation()
         {
-            List<IdAllocation> allocs = new List<IdAllocation>();
+            List<IdPacket> allocs = new List<IdPacket>();
 
             foreach (IdGroup g in m_IdGroups)
             {
-                IdAllocation a = GetAllocation(g, false);
-                if (a != null)
-                    allocs.Add(a);
+                IdPacket p = GetAllocation(g, false);
+                if (p != null)
+                    allocs.Add(p);
             }
 
             return allocs.ToArray();
