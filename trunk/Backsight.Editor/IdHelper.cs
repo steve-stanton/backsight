@@ -60,7 +60,7 @@ namespace Backsight.Editor
             // If we didn't find any, obtain an extra allocation
             if (avail.Length == 0)
             {
-                IdPacket newPacket = idMan.GetAllocation(group, true); // with announcement
+                IdPacket newPacket = group.GetAllocation(true); // with announcement
                 avail = group.GetAvailIds();
                 if (avail.Length == 0)
                     throw new ApplicationException("Cannot obtain ID allocation");

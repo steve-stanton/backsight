@@ -166,9 +166,7 @@ namespace Backsight.Editor
 		        // back to IdGroup.GetAllocation).
                 if (packet == null)
                 {
-                    IdManager man = CadastralMapModel.Current.IdManager;
-			        if (man.GetAllocation(this, true)==null)
-                        return false;
+			        GetAllocation(true);
                     packet = FindNextAvail();
                     if (packet == null)
                         return false;
@@ -317,6 +315,16 @@ namespace Backsight.Editor
                 p.GetAvailIds(result);
 
             return result.ToArray();
+        }
+
+        /// <summary>
+        /// Discards any IDs that may have been reserved (but which are no longer needed). This
+        /// should be called in situations where a use cancels from a data entry dialog.
+        /// </summary>
+        internal void FreeAllReservedIds()
+        {
+            foreach (IdPacket p in m_Packets)
+                p.FreeAllReservedIds();
         }
     }
 }

@@ -214,10 +214,6 @@ namespace Backsight.Editor.Forms
             if (m_DialOff!=null)
                 m_Cmd.DialFinish(m_DialOff);
 
-            // Release any reserved ID
-            if (m_PointId != null)
-                m_PointId.DiscardReservedId();
-
             // Abort the command.
             m_Cmd.DialAbort(this);
         }

@@ -323,25 +323,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Scans this session to note the native IDs that have been used.
-        /// Before calling this method, you must make a call to <see cref="Load"/>
-        /// to obtain the relevant allocations.
-        /// </summary>
-        /// <param name="m">The ID manager, previously initialized with relevant
-        /// ID allocations</param>
-        internal void LoadUsedIds(IdManager m)
-        {
-            IdPacket p = null;
-
-            foreach (Operation op in m_Operations)
-            {
-                Feature[] fa = op.Features;
-                foreach (Feature f in fa)
-                    p = m.AddUsedId(f, p);
-            }
-        }
-
-        /// <summary>
         /// The number of edits performed in this session
         /// </summary>
         internal int OperationCount
