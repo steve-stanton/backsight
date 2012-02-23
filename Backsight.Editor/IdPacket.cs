@@ -165,7 +165,6 @@ namespace Backsight.Editor
         /// </summary>
         internal int NumUsed
         {
-            //get { return m_Allocation.NumUsed; }
             get
             {
                 int result = 0;
@@ -260,7 +259,6 @@ namespace Backsight.Editor
         int FindReservedId(uint id)
         {
             return m_ReservedIds.FindIndex(r => r == id);
-            //return m_ReservedIds.FindIndex(delegate(uint r) { return r == id; });
         }
 
         /// <summary>
@@ -557,46 +555,15 @@ namespace Backsight.Editor
             return (Min <= rawId && rawId <= Max);
         }
 
-        // TODO
-        internal NativeId ReplaceReservedId(ReservedId reservedId)
-        {
-            int index = GetIndex(reservedId.RawId);
-            if (index < 0)
-                throw new ArgumentException();
-
-            // Will the reserved ID refer to any features & rows? (should they be copied over)?
-
-            NativeId result = new NativeId(reservedId.Packet.IdGroup, reservedId.RawId);
-            m_Ids[index] = result;
-            return result;
-        }
-
-        /*
-        internal void Clean()
-        {
-            for (int i = 0; i < m_Ids.Length; i++)
-            {
-                if (m_Ids[i] is ReservedId)
-                    m_Ids[i] = null;
-            }
-        }
-         */
-
         /// <summary>
         /// Frees an ID that was previously reserved.
         /// </summary>
         /// <param name="id">The ID to free.</param>
-        /// <returns>True if the ID was freed. False if it could not be found.</returns>
-        internal bool FreeId(uint id)
+        internal void FreeReservedId(uint id)
         {
             int index = FindReservedId(id);
             if (index >= 0)
-            {
                 m_ReservedIds.RemoveAt(index);
-                return true;
-            }
-
-            return false;
         }
     }
 }

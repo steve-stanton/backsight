@@ -202,21 +202,6 @@ namespace Backsight.Editor
             return m_Packets.Find(p => p.HasAvail());
         }
 
-        /// <summary>
-        /// Frees an ID that was previously reserved.
-        /// </summary>
-        /// <param name="id">The ID to free.</param>
-        /// <returns>True if the ID was freed. False if it could not be found.</returns>
-        internal bool FreeId(uint id)
-        {
-            IdPacket p = FindPacket(id);
-
-            if (p == null)
-                return false;
-            else
-                return p.FreeId(id);
-        }
-
         public override string ToString()
         {
             return this.Name;

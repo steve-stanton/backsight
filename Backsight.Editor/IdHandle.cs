@@ -47,13 +47,6 @@ namespace Backsight.Editor
     class IdHandle
     {
         #region Class data
-        
-        /// <summary>
-        /// The ID group for the ID. This could be null for previously created features,
-        /// which may have been imported from an external source, or which belong to
-        /// obsolete ID groups.
-        /// </summary>
-        private IdGroup m_Group;
 
         /// <summary>
         /// The ID packet that contains the ID. Will be null if the group is null.
@@ -66,87 +59,30 @@ namespace Backsight.Editor
         private IEntity m_Entity;
 
         /// <summary>
-        /// The feature that this ID handle relates to.
-        /// </summary>
-        private Feature m_Feature;
-
-        // An ID handle can either refer to a reserved ID (a FeatureId that
-        // still needs to be created), or a previously existing ID. It
-        // cannot be both. Thus, if m_FeatureId is defined, m_Id must be 0,
-        // and vice versa.
-
-        /// <summary>
         /// The reserved ID (0 if not yet reserved).
         /// </summary>
         private uint m_Id;
-
-        /// <summary>
-        /// A previously created feature ID.
-        /// </summary>
-        private FeatureId m_FeatureId; // was m_pId
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Default constructor.
+        /// Initializes a new instance of the <see cref="IdHandle"/> class that doesn't
+        /// refer to anything.
         /// </summary>
         public IdHandle()
-            : this(null)
         {
-        }
-
-        /// <summary>
-        /// Constructor based on a spatial feature.
-        /// </summary>
-        /// <param name="feat">The existing feature (if any) that this ID handle
-        /// relates to (may be null). If a feature is supplied, it may or may not
-        /// have an existing ID.</param>
-        internal IdHandle(Feature feat)
-        {
-            // Start off in a pristine state.
-            m_Group = null;
             m_Packet = null;
-            m_Id = 0;
-            m_FeatureId = null;
             m_Entity = null;
-            m_Feature = feat;
-
-            // If we actually got a feature, define some more info.
-            if (m_Feature!=null)
-            {
-                // Get the current ID (if any).
-                m_FeatureId = m_Feature.FeatureId;
-
-                // Note the feature's entity type.
-                m_Entity = m_Feature.EntityType;
-
-                // If there is no ID manager (e.g. the application does not need
-                // to work with "official" IDs), the group and range remain null.
-
-                IdManager idMan = m_Feature.MapModel.IdManager;
-                if (idMan!=null)
-                {
-                    // Try to find the ID group that applies to the feature's
-                    // entity type (this will be null if the entity type was
-                    // not originally listed in the IdEntity table, or the
-                    // group is considered to be obsolete).
-                    m_Group = idMan.GetGroup(m_Entity);
-
-                    // If we got a group (and the ID if not foreign) try to find
-                    // the ID packet that refers to the feature's ID.
-                    if (m_Group != null && (m_FeatureId is NativeId))
-                    {
-                        NativeId nid = (m_FeatureId as NativeId);
-                        m_Packet = m_Group.FindPacket(nid);
-                    }
-                }
-            }
+            m_Id = 0;
         }
 
         #endregion
 
+        /// <summary>
+        /// Has an ID been reserved?
+        /// </summary>
         internal bool IsReserved
         {
             get { return (m_Id>0); }
@@ -159,13 +95,7 @@ namespace Backsight.Editor
         {
             get
             {
-	            // If a feature ID was previously defined for this handle,
-	            // get the feature ID's key to format the result.
-	            if (m_FeatureId!=null)
-                    return m_FeatureId.FormattedKey;
-
-                // If an ID has been reserved, format that as a string.
-                // Otherwise it's blank.
+                // If an ID has been reserved, format that as a string. Otherwise it's blank.
 
 	            if (m_Id!=0 && m_Packet!=null)
                     return m_Packet.IdGroup.FormatId(m_Id);
@@ -180,8 +110,8 @@ namespace Backsight.Editor
         /// </summary>
         internal void DiscardReservedId()
         {
-            if (m_Group!=null && m_Id!=0)
-                m_Group.FreeId(m_Id);
+            if (m_Packet!=null && m_Id!=0)
+                m_Packet.FreeReservedId(m_Id);
         }
 
         /// <summary>
@@ -229,16 +159,11 @@ namespace Backsight.Editor
         internal bool ReserveId(IdPacket packet, IEntity ent, uint id)
         {
             // Ensure that any currently reserved ID is released.
-            if (!FreeId())
-            {
-                MessageBox.Show("IdHandle.ReserveId - Cannot free reserved ID");
-                return false;
-            }
+            FreeId();
 
             // Just get the packet to do it.
             if (packet.ReserveId(id))
             {
-                m_Group = packet.IdGroup;
                 m_Packet = packet;
                 m_Id = id;
                 m_Entity = ent;
@@ -272,15 +197,11 @@ namespace Backsight.Editor
         /// Creates a feature ID from this ID handle. In order for this to work, a
         /// prior call to <c>IdHandle.ReserveId</c> is needed.
         /// </summary>
-        /// <returns>The created feature ID (if any).</returns>
+        /// <returns>The created feature ID (null if an ID hasn't been reserved).</returns>
         internal FeatureId CreateId()
         {
-            // You can't create a new feature ID if it already existed.
-            if (m_FeatureId!=null)
-                throw new ApplicationException("IdHandle.CreateId - ID previously defined");
-
             // The packet has to be known.
-            if (m_Group == null || m_Packet == null)
+            if (m_Packet == null)
                 return null;
 
             // Create a NativeId, clear the reserve status
@@ -288,63 +209,16 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Frees an ID. The ID handle can either refer to a reserved ID, or a persistent ID.
-        ///
-        /// The only function that should attempt to free a persistent ID is <c>Feature.Clean</c>,
-        /// which is called if a user-perceived deletion is performed. In that case, this
-        /// function will only free the ID if the ID range has not been released.
+        /// Releases any previously reserved ID.
         /// </summary>
-        /// <returns>True if ID was found. False if not found (it could be a foreign ID).</returns>
-        internal bool FreeId()
+        internal void FreeId()
         {
-            // If we're referring to an existing (persistent) ID
-            if (m_Feature!=null)
-            {
-                // Return if there's no ID to free!
-                if (m_FeatureId==null)
-                    return false;
+            if (m_Packet!=null)
+                m_Packet.FreeReservedId(m_Id);
 
-                // Return if it's a foreign ID.
-                NativeId nid = (m_FeatureId as NativeId);
-                if (nid==null)
-                    return false;
-
-                // The ID range SHOULD be known (see the constructor that
-                // accepts a Feature). It might not be if one of three
-                // things happened:
-
-                // 1. Some software frigged around with the entity type without changing the ID.
-                // 2. The ID group was made obsolete after the ID was created.
-                // 3. The calling function did not check whether the ID was foreign.
-
-                if (m_Packet==null)
-                    m_Packet = CadastralMapModel.Current.IdManager.FindPacket(nid); 
-
-                // If we still don't know the ID packet, issue an error message and return.
-                if (m_Packet==null)
-                {
-                    string errmsg = String.Format("Cannot free ID '{0}' (not found)", m_FeatureId.FormattedKey);
-                    MessageBox.Show(errmsg);
-                    return false;
-                }
-
-                // If the range has not been released, tell it to "delete"
-                // the pointer it has to the ID.
-                m_Packet.DeleteId(nid);
-            }
-            else
-            {
-                // The ID was just reserved, so tell the ID group to turf the reserved ID.
-                if (m_Group!=null)
-                    m_Group.FreeId(m_Id);
-            }
-
-            m_Group = null;
             m_Packet = null;
             m_Id = 0;
             m_Entity = null;
-
-            return true;
         }
 
         /// <summary>
@@ -356,17 +230,11 @@ namespace Backsight.Editor
         /// <returns>True if the ID was valid.</returns>
         internal bool Define(IdPacket packet, IEntity ent, uint id)
         {
-            // You can NEVER use this handle to refer simultaneously to
-            // an existing feature ID as well as a reserved ID.
-            if (m_FeatureId!=null)
-                return false;
-
             // The ID has to be valid.
             if (id==0)
                 return false;
 
             // Remember the supplied info.
-            m_Group = packet.IdGroup;
             m_Packet = packet;
             m_Id = id;
             m_Entity = ent;
@@ -388,23 +256,16 @@ namespace Backsight.Editor
             if (idMan==null)
                 return true;
 
-            // If this ID handle refers to an existing feature that has a
-            // foreign ID, the entity type is always valid.
-            if (m_Feature!=null && m_FeatureId!=null && m_Feature.IsForeignId)
-                return true;
-
             // Try to find the ID group for the specified entity type.
             IIdGroup group = ent.IdGroup;
 
-            // If we actually found an a group, it has to match the one
-            // that we already know about.
-
+            // If we actually found an a group, it has to match the one that we already know about.
             // If we didn't find a group, this ID is valid only if it is undefined!
 
-            if (group!=null)
-                return Object.ReferenceEquals(group, m_Group);
+            if (group!=null && m_Packet!=null)
+                return (group.Id == m_Packet.IdGroup.Id);
             else
-                return (m_Id==0 && m_FeatureId==null);
+                return (m_Id==0);
         }
 
         /// <summary>
@@ -412,11 +273,9 @@ namespace Backsight.Editor
         /// </summary>
         void Reset()
         {
-            m_Group = null;
             m_Packet = null;
             m_Entity = null;
             m_Id = 0;
-            m_FeatureId = null;
         }
 
         /// <summary>

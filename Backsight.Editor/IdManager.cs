@@ -103,11 +103,7 @@ namespace Backsight.Editor
         internal bool ReserveId(IdHandle idh, IEntity ent, uint id)
         {
             // Ensure the ID handle is free.
-            if (!idh.FreeId())
-            {
-                MessageBox.Show("IdManager.ReserveId - Cannot free old ID");
-                return false;
-            }
+            idh.FreeId();
 
             // Get the ID group to make the reservation
             IdGroup g = GetGroup(ent);

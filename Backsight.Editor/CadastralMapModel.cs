@@ -1381,22 +1381,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Creates a new native ID as part of this model, replacing a previously made
-        /// ID reservation.
-        /// </summary>
-        /// <param name="reservedId">The previously reserved ID</param>
-        /// <returns>The ID object that replaces the reservation.</returns>
-        internal NativeId AddNativeId(ReservedId reservedId)
-        {
-            // Get the packet to replace this ID object and replace with an "official" ID.
-            NativeId result = reservedId.Packet.ReplaceReservedId(reservedId);
-
-            // Remember the newly created ID as part of the map model
-            m_NativeIds.Add(result.RawId, result);
-            return result;
-        }
-
-        /// <summary>
         /// Tries to obtains a foreign ID for a feature.
         /// </summary>
         /// <param name="key">The formatted key to look for</param>
