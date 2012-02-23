@@ -57,14 +57,14 @@ namespace Backsight.Editor.Forms
             this.counterClockwiseRadioButton = new System.Windows.Forms.RadioButton();
             this.offsetButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.newPointGroupBox = new System.Windows.Forms.GroupBox();
             this.entityTypeComboBox = new Backsight.Editor.Forms.EntityTypeComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.addLineCheckBox = new System.Windows.Forms.CheckBox();
             this.pointIdLabel = new System.Windows.Forms.Label();
             this.pointIdComboBox = new System.Windows.Forms.ComboBox();
             editingHelpProvider = new Backsight.Editor.EditingHelpProvider();
-            this.groupBox1.SuspendLayout();
+            this.newPointGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // editingHelpProvider
@@ -211,19 +211,19 @@ namespace Backsight.Editor.Forms
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
-            // groupBox1
+            // newPointGroupBox
             // 
-            this.groupBox1.Controls.Add(this.entityTypeComboBox);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.addLineCheckBox);
-            this.groupBox1.Controls.Add(this.pointIdLabel);
-            this.groupBox1.Controls.Add(this.pointIdComboBox);
-            this.groupBox1.Location = new System.Drawing.Point(345, 16);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(363, 97);
-            this.groupBox1.TabIndex = 14;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "New Sideshot Point";
+            this.newPointGroupBox.Controls.Add(this.entityTypeComboBox);
+            this.newPointGroupBox.Controls.Add(this.label6);
+            this.newPointGroupBox.Controls.Add(this.addLineCheckBox);
+            this.newPointGroupBox.Controls.Add(this.pointIdLabel);
+            this.newPointGroupBox.Controls.Add(this.pointIdComboBox);
+            this.newPointGroupBox.Location = new System.Drawing.Point(345, 16);
+            this.newPointGroupBox.Name = "newPointGroupBox";
+            this.newPointGroupBox.Size = new System.Drawing.Size(363, 97);
+            this.newPointGroupBox.TabIndex = 14;
+            this.newPointGroupBox.TabStop = false;
+            this.newPointGroupBox.Text = "New Sideshot Point";
             // 
             // entityTypeComboBox
             // 
@@ -282,7 +282,7 @@ namespace Backsight.Editor.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.newPointGroupBox);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.offsetButton);
             this.Controls.Add(this.counterClockwiseRadioButton);
@@ -302,8 +302,8 @@ namespace Backsight.Editor.Forms
             editingHelpProvider.SetShowHelp(this, true);
             this.Size = new System.Drawing.Size(724, 163);
             this.Load += new System.EventHandler(this.RadialControl_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.newPointGroupBox.ResumeLayout(false);
+            this.newPointGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -324,7 +324,7 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.RadioButton counterClockwiseRadioButton;
         private System.Windows.Forms.Button offsetButton;
         private System.Windows.Forms.Button okButton;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox newPointGroupBox;
         private System.Windows.Forms.Label pointIdLabel;
         private System.Windows.Forms.ComboBox pointIdComboBox;
         private System.Windows.Forms.Label label6;

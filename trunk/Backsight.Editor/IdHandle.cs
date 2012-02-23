@@ -152,13 +152,6 @@ namespace Backsight.Editor
             get { return (m_Id>0); }
         }
 
-        /*
-        bool IsDefined
-        {
-            get { return (m_FeatureId!=null || m_Id!=0); }
-        }
-        */
-
         /// <summary>
         /// A formatted string representing the key (if any) for this ID handle.
         /// </summary>
@@ -190,19 +183,6 @@ namespace Backsight.Editor
             if (m_Group!=null && m_Id!=0)
                 m_Group.FreeId(m_Id);
         }
-
-        /*
-        /// <summary>
-        /// Reserves the next available ID for the specified entity type.
-        /// Any ID previously reserved by this ID handle will be released.
-        /// </summary>
-        /// <param name="ent">The entity type that the ID is required for.</param>
-        /// <returns>True if the ID was successfully reserved.</returns>
-        bool ReserveId(IEntity ent)
-        {
-            return ReserveId(ent, 0);
-        }
-        */
 
         /// <summary>
         /// Reserves a feature ID. Any ID previously reserved by this ID handle will
@@ -302,10 +282,9 @@ namespace Backsight.Editor
             // The packet has to be known.
             if (m_Group == null || m_Packet == null)
                 return null;
-                //throw new ApplicationException("IdHandle.CreateId - No ID group or range");
 
-            // Get the group to pick up the reserved ID
-            return m_Group.CreateId(m_Id, m_Packet);
+            // Create a NativeId, clear the reserve status
+            return m_Packet.CreateId(m_Id);
         }
 
         /// <summary>
@@ -394,20 +373,6 @@ namespace Backsight.Editor
 
             return true;
         }
-
-        /*
-        /// <summary>
-        /// Loads a list with all the IDs that are available for a specific entity type.
-        /// </summary>
-        /// <param name="ent">The entity type to search for.</param>
-        /// <param name="avail">The list to load.</param>
-        /// <returns>The number of IDs that were added to the array.</returns>
-        uint GetAvailIds(IEntity ent, List<uint> avail)
-        {
-            IdManager idMan = CadastralMapModel.Current.IdManager;
-            return (idMan==null ? 0 : idMan.GetAvailIds(ent, avail));
-        }
-        */
 
         /// <summary>
         /// Checks whether this ID handle is valid for a specific entity type.

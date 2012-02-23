@@ -302,6 +302,9 @@ namespace Backsight.Editor.Operations
         {
             m_Direction = data.ExchangeObservation<Direction>(this, DataField.Direction, m_Direction);
             m_Length = data.ExchangeObservation<Observation>(this, DataField.Length, m_Length);
+
+            if (m_Line != null)
+                m_Line.ObservedLength = (m_Length as Distance);
         }
 
         /// <summary>

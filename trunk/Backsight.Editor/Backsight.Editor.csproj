@@ -137,6 +137,7 @@
     <Compile Include="Project.cs" />
     <Compile Include="ProjectDatabase.cs" />
     <Compile Include="ProjectSettings.cs" />
+    <Compile Include="ReservedId.cs" />
     <Compile Include="TextEditReader.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />

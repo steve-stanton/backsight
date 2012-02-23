@@ -1214,12 +1214,25 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The session that we are currently appending to.
+        /// The session that we are currently appending to (null if the model is being deserialized).
         /// </summary>
         internal Session WorkingSession
         {
             get { return m_WorkingSession; }
-            set { m_WorkingSession = value; }
+        }
+
+        /// <summary>
+        /// Defines the current editing session.
+        /// </summary>
+        /// <param name="s">The session that new edits should be appended to (not null).</param>
+        /// <exception cref="ArgumentNullException">If the supplied session is null.</exception>
+        /// <remarks>During deserialization, the model does not have a working session.</remarks>
+        internal void SetWorkingSession(Session s)
+        {
+            if (s == null)
+                throw new ArgumentNullException();
+
+            m_WorkingSession = s;
         }
 
         /// <summary>
@@ -1364,6 +1377,22 @@ namespace Backsight.Editor
             Debug.Assert(group != null);
             NativeId result = new NativeId(group, rawId);
             m_NativeIds.Add(rawId, result);
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a new native ID as part of this model, replacing a previously made
+        /// ID reservation.
+        /// </summary>
+        /// <param name="reservedId">The previously reserved ID</param>
+        /// <returns>The ID object that replaces the reservation.</returns>
+        internal NativeId AddNativeId(ReservedId reservedId)
+        {
+            // Get the packet to replace this ID object and replace with an "official" ID.
+            NativeId result = reservedId.Packet.ReplaceReservedId(reservedId);
+
+            // Remember the newly created ID as part of the map model
+            m_NativeIds.Add(result.RawId, result);
             return result;
         }
 

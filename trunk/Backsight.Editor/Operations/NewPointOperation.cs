@@ -16,6 +16,7 @@
 using System;
 
 using Backsight.Editor.Observations;
+using Backsight.Environment;
 
 
 namespace Backsight.Editor.Operations
@@ -78,14 +79,16 @@ namespace Backsight.Editor.Operations
         /// Executes the new point operation.
         /// </summary>
         /// <param name="vtx">The position of the new point.</param>
-        /// <param name="pointId">The ID (and entity type) to assign to the new point</param>
-        internal void Execute(IPosition vtx, IdHandle pointId)
+        /// <param name="e">The entity type for the point (not null)</param>
+        /// <param name="pointId">The ID to assign to the new point</param>
+        internal void Execute(IPosition vtx, IEntity e, FeatureId pointId)
         {
             // Add a point on the model
-            m_NewPoint = MapModel.AddPoint(vtx, pointId.Entity, this);
+            m_NewPoint = MapModel.AddPoint(vtx, e, this);
 
-            // Give the new point the specified ID.
-            pointId.CreateId(m_NewPoint);
+            // Give the new point the specified ID (point the ID to the feature & vice versa)
+            if (pointId != null)
+                pointId.Add(m_NewPoint);
 
             // Peform standard completion steps
             Complete();
@@ -198,6 +201,15 @@ namespace Backsight.Editor.Operations
 
             // To get around all this, the data exchange will be deferred until
             // CalculateGeometry is called (see implementation below).
+
+            // ...the only problem with the above is that during deserialization, data
+            // exchange occurs at the moment the update is encountered in the deserialization
+            // stream. Subsequently, CalculateGeometry will be called with a null editing
+            // context, so the update info will not be available. So do the exchange if
+            // the model is just being loaded.
+
+            if (MapModel.WorkingSession == null)
+                ApplyUpdateItems(null, data);
         }
 
         /// <summary>
@@ -211,12 +223,21 @@ namespace Backsight.Editor.Operations
             if (ctx is UpdateEditingContext)
             {
                 UpdateEditingContext uec = (ctx as UpdateEditingContext);
-                UpdateItemCollection data = uec.UpdateSource.Changes;
-                double x = data.ExchangeValue<double>(DataField.X, m_NewPoint.Easting.Meters);
-                double y = data.ExchangeValue<double>(DataField.Y, m_NewPoint.Northing.Meters);
-                PointGeometry pg = new PointGeometry(x, y);
-                m_NewPoint.ApplyPointGeometry(ctx, pg);
+                ApplyUpdateItems(ctx, uec.UpdateSource.Changes);
             }
+        }
+
+        /// <summary>
+        /// Applies changes to this editing operation.
+        /// </summary>
+        /// <param name="ctx">The editing context (null if the model is being deserialized)</param>
+        /// <param name="data">The changes to apply</param>
+        void ApplyUpdateItems(EditingContext ctx, UpdateItemCollection data)
+        {
+            double x = data.ExchangeValue<double>(DataField.X, m_NewPoint.Easting.Meters);
+            double y = data.ExchangeValue<double>(DataField.Y, m_NewPoint.Northing.Meters);
+            PointGeometry pg = new PointGeometry(x, y);
+            m_NewPoint.ApplyPointGeometry(ctx, pg);
         }
 
         /// <summary>

@@ -54,7 +54,7 @@ namespace Backsight.Editor.Forms
         Distance m_Length;
 
         /// <summary>
-        /// The ID (+ entity type) of the extension point.
+        /// The ID (+ entity type) of the extension point (null when doing an update).
         /// </summary>
         IdHandle m_PointId;
 
@@ -136,18 +136,17 @@ namespace Backsight.Editor.Forms
 
         private void LineExtensionControl_Load(object sender, EventArgs e)
         {
-            // Initialize combo box with a list of all point entity types
-            // for the currently active layer.
-            IEntity ent = pointTypeComboBox.Load(SpatialType.Point);
-
             // If we are doing an update select the previously defined
             // entity type, and show the key that was assigned to the point.
-            if (!InitUpdate())
+            LineExtensionOperation pop = this.UpdateOp;
+            if (pop == null)
             {
-                // Otherwise ...
+                // Initialize combo box with a list of all point entity types
+                // for the currently active layer.
+                IEntity ent = pointTypeComboBox.Load(SpatialType.Point);
 
                 // Load the ID combo (reserving the first available ID).
-                IdHelper.LoadIdCombo(idComboBox, ent, m_PointId, true);
+                IdHelper.LoadIdCombo(idComboBox, ent, m_PointId);
 
                 // If we are auto-numbering, disable the combo.
                 if (m_Cmd.Controller.IsAutoNumber)
@@ -156,6 +155,21 @@ namespace Backsight.Editor.Forms
                 // We may be recalling an old operation.
                 if (m_Length.IsDefined)
                     lengthTextBox.Text = m_Length.Format();
+            }
+            else
+            {
+                pointTypeComboBox.SelectedValueChanged -= pointTypeComboBox_SelectedValueChanged;
+                idComboBox.SelectedValueChanged -= idComboBox_SelectedValueChanged;
+
+                // Initialize combo box with a list of all point entity types
+                // for the currently active layer.
+                IEntity ent = pointTypeComboBox.Load(SpatialType.Point);
+
+                InitUpdate(pop);
+
+                // All the user can update is the length of the extension, and the end of
+                // the line to extend from.
+                newPointGroupBox.Enabled = false;
             }
 
             wantLineCheckBox.Checked = m_WantLine;
@@ -193,7 +207,7 @@ namespace Backsight.Editor.Forms
             // If the current ID does not apply to the new point type,
             // reload the ID combo (reserving a different ID).
             if (!m_PointId.IsValidFor(ent))
-                IdHelper.LoadIdCombo(idComboBox, ent, m_PointId, true);
+                IdHelper.LoadIdCombo(idComboBox, ent, m_PointId);
             else
                 m_PointId.Entity = ent;
         }
@@ -291,13 +305,8 @@ namespace Backsight.Editor.Forms
             IdHelper.OnChangeSelectedId(idComboBox, m_PointId);
         }
 
-        bool InitUpdate()
+        void InitUpdate(LineExtensionOperation pop)
         {
-            // Get the creating op.
-            LineExtensionOperation pop = this.UpdateOp;
-            if (pop==null)
-                return false;
-
             Form parent = ParentForm;
             parent.Text = "Update Line Extension";
 
@@ -305,33 +314,22 @@ namespace Backsight.Editor.Forms
             m_IsExtendFromEnd = pop.IsExtendFromEnd;
             m_Length = new Distance(pop.Length);
 
-            PointFeature point = pop.NewPoint;
-            m_PointId = new IdHandle(point);
-            IEntity ent = (point==null ? null : point.EntityType);
-
             // Was an extension line added?
             m_WantLine = (pop.NewLine!=null);
 
             // Scroll the entity combo to the previously defined
             // entity type for the extension point.
-            if (ent!=null)
+            PointFeature point = pop.NewPoint;
+            IEntity ent = point.EntityType;
+            if (ent != null)
                 pointTypeComboBox.SelectEntity(ent);
-
-            // Disable the entity combo, as well as the check box that
-            // says whether a line should be added. All the user can
-            // update is the length of the extension, and the end of
-            // the line to extend from.
-            pointTypeComboBox.Enabled = false;
-            wantLineCheckBox.Enabled = false;
 
             // Display the original observed length.
             lengthTextBox.Text = m_Length.Format();
 
-            // Display the point key (if any) and disable it.
-            idComboBox.Text = m_PointId.FormattedKey;
-            idComboBox.Enabled = false;
-
-            return true;
+            // Display the point key (if any)
+            idComboBox.DropDownStyle = ComboBoxStyle.DropDown;
+            idComboBox.Text = point.FormattedKey;
         }
 
         bool IsUpdate

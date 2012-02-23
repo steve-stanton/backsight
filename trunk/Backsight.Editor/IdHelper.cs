@@ -32,10 +32,8 @@ namespace Backsight.Editor
         /// <param name="handle">The ID handle that should be defined to correspond with the
         /// first available ID (may be null). If there are no available IDs for the specified
         /// entity type, any ID previously reserved will be released.</param>
-        /// <param name="canAllocate">Allocate IDs if nothing available? Default=TRUE. For
-        /// this to have any effect, an ID handle must be supplied.</param>
         /// <returns>The number of IDs that were loaded into the combo (if any)</returns>
-        internal static int LoadIdCombo(ComboBox box, IEntity ent, IdHandle handle, bool canAllocate)
+        internal static int LoadIdCombo(ComboBox box, IEntity ent, IdHandle handle)
         {
             if (box==null)
                 throw new ArgumentNullException();
@@ -56,55 +54,34 @@ namespace Backsight.Editor
             if (group==null)
                 return 0;
 
-            // Get the ID packets for the group
-            IdPacket[] packets = group.IdPackets;
-            List<uint> avail = new List<uint>(1000);
+            // Get the available IDs for the group
+            uint[] avail = group.GetAvailIds();
 
-            uint resid=0;		// The ID that has been reserved (if any).
-
-            foreach (IdPacket packet in packets)
+            // If we didn't find any, obtain an extra allocation
+            if (avail.Length == 0)
             {
-                avail.Clear();
-                if (packet.GetAvailIds(avail) == 0)
-                    continue;
-
-                DisplayId[] ids = new DisplayId[avail.Count];
-                for (int i=0; i<ids.Length; i++)
-                {
-                    // If this is the very first available ID, and an ID
-                    // handle was supplied, reserve the ID.
-                    if (resid==0 && handle!=null)
-                    {
-                        resid = avail[i];
-                        handle.ReserveId(packet, ent, resid);
-                    }
-
-                    ids[i] = new DisplayId(packet, avail[i]);
-                }
-
-                box.Items.AddRange(ids);
+                IdPacket newPacket = idMan.GetAllocation(group, true); // with announcement
+                avail = group.GetAvailIds();
+                if (avail.Length == 0)
+                    throw new ApplicationException("Cannot obtain ID allocation");
             }
 
-            // If an ID handle has been supplied but we did NOT find any
-            // available IDs, free any ID previously reserved. (?)
-            if (handle!=null && resid==0)
-                handle.FreeId();
+            // Load the combo
+            DisplayId[] ids = new DisplayId[avail.Length];
+            for (int i = 0; i < ids.Length; i++)
+                ids[i] = new DisplayId(group, avail[i]);
 
-            // If we did reserve something, make it selected (assumes it's at the top).
-            if (resid!=0)
-                box.SelectedItem = box.Items[0];
- 
-            // If we didn't find anything, try it again! Don't try to
-            // allocate again, just in case we go into an infinite loop.
+            box.Items.AddRange(ids);
 
-            int nid = box.Items.Count;
-            if (nid==0 && canAllocate)
+            // Reserve the first available ID if a handle was supplied (and select it)
+            if (handle != null)
             {
-                idMan.GetAllocation(group, true); // with announcement
-                nid = IdHelper.LoadIdCombo(box, ent, handle, false);
-            }
+                IdPacket p = group.FindPacket(avail[0]);
+                handle.ReserveId(p, ent, avail[0]);
+                box.SelectedItem = ids[0];
+            } 
 
-            return nid;
+            return avail.Length;
         }
 
         /// <summary>

@@ -157,7 +157,7 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal void ApplyChanges()
         {
-            m_Changes.ExchangeData((IRevisable)m_Edit);
+            ((IRevisable)m_Edit).ExchangeData(m_Changes);
         }
 
         /// <summary>

@@ -56,7 +56,7 @@ namespace Backsight.Editor.Forms
         {
             // Load the ID combo and reserve the first available ID (extending
             // the allocation if necessary).
-            int nid = IdHelper.LoadIdCombo(pointIdComboBox, m_Entity, m_IdHandle, true);
+            int nid = IdHelper.LoadIdCombo(pointIdComboBox, m_Entity, m_IdHandle);
 
             // If nothing could be reserved, get out now.
             if (nid == 0)

@@ -48,7 +48,7 @@ namespace Backsight.Editor.Forms
         private double m_Elevation;
 
         /// <summary>
-        /// The ID and entity type of the point.
+        /// The ID and entity type of the point (null when doing an update)
         /// </summary>
         private IdHandle m_PointId;
 
@@ -64,7 +64,6 @@ namespace Backsight.Editor.Forms
             m_Position = new Position(0.0, 0.0);
         	m_Elevation = 0.0;
             m_Title = (title==null ? String.Empty : title);
-            m_PointId = new IdHandle();
 
             NewPointOperation op = (recall as NewPointOperation);
             if (op != null)
@@ -89,7 +88,6 @@ namespace Backsight.Editor.Forms
                 return false;
 
 	        // Pick up the previously defined info.
-	        m_PointId = new IdHandle((Feature)upt);
             m_Position.X = upt.X;
             m_Position.Y = upt.Y;
 
@@ -133,6 +131,8 @@ namespace Backsight.Editor.Forms
 	        // If it's not an update ...
 	        if (!InitUpdate())
             {
+                m_PointId = new IdHandle();
+
                 // Pick any default entity type (the change handler for the entity type combo will go on to load the ID combo)
                 IEntity defEnt = CadastralMapModel.Current.DefaultPointType;
                 if (defEnt!=null)
@@ -336,19 +336,13 @@ namespace Backsight.Editor.Forms
             if (Math.Abs(m_Elevation) > Double.Epsilon)
                 throw new NotImplementedException("NewPointForm.Save - 3D points not currently supported");
 
-            NewPointOperation op = null;
-
             try
             {
-                op = new NewPointOperation();
-
+                NewPointOperation op = new NewPointOperation();
                 IEntity ent = entityTypeComboBox.SelectedEntityType;
-                m_PointId.Entity = ent;
                 DisplayId did = (DisplayId)idComboBox.SelectedItem;
-                if (did != null)
-                    m_PointId.ReserveId(ent, did.RawId);
-
-                op.Execute(m_Position, m_PointId);
+                FeatureId fid = (did == null ? null : did.CreateId());
+                op.Execute(m_Position, ent, fid);
                 return op.Point;
             }
 
@@ -366,7 +360,7 @@ namespace Backsight.Editor.Forms
             idComboBox.Enabled = (ent!=null && ent.IdGroup!=null);
             if (idComboBox.Enabled)
             {
-                if (IdHelper.LoadIdCombo(idComboBox, ent, m_PointId, true)==0)
+                if (IdHelper.LoadIdCombo(idComboBox, ent, m_PointId)==0)
                 {
                     MessageBox.Show("IDs have not been allocated. See Edit - ID Allocations");
                     m_Cmd.DialAbort(this);

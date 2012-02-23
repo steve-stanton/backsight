@@ -49,15 +49,6 @@ namespace Backsight.Editor
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TextEditReader"/> class.
-        /// </summary>
-        [Obsolete]
-        internal TextEditReader()
-        {
-            m_Reader = null;
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TextEditReader"/> class
         /// that utilizes the supplied reader.
         /// </summary>

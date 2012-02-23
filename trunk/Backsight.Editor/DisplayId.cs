@@ -20,7 +20,7 @@ namespace Backsight.Editor
 	/// <written by="Steve Stanton" on="05-APR-2007" />
     /// <summary>
     /// A numeric ID that is potentially decorated according to some display format (as
-    /// defined through an associated <see cref="IdPacket"/>
+    /// defined through an associated <see cref="IdGroup"/>
     /// </summary>
     class DisplayId
     {
@@ -32,9 +32,9 @@ namespace Backsight.Editor
         uint m_Id;
 
         /// <summary>
-        /// The packet the ID is part of
+        /// The group the ID is part of
         /// </summary>
-        IdPacket m_Packet;
+        IdGroup m_Group;
 
         #endregion
 
@@ -43,14 +43,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>DisplayId</c>
         /// </summary>
-        /// <param name="packet">The packet the ID is part of (holds formatting rules for the ID)</param>
+        /// <param name="group">The ID group containing the raw ID</param>
         /// <param name="rawId">The raw ID (undecorated with stuff like check digits)</param>
-        internal DisplayId(IdPacket packet, uint rawId)
+        internal DisplayId(IdGroup group, uint rawId)
         {
-            if (packet == null)
+            if (group == null)
                 throw new ArgumentNullException();
 
-            m_Packet = packet;
+            m_Group = group;
             m_Id = rawId;
         }
 
@@ -62,7 +62,7 @@ namespace Backsight.Editor
         /// <returns>The result of a call to <c>IdGroup.FormatId(RawId)</c></returns>
         public override string ToString()
         {
-            return m_Packet.IdGroup.FormatId(m_Id);
+            return m_Group.FormatId(m_Id);
         }
 
         /// <summary>
@@ -71,6 +71,17 @@ namespace Backsight.Editor
         internal uint RawId
         {
             get { return m_Id; }
+        }
+
+        /// <summary>
+        /// Creates a new feature ID that doesn't reference anything (and does not add it to the map model).
+        /// </summary>
+        /// <returns>The created feature ID.</returns>
+        internal FeatureId CreateId()
+        {
+            IdPacket p = m_Group.FindPacket(m_Id);
+            p.ReserveId(m_Id);
+            return p.CreateId(m_Id);
         }
     }
 }
