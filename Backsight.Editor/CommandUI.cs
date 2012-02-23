@@ -386,12 +386,17 @@ namespace Backsight.Editor
         protected bool AbortCommand()
         {
 	        // If this command was invoked by an update command, get
-	        // the update to clean up. Otherwise tell the view.
+	        // the update to clean up. Otherwise tell the controller.
 
             if (m_UpdCmd!=null)
                 m_UpdCmd.AbortCommand(this);
             else
                 this.Controller.AbortCommand(this);
+
+            // Ensure that any reserved IDs have been released
+            IdManager idMan = CadastralMapModel.Current.IdManager;
+            if (idMan != null)
+                idMan.FreeAllReservedIds();
 
 	        return true;
         }

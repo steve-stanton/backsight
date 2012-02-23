@@ -108,6 +108,9 @@ namespace Backsight.Editor
         /// Ensures that any reserved ID has been cleared (if the ID handle has actually been
         /// used to create a new <see cref="NativeId"/>, this does nothing).
         /// </summary>
+        /// <remarks>In normal circumstances, reserved IDs will be discarded whenever a data entry
+        /// dialog is aborted (from <see cref="CommandUI.AbortCommand"/>).
+        /// </remarks>
         internal void DiscardReservedId()
         {
             if (m_Packet!=null && m_Id!=0)

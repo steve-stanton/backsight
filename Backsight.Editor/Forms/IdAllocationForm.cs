@@ -101,7 +101,7 @@ namespace Backsight.Editor.Forms
                 foreach (DataGridViewRow row in sel)
                 {
                     IdGroup g = (IdGroup)row.Cells["dgcGroupName"].Value;
-                    m_IdMan.GetAllocation(g, false); // no announcement
+                    g.GetAllocation(false); // no announcement
                 }
             }
 
@@ -119,7 +119,7 @@ namespace Backsight.Editor.Forms
 
             // Make an allocation for the selected group.
             IdGroup g = (IdGroup)sel[0].Cells["dgcGroupName"].Value;
-            m_IdMan.GetAllocation(g, false); // no announcement
+            g.GetAllocation(false); // no announcement
             RefreshList();
             SetChanged();
         }

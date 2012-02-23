@@ -74,10 +74,7 @@ namespace Backsight.Editor
         /// <returns>The corresponding ID group (null if not found)</returns>
         internal IdGroup FindGroupById(int groupId)
         {
-            return Array.Find<IdGroup>(m_IdGroups, delegate(IdGroup g)
-            {
-                return (g.Id == groupId);
-            });
+            return Array.Find<IdGroup>(m_IdGroups, g => g.Id == groupId);
         }
 
         /// <summary>
@@ -87,10 +84,7 @@ namespace Backsight.Editor
         /// <returns>The corresponding ID group (null if not found)</returns>
         internal IdGroup FindGroupByRawId(uint rawId)
         {
-            return Array.Find<IdGroup>(m_IdGroups, delegate(IdGroup g)
-            {
-                return ((uint)g.LowestId <= rawId && rawId <= (uint)g.HighestId);
-            });
+            return Array.Find<IdGroup>(m_IdGroups, g => (uint)g.LowestId <= rawId && rawId <= (uint)g.HighestId);
         }
 
         /// <summary>
@@ -170,51 +164,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Loads ID information for the specified project and user. This should be called
-        /// after edits have been loaded into the map model.
-        /// </summary>
-        /// <param name="map">The loaded model</param>
-        /// <param name="project">The project to load</param>
-        /// <param name="user">The user who is doing the load</param>
-        internal void Load(CadastralMapModel map, Project project, User user)
-        {
-            // Grab all defined allocations for the job and user
-            //IdAllocation[] allocs = IdAllocation.FindByJobUser(job, user);
-            //IdAllocation[] allocs = job.GetIdAllocations();
-            throw new NotImplementedException();
-
-            /*
-            // Attach each allocation to its group
-            foreach (IdAllocation a in allocs)
-            {
-                IdGroup g = Array.Find<IdGroup>(m_IdGroups, delegate(IdGroup t)
-                                { return t.Id==a.GroupId; });
-                if (g==null)
-                    throw new Exception("Cannot locate ID group for allocation");
-
-                g.AddIdPacket(a);
-            }
-             */
-        }
-
-        /// <summary>
-        /// Gets a new allocation for a specific ID group.
-        /// </summary>
-        /// <param name="group">The group to get the allocation for.</param>
-        /// <param name="announce">Should the new range be announced to the user? Default=TRUE.
-        /// The only time when it's not appropriate to announce is when the user is explicitly
-        /// allocating ID ranges.</param>
-        /// <returns>Information about the allocated range.</returns>
-        internal IdPacket GetAllocation(IdGroup group, bool announce)
-        {
-            // I assume that the specified group is actually
-            // one of the groups known to this ID manager.
-
-            // Let the group do the work.
-            return group.GetAllocation(announce);
-        }
-
-        /// <summary>
         /// Gets a new allocation for every ID group. This function is used only when the
         /// user is explicitly allocating ID ranges (through the dialog that lists the allocations).
         /// </summary>
@@ -225,7 +174,7 @@ namespace Backsight.Editor
 
             foreach (IdGroup g in m_IdGroups)
             {
-                IdPacket p = GetAllocation(g, false);
+                IdPacket p = g.GetAllocation(false);
                 if (p != null)
                     allocs.Add(p);
             }
@@ -249,35 +198,6 @@ namespace Backsight.Editor
             else
                 return null;
         }
-
-        /*
-        /// <summary>
-        /// Loads a list with all the IDs that are available for a specific entity type.
-        /// </summary>
-        /// <param name="ent">The entity type to search for.</param>
-        /// <param name="avail">The list to load.</param>
-        /// <returns>The number of IDs that were added to the list.</returns>
-        internal uint GetAvailIds(IEntity ent, List<uint> avail)
-        {
-            // Get the ID group for the specified entity type.
-            IdGroup group = GetGroup(ent);
-            if (group==null)
-                return 0;
-
-            // Get the group to load the available IDs.
-            uint navail = group.GetAvailIds(avail);
-
-            // If the group didn't have anything, allocate a new range,
-            // announcing the fact to the user.
-            if (navail==0)
-            {
-                group.GetAllocation(true);
-                navail = group.GetAvailIds(avail);
-            }
-
-            return navail;
-        }
-        */
 
         /// <summary>
         /// Gets rid of a pointer to a feature ID.
@@ -346,38 +266,13 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Records any ID utilized by a feature
+        /// Discards any IDs that may have been reserved (but which are no longer needed). This
+        /// should be called in situations where a use cancels from a data entry dialog.
         /// </summary>
-        /// <param name="f">The feature to examine</param>
-        /// <param name="hint">The ID packet that may well contain the ID in
-        /// question (null for no hint)</param>
-        /// <returns>The ID packet that actually contains the ID (null if not found)</returns>
-        internal IdPacket AddUsedId(Feature f, IdPacket hint)
+        internal void FreeAllReservedIds()
         {
-            // We only care about features with native IDs
-            NativeId nid = (f.FeatureId as NativeId);
-            if (nid == null)
-                return hint;
-
-            if (hint!=null && hint.SetId(nid))
-                return hint;
-
-            // Try the ID group for the feature's entity type. If we can't find it
-            // that way (we probably should), make an exhaustive search
-            IdPacket p = null;
-            IdGroup g;
-            if (m_EntityGroups.TryGetValue(f.EntityType.Id, out g))
-                p = g.FindPacket(nid);
-            else
-                p = FindPacket(nid);
-
-            // Just in case...
-            if (p == null)
-                return null;
-
-            bool set = p.SetId(nid);
-            Debug.Assert(set);
-            return p;
+            foreach (IdGroup group in m_IdGroups)
+                group.FreeAllReservedIds();
         }
 	}
 }
