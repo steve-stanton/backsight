@@ -270,7 +270,10 @@ namespace Backsight.Editor
                 // Display the units only if the distance does not
                 // correspond to the current data entry units.
 
-                if (dist.EntryUnit != dunit)
+                if (dunit.UnitType == DistanceUnitType.AsEntered)
+                    dunit = ec.EntryUnit;
+
+                if (!dist.EntryUnit.Equals(dunit))
                     distr = dist.Format(true); // with units abbreviation
                 else
                     distr = dist.Format(false); // no units abbreviation
