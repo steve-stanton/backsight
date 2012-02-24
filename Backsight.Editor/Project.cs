@@ -253,6 +253,11 @@ namespace Backsight.Editor
                                 IdAllocation alloc = (IdAllocation)edit;
                                 IdGroup g = idMan.FindGroupById(alloc.GroupId);
                                 g.AddIdPacket(alloc);
+
+                                // Remember that allocations have been made in the session (bit of a hack
+                                // to ensure the session isn't later removed if no edits are actually
+                                // performed).
+                                lastSession.AddAllocation(alloc);
                             }
 
                         }
