@@ -238,21 +238,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Does any clean-up after a feature has just cut the reference that
-        /// this ID makes to it. The ID will check if it refers to any additional
-        /// features and, if not, any attached rows will be deleted.
-        /// </summary>
-        void Clean()
-        {
-	        // Return if this ID still refers to spatial features.
-	        if (m_Features!=null)
-                return;
-
-	        // Detach every row (if any).
-            m_Rows = null;
-        }
-
-        /// <summary>
         /// Tries to find a row that is attached to this ID, and which has a specific schema.
         /// </summary>
         /// <param name="schema">The schema to search for.</param>

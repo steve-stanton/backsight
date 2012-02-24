@@ -532,51 +532,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Marks this line as "deleted". When you do this, any system-defined split
-        /// sections will be marked as well. This gets called during rollback.
-        /// </summary>
-        internal override void Undo()
-        {
-            if (IsUndoing)
-                return;
-            /*
-	// If the line primitive is used by any subsequent operation,
-	// it CAN'T be marked for deletion. Otherwise the op would
-	// eventually refer to an area of deleted memory. The only
-	// exception is if the primitive is cross-referenced to a
-	// CeSplit operation. In that case, we'll be eliminating
-	// that below.
-
-	if ( m_pLine->HasAnyOps(this) ) {
-		ShowMessage("Attempt to delete a line that is used by another edit.");
-		SetInactive(0);
-		return;
-	}
-
-	// Remember whether this arc is the result of a split (the info
-	// will be nulled out when we call CeFeature::Undo).
-	const LOGICAL isSplit = IsSplit();
-
-	// Mark the base class (sets FFL_DELETED and nulls creating op).
-	CeFeature::SetDeleted();
-
-	// Mark any adjacent polygons.
-	SetPolDeleted();
-
-	// Return if this is the result of a split.
-	if ( isSplit ) return;
-
-	// Remove any system-defined arc sections.
-	RemoveSplits();
-
-	// Check for overlaps with the line's end locations.
-	m_pLine->UndoEndOverlaps(*this);
-
-             */
-            base.Undo();
-        }
-
-        /// <summary>
         /// The circle this line sits on. This implementation returns null. The
         /// derived <see cref="ArcFeature"/> class overrides.
         /// </summary>

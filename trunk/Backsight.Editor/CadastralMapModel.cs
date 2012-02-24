@@ -901,8 +901,31 @@ namespace Backsight.Editor
         /// of this model.</returns>
         internal bool RemoveEdit(Operation edit)
         {
+            // Ensure any user-perceived IDs have been removed
+            foreach (Feature f in edit.Features)
+            {
+                FeatureId fid = f.FeatureId;
+                if (fid != null)
+                    RemoveId(fid);
+            }
+
             InternalIdValue id = new InternalIdValue(edit.EditSequence);
             return m_Edits.Remove(id);
+        }
+
+        /// <summary>
+        /// Removes a user-perceived ID from this model (for use when the last edit is
+        /// being undone).
+        /// </summary>
+        /// <param name="id">The ID to remove</param>
+        /// <returns>True if a matching ID was removed. False if the supplied ID isn't one
+        /// known to this model.</returns>
+        internal bool RemoveId(FeatureId id)
+        {
+            if (id is NativeId)
+                return m_NativeIds.Remove((id as NativeId).RawId);
+            else
+                return m_ForeignIds.Remove(id.FormattedKey);
         }
 
         /// <summary>

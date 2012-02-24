@@ -577,29 +577,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Marks this feature for removal. This gets called when the operation that created
-        /// it is getting undone. Certain derived classes override (e.g. see <c>LineFeature</c>).
+        /// Marks this feature for removal (in a situation where the editing operation that
+        /// created it is getting undone).
         /// </summary>
-        internal virtual void Undo()
+        /// <remarks>This merely sets a flag bit. The actual changes won't happen until
+        /// <see cref="Clean"/> gets called.</remarks>
+        internal void Undo()
         {
-            // Mark feature as deleted. In addition to setting the
-            // FFL_DELETED bit, this nulls out the pointer to the
-            // creating op. This covers the fact that CeLine::RemoveSplits
-            // will delete CeSplit operations before CeMap::CleanEdit is
-            // called (the reason being that CleanEdit does not expect to
-            // delete "operations" except via rollback). Since a CeSplit
-            // operation is kind of a special case, nulling the creator
-            // here ensures that no attempt will be made to reference a
-            // deleted area of memory.
-
-            // For any other op, it shouldn't really matter whether a
-            // feature marked for deletion has no creator.
-
             SetFlag(FeatureFlag.Undoing, true);
-
-            // Try without nulling the creator (the comment above may be
-            // irrelevant in the Backsight implementation).
-	        // m_Creator = null;
         }
 
         /// <summary>
@@ -782,44 +767,10 @@ namespace Backsight.Editor
             // may continue to point to other features).
             m_Id.CutReference(this);
 
-            // 20070908: Not sure about the following...
-            /*
-	// If this feature is about to be really deleted
-	if ( this->IsDeleted() ) {
-
-		// Clean the feature ID. If the ID no longer refers to any
-		// features, this will DELETE any attached rows.
-		m_pFeatureId->Clean();
-
-		// If the ID is now inactive (does not refer to anything),
-		// delete it.
-		if ( m_pFeatureId->IsInactive() ) {
-			CeIdHandle idh(this);
-			idh.DeleteId();
-		}
-
-		// Clear the ID pointer, even if the ID still exists (otherwise
-		// ~CeFeature will ultimately issue an error message).
-		m_pFeatureId = 0;
-	}
-	else {
-
-		// If this was the ONLY thing that the ID points to, tell
-		// the ID manager that this feature is going away (it might
-		// come back again if the user-perceived deletion is later
-		// rolled back).
-
-		if ( m_pFeatureId->IsInactive() ) {
-			CeIdHandle idh(this);
-			idh.FreeId();
-		}
-
-		// In this case, we must retain the pointer to the ID so
-		// that the user-deletion could be restored later. Note
-		// that the ID itself can only be destroyed on rollback.
-		// However, for that to happen, this user-deletion would
-		// have been rolled back too.
-             */
+            // Remove the the ID from its enclosing ID packet
+            NativeId nid = (m_Id as NativeId);
+            if (nid != null)
+                nid.IdGroup.ReleaseId(nid);
         }
 
         /// <summary>

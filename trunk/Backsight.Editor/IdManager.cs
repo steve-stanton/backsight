@@ -200,54 +200,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Gets rid of a pointer to a feature ID.
-        /// </summary>
-        /// <param name="fid">The ID to search for.</param>
-        /// <param name="ent">The entity type for the ID.</param>
-        /// <returns>True if the ID pointer was removed. False if it could not be found.</returns>
-        internal bool DeleteId(NativeId fid, IEntity ent)
-        {
-        	IdPacket packet = null;		// Packet not found so far.
-
-	        // Search the ID group that the ID SHOULD be in.
-	        IdGroup group = GetGroup(ent);
-            if (group != null)
-                packet = group.FindPacket(fid);
-
-	        // If we didn't find it, we must have been supplied the wrong
-	        // entity type, so check every group we know about (we'll repeat
-	        // the above, but who cares).
-            if (packet == null)
-            {
-                foreach (IdGroup g in m_IdGroups)
-                {
-                    packet = g.FindPacket(fid);
-                    if (packet != null)
-                        break;
-                }
-	        }
-
-            // Issue an error message if we STILL haven't found the packet.
-            if (packet == null)
-            {
-		        string errmsg = String.Format("Unable to delete ID '{0}'", fid.FormattedKey);
-                MessageBox.Show(errmsg);
-		        return false;
-	        }
-
-	        // I SUPPOSE it could be a range that refers to an ID group
-	        // that is now obsolete, so we COULD also check every range
-	        // known to the map ... later
-
-	        // Get the range to remove the pointer.
-            return packet.DeleteId(fid);
-
-	        // Note that the ID slot will only be re-used if the range
-	        // has not been released. If the range HAS been released, the
-	        // ID disappears into the ether, and will never come back.
-        }
-
-        /// <summary>
         /// Exhaustive search for the ID packet that refers to a specific ID. This method
         /// should only be called in situations where something has gone astray.
         /// </summary>
