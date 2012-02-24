@@ -226,14 +226,7 @@ namespace Backsight.Editor
         internal IdPacket FindPacket(NativeId fid)
         {
             uint rawId = fid.RawId;
-
-            foreach (IdPacket p in m_Packets)
-            {
-                if (p.Contains(rawId))
-                    return p;
-            }
-
-            return null;
+            return m_Packets.Find(p => p.Contains(rawId));
         }
 
         /// <summary>
@@ -325,6 +318,20 @@ namespace Backsight.Editor
         {
             foreach (IdPacket p in m_Packets)
                 p.FreeAllReservedIds();
+        }
+
+        /// <summary>
+        /// Release an allocated ID for a feature that is being removed due to an undo.
+        /// This nulls out the reference to the ID from its enclosing ID packet.
+        /// </summary>
+        /// <param name="id">The ID that should be returned to the pool of available IDs.</param>
+        internal void ReleaseId(NativeId id)
+        {
+            IdPacket p = FindPacket(id);
+            if (p == null)
+                throw new ApplicationException("Cannot locate packet for ID: " + id.FormattedKey);
+
+            p.DeleteId(id);
         }
     }
 }
