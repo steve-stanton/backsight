@@ -211,7 +211,7 @@ namespace Backsight.Editor
         internal int RemoveEmptySessions()
         {
             // Locate any empty sessions
-            List<Session> emptySessions = m_Sessions.FindAll(s => s.OperationCount == 0);
+            List<Session> emptySessions = m_Sessions.FindAll(s => s.ChangeCount == 0);
             if (emptySessions.Count == 0)
                 return 0;
 
@@ -223,7 +223,7 @@ namespace Backsight.Editor
             }
 
             // Remove from the model
-            m_Sessions.RemoveAll(s => s.OperationCount == 0);
+            m_Sessions.RemoveAll(s => s.ChangeCount == 0);
             return emptySessions.Count;
         }
 
@@ -935,8 +935,7 @@ namespace Backsight.Editor
         /// <returns>True if rollback succeeded</returns>
         internal bool Rollback(Session s)
         {
-            int editSequence = s.Rollback();
-            if (editSequence <= 0)
+            if (!s.Rollback())
                 return false;
 
             CleanEdit();

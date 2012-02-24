@@ -22,28 +22,13 @@ using Backsight.Environment;
 namespace Backsight.Editor
 {
 	/// <written by="Steve Stanton" on="17-DEC-1998" />
-    /// <summary>An "ID handle" is a transient object used by software that needs to
-    /// announce the possibility that it will want to assign a specific feature ID.
-    /// 
-    /// For example, when a dialog containing an ID field is initially
-    /// presented to a user, the default ID should be shown. However, it is possible
-    /// that the user could change that ID. The problem is that in order to show the
-    /// default ID at all, the ID range object needs to create an empty <c>FeatureId</c>
-    /// object. So if the user changes the ID (or simply cancels the dialog), we could
-    /// easily end up with an unused feature ID. To avoid that, we COULD modify all the
-    /// UI code, to ensure that it cleans up any IDs that it created ... but that would
-    /// involve a lot of code, and could be implemented inconsistently.
-    ///
-    /// An ID handle gets around this problem by acting as a mechanism that the UI can
-    /// use to reserve IDs without actually creating an empty <c>FeatureId</c> object.
-    /// The actual creation of an ID is done by passing the ID handle into the Execute()
-    /// function that is part of the <c>Operation</c> that actually creates the
-    /// associated feature. This aim is to ensure that a feature ID can never be created
-    /// unless the spatial feature already exists.
+    /// <summary>
+    /// A handle on a user-perceived ID that has been reserved (but not actually allocated to a feature).
+    /// Applies only to instances of <see cref="NativeId"/>.
     /// </summary>
-    /// <devnote>06-FEB-2007: The above is the original comment from 1998. What it doesn't
-    /// say is why it's bad to have an unused feature ID. Perhaps it's something to do with
-    /// the old persistence mechanism. If so, this class could well be irrelevant.</devnote>
+    /// <remarks>This class formerly served a larger role than it does now. It may be desirable to
+    /// combine the class with <see cref="DisplayId"/> class, since they are now relatively close
+    /// in terms of intended usage.</remarks>
     class IdHandle
     {
         #region Class data
@@ -73,9 +58,7 @@ namespace Backsight.Editor
         /// </summary>
         public IdHandle()
         {
-            m_Packet = null;
-            m_Entity = null;
-            m_Id = 0;
+            Reset();
         }
 
         #endregion
@@ -162,7 +145,7 @@ namespace Backsight.Editor
         internal bool ReserveId(IdPacket packet, IEntity ent, uint id)
         {
             // Ensure that any currently reserved ID is released.
-            FreeId();
+            FreeReservedId();
 
             // Just get the packet to do it.
             if (packet.ReserveId(id))
@@ -214,14 +197,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Releases any previously reserved ID.
         /// </summary>
-        internal void FreeId()
+        internal void FreeReservedId()
         {
             if (m_Packet!=null)
                 m_Packet.FreeReservedId(m_Id);
 
-            m_Packet = null;
-            m_Id = 0;
-            m_Entity = null;
+            Reset();
         }
 
         /// <summary>

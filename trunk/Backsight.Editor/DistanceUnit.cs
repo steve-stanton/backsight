@@ -23,7 +23,7 @@ namespace Backsight.Editor
     /// cadastral map model is created (for meters, feet, and chains). The resultant
     /// objects will be held as part of the model.
     /// </summary>
-    class DistanceUnit
+    class DistanceUnit : IEquatable<DistanceUnit>
     {
         #region Class data
 
@@ -219,6 +219,16 @@ namespace Backsight.Editor
         public override string ToString()
         {
             return m_UnitName;
+        }
+
+        /// <summary>
+        /// Checks whether this distance unit is the same as another distance unit.
+        /// </summary>
+        /// <param name="that">The distance unit to compare with</param>
+        /// <returns>True if the <see cref="UnitType"/> property values are the same</returns>
+        public bool Equals(DistanceUnit that)
+        {
+            return (this.m_UnitCode == that.m_UnitCode);
         }
     }
 }

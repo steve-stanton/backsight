@@ -317,7 +317,7 @@ namespace Backsight.Editor
 
             if (s != null)
             {
-                if (s.OperationCount == 0)
+                if (s.ChangeCount == 0)
                 {
                     string sessionFile = s.FileName;
                     File.Delete(sessionFile);

@@ -108,6 +108,7 @@ namespace Backsight.Editor
                 m_MaxAllocatedId = newMaxUsedId;
 
                 // Write event data for the allocation
+                CadastralMapModel.Current.WorkingSession.AddAllocation(alloc);
                 EditingController.Current.Project.WriteChange(alloc);
             });
 

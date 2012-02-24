@@ -141,13 +141,12 @@ namespace Backsight.Editor
         /// Rolls back the last operation in this session. The operation will be removed from
         /// the session's operation list.
         /// </summary>
-        /// <returns>-1 if last operation failed to roll back. 0 if no operation to rollback.
-        /// Otherwise the sequence number of the edit that was rolled back.</returns>
-        internal int Rollback()
+        /// <returns>True if an edit was undone.</returns>
+        internal bool Rollback()
         {
             // Return if there is nothing to rollback.
             if (m_Operations.Count==0)
-                return 0;
+                return false;
 
             // Get the tail operation
             int index = m_Operations.Count-1;
@@ -168,12 +167,13 @@ namespace Backsight.Editor
 
             // Rollback the operation & remove from list
             if (!op.Undo())
-                return -1;
+                return false;
 
             m_Operations.RemoveAt(index);
             this.MapModel.RemoveEdit(op);
+            m_Project.SetLastItem(op.EditSequence - 1);
 
-            return (int)editSequence;
+            return true;
         }
 
         /// <summary>
@@ -325,9 +325,34 @@ namespace Backsight.Editor
         /// <summary>
         /// The number of edits performed in this session
         /// </summary>
+        /// <remarks>Caution: An ID allocation is not currently regarded as an edit (perhaps it should be).</remarks>
         internal int OperationCount
         {
             get { return m_Operations.Count; }
+        }
+
+        /// <summary>
+        /// The number of changes in this session (the sum of the <see cref="OperationCount"/> and
+        /// <see cref="AllocationCount"/> property values).
+        /// </summary>
+        internal int ChangeCount
+        {
+            get { return m_Operations.Count + (int)AllocationCount; }
+        }
+
+        /// <summary>
+        /// The number of ID allocations that were made during this session.
+        /// </summary>
+        internal uint AllocationCount { get; private set; }
+
+        /// <summary>
+        /// Remembers that an allocation has been made during this session.
+        /// </summary>
+        /// <param name="alloc">The allocation that was made</param>
+        internal void AddAllocation(IdAllocation alloc)
+        {
+            AllocationCount++;
+            m_LastSavedItem = Math.Max(m_LastSavedItem, alloc.EditSequence);
         }
 
         /// <summary>

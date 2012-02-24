@@ -97,7 +97,7 @@ namespace Backsight.Editor
         internal bool ReserveId(IdHandle idh, IEntity ent, uint id)
         {
             // Ensure the ID handle is free.
-            idh.FreeId();
+            idh.FreeReservedId();
 
             // Get the ID group to make the reservation
             IdGroup g = GetGroup(ent);
