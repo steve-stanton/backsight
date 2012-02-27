@@ -130,7 +130,6 @@ namespace Backsight.Editor
         internal IdPacket FindPacket(uint id)
         {
             return m_Packets.Find(p => p.Min <= id && p.Max >= id);
-            //return m_Packets.Find(delegate(IdPacket p) { return (p.Min <= id && p.Max >= id); });
         }
 
         /// <summary>

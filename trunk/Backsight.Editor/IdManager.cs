@@ -153,8 +153,7 @@ namespace Backsight.Editor
                 if (idg!=null && idg.Id>0)
                 {
                     int gid = idg.Id;
-                    IdGroup entGroup = Array.Find<IdGroup>(groups,
-                        delegate(IdGroup g) { return (g.Id==gid); });
+                    IdGroup entGroup = Array.Find<IdGroup>(groups, g => g.Id==gid);
                     Debug.Assert(entGroup!=null);
                     result.Add(e.Id, entGroup);
                 }

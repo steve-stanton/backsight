@@ -189,8 +189,7 @@ namespace Backsight.Editor.Forms
         IColumnDomain FindColumnDomain(string columnName)
         {
             IColumnDomain[] cds = m_Table.ColumnDomains;
-            return Array.Find<IColumnDomain>(cds,
-                delegate(IColumnDomain t) { return String.Compare(t.ColumnName, columnName, true)==0; });
+            return Array.Find<IColumnDomain>(cds, t => String.Compare(t.ColumnName, columnName, true)==0);
         }
 
         void SetGrid(DataRow data)

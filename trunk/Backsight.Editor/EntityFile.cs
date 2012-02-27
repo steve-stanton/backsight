@@ -122,8 +122,7 @@ namespace Backsight.Editor
             // Get the translation block (if any) that refers to the line's entity type.
             string entName = ent.Name;
             string lyrName = layer.Name;
-            EntityBlock block = Array.Find<EntityBlock>(m_Blocks,
-                delegate(EntityBlock eb) { return eb.IsMatch(entName, lyrName); });
+            EntityBlock block = Array.Find<EntityBlock>(m_Blocks, eb => eb.IsMatch(entName, lyrName));
 
             // Return if the line's entity type is not associated with a translation.
             if (block==null)
