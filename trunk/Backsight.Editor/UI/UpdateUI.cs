@@ -16,13 +16,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 
-using Backsight.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
+using Backsight.Forms;
 
 namespace Backsight.Editor.UI
 {
@@ -50,14 +50,9 @@ namespace Backsight.Editor.UI
         Feature m_Update;
 
         /// <summary>
-        /// Information about any updates that have been made
+        /// The last update that was created on a call to <see cref="AddUpdate"/>.
         /// </summary>
-        //readonly UpdateContext m_Context;
-
-        /// <summary>
-        /// Modified edits
-        /// </summary>
-        readonly Stack<UpdateOperation> m_Updates;
+        UpdateOperation m_LastUpdate;
 
         /// <summary>
         /// Edits that are dependent on the edit that is currently being revised
@@ -73,6 +68,12 @@ namespace Backsight.Editor.UI
         /// Info about the current feature that's selected for update.
         /// </summary>
         UpdateForm m_Info;
+
+        /// <summary>
+        /// The ID of the last edit prior to start of updates (or the ID of the session
+        /// itself if there were no prior edits in the current working session).
+        /// </summary>
+        uint m_PreUpdateId;
 
         #endregion
 
@@ -91,8 +92,9 @@ namespace Backsight.Editor.UI
             m_IsFinishing = false;
             m_DepOps = null;
             m_Problem = null;
-            //m_Context = new UpdateContext();
-            m_Updates = new Stack<UpdateOperation>();
+
+            Session s = CadastralMapModel.Current.WorkingSession;
+            m_PreUpdateId = (s.LastOperation == null ? s.Id : s.LastOperation.EditSequence);
         }
 
         #endregion
@@ -478,7 +480,7 @@ namespace Backsight.Editor.UI
                 return false;
 
             // Grab the description of the changes
-            UpdateOperation rev = LastUpdate;
+            UpdateOperation rev = m_LastUpdate;
             if (rev == null)
                 return false;
 
@@ -885,15 +887,52 @@ namespace Backsight.Editor.UI
         }
 
         /// <summary>
-        /// Rolls back to the last undo point, and updates dialog to reflect this.
+        /// Rolls back the last update.
         /// </summary>
         void Undo()
         {
-            throw new NotImplementedException("UpdateUI.Undo");
-            //m_Context.Undo();
+            if (CanUndo())
+            {
+                CadastralMapModel.Current.UndoLastEdit();
 
-            //if (m_Info!=null)
-            //    m_Info.SetUpdateCount(m_Context.NumUndoMarkers);
+                if (m_Info != null)
+                    m_Info.SetUpdateCount(GetUpdateCount());
+            }
+        }
+
+        /// <summary>
+        /// Obtains the number of update operations that have been performed since the user started
+        /// performing updates.
+        /// </summary>
+        /// <returns>The number of update operations that have been added to the working
+        /// session since the update dialog was presented.</returns>
+        uint GetUpdateCount()
+        {
+            Session s = CadastralMapModel.Current.WorkingSession;
+            Operation[] edits = s.Edits;
+            uint result = 0;
+
+            foreach (Operation op in edits)
+            {
+                if (op.EditSequence > m_PreUpdateId && op is UpdateOperation)
+                    result++;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Have any edits been performed since the user started performing updates?
+        /// </summary>
+        /// <returns></returns>
+        bool CanUndo()
+        {
+            Session s = CadastralMapModel.Current.WorkingSession;
+            Operation op = s.LastOperation;
+            if (op == null)
+                return false;
+            else
+                return (op.EditSequence > m_PreUpdateId);
         }
 
         /// <summary>
@@ -901,11 +940,13 @@ namespace Backsight.Editor.UI
         /// </summary>
         void UndoAll()
         {
-            throw new NotImplementedException("UpdateUI.UndoAll");
-            //m_Context.UndoAll();
+            while (CanUndo())
+            {
+                CadastralMapModel.Current.UndoLastEdit();
+            }
 
             if (m_Info != null)
-                m_Info.SetUpdateCount(0);
+                m_Info.SetUpdateCount(GetUpdateCount());
         }
 
         /// <summary>
@@ -932,6 +973,10 @@ namespace Backsight.Editor.UI
         /// <param name="changes">The changes to apply</param>
         /// <returns>True if an update was recorded, false if the supplied change collection is empty (in that
         /// case, the user receives a warning message).</returns>
+        /// <remarks>This will be called when the user has finished making changes to an old
+        /// edit. The call comes from the UI for the revised edit, which goes on to call
+        /// CommandUI.FinishCommand, which routes back to UpdateUI.FinishCommand when an
+        /// update UI is in progress.</remarks>
         internal bool AddUpdate(Operation revisedEdit, UpdateItemCollection changes)
         {
             if (changes.Count == 0)
@@ -940,28 +985,12 @@ namespace Backsight.Editor.UI
                 return false;
             }
 
-            UpdateOperation uop = new UpdateOperation(revisedEdit, changes);
-            m_Updates.Push(uop);
+            m_LastUpdate = new UpdateOperation(revisedEdit, changes);
 
-            if (m_Info != null)
-                m_Info.SetUpdateCount((uint)m_Updates.Count);
+            //if (m_Info != null)
+            //    m_Info.SetUpdateCount(GetUpdateCount());
 
             return true;
-        }
-
-        /// <summary>
-        /// The last edit recorded via a call to <see cref="AddUpdate"/> (null if no
-        /// edits have been made).
-        /// </summary>
-        internal UpdateOperation LastUpdate
-        {
-            get
-            {
-                if (m_Updates.Count == 0)
-                    return null;
-
-                return m_Updates.Peek();
-            }
         }
     }
 }
