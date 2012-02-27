@@ -114,10 +114,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollback this operation.
+        /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
-        /// <returns></returns>
-        internal override bool Undo()
+        internal override void Undo()
         {
             // Delete observed radius.
             m_Radius.OnRollback(this);
@@ -127,7 +126,7 @@ namespace Backsight.Editor.Operations
                 m_Center.CutOp(this);
 
             // Rollback the base class (mark the circle for undo).
-            return base.Undo();
+            base.Undo();
         }
 
         /// <summary>

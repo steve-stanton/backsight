@@ -92,11 +92,9 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
-        /// <returns>True if operation was rolled back ok</returns>
-        internal override bool Undo()
+        internal override void Undo()
         {
             MapModel.DefaultTextRotation = m_PrevRotation;
-            return true;
         }
 
         /// <summary>

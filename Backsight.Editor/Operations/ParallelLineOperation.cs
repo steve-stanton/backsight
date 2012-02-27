@@ -161,7 +161,10 @@ namespace Backsight.Editor.Operations
             }
         }
 
-        internal override bool Undo()
+        /// <summary>
+        /// Rollback this operation (occurs when a user undoes the last edit).
+        /// </summary>
+        internal override void Undo()
         {
             base.OnRollback();
 
@@ -187,7 +190,6 @@ namespace Backsight.Editor.Operations
 
             // Mark the parallel line as deleted.
 	        Rollback(m_ParLine);
-            return true;
         }
 
         /// <summary>

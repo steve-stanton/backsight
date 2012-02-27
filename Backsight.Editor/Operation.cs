@@ -162,8 +162,7 @@ namespace Backsight.Editor
         /// <summary>
         /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
-        /// <returns>True if operation was rolled back ok</returns>
-        abstract internal bool Undo();
+        abstract internal void Undo();
 
         /// <summary>
         /// Rollback any "extra things" known to this operation. Should be called at
