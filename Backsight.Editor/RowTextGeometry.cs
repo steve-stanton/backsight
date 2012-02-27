@@ -254,8 +254,7 @@ namespace Backsight.Editor
         {
             // Attempt to locate the column in question
             IColumnDomain[] cds = table.ColumnDomains;
-            IColumnDomain cd = Array.Find<IColumnDomain>(cds, delegate(IColumnDomain t)
-                { return String.Compare(t.ColumnName, columnName, true)==0; });
+            IColumnDomain cd = Array.Find<IColumnDomain>(cds, t => String.Compare(t.ColumnName, columnName, true) == 0);
             if (cd == null)
                 return shortValue;
 

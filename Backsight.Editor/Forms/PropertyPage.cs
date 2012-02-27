@@ -118,8 +118,7 @@ namespace Backsight.Editor.Forms
                 // If the column is associated with a domain, lookup the expanded value and
                 // record as the item's description
 
-                IColumnDomain cd = Array.Find<IColumnDomain>(cds, delegate(IColumnDomain t)
-                    { return String.Compare(t.ColumnName, columnName, true)==0; });
+                IColumnDomain cd = Array.Find<IColumnDomain>(cds, t => String.Compare(t.ColumnName, columnName, true) == 0);
 
                 if (cd != null)
                 {

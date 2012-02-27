@@ -77,8 +77,8 @@ namespace Backsight.Editor.Forms
 
             // If we're not supposed to show blank entities, weed them out
             if (!m_ShowBlankEntityType)
-                entities = Array.FindAll(entities, delegate(IEntity e)
-                                        { return e.Name.Length>0; });
+                entities = Array.FindAll(entities, e => e.Name.Length>0);
+
             this.DataSource = entities;
 
             //IEntity ent = EnvironmentContainer.GetDefaultEntity(type, layer);
@@ -88,8 +88,7 @@ namespace Backsight.Editor.Forms
 
             // The objects representing the default may be in a different address
             // space, so ensure we return the item from the combo.
-            ent = Array.Find<IEntity>(entities, delegate(IEntity e)
-                                    { return (e.Name == ent.Name); });
+            ent = Array.Find<IEntity>(entities, e => (e.Name == ent.Name));
             this.SelectedItem = ent;
             return ent;
         }
@@ -117,8 +116,7 @@ namespace Backsight.Editor.Forms
 
             // The objects representing the default may be in a different address
             // space, so ensure we return the item from the combo.
-            IEntity ent = Array.Find<IEntity>(entities, delegate(IEntity a)
-                                    { return (id == a.Id); });
+            IEntity ent = Array.Find<IEntity>(entities, a => (id == a.Id));
             this.SelectedItem = ent;
             return ent;
         }

@@ -99,8 +99,7 @@ namespace Backsight.Editor
                     string entName = items[1].Trim();
 
                     // Attempt to find the entity type
-                    IEntity ent = Array.Find<IEntity>(ents, delegate(IEntity e)
-                        { return String.Compare(entName, e.Name, true)==0; });
+                    IEntity ent = Array.Find<IEntity>(ents, e => String.Compare(entName, e.Name, true) == 0);
 
                     Translation<IEntity> t = new Translation<IEntity>(featureCode, ent, m_NumLoad);
                     m_Translations.Add(t);

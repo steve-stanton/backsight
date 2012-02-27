@@ -101,26 +101,6 @@ namespace Backsight.Editor
             get { return m_Project.Model; }
         }
 
-        /*
-        /// <summary>
-        /// Cuts an operation from this session.
-        /// </summary>
-        /// <param name="o">The operation to remove.</param>
-        /// <returns>True if the operation was removed, false if the operation could
-        /// not be found.</returns>
-        bool CutOperation(Operation o)
-        {
-            // Traverse the list of operations from the end, since we should probably be cutting
-            // in reverse sequence.
-
-            int index = m_Operations.FindLastIndex(delegate(Operation t) { return object.ReferenceEquals(o,t); });
-            if (index>=0)
-                m_Operations.RemoveAt(index);
-
-            return (index>=0);
-        }
-        */
-
         /// <summary>
         /// The login name of the user logged on for the session. 
         /// </summary>
@@ -377,11 +357,7 @@ namespace Backsight.Editor
             // If a starting op has been specified, process only from there
             if (startOp != null)
             {
-                int opIndex = m_Operations.FindIndex(delegate(Operation o)
-                {
-                    return object.ReferenceEquals(o, startOp);
-                });
-
+                int opIndex = m_Operations.FindIndex(o => object.ReferenceEquals(o, startOp));
                 if (opIndex < 0)
                     throw new Exception("Cannot locate starting edit within session");
 

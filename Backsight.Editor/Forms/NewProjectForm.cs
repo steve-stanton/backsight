@@ -87,7 +87,7 @@ namespace Backsight.Editor.Forms
 
             // Confirm that the name is unique
             string[] names = m_Container.FindAllProjectNames();
-            if (Array.Exists<string>(names, delegate(string s) { return (String.Compare(s, projectName, true) == 0); }))
+            if (Array.Exists<string>(names, s => String.Compare(s, projectName, true) == 0))
             {
                 MessageBox.Show("Project name has already been used.");
                 return;

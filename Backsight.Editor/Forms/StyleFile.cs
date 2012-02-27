@@ -195,7 +195,7 @@ namespace Backsight.Editor.Forms
                     string pat = entry.DashToken;
                     if (pat.Length > 0)
                     {
-                        dp = dashPatterns.Find(delegate(DashPattern d) { return d.Name==pat; });
+                        dp = dashPatterns.Find(d => d.Name==pat);
                         if (dp==null)
                         {
                             errors.AppendLine(String.Format("Cannot find dash pattern for: {0}", line));
@@ -226,7 +226,7 @@ namespace Backsight.Editor.Forms
                         style = new LineStyle(col, fwt, dp);
 
                     // If we already have an identical style, use that instead
-                    Style prevStyle = styles.Find(delegate(Style s) { return style.IsMatch(s); });
+                    Style prevStyle = styles.Find(s => style.IsMatch(s));
                     if (prevStyle!=null)
                         m_StyleLookup[itemName] = prevStyle;
                     else

@@ -1485,11 +1485,7 @@ namespace Backsight.Editor
                 return new Operation[] { op };
 
             // Locate the session containing the edit
-            int sessionIndex = m_Sessions.FindIndex(delegate(Session s)
-            {
-                return object.ReferenceEquals(s, op.Session);
-            });
-
+            int sessionIndex = m_Sessions.FindIndex(s => object.ReferenceEquals(s, op.Session));
             if (sessionIndex < 0)
                 throw new Exception("Cannot locate editing session for edit");
 

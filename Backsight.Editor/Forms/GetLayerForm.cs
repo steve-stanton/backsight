@@ -51,8 +51,7 @@ namespace Backsight.Editor.Forms
                 listBox.Items.RemoveAt(0);
 
             if (m_SelectedLayer!=null)
-                listBox.SelectedItem = Array.Find<ILayer>(layers,
-                    delegate(ILayer layer) { return layer.Id==m_SelectedLayer.Id; });
+                listBox.SelectedItem = Array.Find<ILayer>(layers, layer => layer.Id==m_SelectedLayer.Id);
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
