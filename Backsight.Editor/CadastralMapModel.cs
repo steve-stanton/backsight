@@ -930,6 +930,15 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Undoes the last edit in the current working session.
+        /// </summary>
+        /// <returns>True if an edit was rolled back</returns>
+        internal bool UndoLastEdit()
+        {
+            return Rollback(m_WorkingSession);
+        }
+
+        /// <summary>
         /// Rolls back the last operation known to this map.
         /// </summary>
         /// <param name="s">The session to rollback (all subsequent sessions must be empty)</param>
