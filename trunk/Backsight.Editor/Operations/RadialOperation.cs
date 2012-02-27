@@ -414,7 +414,10 @@ void CeRadial::CreateAngleText ( CPtrList& text
             return result.ToArray();
         }
 
-        internal override bool Undo()
+        /// <summary>
+        /// Rollback this operation (occurs when a user undoes the last edit).
+        /// </summary>
+        internal override void Undo()
         {
             base.OnRollback();
 
@@ -427,8 +430,6 @@ void CeRadial::CreateAngleText ( CPtrList& text
 
             // If we created a line, mark it as well
             Rollback(m_Line);
-
-            return true;
         }
 
         /// <summary>

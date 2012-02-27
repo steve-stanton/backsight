@@ -102,10 +102,9 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Rollback this operation.
+        /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
-        /// <returns></returns>
-        internal override bool Undo()
+        internal override void Undo()
         {
             if (m_NewLine==null)
                 throw new Exception("NewLineOperation.Rollback - No line to rollback.");
@@ -115,7 +114,6 @@ namespace Backsight.Editor.Operations
 
             // Mark the line as deleted.
             Rollback(m_NewLine);
-            return true;
         }
 
         /// <summary>

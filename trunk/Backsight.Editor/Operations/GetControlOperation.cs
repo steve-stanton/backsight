@@ -112,16 +112,13 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
-        /// <returns>True if operation was rolled back ok</returns>
-        internal override bool Undo()
+        internal override void Undo()
         {
             base.OnRollback();
 
             // Mark for deletion each created point
             foreach (PointFeature p in m_Features)
                 Rollback(p);
-
-            return true;
         }
 
         /// <summary>

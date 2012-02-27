@@ -165,13 +165,11 @@ namespace Backsight.Editor
             // Remember the sequence number of the edit we're rolling back
             uint editSequence = op.EditSequence;
 
-            // Rollback the operation & remove from list
-            if (!op.Undo())
-                return false;
-
+            // Remove the edit and undo it
             m_Operations.RemoveAt(index);
             this.MapModel.RemoveEdit(op);
             m_Project.SetLastItem(op.EditSequence - 1);
+            op.Undo();
 
             return true;
         }

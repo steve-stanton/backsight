@@ -140,8 +140,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
-        /// <returns>True if operation was rolled back ok</returns>
-        internal override bool Undo()
+        internal override void Undo()
         {
             base.OnRollback();
 
@@ -153,8 +152,6 @@ namespace Backsight.Editor.Operations
                 m_Text.SetPolPosition(m_OldPolPosition);
             else
                 m_Text.RecalculateEnclosingPolygon();
-
-            return true;
         }
 
         /// <summary>

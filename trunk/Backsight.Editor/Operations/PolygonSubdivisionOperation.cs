@@ -99,7 +99,10 @@ namespace Backsight.Editor.Operations
             get { return EditingActionId.PolygonSubdivision; }
         }
 
-        internal override bool Undo()
+        /// <summary>
+        /// Rollback this operation (occurs when a user undoes the last edit).
+        /// </summary>
+        internal override void Undo()
         {
             base.OnRollback();
 
@@ -110,8 +113,6 @@ namespace Backsight.Editor.Operations
             // If the polygon originally had a label, restore it.
             if (m_Label!=null)
                 m_Label.Restore();
-
-            return true;
         }
 
         /// <summary>

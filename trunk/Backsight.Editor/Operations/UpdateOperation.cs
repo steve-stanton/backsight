@@ -100,8 +100,7 @@ namespace Backsight.Editor.Operations
         /// <summary>
         /// Rollback this operation (occurs when a user undoes the last edit).
         /// </summary>
-        /// <returns>True if operation was rolled back ok</returns>
-        internal override bool Undo()
+        internal override void Undo()
         {
             // Copy the original stuff back to the edit
             ApplyChanges();
@@ -111,8 +110,6 @@ namespace Backsight.Editor.Operations
             // exception?
             UpdateEditingContext uec = new UpdateEditingContext(this);
             uec.Recalculate();
-
-            return true;
         }
 
         /// <summary>
