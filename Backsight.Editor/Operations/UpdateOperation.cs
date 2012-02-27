@@ -14,9 +14,6 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
-
-using Backsight.Editor.Observations;
 
 
 namespace Backsight.Editor.Operations
@@ -25,6 +22,12 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// An edit representing a revision to an earlier edit.
     /// </summary>
+    /// <remarks>Updates can change the observations that were specified for a previous edit, but it
+    /// must not create any new spatial features.
+    /// <para/>
+    /// The observations mentioned in an update can refer to features that were created AFTER the
+    /// revised edit, so long as the referenced feature is not dependent on the revised edit.
+    /// </remarks>
     class UpdateOperation : Operation
     {
         #region Class data
@@ -103,7 +106,11 @@ namespace Backsight.Editor.Operations
             // Copy the original stuff back to the edit
             ApplyChanges();
 
-            // TODO: Anything else to do?
+            // Rework the map model ... TODO - does the update need to be already removed
+            // from the model? (see Session.Rollback). Should Undo return bool or throw
+            // exception?
+            UpdateEditingContext uec = new UpdateEditingContext(this);
+            uec.Recalculate();
 
             return true;
         }
@@ -118,6 +125,9 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override void AddReferences()
         {
+            // TODO: What about updates that change an observation so that something else is
+            // referenced? I think the handling of references should be getting done when
+            // the revised edit's ExchangeData method is called.
         }
 
         /// <summary>

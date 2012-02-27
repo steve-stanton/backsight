@@ -104,18 +104,58 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Recalculates geometry to account for the update. This should be called after
+        /// <see cref="UpdateOperation.ApplyChanges"/> has been called.
+        /// </summary>
+        internal void Recalculate()
+        {
+            // Obtain the calculation sequence (which may have changed as a result of applying the update).
+            Operation[] edits = m_Update.MapModel.GetCalculationSequence();
+
+            // The revised edit is the only edit that needs to be re-calculated initially.
+            m_Update.RevisedEdit.ToCalculate = true;
+
+            int startIndex = Array.IndexOf(edits, m_Update.RevisedEdit) + 1;
+            for (int i = startIndex; i < edits.Length; i++)
+            {
+                // If any required edit is going to be recalculated, this edit will need to
+                // be done too
+                Operation currentEdit = edits[i];
+                Operation[] req = currentEdit.GetRequiredEdits();
+
+                if (Array.Exists<Operation>(req, t => t.ToCalculate))
+                    currentEdit.ToCalculate = true;
+            }
+
+            // Recalculate geometry
+            foreach (Operation op in edits)
+            {
+                if (op.ToCalculate)
+                    Recalculate(op);
+            }
+
+            // At this stage, a call to CadastralMapModel.CleanEdit is needed.
+        }
+
+        /// <summary>
         /// Recalculates the geometry for an edit.
         /// </summary>
         /// <param name="op">The edit to recalculate</param>
-        internal void Recalculate(Operation op)
+        void Recalculate(Operation op)
         {
             m_RecalculatedEdits.Add(op);
 
-            // Remove from spatial index -- too late for things like lines that
-            // are connected to moved points. To cover that, lines gets removed
-            // from the spatial index when terminal points are moved (currently
-            // done in RegisterChange).
-            //op.RemoveFromIndex();
+            // At this point, I initially used Operation.RemoveFromIndex to take the edit's
+            // created feature out of the spatial index (so that they could be re-added after
+            // the call to CalculateGeometry). However, there's a problem with lines connected
+            // to moved points - when we go on to "recalculate" the edit that added the line
+            // it would no longer have access to the original position, so could not remove
+            // from the index at that stage.
+            //
+            // To get around that, lines get removed from the spatial index when terminal
+            // points are moved. Each edit's CalculateGeometry method is expected to apply
+            // calculated geometry by calling PointFeature.ApplyPointGeometry, which passes
+            // on the change to EditingContext.RegisterChange.
 
             // Re-calculate the geometry for created features
             op.CalculateGeometry(this);
@@ -123,27 +163,6 @@ namespace Backsight.Editor
 
             // Re-index
             op.AddToIndex();
-
-            /*
-             * Do in RegisterChange
-             * 
-            // Mark any lines as moved. In the case of lines that previously intersected
-            // anything, remove any topological construct, and replace afresh
-            Feature[] fa = op.Features;
-            foreach (Feature f in fa)
-            {
-                LineFeature line = (f as LineFeature);
-                if (line != null && line.IsTopological)
-                {
-                    line.SwitchTopology(); // turn off
-
-                    // Turn back on (but avoid possible problem with MarkPolygons)
-                    //line.SwitchTopology();
-                    line.SetTopology(true);
-                    line.IsMoved = true;
-                }
-            }
-             */
         }
 
         /// <summary>

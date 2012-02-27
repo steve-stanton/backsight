@@ -356,17 +356,10 @@ namespace Backsight.Editor.Operations
         /// <returns>The observation for the corresponding section (null if not found)</returns>
         internal LineFeature FindObservedLine(string dataId)
         {
-            LineFeature result = null;
-
-            if (m_Sections != null)
-            {
-                result = m_Sections.Find(delegate(LineFeature t)
-                {
-                    return (t.InternalId.ToString() == dataId);
-                });
-            }
-
-            return result;
+            if (m_Sections == null)
+                return null;
+            else
+                return m_Sections.Find(t => t.InternalId.ToString() == dataId);
         }
 
         /// <summary>
@@ -376,6 +369,15 @@ namespace Backsight.Editor.Operations
         {
             get { return m_Sections.ToArray(); }
         }
+
+        /// <summary>
+        /// The lengths for each subdivision section.
+        /// </summary>
+        internal Distance[] ObservedLengths
+        {
+            get { return m_Distances; }
+        }
+
 
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.
@@ -423,14 +425,6 @@ namespace Backsight.Editor.Operations
 
             // Just package up every supplied section (even those that have not changed)
             return new UpdateItem(field, sections);
-        }
-
-        /// <summary>
-        /// The lengths for each subdivision section.
-        /// </summary>
-        internal Distance[] ObservedLengths
-        {
-            get { return m_Distances; }
         }
 
         /// <summary>

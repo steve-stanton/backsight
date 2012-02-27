@@ -23,6 +23,7 @@ using Backsight.Data;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Index;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -1548,8 +1549,7 @@ namespace Backsight.Editor
                 {
                     Operation[] requiredEdits = edit.GetRequiredEdits();
 
-                    if (Array.Exists<Operation>(requiredEdits,
-                            delegate(Operation t) { return t.ToCalculate; }))
+                    if (Array.Exists<Operation>(requiredEdits, t => t.ToCalculate))
                     {
                         next.Add(edit);
                     }

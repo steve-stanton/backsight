@@ -22,7 +22,7 @@ namespace Backsight.Editor
     /// throwaway feature may be needed when previewing the results of an edit
     /// (which the user may decide to cancel).
     /// </summary>
-    /// <remarks>Currently used when defining staggered property lots (alternate faces)</remarks>
+    /// <remarks>Currently used when performing line subdivision updates</remarks>
     class ThrowawayFeatureFactory : FeatureFactory
     {
         #region Constructors
@@ -62,7 +62,7 @@ namespace Backsight.Editor
                                                             PointFeature from, PointFeature to)
         {
             IFeature f = new FeatureStub(this.Creator, InternalIdValue.Empty, baseLine.EntityType, null);
-            return new LineFeature(f, baseLine, from, to, false);
+            return new LineFeature(f, baseLine, from, to, baseLine.IsTopological);
         }
 
     }

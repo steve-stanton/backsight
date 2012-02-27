@@ -41,7 +41,7 @@ namespace Backsight.Editor.Forms
         readonly UpdateUI m_UpdCmd;
 
         /// <summary>
-        /// The line that is currently selected.
+        /// The line that is currently selected (if defined, it should be one of the lines in m_CurrentFace)
         /// </summary>
         LineFeature m_SelectedLine;
 
@@ -51,24 +51,19 @@ namespace Backsight.Editor.Forms
         LineSubdivisionOperation m_pop;
 
         /// <summary>
-        /// The distances for the primary face
+        /// The working copy of the primary face
         /// </summary>
-        Distance[] m_Face1;
+        LineSubdivisionFace m_Face1;
 
         /// <summary>
-        /// The distances for the alternate face (if there is one)
+        /// The working copy of the alternate face (if there is one)
         /// </summary>
-        Distance[] m_Face2;
-
-        /// <summary>
-        /// Was the alternate face created via this dialog?
-        /// </summary>
-        //bool m_IsFace2New;
+        LineSubdivisionFace m_Face2;
 
         /// <summary>
         /// The currently listed face (m_Face1 or m_Face2). Should never be null.
         /// </summary>
-        Distance[] m_CurrentFace;
+        LineSubdivisionFace m_CurrentFace;
 
         #endregion
 
@@ -83,7 +78,6 @@ namespace Backsight.Editor.Forms
             InitializeComponent();
 
             m_UpdCmd = up;
-            //m_IsFace2New = false;
             this.DialogResult = DialogResult.Cancel;
         }
 
@@ -122,19 +116,35 @@ namespace Backsight.Editor.Forms
             Debug.Assert(m_pop != null);
 
             // Grab something we throw away if the user decides to cancel
-            m_Face1 = CopyDistances(m_pop.PrimaryFace);
-            m_Face2 = CopyDistances(m_pop.AlternateFace);
+            m_Face1 = CreateWorkingFace(m_pop.PrimaryFace);
+            m_Face2 = CreateWorkingFace(m_pop.AlternateFace);
 
             // If we have two faces, the "New Face" button means you want to switch to the other face.
             if (m_Face2 != null)
                 newFaceButton.Text = "&Other Face";
 
-            // If we have a selected line section that is on the second face, make that the initial face.
+            // Default to the working initially with the primary face (which must always exist)
             m_CurrentFace = m_Face1;
-            if (m_SelectedLine != null && m_Face2 != null)
+
+            // If a line was selected, remember where it is in our working copy (and if it's actually on
+            // the alternate face, make that the initial face for editing).
+            LineFeature selectedLine = (feat as LineFeature);
+            if (selectedLine != null)
             {
-                if (m_pop.AlternateFace.HasSection(m_SelectedLine))
-                    m_CurrentFace = m_Face2;
+                int lineIndex = Array.FindIndex<LineFeature>(m_pop.PrimaryFace.Sections, t => t == selectedLine);
+                if (lineIndex >= 0)
+                {
+                    m_SelectedLine = m_Face1.Sections[lineIndex];
+                }
+                else if (m_pop.AlternateFace != null)
+                {
+                    lineIndex = Array.FindIndex<LineFeature>(m_pop.AlternateFace.Sections, t => t == selectedLine);
+                    if (lineIndex >= 0)
+                    {
+                        m_CurrentFace = m_Face2;
+                        m_SelectedLine = m_Face2.Sections[lineIndex];
+                    }
+                }
             }
 
             // Disable the option to flip annotation if annotation is currently invisible
@@ -175,14 +185,7 @@ namespace Backsight.Editor.Forms
             if (listIndex < 0)
                 return null;
 
-            if (m_CurrentFace == m_Face1)
-                return m_pop.PrimaryFace.Sections[listIndex];
-
-            // May have just added new face
-            if (m_CurrentFace == m_Face2 && m_pop.AlternateFace != null)
-                return m_pop.AlternateFace.Sections[listIndex];
-
-            return null;
+            return m_CurrentFace.Sections[listIndex];
         }
 
         private void updateButton_Click(object sender, EventArgs e)
@@ -195,7 +198,6 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
-            //m_SelectedLine = GetLine(listBox.SelectedIndex);
             Distance dCopy = new Distance(d);
 
             using (DistForm dist = new DistForm(dCopy, false))
@@ -203,8 +205,9 @@ namespace Backsight.Editor.Forms
                 if (dist.ShowDialog(this) == DialogResult.OK)
                 {
                     // Change the displayed distance
-                    m_CurrentFace[listBox.SelectedIndex] = new Distance(dist.Distance);
-                    m_CurrentFace[listBox.SelectedIndex].IsAnnotationFlipped = d.IsAnnotationFlipped;
+                    m_CurrentFace.ObservedLengths[listBox.SelectedIndex] = dist.Distance;
+                    m_CurrentFace.Sections[listBox.SelectedIndex].ObservedLength = dist.Distance;
+                    m_UpdCmd.ErasePainting();
                     RefreshList();
                 }
             }
@@ -233,30 +236,16 @@ namespace Backsight.Editor.Forms
             style.IsFixed = true;
             m_pop.Render(display, style, true);
 
+            // Ensure the current face has up-to-date geometry and draw that using magenta draw style
+            m_CurrentFace.CalculateGeometry(m_pop.Parent, null);
+            style = m_UpdCmd.Controller.Style(Color.Magenta);
+            style.IsFixed = true;
+            foreach (LineFeature line in m_CurrentFace.Sections)
+                line.Render(display, style);
+
             // Highlight the currently selected section (if any).
             if (m_SelectedLine != null)
                 m_SelectedLine.Render(display, new HighlightStyle());
-
-            // Draw points on the current face (except the last one, which should
-            // coincide with the end of the parent line).
-
-            // Leave for now.... need to also cover possible reverse, and annotations
-
-            // and need annotations only if they're drawn
-            //if (!EditingController.Current.AreLineAnnotationsDrawn)
-
-            /*
-            double[] offsets = LineSubdivisionFace.GetAdjustedLengths(m_pop.Parent, m_CurrentFace);
-            LineGeometry geom = m_pop.Parent.LineGeometry;
-            IPosition start = geom.Start;
-            IPosition end = null;
-
-            for (int i = 0; i < offsets.Length - 1; i++, start = end)
-            {
-                geom.GetPosition(new Length(offsets[i]), out end);
-
-            }
-            */
         }
 
         void RefreshList()
@@ -264,9 +253,17 @@ namespace Backsight.Editor.Forms
             // Highlight currently selected line (if any).
             Draw();
 
-            // List the observed distances, relating each distance to the corresponding line.
+            // List the observed distances on the current face
             listBox.Items.Clear();
-            listBox.Items.AddRange(m_CurrentFace);
+            listBox.Items.AddRange(m_CurrentFace.ObservedLengths);
+
+            // If a line is currently selected, select the corresponding distance in the listbox
+            if (m_SelectedLine != null)
+            {
+                int lineIndex = Array.FindIndex<LineFeature>(m_CurrentFace.Sections, t => t == m_SelectedLine);
+                if (lineIndex >= 0)
+                    listBox.SelectedIndex = lineIndex;
+            }
 
             // Always leave the focus in the list of distances.
             listBox.Focus();
@@ -282,7 +279,7 @@ namespace Backsight.Editor.Forms
                 return;
             }
 
-            Distance faceDist = m_CurrentFace[index];
+            Distance faceDist = m_CurrentFace.ObservedLengths[index];
             faceDist.ToggleIsFlipped();
 
             // Ensure stuff gets redrawn
@@ -291,11 +288,8 @@ namespace Backsight.Editor.Forms
 
         private void newFaceButton_Click(object sender, EventArgs e)
         {
-            // If we previously highlighted something, draw it
-            // normally (since it cannot exist as part of any other
-            // face).
-            if (m_SelectedLine != null)
-                m_SelectedLine = null;
+            // If we previously highlighted something, draw it normally (since it cannot exist as part of any other face).
+            m_SelectedLine = null;
 
             // If a second face doesn't already exist, get the user to specify the distances.
 
@@ -325,9 +319,8 @@ namespace Backsight.Editor.Forms
                             d.IsAnnotationFlipped = true;
 
                         // Create the new face (for use in preview only)
-                        //m_pop.AlternateFace = CreateAlternateFace(dists);
-                        m_Face2 = dists;
-                        //m_IsFace2New = true;
+                        m_Face2 = new LineSubdivisionFace(dists, m_Face1.IsEntryFromEnd);
+                        InitializeWorkingFace(m_Face2);
 
                         newFaceButton.Text = "&Other Face";
                     }
@@ -350,33 +343,34 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Creates a new face for the line (for use in previewing the outcome
-        /// of the change).
+        /// Creates a working copy of an existing face.
         /// </summary>
-        /// <param name="dists">The lengths of the line sections along the alternate face</param>
-        LineSubdivisionFace CreateAlternateFace(Distance[] dists)
+        /// <param name="face">The face to copy</param>
+        /// <returns>The working copy</returns>
+        LineSubdivisionFace CreateWorkingFace(LineSubdivisionFace face)
         {
-            // Distances are assumed to come from the start of the line (the LegForm dialog
-            // doesn't let you reverse things).
-            LineSubdivisionFace face = new LineSubdivisionFace(dists, false);
+            if (face == null)
+                return null;
 
-            // Create features, but without assigning any feature IDs to anything.
-            // The ThrowawayFeatureFactory creates stuff with a session ID of 0 (denoting a temporary
-            // feature that shouldn't get pointed to by anything else).
-            // - prob better to do stuff entirely in Draw
-            /*
+            // Make a copy of the distance observations from the source face
+            Distance[] distances = CopyDistances(face);
+            LineSubdivisionFace result = new LineSubdivisionFace(distances, face.IsEntryFromEnd);
+
+            // Create sections and calculate geometry
+            InitializeWorkingFace(result);
+            return result;
+        }
+
+        void InitializeWorkingFace(LineSubdivisionFace face)
+        {
+            // Create throwaway line sections (without any feature IDs, not associated with any session,
+            // not in spatial index).
             FeatureFactory ff = new ThrowawayFeatureFactory(m_pop);
             ff.LineType = m_pop.Parent.EntityType;
             face.CreateSections(m_pop.Parent, ff);
 
-            // Define geometry
+            // And calculate initial geometry
             face.CalculateGeometry(m_pop.Parent, null);
-
-            // Add to spatial index
-            //Feature[] feats = ff.CreatedFeatures;
-            //m_pop.MapModel.AddToIndex(feats);
-            */
-            return face;
         }
 
         /// <summary>
@@ -390,7 +384,7 @@ namespace Backsight.Editor.Forms
 
             double length = 0.0;
 
-            foreach (Distance d in m_CurrentFace)
+            foreach (Distance d in m_CurrentFace.ObservedLengths)
                 length += d.Meters;
 
             return length;
@@ -403,46 +397,6 @@ namespace Backsight.Editor.Forms
         internal UpdateItemCollection GetUpdateItems()
         {
             return m_pop.GetUpdateItems(m_Face1, m_Face2);
-        }
-
-        private void LineSubdivisionUpdateForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // Ensure any flipped annotations have been temporarily flipped back. To set the
-            // status for good, the appropriate update items must be returned by GetUpdateItems.
-
-            // ...avoid the complication here, calculate stuff as part of Draw
-            /*
-            CloseFace(m_Face1, m_pop.PrimaryFace);
-
-            if (m_IsFace2New)
-            {
-                m_pop.AlternateFace = null;
-            }
-            else
-            {
-                CloseFace(m_Face2, m_pop.AlternateFace);
-            }
-             */
-        }
-
-        void CloseFace(Distance[] dists, LineSubdivisionFace face)
-        {
-            /*
-            if (face == null)
-                return;
-
-            LineFeature[] sections = face.Sections;
-            Debug.Assert(sections.Length == dists.Length);
-
-            for (int i = 0; i < sections.Length; i++)
-            {
-                if (dists[i].IsAnnotationFlipped)
-                {
-                    Distance d = sections[i].ObservedLength;
-                    d.ToggleIsFlipped();
-                }
-            }
-             */
         }
     }
 }

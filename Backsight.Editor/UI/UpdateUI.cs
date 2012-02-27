@@ -154,23 +154,6 @@ namespace Backsight.Editor.UI
             return true;
         }
 
-        /*
-//	@mfunc	Handle request to wrap things up.
-void CuiUpdate::Finish ( void ) {
-
-	// Erase stuff.
-	Erase();
-
-	// Force a redraw (for luck).
-	m_View.InvalidateRect(0);
-
-	// Get the base class to finish up (will destroy this
-	// command).
-	CuiCommand::FinishCommand();
-
-} // end of Finish
-         */
-
         /// <summary>
         /// Displays info about the edits that are dependent on the feature
         /// currently selected for update.
@@ -360,71 +343,6 @@ void CuiUpdate::Finish ( void ) {
                 m_Update.Render(display, Controller.HighlightStyle);
         }
 
-        /*
-//	@mfunc	Draw (or un-draw) all the features in a list.
-//
-//	@parm	The list of features.
-//	@parm	Are we undo-ing an earlier draw?
-//
-///////////////////////////////////////////////////////////////////////
-
-void CuiUpdate::Draw ( const CeObjectList& flist
-					 , const LOGICAL isUndo ) const {
-
-	// Reserve a DC.
-	CClientDC dc(&m_View);
-	m_View.OnPrepareDC(&dc);
-
-	CeListIter loop(&flist);
-	CeFeature* pFeat;
-	COLORREF col;
-
-	// If we're undoing an earlier draw, erase anything in the
-	// list that is inactive.
-
-	if ( isUndo ) {
-
-		COLORREF bkcol = GetSysColor(COLOR_WINDOW);
-		CPen bkpen(PS_SOLID,1,bkcol);
-		CBrush bkbrush(bkcol);
-		CPen* pOldPen = dc.SelectObject(&bkpen);
-		CBrush* pOldBrush = dc.SelectObject(&bkbrush);
-
-		for ( pFeat = (CeFeature*)loop.GetHead();
-			  pFeat;
-			  pFeat = (CeFeature*)loop.GetNext() ) {
-
-			if ( pFeat->IsInactive() ) pFeat->Draw(&m_View,&dc);
-		}
-
-		dc.SelectObject(pOldPen);
-		dc.SelectObject(pOldBrush );
-
-		col = COL_BLACK;
-	}
-	else
-		col = COL_MAGENTA;
-
-	// Draw each feature (skipping inactive features if we're
-	// undoing an earlier draw).
-
-	CPen pen(PS_SOLID,1,col);
-	CBrush brush(col);
-	dc.SelectObject(&pen);
-	dc.SelectObject(&brush);
-
-	for ( pFeat = (CeFeature*)loop.GetHead();
-		  pFeat;
-		  pFeat = (CeFeature*)loop.GetNext() ) {
-
-		if ( isUndo && pFeat->IsInactive() ) continue;
-
-		pFeat->Draw(&m_View,&dc);
-	}
-
-} // end of Draw
-         */
-
         /// <summary>
         /// Runs the update for the current update feature.
         /// </summary>
@@ -598,39 +516,16 @@ void CuiUpdate::Draw ( const CeObjectList& flist
                 // Remember the original values (we'll need to restore them before serializing)
                 UpdateItemCollection originalItems = new UpdateItemCollection(uop.Changes);
 
-                // Apply changes to the original edit, THEN obtain the calculation sequence (which
-                // may have changed as a result of the update).
+                // Apply changes, then rework the map model to account for the update
                 uop.ApplyChanges();
-                Operation[] edits = uop.MapModel.GetCalculationSequence();
+                uec.Recalculate();
 
-                // The revised edit is the only edit that needs to be re-calculated initially.
-                uop.RevisedEdit.ToCalculate = true;
-
-                int startIndex = Array.IndexOf(edits, uop.RevisedEdit) + 1;
-                for (int i=startIndex; i<edits.Length; i++)
-                {
-                    // If any required edit is going to be recalculated, this edit will need to
-                    // be done too
-                    Operation currentEdit = edits[i];
-                    Operation[] req = currentEdit.GetRequiredEdits();
-
-                    if (Array.Exists<Operation>(req, delegate(Operation t) { return t.ToCalculate; }))
-                        currentEdit.ToCalculate = true;
-                }
-
-                // Recalculate geometry
-                foreach (Operation op in edits)
-                {
-                    if (op.ToCalculate)
-                        uec.Recalculate(op);
-                }
-
-                // Update topology and save to database
+                // Update topology and save the update
                 uop.MapModel.CleanEdit();
 
                 // Temporarily restore the original change items so that we serialize
-                // the correct data (as things stand, the modified values have been applied
-                // to the edit)
+                // the correct data (as things stand, the modified values have already
+                // been applied to the edit)
                 UpdateItemCollection revisedItems = uop.Changes;
                 uop.Changes = originalItems;
                 uop.Session.SaveOperation(uop);
