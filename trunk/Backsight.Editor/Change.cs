@@ -41,7 +41,17 @@ namespace Backsight.Editor
             // Associate referenced features with the edit
             result.AddReferences();
 
-            // If we're dealing with an update, exchange update items
+            // If we're dealing with an update, exchange update items. Do this NOW (rather than at it's natural
+            // spot in the editing sequence) so as to avoid repeated calculation loops during loading. When an
+            // update is applied during regular editing work, we have to rework the calculation sequence and
+            // rollforward all the subsequent edits. So we'd have to do that for every update. By applying changes
+            // now, we'll end up doing a single calculation loop.
+
+            // There is a bit of a wrinkle in cases where the update also creates new features (e.g. when an
+            // alternate face is added to a subdivided line). In that case, we can apply the changes (i.e. the
+            // observed distances) here, but it won't be possible to create the actual features until we get
+            // to the update operation. Not sure if there's a better way.
+
             UpdateOperation upo = (result as UpdateOperation);
             if (upo != null)
                 upo.ApplyChanges();

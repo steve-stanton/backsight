@@ -31,6 +31,30 @@ namespace Backsight.Editor
         [STAThread]
         static void Main(string[] args)
         {
+            /*
+            try
+            {
+                uint value = 0x1234;
+                byte[] dat = (byte[])(value as IConvertible).ToType(typeof(byte));
+                MessageBox.Show("ok");
+                return;
+
+                List<byte> res = new List<byte>();
+                uint[] test = new uint[] { 0x10, 0x100, 0x1000, 0x10000, 0x100000 };
+                foreach (uint i in test)
+                {
+                    byte[] dat = (byte[])Convert.ChangeType(i, typeof(byte[]));
+                    res.AddRange(dat);
+                }
+                MessageBox.Show("n=" + res.Count);
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            return;
+            */
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

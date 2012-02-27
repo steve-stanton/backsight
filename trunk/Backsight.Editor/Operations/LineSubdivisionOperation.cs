@@ -126,6 +126,15 @@ namespace Backsight.Editor.Operations
 
             // Retire the original line
             ff.Deactivate(m_Line);
+
+            // Create sections for any the alternate face (this will be defined only when we are
+            // deserializing an edit that has has an update applied).
+            if (m_AlternateFace != null)
+            {
+                // The problem here is that the sections on the alternate face were created by the
+                // update operation (so the ff.Creator needs to change... but to what?)
+                m_AlternateFace.CreateSections(m_Line, ff);
+            }
         }
 
         /// <summary>
@@ -135,6 +144,9 @@ namespace Backsight.Editor.Operations
         internal override void CalculateGeometry(EditingContext ctx)
         {
             m_PrimaryFace.CalculateGeometry(m_Line, ctx);
+
+            if (m_AlternateFace != null)
+                m_AlternateFace.CalculateGeometry(m_Line, ctx);
         }
 
         /// <summary>
@@ -251,30 +263,24 @@ namespace Backsight.Editor.Operations
             if (face1 != null)
                 m_PrimaryFace.ExchangeData(face1);
 
-            //UpdateItem face2 = data.GetUpdateItem(DataField.Face2);
-            //if (face2 != null)
-            //{
-            //    if (m_AlternateFace == null)
-            //}
-            
-            /*
-            foreach (UpdateItem item in data.ToArray())
+            UpdateItem face2 = data.GetUpdateItem(DataField.Face2);
+            if (face2 != null)
             {
-                // Items that start with "A" relate to the flip status of the annotation
-                // (see LineSubdivisionUpdateForm.GetUpdateItems)
-                string dataId = item.Name;
-                bool isAnnoChange = dataId.StartsWith("A");
-                if (isAnnoChange)
-                    dataId = dataId.Substring(1);
-
-                MeasuredLineFeature mf = FindObservedLine(dataId);
-
-                if (isAnnoChange)
-                    mf.Line.IsLineAnnotationFlipped = !mf.Line.IsLineAnnotationFlipped;
+                if (m_AlternateFace == null)
+                {
+                    // Create a new face
+                    Distance[] distances = (Distance[])face2.Value;
+                    m_AlternateFace = new LineSubdivisionFace(distances, m_PrimaryFace.IsEntryFromEnd);
+                    face2.Value = null;
+                }
                 else
-                    mf.ObservedLength = data.ExchangeObservation<Distance>(this, mf.Line.DataId, mf.ObservedLength);
+                {
+                    // Could face2.Value be null? (what happens when you rollback an update that
+                    // created a new face?)
+
+                    m_AlternateFace.ExchangeData(face2);
+                }
             }
-             */
         }
 
         /// <summary>
@@ -333,18 +339,18 @@ namespace Backsight.Editor.Operations
         /// alternate face).</param>
         /// <returns>The items representing the change (may be subsequently supplied to
         /// the <see cref="ExchangeUpdateItems"/> method).</returns>
-        internal UpdateItemCollection GetUpdateItems(Distance[] face1, Distance[] face2)
+        internal UpdateItemCollection GetUpdateItems(LineSubdivisionFace face1, LineSubdivisionFace face2)
         {
             UpdateItemCollection result = new UpdateItemCollection();
 
-            result.Add(m_PrimaryFace.GetUpdateItem(DataField.Face1, face1));
+            result.Add(m_PrimaryFace.GetUpdateItem(DataField.Face1, face1.ObservedLengths));
 
-            // When creating a new face, the update UI creates the alternate face for the sake
-            // of rendering a preview.
             if (face2 != null)
             {
-                Debug.Assert(m_AlternateFace != null);
-                result.Add(m_AlternateFace.GetUpdateItem(DataField.Face2, face2));
+                if (m_AlternateFace == null)
+                    result.Add(new UpdateItem(DataField.Face2, face2.ObservedLengths));
+                else
+                    result.Add(m_AlternateFace.GetUpdateItem(DataField.Face2, face2.ObservedLengths));
             }
 
             return result;

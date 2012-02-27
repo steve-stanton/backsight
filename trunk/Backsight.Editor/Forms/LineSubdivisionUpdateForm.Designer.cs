@@ -47,8 +47,8 @@
             this.listBox.Name = "listBox";
             this.listBox.Size = new System.Drawing.Size(138, 244);
             this.listBox.TabIndex = 0;
-            this.listBox.DoubleClick += new System.EventHandler(this.listBox_DoubleClick);
             this.listBox.SelectedValueChanged += new System.EventHandler(this.listBox_SelectedValueChanged);
+            this.listBox.DoubleClick += new System.EventHandler(this.listBox_DoubleClick);
             // 
             // updateButton
             // 
@@ -127,7 +127,6 @@
             this.Text = "Update Line Subdivision";
             this.TopMost = true;
             this.Shown += new System.EventHandler(this.LineSubdivisionUpdateForm_Shown);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LineSubdivisionUpdateForm_FormClosing);
             this.ResumeLayout(false);
 
         }

@@ -134,6 +134,7 @@
     <Compile Include="EnvironmentResource.cs" />
     <Compile Include="Change.cs" />
     <Compile Include="NewSessionEvent.cs" />
+    <Compile Include="PersonalIdServer.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="ProjectDatabase.cs" />
     <Compile Include="ProjectSettings.cs" />
