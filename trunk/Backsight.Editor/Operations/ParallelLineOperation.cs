@@ -660,8 +660,8 @@ namespace Backsight.Editor.Operations
         /// <param name="refLine">The reference line.</param>
         /// <param name="offset">The observed offset (either a <c>Distance</c>
         /// or an <c>OffsetPoint</c>).</param>
-        /// <param name="term1">A line that the parallel should start on.</param>
-        /// <param name="term2">A line that the parallel should end on.</param>
+        /// <param name="term1">A line that the parallel should start on (may be null).</param>
+        /// <param name="term2">A line that the parallel should end on (may be null).</param>
         /// <param name="spar">The start of the parallel.</param>
         /// <param name="epar">The end of the parallel.</param>
         /// <returns>True if calculated ok.</returns>
@@ -680,25 +680,23 @@ namespace Backsight.Editor.Operations
 	        // If the start of the parallel should begin on a specific
 	        // line, get the closest intersection.
 
-            IPosition pos = null;
         	if (term1!=null)
             {
-                pos = ParallelLineUI.GetIntersect(refLine, spar, term1);
-		        if (pos==null)
+                spar = ParallelLineUI.GetIntersect(refLine, spar, term1);
+		        if (spar == null)
                     throw new Exception("Parallel does not intersect terminal line.");
     		}
-	    	spar = pos;
 
         	// And similarly for the end of the parallel.
 
 	        if (term2!=null)
             {
-                pos = ParallelLineUI.GetIntersect(refLine, epar, term2);
-                if (pos==null)
+                epar = ParallelLineUI.GetIntersect(refLine, epar, term2);
+                if (epar == null)
                     throw new Exception("Parallel does not intersect terminal line.");
     		}
-	    	epar = pos;
-	        return true;
+
+            return true;
 	    }
 
         /// <summary>
