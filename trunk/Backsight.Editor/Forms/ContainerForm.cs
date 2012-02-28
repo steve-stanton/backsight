@@ -38,10 +38,27 @@ namespace Backsight.Editor.Forms
         /// Creates a container for some sort of user action.
         /// </summary>
         /// <param name="title">The title for the dialog</param>
+        /// <remarks>When created this way, the dialog will be a top-most form, which can be
+        /// annoying when running in the debugger. Where possible, use the constructor that
+        /// also specifies a parent (owner) form.</remarks>
         public ContainerForm(string title)
         {
             InitializeComponent();
             Text = title;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContainerForm"/> class that is not
+        /// a top-most window.
+        /// </summary>
+        /// <param name="title">The title for the dialog</param>
+        /// <param name="parent">The form that should be defined as the owner.</param>
+        public ContainerForm(string title, Form parent)
+        {
+            InitializeComponent();
+            Text = title;
+            TopMost = false;
+            Owner = parent;
         }
 
         #endregion
