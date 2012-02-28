@@ -65,6 +65,14 @@ namespace Backsight.Editor.UI
         Operation m_Problem;
 
         /// <summary>
+        /// The editing context at the moment that a rollforward problem was detected. This context
+        /// contains information about positional changes that have already been made to support the
+        /// last update. When the user has attempted corrective action, these changes must be undone
+        /// before the update is applied again.
+        /// </summary>
+        UpdateEditingContext m_ProblemContext;
+
+        /// <summary>
         /// Info about the current feature that's selected for update.
         /// </summary>
         UpdateForm m_Info;
@@ -532,6 +540,33 @@ namespace Backsight.Editor.UI
                 uop.Changes = originalItems;
                 uop.Session.SaveOperation(uop);
                 uop.Changes = revisedItems;
+            }
+
+            catch (RollforwardException rex)
+            {
+                // Remember the problem edit, as well as the update context (since we may need to
+                // move stuff back to their original positions).
+                m_Problem = rex.Problem;
+                m_ProblemContext = uec;
+
+                /*
+                // The spatial index may be missing stuff, so rework it entirely!
+                CadastralMapModel model = uop.MapModel;
+                Operation[] allEdits = model.GetAllEdits();
+                uop.MapModel.CreateIndex(allEdits);
+                */
+
+                // Update topology and cleanup any junk
+                //model.CleanEdit();
+
+                // Re-center on the problem edit if it's off-screen
+                ISpatialDisplay display = base.ActiveDisplay;
+                IPosition newCenter = m_Problem.GetRecenter(display.Extent);
+                if (newCenter != null)
+                    display.Center = newCenter;
+
+                MessageBox.Show("Cannot re-work geometry due to edit " + m_Problem.EditSequence, "Problem",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             catch (Exception ex)

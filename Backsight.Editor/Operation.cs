@@ -624,5 +624,41 @@ namespace Backsight.Editor
         {
             base.WriteData(editSerializer);
         }
+
+        /// <summary>
+        /// Obtains a position for re-centering a draw so that new features created by this operation will show.
+        /// Any redraw must be performed at the current draw scale, so this may be impossible to achieve.
+        /// </summary>
+        /// <param name="currentWindow">The current draw window</param>
+        /// <returns>The position for the new center (null if no re-centering is needed)</returns>
+        /// <remarks>
+        /// This implementation just uses the window of any features created by this operation.
+        /// Derived classes may override (e.g. see <see cref="IntersectOperation"/>).
+        /// </remarks>
+        internal virtual IPosition GetRecenter(IWindow currentWindow)
+        {
+            // Get the window of the features that were created by this operation.
+            IWindow editExtent = GetFeatureExtent();
+
+            // No recenter if the feature window is enclosed by the supplied draw window
+            if (editExtent.IsEnclosedBy(currentWindow))
+                return null;
+            else
+                return editExtent.Center;
+        }
+
+        /// <summary>
+        /// Obtains the spatial extent of the features created by this edit.
+        /// </summary>
+        /// <returns>The extent of features created by this edit (null if no features were created)</returns>
+        IWindow GetFeatureExtent()
+        {
+            Window result = new Window();
+
+            foreach (Feature f in this.Features)
+                result.Union(f.Extent);
+
+            return (result.IsEmpty ? null : result);
+        }
     }
 }
