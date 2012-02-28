@@ -105,9 +105,10 @@ namespace Backsight.Editor.Operations
             // Copy the original stuff back to the edit
             ApplyChanges();
 
-            // Rework the map model ... TODO - does the update need to be already removed
-            // from the model? (see Session.Rollback). Should Undo return bool or throw
-            // exception?
+            // The update edit should have been removed already from the map model (see Session.Rollback),
+            // so the re-calculate call done below will not attempt to call ApplyChanges once again.
+            // Hitting a RollforwardException at this stage would be quite unexpected, indicating a basic
+            // application logic error, so do not attempt to cover that eventuality.
             UpdateEditingContext uec = new UpdateEditingContext(this);
             uec.Recalculate();
         }

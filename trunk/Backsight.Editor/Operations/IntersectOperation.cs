@@ -106,5 +106,31 @@ namespace Backsight.Editor.Operations
                     result.Add(start);
             }
         }
+
+        /// <summary>
+        /// Obtains a position for re-centering a draw so that new features created by this operation will show.
+        /// Any redraw must be performed at the current draw scale, so this may be impossible to achieve.
+        /// </summary>
+        /// <param name="currentWindow">The current draw window</param>
+        /// <returns>The position for the new center (null if no re-centering is needed)</returns>
+        /// <remarks>
+        /// This implementation uses the position of the intersection point to determine whether
+        /// re-centering is needed or not.
+        /// </remarks>
+        internal override IPosition GetRecenter(IWindow currentWindow)
+        {
+            // Get the intersection point. If it's not defined for whatever reason (which shouldn't
+            // really happen), use the base-class implementation of this method.
+            PointFeature p = this.IntersectionPoint;
+            if (p == null)
+                return base.GetRecenter(currentWindow);
+
+            // Just return if the intersection falls within the supplied draw window (otherwise
+            // recenter on the intersection point).
+            if (currentWindow.IsOverlap(p))
+                return null;
+            else
+                return p;
+        }
     }
 }

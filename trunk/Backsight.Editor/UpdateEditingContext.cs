@@ -107,6 +107,10 @@ namespace Backsight.Editor
         /// Recalculates geometry to account for the update. This should be called after
         /// <see cref="UpdateOperation.ApplyChanges"/> has been called.
         /// </summary>
+        /// <exception cref="RollforwardException">If geometry for an edit could not be re-calculated (in that
+        /// case, any subsequent edits that need to be re-calculated will be ignored). In this situation,
+        /// The spatial index will be in an indeterminate state (lines added subsequent to the problem edit
+        /// may not be evident on a draw).</exception>
         internal void Recalculate()
         {
             // Obtain the calculation sequence (which may have changed as a result of applying the update).
@@ -141,6 +145,7 @@ namespace Backsight.Editor
         /// Recalculates the geometry for an edit.
         /// </summary>
         /// <param name="op">The edit to recalculate</param>
+        /// <exception cref="RollforwardException">If geometry for the edit could not be re-calculated</exception>
         void Recalculate(Operation op)
         {
             m_RecalculatedEdits.Add(op);
@@ -157,12 +162,20 @@ namespace Backsight.Editor
             // calculated geometry by calling PointFeature.ApplyPointGeometry, which passes
             // on the change to EditingContext.RegisterChange.
 
-            // Re-calculate the geometry for created features
-            op.CalculateGeometry(this);
-            op.ToCalculate = false;
+            try
+            {
+                // Re-calculate the geometry for created features
+                op.CalculateGeometry(this);
+                op.ToCalculate = false;
 
-            // Re-index
-            op.AddToIndex();
+                // Re-index
+                op.AddToIndex();
+            }
+
+            catch (Exception ex)
+            {
+                throw new RollforwardException(op, ex.Message);
+            }
         }
 
         /// <summary>
