@@ -1342,7 +1342,7 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             // The action title may contain a mnemonic
             string title = action.Title.Replace("&", String.Empty);
 
-            return new ContainerForm(title);
+            return new ContainerForm(title, this);
         }
 
         /// <summary>
