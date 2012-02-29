@@ -819,7 +819,13 @@ namespace Backsight.Editor.UI
         internal override void OnSelectLine(LineFeature line)
         {
             if (m_Cmd != null)
-                m_Cmd.OnSelectLine(line);
+            {
+                // Can't pick something created by a dependent op.
+                if (IsDependent(line))
+                    DependencyMessage();
+                else
+                    m_Cmd.OnSelectLine(line);
+            }
             else if (line != null)
                 Run(line);
         }
@@ -867,7 +873,7 @@ namespace Backsight.Editor.UI
             string msg = String.Format("{0}{1}{2}", 
                             "You are trying to use a feature with a position", System.Environment.NewLine,
 		                    "that is dependent on the edit you are changing.");
-            MessageBox.Show(msg);
+            MessageBox.Show(msg, "Dependent feature", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         /// <summary>

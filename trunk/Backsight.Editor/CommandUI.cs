@@ -401,29 +401,6 @@ namespace Backsight.Editor
 	        return true;
         }
 
-        /// <summary>
-        /// Default handling for selection of a line feature during updates. This checks
-        /// whether the specified line is dependent on the update that is being made --
-        /// if so, a message is issued. If there is no dependency, the selection is passed
-        /// to <c>OnSelectArc</c>
-        ///
-        /// Derived classes may overide in order to do things like substituting an alternate
-        /// line in place of the one the user has selected.
-        /// </summary>
-        /// <param name="line">The line selected by the user</param>
-        void OnUpdateSelect(LineFeature line)
-        {
-            Debug.Assert(m_UpdCmd!=null);
-
-	        // Process the supplied line if it doesn't appear
-	        // to depend on the current update
-
-	        if ( m_UpdCmd.IsDependent(line) )
-		        m_UpdCmd.DependencyMessage();
-	        else
-		        OnSelectLine(line);
-        }
-
         #region IDisposable Members
 
         public virtual void Dispose()
@@ -438,10 +415,6 @@ namespace Backsight.Editor
         {
             get { return m_EditId; }
         }
-        /*
-	virtual CeObject*		GetUpdate			( void ) const { return m_pUpdate; }
-	virtual CuiUpdate*		GetUpdCmd			( void ) const { return m_pUpdCmd; }
-         */
 
         internal Operation Recall
         {
