@@ -348,18 +348,16 @@ namespace Backsight.Editor.Forms
             // parallel continues to intersect it. In the event that
             // the parallel no longer intersects, get another
             // terminal position (and maybe a different terminal line).
-            if (m_Line!=null)
+            if (m_Line != null)
             {
                 m_Terminal = cmd.GetIntersect(m_Line, m_IsLast);
-                if (m_Terminal!=null)
+                if (m_Terminal != null)
                 {
                     // The parallel still intersects the terminal line that was originally specified,
                     // so highlight the terminal line (having de-selected and unhighlighted
                     // anything that was previously highlighted).
 
                     m_Line.Render(view, new HighlightStyle());
-                    //pView->UnHighlight(m_pArc);
-                    //pView->Highlight(*m_pArc);
                 }
                 else
                 {
@@ -372,6 +370,15 @@ namespace Backsight.Editor.Forms
                     if (!FindTerminal())
                         return -1;
                 }
+            }
+            else
+            {
+                // Parallel did not terminate on a line, so grab the start or end of the parallel line
+                LineFeature parLine = op.ParallelLine;
+                if (m_IsLast)
+                    m_Terminal = parLine.EndPoint;
+                else
+                    m_Terminal = parLine.StartPoint;
             }
 
             return 1;
