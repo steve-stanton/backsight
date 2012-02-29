@@ -946,10 +946,13 @@ namespace Backsight.Editor.UI
                 IPosition epos = refline.EndPoint;
                 double bearing = Geom.BearingInRadians(spos, epos);
 
-                // Project the parallel line to positions that are a
-                // long way away (but make sure we don't end up with
-                // negative numbers).
-                double dist = Math.Min(100000.0, refline.Length.Meters);
+                // Project the parallel line to positions that are a long way away (but make sure we
+                // don't end up with negative numbers).
+                Window searchWindow = new Window(line.Extent);
+                searchWindow.Union(refline.Extent);
+                searchWindow.Union(parpos);
+                double dist = Geom.Distance(searchWindow.Min, searchWindow.Max);
+
                 IPosition start = Geom.Polar(parpos, bearing+Constants.PI, dist);
                 IPosition end = Geom.Polar(parpos, bearing, dist);
 
