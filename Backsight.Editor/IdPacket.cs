@@ -180,23 +180,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// The number of IDs that are currently free. This is the total number of null
-        /// references in m_Ids PLUS the number of references to inactive IDs.
-        /// </summary>
-        uint GetNumFree()
-        {
-            uint result = 0;
-
-            foreach (FeatureId fid in m_Ids)
-            {
-                if (fid == null || fid.IsInactive)
-                    result++;
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// The ID group that contains this packet
         /// </summary>
         internal IdGroup IdGroup
@@ -224,13 +207,17 @@ namespace Backsight.Editor
                     throw new Exception("IdPacket.ReserveId - ID already used");
             }
 
-            AddReversedId(id);
+            AddReservedId(id);
             return true;
             // Get the group to reserve the ID.
             //return m_Group.ReserveId(id);
         }
 
-        void AddReversedId(uint id)
+        /// <summary>
+        /// Remembers a reserved ID that is part of this packet.
+        /// </summary>
+        /// <param name="id">The reserved ID</param>
+        void AddReservedId(uint id)
         {
             // Return if the specified ID is already reserved.
             if (IsReserved(id))
@@ -267,39 +254,15 @@ namespace Backsight.Editor
         /// <returns>The reserved ID (null if an ID could not be obtained).</returns>
         internal uint ReserveId()
         {
-            // Return if the packet has been completely used up.
-            uint numFree = GetNumFree();
-            if (numFree == 0)
-                return 0;
-
-            // If the packet contains any inactive IDs, we will need to check for them.
-            int numnull = Size - NumUsed;
-            bool hasInactive = (numFree > numnull);
-
             // Scan though the array of ID pointers, looking for a free slot.
-            // If we find one, get the group to confirm that it's ok to
-            // reserve it (if not, keep going).
 
             for (uint i = 0; i < m_Ids.Length; i++)
             {
                 if (m_Ids[i] == null)
                 {
                     uint keynum = (uint)Min + i;
-                    AddReversedId(keynum);
+                    AddReservedId(keynum);
                     return keynum;
-                    //if (m_Group.ReserveId(keynum))
-                    //    return keynum;
-                }
-                else
-                {
-                    if (hasInactive && m_Ids[i].IsInactive)
-                    {
-                        uint keynum = (uint)Min + i;
-                        AddReversedId(keynum);
-                        return keynum;
-                        //if (m_Group.ReserveId(keynum))
-                        //    return keynum;
-                    }
                 }
             }
 
@@ -314,13 +277,8 @@ namespace Backsight.Editor
         internal uint GetAvailIds(List<uint> avail)
         {
             // Return if the packet has been completely used up.
-            uint numFree = GetNumFree();
-            if (numFree == 0)
+            if (Size == NumUsed)
                 return 0;
-
-            // If the range contains any inactive IDs, we will need to check for them.
-            int numnull = Size - NumUsed;
-            bool hasInactive = (numFree > numnull);
 
             uint navail = 0; // Nothing found so far.
 
@@ -336,14 +294,6 @@ namespace Backsight.Editor
                         avail.Add(keynum);
                         navail++;
                     }
-                    else
-                    {
-                        if (hasInactive && m_Ids[i].IsInactive)
-                        {
-                            avail.Add(keynum);
-                            navail++;
-                        }
-                    }
                 }
             }
             else
@@ -354,27 +304,9 @@ namespace Backsight.Editor
 
                 for (uint i = 0, keynum = (uint)Min; i < m_Ids.Length; i++, keynum++)
                 {
-                    uint tnum = 0;
-                    if (m_Ids[i] != null)
-                    {
-                        if (hasInactive && m_Ids[i].IsInactive)
-                            tnum = keynum;
-                    }
-                    else
-                        tnum = keynum;
-
-                    if (tnum != 0)
+                    if (m_Ids[i] == null)
                     {
                         bool isReserved = m_ReservedIds.Exists(j => j == keynum);
-                        /*
-                        bool isReserved = false;
-
-                        for (int j = 0; j < m_ReservedIds.Count && !isReserved; j++)
-                        {
-                            if (keynum == m_ReservedIds[j])
-                                isReserved = true;
-                        }
-                        */
                         if (!isReserved)
                         {
                             avail.Add(keynum);
@@ -394,16 +326,10 @@ namespace Backsight.Editor
         internal bool HasAvail()
         {
             // Return if nothing is free.
-            uint numFree = GetNumFree();
-            if (numFree == 0)
+            if (Size == NumUsed)
                 return false;
 
-            // If the packet contains any inactive IDs, we will need to check for them.
-            int numnull = Size - NumUsed;
-            bool hasInactive = (numFree > numnull);
-
             // Scan the array looking for a free slot.
-
             for (uint i = 0; i < m_Ids.Length; i++)
             {
                 if (m_Ids[i] == null)
@@ -411,19 +337,6 @@ namespace Backsight.Editor
                     uint keynum = (uint)Min + i;
                     if (!IsReserved(keynum))
                         return true;
-                    //if (!m_Group.IsReserved(keynum))
-                    //    return true;
-                }
-                else
-                {
-                    if (hasInactive && m_Ids[i].IsInactive)
-                    {
-                        uint keynum = (uint)Min + i;
-                        if (!IsReserved(keynum))
-                            return true;
-                        //if (!m_Group.IsReserved(keynum))
-                        //    return true;
-                    }
                 }
             }
 
