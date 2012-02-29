@@ -548,7 +548,7 @@ namespace Backsight.Editor.Operations
             m_RefLine = data.ExchangeFeature<LineFeature>(this, DataField.RefLine, m_RefLine);
             m_Offset = data.ExchangeObservation<Observation>(this, DataField.Offset, m_Offset);
             m_Term1 = data.ExchangeFeature<LineFeature>(this, DataField.Term1, m_Term1);
-            m_Term2 = data.ExchangeFeature<LineFeature>(this, DataField.Term1, m_Term2);
+            m_Term2 = data.ExchangeFeature<LineFeature>(this, DataField.Term2, m_Term2);
 
             // Alter arc direction if necessary.
             bool isArcReversed = data.ExchangeValue<bool>(DataField.ReverseArc, this.IsArcReversed);
