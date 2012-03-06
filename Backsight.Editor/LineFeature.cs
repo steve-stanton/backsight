@@ -756,23 +756,6 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         }
 
         /// <summary>
-        /// Initializes this feature upon loading of an editing operation that involves
-        /// this feature.
-        /// </summary>
-        /// <param name="op">The operation involved</param>
-        /// <param name="isCreator">Is the operation the one that originally created this feature?</param>
-        internal override void OnLoad(Operation op, bool isCreator)
-        {
-            base.OnLoad(op, isCreator);
-
-            if (m_Topology!=null)
-            {
-                foreach (IDivider d in m_Topology)
-                    Topology.OnLoad(d);
-            }
-        }
-
-        /// <summary>
         /// Override inserts this line feature into the supplied index, together with any neighbouring
         /// polygons that have not already been added to the index. This should be called shortly after
         /// a model is opened (after a prior call to <c>OnLoad</c>).

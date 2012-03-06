@@ -74,36 +74,54 @@ namespace Backsight.Editor
         /// <param name="point">The point that is about to be changed</param>
         internal override void RegisterChange(PointFeature point)
         {
-            if (!m_IsReverting)
+            if (m_IsReverting)
+            {
+                if (m_Changes.ContainsKey(point))
+                {
+                    // Don't remove from the index. When reverting, the call comes from RevertChanges, which loops
+                    // through the items in m_Changes. Can't remove now without screwing up the enumeration. The
+                    // m_Changes will be cleared at the end of the loop.
+                    //m_Changes.Remove(point);
+                    HandlePointMoving(point);
+                }
+            }
+            else
             {
                 if (!m_Changes.ContainsKey(point))
                 {
                     m_Changes.Add(point, point.PointGeometry);
+                    HandlePointMoving(point);
+                }
+            }
+        }
 
-                    // Remove the point from the spatial index.
-                    EditingIndex index = point.MapModel.EditingIndex;
-                    index.RemoveFeature(point);
+        /// <summary>
+        /// Performs processing when a point is about to be moved.
+        /// </summary>
+        /// <param name="point">The point that is about to move</param>
+        void HandlePointMoving(PointFeature point)
+        {
+            // Remove the point from the spatial index.
+            point.RemoveIndex();
 
-                    // Remove all dependent spatial objects from the index as well (usually
-                    // incident lines, but could also be circles)
+            // Remove all dependent spatial objects from the index as well (usually
+            // incident lines, but could also be circles)
 
-                    // Convert the supplied List to an array, since we may cut refs in
-                    // the loop below.
-                    if (point.Dependents != null)
-                    {
-                        IFeatureDependent[] deps = point.Dependents.ToArray();
+            // Convert the supplied List to an array, since we may cut refs in
+            // the loop below.
+            if (point.Dependents != null)
+            {
+                IFeatureDependent[] deps = point.Dependents.ToArray();
 
-                        if (deps != null)
-                        {
-                            // IFeatureDependent is implemented by Feature, Circle, and Operation.
-                            // For features and circles, this will remove them from the spatial index (for
-                            // line features, any polygon topology will also be marked for a rebuild).
-                            // For operations, OnFeatureMoving does nothing.
+                if (deps != null)
+                {
+                    // IFeatureDependent is implemented by Feature, Circle, and Operation.
+                    // For features and circles, this will remove them from the spatial index (for
+                    // line features, any polygon topology will also be marked for a rebuild).
+                    // For operations, OnFeatureMoving does nothing.
 
-                            foreach (IFeatureDependent fd in deps)
-                                fd.OnFeatureMoving(point, this);
-                        }
-                    }
+                    foreach (IFeatureDependent fd in deps)
+                        fd.OnFeatureMoving(point, this);
                 }
             }
         }

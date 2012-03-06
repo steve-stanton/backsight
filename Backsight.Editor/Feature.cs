@@ -323,36 +323,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Initializes this feature upon loading of an editing operation that involves
-        /// this feature.
-        /// </summary>
-        /// <param name="op">The operation involved</param>
-        /// <param name="isCreator">Is the operation the one that originally created this feature?</param>
-        internal virtual void OnLoad(Operation op, bool isCreator)
-        {
-            /*
-            if (isCreator)
-            {
-                Debug.Assert(m_Creator==null);
-                m_Creator = op;
-            }
-            else
-            {
-                if (m_References==null)
-                    m_References = new List<IFeatureDependent>(1);
-
-                m_References.Add(op);
-            }
-             */
-        }
-
-        /// <summary>
         /// Inserts this feature into the supplied index. This should be called shortly after a model
         /// is opened (after a prior call to <c>OnLoad</c>).
         /// </summary>
         /// <param name="index">The spatial index to add to</param>
         /// <returns>True if the feature was indexed. False if the feature is currently inactive (not
         /// added to the index)</returns>
+        /// <remarks>The <see cref="LineFeature"/> class provides an override that also deals with
+        /// indexing for topological elements.</remarks>
         internal virtual bool AddToIndex(EditingIndex index)
         {
             if (IsInactive)
