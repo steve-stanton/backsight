@@ -14,18 +14,18 @@
 // </remarks>
 
 using System;
-
+using System.Collections.Generic;
 
 namespace Backsight.Editor.Operations
 {
     /// <written by="Steve Stanton" on="15-MAY-2009" />
     /// <summary>
-    /// An edit representing a revision to an earlier edit.
+    /// An edit representing a revision to one (or more) editing operations.
     /// </summary>
-    /// <remarks>Updates can change the observations that were specified for a previous edit, but it
+    /// <remarks>Updates can change the observations that were specified for previous edits, but it
     /// must not create any new spatial features.
     /// <para/>
-    /// The observations mentioned in an update can refer to features that were created AFTER the
+    /// An observation mentioned in an update can refer to a feature that was created AFTER the
     /// revised edit, so long as the referenced feature is not dependent on the revised edit.
     /// </remarks>
     class UpdateOperation : Operation
@@ -33,39 +33,53 @@ namespace Backsight.Editor.Operations
         #region Class data
 
         /// <summary>
-        /// The edit being updated (not null).
+        /// The editing operations that were changed
         /// </summary>
-        readonly Operation m_Edit;
+        RevisedEdit[] m_Revisions;
 
         /// <summary>
-        /// Information about the update (not null). 
+        /// Have the revisions been used to modify the original edits?
         /// </summary>
-        UpdateItemCollection m_Changes;
+        bool m_IsApplied;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateOperation"/> class.
+        /// Initializes a new instance of the <see cref="UpdateOperation"/> class
+        /// that involves changes to more than one editing operation.
         /// </summary>
-        /// <param name="revisedEdit">The edit being updated (not null). Must implement
-        /// <see cref="IRevisable"/>.</param>
-        /// <exception cref="ArgumentNullException">If either <paramref name="edit"/> or
-        /// <paramref name="changes"/> is null.</exception>
-        /// <exception cref="ArgumentException">If <paramref name="revisedEdit"/> does not
-        /// implement <see cref="IRevisable"/>.</exception>
-        internal UpdateOperation(Operation revisedEdit, UpdateItemCollection changes)
+        /// <param name="revisions">The editing operations that were changed.</param>
+        internal UpdateOperation(RevisedEdit[] revisions)
             : base()
         {
-            if (revisedEdit == null || changes == null)
-                throw new ArgumentNullException();
-
-            if (!(revisedEdit is IRevisable))
+            if (revisions == null || revisions.Length == 0)
                 throw new ArgumentException();
 
-            m_Changes = changes;
-            m_Edit = revisedEdit;
+            m_Revisions = revisions;
+            m_IsApplied = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal UpdateOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            if (editDeserializer.IsNextField(DataField.RevisedEdits))
+            {
+                m_Revisions = editDeserializer.ReadPersistentArray<RevisedEdit>(DataField.RevisedEdits);
+            }
+            else
+            {
+                RevisedEdit rev = new RevisedEdit(editDeserializer);
+                m_Revisions = new RevisedEdit[] { rev };
+            }
+
+            m_IsApplied = false;
         }
 
         #endregion
@@ -75,7 +89,13 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override string Name
         {
-            get { return m_Edit.Name + " (update)"; }
+            get
+            {
+                if (m_Revisions.Length == 1)
+                    return m_Revisions[0].RevisedOperation.Name + " (update)";
+                else
+                    return String.Format("Update to {0} editing operations", m_Revisions.Length);
+            }
         }
 
         /// <summary>
@@ -102,13 +122,15 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal override void Undo()
         {
-            // Copy the original stuff back to the edit
-            ApplyChanges();
+            // Undoing involves re-exchanging the data for each revised edit, then re-calculating.
 
             // The update edit should have been removed already from the map model (see Session.Rollback),
-            // so the re-calculate call done below will not attempt to call ApplyChanges once again.
+            // so the re-calculate call done below will not attempt to re-run this update again.
+
             // Hitting a RollforwardException at this stage would be quite unexpected, indicating a basic
             // application logic error, so do not attempt to cover that eventuality.
+
+            RevertChanges();
             UpdateEditingContext uec = new UpdateEditingContext(this);
             uec.Recalculate();
         }
@@ -135,7 +157,25 @@ namespace Backsight.Editor.Operations
         /// <returns>The referenced features (never null, but may be an empty array).</returns>
         public override Feature[] GetRequiredFeatures()
         {
-            return m_Changes.GetReferences();
+            if (m_Revisions.Length == 1)
+                return m_Revisions[0].Changes.GetReferences();
+
+            // Initialize with the features required by the first revision
+            List<Feature> result = new List<Feature>();
+            result.AddRange(m_Revisions[0].Changes.GetReferences());
+
+            // Append features referenced by subsequent revisions (excluding duplicates)
+            for (int i = 1; i < m_Revisions.Length; i++)
+            {
+                Feature[] fa = m_Revisions[i].Changes.GetReferences();
+                foreach (Feature f in fa)
+                {
+                    if (!result.Contains(f))
+                        result.Add(f);
+                }
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -144,7 +184,12 @@ namespace Backsight.Editor.Operations
         /// <returns>An array holding the revised edit.</returns>
         internal override Operation[] GetRequiredEdits()
         {
-            return new Operation[] { m_Edit };
+            Operation[] result = new Operation[m_Revisions.Length];
+
+            for (int i = 0; i < result.Length; i++)
+                result[i] = m_Revisions[i].RevisedOperation;
+
+            return result;
         }
 
         /// <summary>
@@ -161,28 +206,58 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Exchanges changes with the revised edit.
+        /// Ensures that revised editing operations have been reverted to their original state.
+        /// </summary>
+        internal void RevertChanges()
+        {
+            if (m_IsApplied)
+            {
+                foreach (RevisedEdit re in m_Revisions)
+                    re.ApplyChanges(); // apply again to undo
+
+                m_IsApplied = false;
+            }
+        }
+
+        /// <summary>
+        /// Ensures that changes have been applied to the revised editing operations.
         /// </summary>
         internal void ApplyChanges()
         {
-            ((IRevisable)m_Edit).ExchangeData(m_Changes);
+            if (!m_IsApplied)
+            {
+                foreach (RevisedEdit re in m_Revisions)
+                    re.ApplyChanges();
+
+                m_IsApplied = true;
+            }
         }
 
         /// <summary>
-        /// The edit being updated (not null). Must implement <see cref="IRevisable"/>.
+        /// The editing operations that are associated with the elements of the <see cref="RevisedEdits"/> array.
         /// </summary>
-        internal Operation RevisedEdit
+        internal Operation[] RevisedOperations
         {
-            get { return m_Edit; }
+            get
+            {
+                var result = new Operation[m_Revisions.Length];
+
+                for (int i = 0; i < result.Length; i++)
+                    result[i] = m_Revisions[i].RevisedOperation;
+
+                return result;
+            }
         }
 
         /// <summary>
-        /// Information about the update (not null). 
+        /// Obtains the changes for a specific editing operation.
         /// </summary>
-        internal UpdateItemCollection Changes
+        /// <param name="op">The edit of interest</param>
+        /// <returns>The corresponding changes (null if not found)</returns>
+        internal UpdateItemCollection GetChanges(Operation op)
         {
-            get { return m_Changes; }
-            set { m_Changes = value; }
+            RevisedEdit rev = Array.Find<RevisedEdit>(m_Revisions, r => r.RevisedOperation == op);
+            return (rev == null ? null : rev.Changes);
         }
 
         /// <summary>
@@ -193,21 +268,22 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            editSerializer.WriteInternalId(DataField.RevisedEdit, m_Edit.InternalId);
-            (m_Edit as IRevisable).WriteUpdateItems(editSerializer, m_Changes);
+            if (m_Revisions.Length == 1)
+                m_Revisions[0].WriteData(editSerializer);
+            else
+                editSerializer.WritePersistentArray<RevisedEdit>(DataField.RevisedEdits, m_Revisions);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateOperation"/> class
-        /// using the data read from persistent storage.
+        /// Remembers an additional revision is part of this operation.
         /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal UpdateOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="rev">The additional revision to append</param>
+        /// <remarks>This method should be called only by the <see cref="UpdateUI"/> class
+        /// in a situation where the user is fixing up a rollforward problem.</remarks>
+        internal void AddRevisedEdit(RevisedEdit rev)
         {
-            InternalIdValue id = editDeserializer.ReadInternalId(DataField.RevisedEdit);
-            m_Edit = editDeserializer.MapModel.FindOperation(id);
-            m_Changes = (m_Edit as IRevisable).ReadUpdateItems(editDeserializer);
+            Array.Resize<RevisedEdit>(ref m_Revisions, m_Revisions.Length + 1);
+            m_Revisions[m_Revisions.Length - 1] = rev;
         }
     }
 }

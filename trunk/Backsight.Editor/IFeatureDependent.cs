@@ -28,17 +28,10 @@ namespace Backsight.Editor
         /// Performs any processing that needs to be done just before the position of
         /// a referenced feature is changed.
         /// </summary>
-        /// <param name="f">The feature that is about to be changed (a feature that
-        /// the <c>IFeatureDependent</c> is dependent on)</param>
-        void OnPreMove(Feature f);
-
-        /// <summary>
-        /// Performs any processing that needs to be done after the position of
-        /// a referenced feature has been changed.
-        /// </summary>
-        /// <param name="f">The feature that has just been changed (a feature that
-        /// the <c>IFeatureDependent</c> is dependent on)</param>
-        void OnPostMove(Feature f);
+        /// <param name="f">The feature that is about to be moved  - something that
+        /// the <c>IFeatureDependent</c> is dependent on (not null).</param>
+        /// <param name="ctx">The context in which the move is being made (not null).</param>
+        void OnFeatureMoving(Feature f, UpdateEditingContext context);
 
         /// <summary>
         /// Obtains referenced features where position is required by this dependent.

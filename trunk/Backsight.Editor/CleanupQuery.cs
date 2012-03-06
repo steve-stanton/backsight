@@ -38,7 +38,7 @@ namespace Backsight.Editor
         readonly List<Feature> m_Moves;
 
         /// <summary>
-        /// Items that have been deleted.
+        /// Items that have been deleted (either instances of <see cref="Feature"/> or <see cref="Ring"/>).
         /// </summary>
         readonly List<ISpatialObject> m_Deletions;
 
@@ -79,8 +79,10 @@ namespace Backsight.Editor
 
                 if (o is Feature)
                     index.RemoveFeature((Feature)o);
-                else
+                else if (o is Ring)
                     index.Remove(o);
+                else
+                    throw new ApplicationException("Unexpected data type: " + o.GetType().Name);
             }
         }
 

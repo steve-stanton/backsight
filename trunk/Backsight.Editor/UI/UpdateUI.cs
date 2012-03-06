@@ -35,7 +35,7 @@ namespace Backsight.Editor.UI
         #region Class data
 
         /// <summary>
-        /// The update that is currently being executed.
+        /// The UI for the editing command that is currently being executed.
         /// </summary>
         CommandUI m_Cmd;
         
@@ -47,12 +47,7 @@ namespace Backsight.Editor.UI
         /// <summary>
         /// The feature currently selected for update.
         /// </summary>
-        Feature m_Update;
-
-        /// <summary>
-        /// The last update that was created on a call to <see cref="AddUpdate"/>.
-        /// </summary>
-        UpdateOperation m_LastUpdate;
+        Feature m_SelectedFeature;
 
         /// <summary>
         /// Edits that are dependent on the edit that is currently being revised
@@ -60,17 +55,25 @@ namespace Backsight.Editor.UI
         Operation[] m_DepOps;
 
         /// <summary>
+        /// The editing context for the current update. This contains an instance of <see cref="UpdateOperation"/>,
+        /// together with information about changes that have already been made.
+        /// </summary>
+        UpdateEditingContext m_CurrentUpdate;
+
+        /// <summary>
+        /// The number of updates that have been made.
+        /// </summary>
+        uint m_NumUpdate;
+
+        /// <summary>
         /// The operation that rollforward has had problems re-executing.
         /// </summary>
         Operation m_Problem;
 
         /// <summary>
-        /// The editing context at the moment that a rollforward problem was detected. This context
-        /// contains information about positional changes that have already been made to support the
-        /// last update. When the user has attempted corrective action, these changes must be undone
-        /// before the update is applied again.
+        /// The change recorded on the last call to <see cref="AddUpdate"/>.
         /// </summary>
-        UpdateEditingContext m_ProblemContext;
+        RevisedEdit m_LastRevision;
 
         /// <summary>
         /// Info about the current feature that's selected for update.
@@ -94,7 +97,7 @@ namespace Backsight.Editor.UI
         public UpdateUI(IUserAction action)
             : base(action)
         {
-            m_Update = null;
+            m_SelectedFeature = null;
             m_Info = null;
             m_Cmd = null;
             m_IsFinishing = false;
@@ -143,7 +146,7 @@ namespace Backsight.Editor.UI
             ErasePainting();
 
             // Remember the specified feature.
-            m_Update = update;
+            m_SelectedFeature = update;
 
             // If the info dialog has not already been displayed, display it now.
             if (m_Info == null)
@@ -153,7 +156,7 @@ namespace Backsight.Editor.UI
             }
 
             // Get the info window to display stuff about the selected feature.
-            m_Info.Display(m_Update);
+            m_Info.Display(m_SelectedFeature);
 
             // Leave keyboard focus with the info dialog.
             m_Info.Focus();
@@ -216,7 +219,7 @@ namespace Backsight.Editor.UI
         internal void Predecessors()
         {
             // Return if there is no predecessor.
-            LineFeature prevLine = GetPredecessor(m_Update);
+            LineFeature prevLine = GetPredecessor(m_SelectedFeature);
             if (prevLine == null)
                 return;
 
@@ -252,20 +255,24 @@ namespace Backsight.Editor.UI
             }
 
             // If we've currently got a problem, treat the cancellation
-            // request as a request to undo just the last update.
-            if (m_Problem != null)
+            // request as a request to undo just the last revision
+            if (m_CurrentUpdate != null)
             {
-                Undo();
+                m_CurrentUpdate.RevertChanges();
+                m_CurrentUpdate = null;
                 m_Problem = null;
-                if (m_Update != null)
-                    Run(m_Update);
+
+                //CadastralMapModel.Current.CleanEdit();
+
+                if (m_SelectedFeature != null)
+                    Run(m_SelectedFeature);
 
                 m_Info.OnFinishUpdate(null);
                 ErasePainting();
             }
             else
             {
-                // If we set any undo points, undo them all.
+                // If we saved any updates, undo them all.
                 UndoAll();
 
                 FinishCommand();
@@ -300,7 +307,7 @@ namespace Backsight.Editor.UI
         internal void StartUpdate()
         {
             // Nothing to do if update feature is (somehow) undefined.
-            if (m_Update == null)
+            if (m_SelectedFeature == null)
                 return;
 
             // Return if already updating something.
@@ -349,8 +356,8 @@ namespace Backsight.Editor.UI
 
             // If the update feature is a line, ensure that it is highlighted the normal
             // way (so that the direction of the line is apparent).
-            if (m_Update is LineFeature)
-                m_Update.Render(display, Controller.HighlightStyle);
+            if (m_SelectedFeature is LineFeature)
+                m_SelectedFeature.Render(display, Controller.HighlightStyle);
         }
 
         /// <summary>
@@ -469,10 +476,34 @@ namespace Backsight.Editor.UI
             if (m_Problem != null)
                 return m_Problem;
 
-            if (m_Update == null)
+            if (m_SelectedFeature == null)
                 return null;
 
-            return (Operation)m_Update.Creator;
+            return (Operation)m_SelectedFeature.Creator;
+        }
+
+        /// <summary>
+        /// Remembers details for an updated edit.
+        /// </summary>
+        /// <param name="revisedEdit">The edit that is being revised</param>
+        /// <param name="changes">The changes to apply</param>
+        /// <returns>True if an update was recorded, false if the supplied change collection is empty (in that
+        /// case, the user receives a warning message).</returns>
+        /// <remarks>This will be called when the user has finished making changes to an old
+        /// edit. The call comes from the UI for the revised edit, which goes on to call
+        /// CommandUI.FinishCommand, which routes back to UpdateUI.FinishCommand when an
+        /// update UI is in progress.</remarks>
+        internal bool AddUpdate(Operation revisedEdit, UpdateItemCollection changes)
+        {
+            if (changes.Count == 0)
+            {
+                MessageBox.Show("You do not appear to have made any changes.");
+                return false;
+            }
+
+            // Remember the revision that will be applied by ApplyUpdate
+            m_LastRevision = new RevisedEdit(revisedEdit, changes);
+            return true;
         }
 
         /// <summary>
@@ -482,15 +513,9 @@ namespace Backsight.Editor.UI
         /// <returns>True if the command is one that was created by this update object.</returns>
         internal bool FinishCommand(CommandUI cmd)
         {
-	        // Return if we somehow don't have an operation (this refers to the original editing operation)
-	        Operation pop = GetOp();
-	        if (pop==null)
-                return false;
-
-            // Grab the description of the changes
-            UpdateOperation rev = m_LastUpdate;
-            if (rev == null)
-                return false;
+            // A prior call to AddUpdate should have been made
+            if (m_LastRevision == null)
+                throw new InvalidOperationException("UpdateUI.FinishCommand - revised edit not available");
 
         	// Delete the command.
 	        if (!DeleteCommand(cmd))
@@ -501,13 +526,11 @@ namespace Backsight.Editor.UI
 	        m_Problem = null;
 
 	        // If so, re-display the info for the originally selected op.
-	        if ( wasProblem && m_Update!=null )
-                Run(m_Update);
+	        if (wasProblem && m_SelectedFeature!=null)
+                Run(m_SelectedFeature);
 
-	        // Propagate the change (breaking if an operation can no
-	        // longer be calculated, which assigns m_Problem)
-	        //Rollforward(pop);
-            ApplyUpdate(rev);
+	        // Propagate the change (breaking if an operation can no longer be calculated, which assigns m_Problem)
+            ApplyLastRevision();
 
 	        // Ensure info window is shown
 	        m_Info.OnFinishUpdate(m_Problem);
@@ -517,37 +540,53 @@ namespace Backsight.Editor.UI
 	        return true;
         }
 
-        void ApplyUpdate(UpdateOperation uop)
+        /// <summary>
+        /// Applies the last revision (as noted on a prior call to <see cref="AddUpdate"/>).
+        /// </summary>
+        void ApplyLastRevision()
         {
-            UpdateEditingContext uec = new UpdateEditingContext(uop);
+            // If we already have an update context, it means we're applying a revision in an attempt
+            // to fix a rollforward problem.
+
+            if (m_CurrentUpdate == null)
+            {
+                UpdateOperation uop = new UpdateOperation(new RevisedEdit[] { m_LastRevision });
+                m_CurrentUpdate = new UpdateEditingContext(uop);
+            }
+            else
+            {
+                // Undo the previous recalculation
+                m_CurrentUpdate.RevertChanges();
+
+                // Include the latest revision
+                UpdateOperation uop = m_CurrentUpdate.UpdateSource;
+                uop.AddRevisedEdit(m_LastRevision);
+            }
 
             try
             {
-                // Remember the original values (we'll need to restore them before serializing)
-                UpdateItemCollection originalItems = new UpdateItemCollection(uop.Changes);
+                // Serialize the edit to a string BEFORE we apply the changes (otherwise we'll end
+                // up serializing the modified values)
+                UpdateOperation uop = m_CurrentUpdate.UpdateSource;
+                string editString = uop.GetEditString();
 
                 // Apply changes, then rework the map model to account for the update
-                uop.ApplyChanges();
-                uec.Recalculate();
+                m_CurrentUpdate.UpdateSource.ApplyChanges();
+                m_CurrentUpdate.Recalculate();
 
-                // Update topology and save the update
+                // Update topology
                 uop.MapModel.CleanEdit();
 
-                // Temporarily restore the original change items so that we serialize
-                // the correct data (as things stand, the modified values have already
-                // been applied to the edit)
-                UpdateItemCollection revisedItems = uop.Changes;
-                uop.Changes = originalItems;
-                uop.Session.SaveOperation(uop);
-                uop.Changes = revisedItems;
+                // Save the update as part of the working session
+                uop.Session.SaveEditString(uop, editString);
+                m_CurrentUpdate = null;
+                m_NumUpdate++;
             }
 
             catch (RollforwardException rex)
             {
-                // Remember the problem edit, as well as the update context (since we may need to
-                // move stuff back to their original positions).
+                // Remember the problem edit
                 m_Problem = rex.Problem;
-                m_ProblemContext = uec;
 
                 /*
                 // The spatial index may be missing stuff, so rework it entirely!
@@ -572,58 +611,9 @@ namespace Backsight.Editor.UI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.StackTrace, ex.Message);
-                uec.RevertChanges();
-                uop.ApplyChanges();
+                m_CurrentUpdate.RevertChanges();
+                m_CurrentUpdate = null;
             }
-        }
-
-        /// <summary>
-        /// Propogates changes, starting at the specified operation. If any problem arises,
-        /// the draw window will be recentred on the problem area.
-        /// </summary>
-        /// <param name="op">The operation to start with</param>
-        /// <returns>Any operation that caused a problem during rollfoward (this is also
-        /// assigned to <c>m_Problem</c>)</returns>
-        Operation Rollforward(Operation op)
-        {
-            throw new NotImplementedException("UpdateUI.Rollforward");
-            /*
-	        // Propagate the change (breaking if an operation can no longer be calculated).
-            CadastralMapModel map = CadastralMapModel.Current;
-	        m_Problem = map.Rollforward(op);
-
-	        // Cleanup the map (if there's a problem, don't fix up the
-	        // topology, since things may be screwed up royally).
-	        if (m_Problem!=null)
-		        map.MaintainTopology = false;
-	        else
-		        map.FinishRollforward();
-
-	        // Clean up the map.
-	        map.CleanEdit();
-
-	        // If we switched off topology, switch it on again now just
-	        // so we don't forget later. Also ensure that the problem
-	        // is on screen.
-	        if (m_Problem!=null)
-            {
-		        map.MaintainTopology = true;
-
-		        // Get the view's current draw window
-                ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-                IWindow drawin = display.Extent;
-
-		        // If the problem isn't on screen, re-centre at the current scale
-                IPosition center;
-		        if (m_Problem.GetReCentre(drawin,center))
-		        {
-                    double scale = display.MapScale;
-                    display.SetDraw(center,scale);
-		        }
-	        }
-
-	        return m_Problem;
-             */
         }
 
         /// <summary>
@@ -648,8 +638,9 @@ namespace Backsight.Editor.UI
 	        // wait until the user clicks the Undo button that's
 	        // part of the m_Info dialog.
 
-	        if (m_Problem==null)
-        		Undo();
+            // SS 06-MAR-2012 -- No longer relevant(?)
+	        //if (m_Problem==null)
+        	//	Undo();
 
 	        // Paint in our own way.
 	        Draw();
@@ -891,7 +882,7 @@ namespace Backsight.Editor.UI
         /// <returns></returns>
         internal Feature GetUpdate()
         {
-            return m_Update;
+            return m_SelectedFeature;
         }
 
         /// <summary>
@@ -927,67 +918,35 @@ namespace Backsight.Editor.UI
 	        return true;
         }
 
+        /*
         /// <summary>
         /// Rolls back the last update.
         /// </summary>
         void Undo()
         {
-            if (CanUndo())
+            if (m_NumUpdate > 0)
             {
                 CadastralMapModel.Current.UndoLastEdit();
+                m_NumUpdate--;
 
                 if (m_Info != null)
-                    m_Info.SetUpdateCount(GetUpdateCount());
+                    m_Info.SetUpdateCount(m_NumUpdate);
             }
         }
-
-        /// <summary>
-        /// Obtains the number of update operations that have been performed since the user started
-        /// performing updates.
-        /// </summary>
-        /// <returns>The number of update operations that have been added to the working
-        /// session since the update dialog was presented.</returns>
-        uint GetUpdateCount()
-        {
-            Session s = CadastralMapModel.Current.WorkingSession;
-            Operation[] edits = s.Edits;
-            uint result = 0;
-
-            foreach (Operation op in edits)
-            {
-                if (op.EditSequence > m_PreUpdateId && op is UpdateOperation)
-                    result++;
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Have any edits been performed since the user started performing updates?
-        /// </summary>
-        /// <returns></returns>
-        bool CanUndo()
-        {
-            Session s = CadastralMapModel.Current.WorkingSession;
-            Operation op = s.LastOperation;
-            if (op == null)
-                return false;
-            else
-                return (op.EditSequence > m_PreUpdateId);
-        }
+        */
 
         /// <summary>
         /// Rolls back all undo points created by this command, and updates dialog to reflect this.
         /// </summary>
         void UndoAll()
         {
-            while (CanUndo())
-            {
+            for (int i=0; i<m_NumUpdate; i++)
                 CadastralMapModel.Current.UndoLastEdit();
-            }
+
+            m_NumUpdate = 0;
 
             if (m_Info != null)
-                m_Info.SetUpdateCount(GetUpdateCount());
+                m_Info.SetUpdateCount(0);
         }
 
         /// <summary>
@@ -995,6 +954,12 @@ namespace Backsight.Editor.UI
         /// </summary>
         void SetUndoMarker()
         {
+            // This is still a good idea -- may have more than one edit to cover problems (re-use the same
+            // context for corrective edits?). The context would hold the m_PreUpdateId, revert changes
+            // may undo more than one edit. Would the edits be included in the session? (as it is, on
+            // applying changes and rollforward, if there's a problem, the last update isn't yet part
+            // of the session, and a data file has not been written).
+
             //throw new NotImplementedException("UpdateUI.SetUndoMarker");
             //m_Context.SetUndoMarker();
 
@@ -1005,33 +970,6 @@ namespace Backsight.Editor.UI
         internal CommandUI ActiveCommand
         {
             get { return m_Cmd; }
-        }
-
-        /// <summary>
-        /// Remembers details for an updated edit.
-        /// </summary>
-        /// <param name="revisedEdit">The edit that is being revised</param>
-        /// <param name="changes">The changes to apply</param>
-        /// <returns>True if an update was recorded, false if the supplied change collection is empty (in that
-        /// case, the user receives a warning message).</returns>
-        /// <remarks>This will be called when the user has finished making changes to an old
-        /// edit. The call comes from the UI for the revised edit, which goes on to call
-        /// CommandUI.FinishCommand, which routes back to UpdateUI.FinishCommand when an
-        /// update UI is in progress.</remarks>
-        internal bool AddUpdate(Operation revisedEdit, UpdateItemCollection changes)
-        {
-            if (changes.Count == 0)
-            {
-                MessageBox.Show("You do not appear to have made any changes.");
-                return false;
-            }
-
-            m_LastUpdate = new UpdateOperation(revisedEdit, changes);
-
-            //if (m_Info != null)
-            //    m_Info.SetUpdateCount(GetUpdateCount());
-
-            return true;
         }
     }
 }

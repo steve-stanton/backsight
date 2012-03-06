@@ -286,22 +286,6 @@ namespace Backsight.Editor
             get { return m_Line; }
         }
 
-        /*
-        public void OnPreMove(Feature f) // IFeatureDependent
-        {
-            // This method should never get called. When the referenced line is notified
-            // that a move is about to take place, it should remove references to all
-            // associated boundaries (and mark itself as moved).
-            throw new InvalidOperationException();
-        }
-
-        public void OnPostMove(Feature f) // IFeatureDependent
-        {
-            // This method should never get called. See comment in OnPreMove.
-            throw new InvalidOperationException();
-        }
-         */
-
         /// <summary>
         /// The divider at the start of the associated line.
         /// </summary>

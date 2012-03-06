@@ -47,6 +47,9 @@ namespace Backsight.Editor.Operations
         /// </summary>
         /// <param name="start">The point at the start of the new line.</param>
         /// <param name="end">The point at the end of the new line.</param>
+        /// <remarks>When you add a new line segment, the two end points will be referenced both to the
+        /// new line, and to the editing operation that defined the line. While this is a bit verbose,
+        /// it's consistent.</remarks>
         internal void Execute(PointFeature start, PointFeature end)
         {
             // Disallow an attempt to add a null line.

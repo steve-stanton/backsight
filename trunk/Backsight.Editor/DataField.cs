@@ -98,6 +98,7 @@ namespace Backsight.Editor
         OldX,
         OldY,
         RevisedEdit,
+        RevisedEdits,
         Value,
         Start,
         Table,

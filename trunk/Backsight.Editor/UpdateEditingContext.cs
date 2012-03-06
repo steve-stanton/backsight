@@ -95,8 +95,13 @@ namespace Backsight.Editor
 
                         if (deps != null)
                         {
+                            // IFeatureDependent is implemented by Feature, Circle, and Operation.
+                            // For features and circles, this will remove them from the spatial index (for
+                            // line features, any polygon topology will also be marked for a rebuild).
+                            // For operations, OnFeatureMoving does nothing.
+
                             foreach (IFeatureDependent fd in deps)
-                                fd.OnPreMove(point);
+                                fd.OnFeatureMoving(point, this);
                         }
                     }
                 }
@@ -106,24 +111,37 @@ namespace Backsight.Editor
         /// <summary>
         /// Recalculates geometry to account for the update. This should be called after
         /// <see cref="UpdateOperation.ApplyChanges"/> has been called.
+        /// <para/>
+        /// In a situation where you need to append an additional edit, you should first call
+        /// <see cref="RevertChanges"/>, append the edit by calling <see cref="UpdateSource.AddRevisedEdit"/>,
+        /// then call this method.
         /// </summary>
         /// <exception cref="RollforwardException">If geometry for an edit could not be re-calculated (in that
         /// case, any subsequent edits that need to be re-calculated will be ignored). In this situation,
-        /// The spatial index will be in an indeterminate state (lines added subsequent to the problem edit
+        /// The spatial index may be in an indeterminate state (lines added subsequent to the problem edit
         /// may not be evident on a draw).</exception>
         internal void Recalculate()
         {
             // Obtain the calculation sequence (which may have changed as a result of applying the update).
             Operation[] edits = m_Update.MapModel.GetCalculationSequence();
 
-            // The revised edit is the only edit that needs to be re-calculated initially.
-            m_Update.RevisedEdit.ToCalculate = true;
+            // The revised edits are the only edit that needs to be re-calculated initially.
+            Operation[] revOps = m_Update.RevisedOperations;
+            foreach (Operation o in revOps)
+                o.ToCalculate = true;
 
-            int startIndex = Array.IndexOf(edits, m_Update.RevisedEdit) + 1;
-            for (int i = startIndex; i < edits.Length; i++)
+            // Locate the earliest edit in the calculation sequence
+            int startIndex = edits.Length;
+            foreach (Operation o in revOps)
             {
-                // If any required edit is going to be recalculated, this edit will need to
-                // be done too
+                int oIndex = Array.IndexOf(edits, o);
+                startIndex = Math.Min(oIndex, startIndex);
+            }
+
+            // Check all subsequent edits to see which ones also need to be reworked
+            for (int i = startIndex+1; i < edits.Length; i++)
+            {
+                // If any required edit is going to be recalculated, this edit will need to be done too
                 Operation currentEdit = edits[i];
                 Operation[] req = currentEdit.GetRequiredEdits();
 
@@ -198,6 +216,13 @@ namespace Backsight.Editor
 
                 foreach (Operation op in m_RecalculatedEdits)
                     op.AddToIndex();
+
+                // Clear the stuff just used to undo things
+                m_RecalculatedEdits.Clear();
+                m_Changes.Clear();
+
+                // Push back the original data
+                m_Update.RevertChanges();
             }
 
             finally

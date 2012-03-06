@@ -58,7 +58,7 @@ namespace Backsight.Editor
         /// included in the current editing session.
         /// </summary>
         protected Operation()
-            : base(EditingController.Current.Project.AllocateId())
+            : base()
         {
             m_Session = CadastralMapModel.Current.WorkingSession;
             if (m_Session == null)
@@ -245,13 +245,16 @@ namespace Backsight.Editor
 
         #region IFeatureDependent Members
 
-        public void OnPreMove(Feature f)
+        /// <summary>
+        /// Performs any processing that needs to be done just before the position of
+        /// a referenced feature is changed.
+        /// </summary>
+        /// <param name="f">The feature that is about to be moved  - something that
+        /// the <c>IFeatureDependent</c> is dependent on (not null).</param>
+        /// <param name="ctx">The context in which the move is being made (not null).</param>
+        public void OnFeatureMoving(Feature f, UpdateEditingContext context)
         {
-        }
-
-        public void OnPostMove(Feature f)
-        {
-            SetFlag(OperationFlag.Changed, true);
+            // Do nothing
         }
 
         #endregion
