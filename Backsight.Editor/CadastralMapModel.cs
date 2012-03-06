@@ -124,9 +124,11 @@ namespace Backsight.Editor
             m_Index = null; // new EditingIndex();
 
             // Create an ID manager only if a database can be reached
+            /*
             IDataServer ds = EditingController.Current.DataServer;
             if (ds != null && ds.CanConnect())
                 m_IdManager = new IdManager();
+             */
 
             m_Features = new Dictionary<InternalIdValue, Feature>(1000);
             m_NativeIds = new Dictionary<uint, NativeId>(1000);
