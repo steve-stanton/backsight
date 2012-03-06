@@ -1349,19 +1349,18 @@ CeLocation* CeLine::ChangeEnd ( CeLocation& oldend
 
         /// <summary>
         /// Performs any processing that needs to be done just before the position of
-        /// a referenced feature is changed. Implements <see cref="IFeatureDependent"/>
-        /// by removing this feature from the spatial index.
+        /// a referenced feature is changed.
         /// </summary>
-        /// <param name="f">The feature that is about to be changed (a feature that
-        /// the <c>IFeatureDependent</c> is dependent on)</param>
-        public override void OnPreMove(Feature f)
+        /// <param name="f">The feature that is about to be moved  - something that
+        /// the <c>IFeatureDependent</c> is dependent on (not null).</param>
+        /// <param name="ctx">The context in which the move is being made (not null).</param>
+        public override void OnFeatureMoving(Feature f, UpdateEditingContext ctx)
         {
             // Remove line from spatial index, so long as the feature being moved is
             // an end point.
-            // TODO - consider circular arcs too
             bool isEndPointMoving = (f == this.StartPoint || f == this.EndPoint);
             if (isEndPointMoving)
-                base.OnPreMove(f);
+                base.OnFeatureMoving(f, ctx);
 
             // If we have a line that's been cut up into a series of
             // dividers, remove them all.

@@ -68,7 +68,12 @@ namespace Backsight.Editor
         /// tends to confuse the handling of dependencies (particularly with regard to the handling
         /// of updates). It would be better to hive off the point-line relationship to the PointFeature
         /// class. The m_References list might then be built using the logic of Operation.GetRequiredEdits
-        /// (for each required edit, the calling edit is a dependency).</remarks>
+        /// (for each required edit, the calling edit is a dependency).
+        /// <para/>
+        /// As things stand, if you do something like add a new line segment, the two end points will be
+        /// referenced both to the new line, and to the editing operation that defined the line. This seems
+        /// a bit verbose.
+        /// </remarks>
         List<IFeatureDependent> m_References;
 
         /// <summary>
@@ -357,22 +362,20 @@ namespace Backsight.Editor
             return true;
         }
 
+        /// <summary>
+        /// The editing operation that created this feature.
+        /// </summary>
         public Operation Creator
         {
             get { return m_Creator; }
-            //set { m_Creator = value; }
         }
 
+        /// <summary>
+        /// The type of real-world object that the feature corresponds to.
+        /// </summary>
         public IEntity EntityType
         {
             get { return m_What; }
-            //set
-            //{
-            //    if (value==null)
-            //        throw new ArgumentNullException();
-
-            //    m_What = value; //MapModel.GetRegisteredEntityType(value);
-            //}
         }
 
         /// <summary>
@@ -634,12 +637,32 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Performs any processing that needs to be done just before the position of
-        /// a referenced feature is changed. Implements <see cref="IFeatureDependent"/>
-        /// by removing this feature from the spatial index.
+        /// a referenced feature is changed.
         /// </summary>
-        /// <param name="f">The feature that is about to be changed (a feature that
-        /// the <c>IFeatureDependent</c> is dependent on)</param>
-        public virtual void OnPreMove(Feature f)
+        /// <param name="f">The feature that is about to be moved  - something that
+        /// the <c>IFeatureDependent</c> is dependent on (not null).</param>
+        /// <param name="ctx">The context in which the move is being made (not null).</param>
+        public virtual void OnFeatureMoving(Feature f, UpdateEditingContext ctx)
+        {
+            RemoveIndex();
+        }
+
+        /// <summary>
+        /// Adds this feature to the spatial index, and sets the flag bit indicating
+        /// that this feature is indexed.
+        /// </summary>
+        internal void AddToIndex()
+        {
+            EditingIndex index = MapModel.EditingIndex;
+            if (index != null)
+                index.AddFeature(this);
+        }
+
+        /// <summary>
+        /// Removes spatial indexing for this feature, and clears the flag bit indicating
+        /// that this feature is indexed.
+        /// </summary>
+        internal void RemoveIndex()
         {
             // The spatial index may be null while data is being deserialized from the
             // database during application startup
@@ -647,13 +670,6 @@ namespace Backsight.Editor
             EditingIndex index = MapModel.EditingIndex;
             if (index != null)
                 index.RemoveFeature(this);
-        }
-
-        public void OnPostMove(Feature f)
-        {
-            EditingIndex index = MapModel.EditingIndex;
-            if (index != null)
-                index.AddFeature(this);
         }
 
         public string TypeName

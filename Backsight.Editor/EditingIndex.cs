@@ -77,8 +77,11 @@ namespace Backsight.Editor
         /// <param name="f">The feature to add</param>
         internal void AddFeature(Feature f)
         {
-            base.Add(f);
-            f.IsIndexed = true;
+            if (!f.IsIndexed)
+            {
+                base.Add(f);
+                f.IsIndexed = true;
+            }
         }
 
         /// <summary>
@@ -87,8 +90,11 @@ namespace Backsight.Editor
         /// <param name="f">The feature to remove</param>
         internal void RemoveFeature(Feature f)
         {
-            base.Remove(f);
-            f.IsIndexed = false;
+            if (f.IsIndexed)
+            {
+                base.Remove(f);
+                f.IsIndexed = false;
+            }
         }
 
         /// <summary>

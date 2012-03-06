@@ -231,5 +231,20 @@ namespace Backsight.Editor
         {
             return this;
         }
+
+        /// <summary>
+        /// Performs any processing that needs to be done just before the position of
+        /// a referenced feature is changed.
+        /// </summary>
+        /// <param name="f">The feature that is about to be moved  - something that
+        /// the <c>IFeatureDependent</c> is dependent on (not null).</param>
+        /// <param name="ctx">The context in which the move is being made (not null).</param>
+        public override void OnFeatureMoving(Feature f, UpdateEditingContext ctx)
+        {
+            // Remove the circle from the spatial index
+            this.Circle.OnFeatureMoving(f, ctx);
+
+            base.OnFeatureMoving(f, ctx);
+        }
     }
 }

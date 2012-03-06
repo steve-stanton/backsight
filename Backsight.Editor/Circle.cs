@@ -45,6 +45,11 @@ namespace Backsight.Editor
         /// </summary>
         private readonly List<ArcFeature> m_Arcs;
 
+        /// <summary>
+        /// Has this circle been spatially indexed?
+        /// </summary>
+        private bool IsIndexed { get; set; }
+
         #endregion
 
         #region Constructors
@@ -59,6 +64,7 @@ namespace Backsight.Editor
             m_Center = center;
             m_Radius = radius;
             m_Arcs = new List<ArcFeature>();
+            IsIndexed = false;
         }
 
         #endregion
@@ -109,30 +115,33 @@ namespace Backsight.Editor
         /// Performs any processing that needs to be done just before the position of
         /// a referenced feature is changed.
         /// </summary>
-        /// <param name="f">The feature that is about to be changed (a feature that
-        /// the <c>IFeatureDependent</c> is dependent on)</param>
-        public void OnPreMove(Feature f)
+        /// <param name="f">The feature that is about to be moved  - something that
+        /// the <c>IFeatureDependent</c> is dependent on (not null).</param>
+        /// <param name="ctx">The context in which the move is being made (not null).</param>
+        public void OnFeatureMoving(Feature f, UpdateEditingContext ctx)
         {
             EditingIndex index = f.MapModel.EditingIndex;
-            if (index != null)
-                index.Remove(this);
-        }
-
-        /// <summary>
-        /// Performs any processing that needs to be done after the position of
-        /// a referenced feature has been changed.
-        /// </summary>
-        /// <param name="f">The feature that has just been changed (a feature that
-        /// the <c>IFeatureDependent</c> is dependent on)</param>
-        public void OnPostMove(Feature f)
-        {
-            EditingIndex index = f.MapModel.EditingIndex;
-            if (index != null)
-                index.Add(this);
+            if (index != null && this.IsIndexed)
+            {
+                index.RemoveCircle(this);
+                this.IsIndexed = false;
+            }
         }
 
         #endregion
 
+        /// <summary>
+        /// Records this circle as part of the spatial index in the current map model.
+        /// </summary>
+        internal void AddToIndex()
+        {
+            EditingIndex index = CadastralMapModel.Current.EditingIndex;
+            if (index != null && !this.IsIndexed)
+            {
+                index.AddCircle(this);
+                this.IsIndexed = true;
+            }
+        }
 
         /// <summary>
         /// Adds references to the features that this dependent is dependent on.
@@ -172,19 +181,6 @@ namespace Backsight.Editor
         }
 
         #endregion
-
-        /*
-        // Not sure about this. Should it be disallowed?
-        internal void ChangeRadius(ArcFeature arc, double newRadius)
-        {
-            if (Math.Abs(m_Radius - newRadius) > Constants.TINY)
-            {
-                OnPreMove(arc);
-                m_Radius = newRadius;
-                OnPostMove(arc);
-            }
-        }
-        */
 
         /// <summary>
         /// Associates an arc with this circle.

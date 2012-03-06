@@ -24,11 +24,6 @@ namespace Backsight.Editor
     enum OperationFlag : byte
     {
         /// <summary>
-        /// Geometry which this operation refers to has been changed
-        /// </summary>
-        Changed=0x01,
-
-        /// <summary>
         /// Operation has been "touched" by a change. Set either by SetTouch(), or via Touch().
         /// </summary>
         Touched=0x02,

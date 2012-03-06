@@ -399,10 +399,21 @@ namespace Backsight.Editor
         internal void SaveOperation(Operation edit)
         {
             Trace.Write("Saving edit");
-
-            // Save the last edit in a file
             string editString = edit.GetEditString();
+            SaveEditString(edit, editString);
+        }
 
+        /// <summary>
+        /// Saves an editing operation as part of this session (writes a file to the project folder).
+        /// </summary>
+        /// <param name="edit">The edit to save</param>
+        /// <param name="editString">A serialized version of the edit to save</param>
+        /// <remarks>This method is called directly when dealing with instances of <see cref="UpdateOperation"/>,
+        /// as the serialized string must be obtained before the update is applied. In all other cases, you
+        /// should use the <see cref="SaveOperation"/> to save an edit.
+        /// </remarks>
+        internal void SaveEditString(Operation edit, string editString)
+        {
             string dataFolder = Path.GetDirectoryName(m_FileName);
             string editFileName = Path.Combine(dataFolder, ProjectDatabase.GetDataFileName(m_Project.LastItemId));
             File.WriteAllText(editFileName, editString);

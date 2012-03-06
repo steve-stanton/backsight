@@ -239,7 +239,7 @@ namespace Backsight.Editor.Operations
             if (ctx is UpdateEditingContext)
             {
                 UpdateEditingContext uec = (ctx as UpdateEditingContext);
-                ApplyUpdateItems(ctx, uec.UpdateSource.Changes);
+                ApplyUpdateItems(ctx, uec.UpdateSource.GetChanges(this));
             }
         }
 

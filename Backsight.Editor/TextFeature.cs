@@ -342,10 +342,10 @@ namespace Backsight.Editor
 
             // Remove this feature from spatial index, move the text (and null the
             // polygon reference position), add back into the spatial index
-            OnPreMove(this);
+            RemoveIndex();
             m_Geom.Position = to;
             m_PolygonPosition = null;
-            OnPostMove(this);
+            AddToIndex();
 
             return true;
         }
