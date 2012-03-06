@@ -1584,5 +1584,25 @@ namespace Backsight.Editor
 
             return result.ToArray();
         }
+
+        /// <summary>
+        /// Ensures that all active features have been included in the spatial index.
+        /// </summary>
+        /// <remarks>When performing editing updates (where features get moved), the spatial index may end
+        /// up being incomplete (changes made to support preview may not get reverted in situations where
+        /// the user decides to cancel). The lack of a complete index may then make it appear that lines
+        /// have disappeared (since the draw is driven through the index). So call this method if there is
+        /// any question about the completeness of the index.</remarks>
+        internal void EnsureFeaturesAreIndexed()
+        {
+            if (m_Index == null)
+                throw new InvalidOperationException();
+
+            foreach (Feature f in m_Features.Values)
+            {
+                if (!f.IsInactive)
+                    m_Index.AddFeature(f);
+            }
+        }
     }
 }

@@ -146,35 +146,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Initializes a divider upon loading of the model that contains it. This clears
-        /// the indexing flag that is defined as part of any neighbouring polygons.
-        /// </summary>
-        /// <param name="d">The divider to process</param>
-        internal static void OnLoad(IDivider d)
-        {
-            if (d.Left!=null)
-                d.Left.IsIndexed = false;
-
-            if (d.Right!=null)
-                d.Right.IsIndexed = false;
-
-            OnLoadTerminal(d.From);
-            OnLoadTerminal(d.To);
-        }
-
-        /// <summary>
-        /// Initializes a terminal at one end of a divider. If the terminal is an instance
-        /// of <see cref="Intersection"/>, the flag bit indicating whether the intersection is
-        /// indexed will be cleared.
-        /// </summary>
-        /// <param name="t"></param>
-        static void OnLoadTerminal(ITerminal t)
-        {
-            if (t is Intersection)
-                (t as Intersection).IsIndexed = false;
-        }
-
-        /// <summary>
         /// Inserts neighbouring polygons into the supplied index (if they are not already
         /// marked as indexed). This should be called shortly after a model is opened (after
         /// a prior call to <c>OnLoad</c>).

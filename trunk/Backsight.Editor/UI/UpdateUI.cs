@@ -262,13 +262,15 @@ namespace Backsight.Editor.UI
                 m_CurrentUpdate = null;
                 m_Problem = null;
 
-                //CadastralMapModel.Current.CleanEdit();
+                CadastralMapModel model = CadastralMapModel.Current;
+                model.EnsureFeaturesAreIndexed();
+                model.CleanEdit();
 
                 if (m_SelectedFeature != null)
                     Run(m_SelectedFeature);
 
                 m_Info.OnFinishUpdate(null);
-                ErasePainting();
+                ActiveDisplay.Redraw();
             }
             else
             {
@@ -326,14 +328,9 @@ namespace Backsight.Editor.UI
             // with what this object does).
             ErasePainting();
 
-            // Run the update command. If it's left running, declare
-            // a save point (so long as we're not responding to a problem
-            // that has arisen during rollforward).
-            if (RunUpdate())
-            {
-                if (m_Problem == null)
-                    SetUndoMarker();
-            }
+            // Run the update command. On successful completion, we'll end up in FinishCommand. If the
+            // user cancels, we'll end up in Cancel.
+            RunUpdate();
         }
 
         /// <summary>
@@ -545,12 +542,14 @@ namespace Backsight.Editor.UI
         /// </summary>
         void ApplyLastRevision()
         {
+            UpdateOperation uop;
+
             // If we already have an update context, it means we're applying a revision in an attempt
             // to fix a rollforward problem.
 
             if (m_CurrentUpdate == null)
             {
-                UpdateOperation uop = new UpdateOperation(new RevisedEdit[] { m_LastRevision });
+                uop = new UpdateOperation(new RevisedEdit[] { m_LastRevision });
                 m_CurrentUpdate = new UpdateEditingContext(uop);
             }
             else
@@ -559,7 +558,7 @@ namespace Backsight.Editor.UI
                 m_CurrentUpdate.RevertChanges();
 
                 // Include the latest revision
-                UpdateOperation uop = m_CurrentUpdate.UpdateSource;
+                uop = m_CurrentUpdate.UpdateSource;
                 uop.AddRevisedEdit(m_LastRevision);
             }
 
@@ -567,11 +566,10 @@ namespace Backsight.Editor.UI
             {
                 // Serialize the edit to a string BEFORE we apply the changes (otherwise we'll end
                 // up serializing the modified values)
-                UpdateOperation uop = m_CurrentUpdate.UpdateSource;
                 string editString = uop.GetEditString();
 
                 // Apply changes, then rework the map model to account for the update
-                m_CurrentUpdate.UpdateSource.ApplyChanges();
+                uop.ApplyChanges();
                 m_CurrentUpdate.Recalculate();
 
                 // Update topology
@@ -588,15 +586,12 @@ namespace Backsight.Editor.UI
                 // Remember the problem edit
                 m_Problem = rex.Problem;
 
-                /*
-                // The spatial index may be missing stuff, so rework it entirely!
+                // The spatial index may be missing stuff (since the recalc exited early)
                 CadastralMapModel model = uop.MapModel;
-                Operation[] allEdits = model.GetAllEdits();
-                uop.MapModel.CreateIndex(allEdits);
-                */
+                model.EnsureFeaturesAreIndexed();
 
                 // Update topology and cleanup any junk
-                //model.CleanEdit();
+                model.CleanEdit();
 
                 // Re-center on the problem edit if it's off-screen
                 ISpatialDisplay display = base.ActiveDisplay;
@@ -947,24 +942,6 @@ namespace Backsight.Editor.UI
 
             if (m_Info != null)
                 m_Info.SetUpdateCount(0);
-        }
-
-        /// <summary>
-        /// Sets an undo marker and and updates dialog to reflect this.
-        /// </summary>
-        void SetUndoMarker()
-        {
-            // This is still a good idea -- may have more than one edit to cover problems (re-use the same
-            // context for corrective edits?). The context would hold the m_PreUpdateId, revert changes
-            // may undo more than one edit. Would the edits be included in the session? (as it is, on
-            // applying changes and rollforward, if there's a problem, the last update isn't yet part
-            // of the session, and a data file has not been written).
-
-            //throw new NotImplementedException("UpdateUI.SetUndoMarker");
-            //m_Context.SetUndoMarker();
-
-            //if (m_Info != null)
-            //    m_Info.SetUpdateCount(m_Context.NumUndoMarkers);
         }
 
         internal CommandUI ActiveCommand
