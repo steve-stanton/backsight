@@ -35,14 +35,15 @@ namespace Backsight.Editor.Operations
         readonly LineFeature m_Line;
 
         /// <summary>
-        /// Definition of the original face for this subdivision.
+        /// Definition of the line sections for the subdivided line.
         /// </summary>
-        readonly LineSubdivisionFace m_PrimaryFace;
+        readonly LineSubdivisionFace m_Face;
 
         /// <summary>
-        /// A secondary face that was included via an update to the original edit.
+        /// Any subdivision for the other side of the line (null if the subdivision applies
+        /// to both sides of the line).
         /// </summary>
-        LineSubdivisionFace m_AlternateFace;
+        internal LineSubdivisionOperation OtherSide { get; set; }
 
         #endregion
 
@@ -58,8 +59,7 @@ namespace Backsight.Editor.Operations
             : base()
         {
             m_Line = line;
-            m_PrimaryFace = new LineSubdivisionFace(distances, isEntryFromEnd);
-            m_AlternateFace = null;
+            m_Face = new LineSubdivisionFace(distances, isEntryFromEnd);
         }
 
         /// <summary>
@@ -70,8 +70,17 @@ namespace Backsight.Editor.Operations
         internal LineSubdivisionOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            FeatureStub[] sections;
-            ReadData(editDeserializer, out m_Line, out m_PrimaryFace, out sections);
+            m_Line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
+            m_Face = editDeserializer.ReadPersistent<LineSubdivisionFace>(DataField.Face);
+            FeatureStub[] sections = editDeserializer.ReadFeatureStubArray(DataField.Result);
+
+            if (editDeserializer.IsNextField(DataField.OtherSide))
+            {
+                InternalIdValue id = editDeserializer.ReadInternalId(DataField.OtherSide);
+                OtherSide = (LineSubdivisionOperation)editDeserializer.MapModel.FindOperation(id);
+                Debug.Assert(OtherSide != null);
+                OtherSide.OtherSide = this;
+            }
 
             DeserializationFactory result = new DeserializationFactory(this, sections);
             ProcessFeatures(result);
@@ -92,7 +101,16 @@ namespace Backsight.Editor.Operations
         /// </summary>
         public override string Name
         {
-            get { return "Line subdivision"; }
+            get
+            {
+                if (OtherSide == null)
+                    return "Line subdivision";
+
+                if (IsPrimaryFace)
+                    return "Line subdivision (first face)";
+
+                return "Line subdivision (second face)";
+            }
         }
 
         /// <summary>
@@ -120,21 +138,13 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating any spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            // Create the sections along the primary face (the alternate face is
-            // handled via an editing update).
-            m_PrimaryFace.CreateSections(m_Line, ff);
+            // Create the sections along the face
+            m_Face.CreateSections(m_Line, ff, (OtherSide == null));
 
-            // Retire the original line
-            ff.Deactivate(m_Line);
-
-            // Create sections for any the alternate face (this will be defined only when we are
-            // deserializing an edit that has has an update applied).
-            if (m_AlternateFace != null)
-            {
-                // The problem here is that the sections on the alternate face were created by the
-                // update operation (so the ff.Creator needs to change... but to what?)
-                m_AlternateFace.CreateSections(m_Line, ff);
-            }
+            // Retire the original line if not already retired (it will already be inactive
+            // if we're dealing with an alternate face).
+            if (!m_Line.IsInactive)
+                ff.Deactivate(m_Line);
         }
 
         /// <summary>
@@ -143,10 +153,7 @@ namespace Backsight.Editor.Operations
         /// <param name="ctx">The context in which the geometry is being calculated.</param>
         internal override void CalculateGeometry(EditingContext ctx)
         {
-            m_PrimaryFace.CalculateGeometry(m_Line, ctx);
-
-            if (m_AlternateFace != null)
-                m_AlternateFace.CalculateGeometry(m_Line, ctx);
+            m_Face.CalculateGeometry(m_Line, ctx);
         }
 
         /// <summary>
@@ -158,11 +165,8 @@ namespace Backsight.Editor.Operations
             {
                 List<Feature> result = new List<Feature>();
 
-                if (m_PrimaryFace != null)
-                    result.AddRange(m_PrimaryFace.GetNewFeatures(m_Line));
-
-                if (m_AlternateFace != null)
-                    result.AddRange(m_AlternateFace.GetNewFeatures(m_Line));
+                if (m_Face != null)
+                    result.AddRange(m_Face.GetNewFeatures(m_Line));
 
                 return result.ToArray();
             }
@@ -197,22 +201,37 @@ namespace Backsight.Editor.Operations
         {
             base.OnRollback();
 
-            m_Line.CutOp(this);
+            if (IsPrimaryFace)
+                m_Line.CutOp(this);
 
             // Go through each section we created, marking each one as
             // deleted. Also mark the point features at the start of each
             // section, so long as it was created by this operation (should
             // do nothing for the 1st section).
 
-            // Only the primary face is relevant, since the alternate face
-            // is created via an editing update.
-
-            Feature[] fa = m_PrimaryFace.GetNewFeatures(m_Line);
+            Feature[] fa = m_Face.GetNewFeatures(m_Line);
             foreach (Feature f in fa)
                 f.Undo();
 
-            // Restore the original line
-            m_Line.Restore();
+            // Restore the original line so long as this is the primary face
+            if (IsPrimaryFace)
+                m_Line.Restore();
+        }
+
+        /// <summary>
+        /// Is this the initial subdivision for the line?
+        /// </summary>
+        /// <value>True if there is no alternate face, or there is an alternate face but this
+        /// edit came first.</value>
+        internal bool IsPrimaryFace
+        {
+            get
+            {
+                if (OtherSide == null)
+                    return true;
+                else
+                    return (this.EditSequence < OtherSide.EditSequence);
+            }
         }
 
         /// <summary>
@@ -223,30 +242,18 @@ namespace Backsight.Editor.Operations
         /// <returns>The subdivided line (if any section corresponds to the supplied line).</returns>
         internal override LineFeature GetPredecessor(LineFeature line)
         {
-            if (m_PrimaryFace != null && m_PrimaryFace.HasSection(line))
-                return m_Line;
-
-            if (m_AlternateFace != null && m_AlternateFace.HasSection(line))
+            if (m_Face != null && m_Face.HasSection(line))
                 return m_Line;
 
             return null;
         }
 
         /// <summary>
-        /// Definition of the original face for this subdivision.
+        /// Definition of the line sections for this subdivision.
         /// </summary>
-        internal LineSubdivisionFace PrimaryFace
+        internal LineSubdivisionFace Face
         {
-            get { return m_PrimaryFace; }
-        }
-
-        /// <summary>
-        /// A secondary face that was included via an update to the original edit.
-        /// </summary>
-        internal LineSubdivisionFace AlternateFace
-        {
-            get { return m_AlternateFace; }
-            set { m_AlternateFace = value; }
+            get { return m_Face; }
         }
 
         /// <summary>
@@ -257,46 +264,9 @@ namespace Backsight.Editor.Operations
         /// hold the values that were previously defined for the edit)</param>
         public override void ExchangeData(UpdateItemCollection data)
         {
-            UpdateItem face1 = data.GetUpdateItem(DataField.Face1);
-            if (face1 != null)
-                m_PrimaryFace.ExchangeData(face1);
-
-            UpdateItem face2 = data.GetUpdateItem(DataField.Face2);
-            if (face2 != null)
-            {
-                if (m_AlternateFace == null)
-                {
-                    // Create a new face
-                    Distance[] distances = (Distance[])face2.Value;
-                    m_AlternateFace = new LineSubdivisionFace(distances, m_PrimaryFace.IsEntryFromEnd);
-                    face2.Value = null;
-                }
-                else
-                {
-                    // Could face2.Value be null? (what happens when you rollback an update that
-                    // created a new face?)
-
-                    m_AlternateFace.ExchangeData(face2);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Attempts to locate the line section with a specific ID.
-        /// </summary>
-        /// <param name="dataId">The ID to look for</param>
-        /// <returns>The observation for the corresponding section (null if not found)</returns>
-        LineFeature FindObservedLine(string dataId)
-        {
-            LineFeature result = null;
-
-            if (m_PrimaryFace != null)
-                result = m_PrimaryFace.FindObservedLine(dataId);
-
-            if (result == null && m_AlternateFace != null)
-                result = m_AlternateFace.FindObservedLine(dataId);
-
-            return result;
+            UpdateItem face = data.GetUpdateItem(DataField.Face);
+            if (face != null)
+                m_Face.ExchangeData(face);
         }
 
         /// <summary>
@@ -307,49 +277,30 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
 
-            // The alternate face is currently added only via update edits
             editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_Line);
-            editSerializer.WritePersistent<LineSubdivisionFace>(DataField.Face1, m_PrimaryFace);
+            editSerializer.WritePersistent<LineSubdivisionFace>(DataField.Face, m_Face);
             editSerializer.WriteFeatureStubArray(DataField.Result, this.Features);
-        }
 
-        /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="line">The line that was subdivided.</param>
-        /// <param name="primaryFace">Definition of the original face for this subdivision.</param>
-        /// <param name="result">Information about the created line sections.</param>
-        static void ReadData(EditDeserializer editDeserializer, out LineFeature line, out LineSubdivisionFace primaryFace,
-                                out FeatureStub[] result)
-        {
-            line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
-            primaryFace = editDeserializer.ReadPersistent<LineSubdivisionFace>(DataField.Face1);
-            result = editDeserializer.ReadFeatureStubArray(DataField.Result);
+            // When we initially write the primary face, this will always be undefined. Only the
+            // alternate face will write out the reference to the other side.
+            if (OtherSide != null)
+                editSerializer.WriteInternalId(DataField.OtherSide, OtherSide.InternalId);
         }
 
         /// <summary>
         /// Obtains update items for a revised version of this edit
-        /// (for later use with <see cref="ExchangeData"/>).
+        /// (for later use with <see cref="ExchangeData"/> and <see cref="WriteUpdateItems"/>).
         /// </summary>
-        /// <param name="face1">The observed lengths for each section on the primary face</param>
-        /// <param name="face2">The observed lengths for each section on the alternate face (null if there is no
-        /// alternate face).</param>
+        /// <param name="face">The revised observed lengths for each subdivision section</param>
         /// <returns>The items representing the change (may be subsequently supplied to
-        /// the <see cref="ExchangeUpdateItems"/> method).</returns>
-        internal UpdateItemCollection GetUpdateItems(LineSubdivisionFace face1, LineSubdivisionFace face2)
+        /// the <see cref="ExchangeUpdateItems"/> method). Never null, but may be an empty collection
+        /// if the supplied face does not involve any changes.</returns>
+        internal UpdateItemCollection GetUpdateItems(LineSubdivisionFace face)
         {
             UpdateItemCollection result = new UpdateItemCollection();
 
-            result.Add(m_PrimaryFace.GetUpdateItem(DataField.Face1, face1.ObservedLengths));
-
-            if (face2 != null)
-            {
-                if (m_AlternateFace == null)
-                    result.Add(new UpdateItem(DataField.Face2, face2.ObservedLengths));
-                else
-                    result.Add(m_AlternateFace.GetUpdateItem(DataField.Face2, face2.ObservedLengths));
-            }
+            if (!m_Face.HasIdenticalObservedLengths(face))
+                result.Add(m_Face.GetUpdateItem(DataField.Face, face.ObservedLengths));
 
             return result;
         }
@@ -363,15 +314,11 @@ namespace Backsight.Editor.Operations
         /// <param name="data">The collection of changes to write</param>
         public void WriteUpdateItems(EditSerializer editSerializer, UpdateItemCollection data)
         {
-            // The logic that follows is based on the update items that get defined by LineSubdivisionUpdateForm.GetUpdateItems
+            // The logic that follows is based on the update items that get defined by GetUpdateItems
 
-            UpdateItem face1 = data.GetUpdateItem(DataField.Face1);
-            if (face1 != null)
-                editSerializer.WritePersistentArray<Distance>(DataField.Face1, (Distance[])face1.Value);
-
-            UpdateItem face2 = data.GetUpdateItem(DataField.Face2);
-            if (face2 != null)
-                editSerializer.WritePersistentArray<Distance>(DataField.Face2, (Distance[])face2.Value);
+            UpdateItem face = data.GetUpdateItem(DataField.Face);
+            if (face != null)
+                editSerializer.WritePersistentArray<Distance>(DataField.Face, (Distance[])face.Value);
         }
 
         /// <summary>
@@ -383,16 +330,10 @@ namespace Backsight.Editor.Operations
         {
             UpdateItemCollection result = new UpdateItemCollection();
 
-            if (editDeserializer.IsNextField(DataField.Face1))
+            if (editDeserializer.IsNextField(DataField.Face))
             {
-                Distance[] face1 = editDeserializer.ReadPersistentArray<Distance>(DataField.Face1);
-                result.Add(new UpdateItem(DataField.Face1, face1));
-            }
-
-            if (editDeserializer.IsNextField(DataField.Face2))
-            {
-                Distance[] face2 = editDeserializer.ReadPersistentArray<Distance>(DataField.Face2);
-                result.Add(new UpdateItem(DataField.Face2, face2));
+                Distance[] face = editDeserializer.ReadPersistentArray<Distance>(DataField.Face);
+                result.Add(new UpdateItem(DataField.Face, face));
             }
 
             return result;

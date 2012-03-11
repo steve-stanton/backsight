@@ -254,7 +254,8 @@ namespace Backsight.Editor.Operations
         /// <param name="parentLine">The line that is being subdivided</param>
         /// <param name="ff">Factory for producing new features (the important thing
         /// is the editing operation that's involved).</param>
-        internal void CreateSections(LineFeature parentLine, FeatureFactory ff)
+        /// <param name="isTopological">Should the sections be tagged as polygon boundaries?</param>
+        internal void CreateSections(LineFeature parentLine, FeatureFactory ff, bool isTopological)
         {
             // Must have at least two distances
             if (m_Distances == null)
@@ -281,6 +282,10 @@ namespace Backsight.Editor.Operations
                 item.ItemSequence++;
                 LineFeature line = ff.CreateSection(item.ToString(), parentLine, start, end);
                 line.ObservedLength = m_Distances[i];
+
+                if (!isTopological)
+                    line.SetTopology(false);
+
                 m_Sections.Add(line);
                 start = end;
             }
@@ -425,6 +430,28 @@ namespace Backsight.Editor.Operations
 
             // Just package up every supplied section (even those that have not changed)
             return new UpdateItem(field, sections);
+        }
+
+        /// <summary>
+        /// Checks whether this face has identical observed lengths for each section.
+        /// </summary>
+        /// <param name="that">The face to compare with</param>
+        /// <returns>True if this face is identical to the supplied face</returns>
+        internal bool HasIdenticalObservedLengths(LineSubdivisionFace that)
+        {
+            if (this.m_Distances.Length != that.m_Distances.Length)
+                return false;
+
+            for (int i = 0; i < this.m_Distances.Length; i++)
+            {
+                Distance dThis = this.m_Distances[i];
+                Distance dThat = that.m_Distances[i];
+
+                if (!dThis.IsIdentical(dThat))
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>

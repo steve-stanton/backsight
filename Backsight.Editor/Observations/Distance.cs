@@ -412,10 +412,27 @@ namespace Backsight.Editor.Observations
         /// <param name="that">The distance to compare with.</param>
         /// <returns>True if the distance values are the same, and the distances are
         /// either both fixed or both floating</returns>
+        /// <seealso cref="IsIdentical"/>
         public bool Equals(Distance that) // IEquatable<Distance>
         {
             return (this.IsFixed == that.IsFixed &&
                     Math.Abs(this.Meters - that.Meters) < Constants.TINY);
+        }
+
+        /// <summary>
+        /// Is this <see cref="Distance"/> identical to the supplied one (the distance involved (including
+        /// it's units), and attributes to say the distance is fixed, and annotation flipped).
+        /// </summary>
+        /// <param name="that">The distance to compare with</param>
+        /// <returns>True if the supplied distance is identical</returns>
+        /// <remarks>This should really be done by <see cref="Equals"/>, but I'm not confident that
+        /// it's usage is consistent with a more thorough equality test.</remarks>
+        internal bool IsIdentical(Distance that)
+        {
+            return (this.m_IsFixed == that.m_IsFixed &&
+                    this.m_EnteredUnit == that.m_EnteredUnit &&
+                    this.IsAnnotationFlipped == that.IsAnnotationFlipped &&
+                    Math.Abs(this.m_ObservedMetric - that.m_ObservedMetric) < Constants.TINY);
         }
 
         /// <summary>
