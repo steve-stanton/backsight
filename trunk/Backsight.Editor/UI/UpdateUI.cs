@@ -71,9 +71,9 @@ namespace Backsight.Editor.UI
         Operation m_Problem;
 
         /// <summary>
-        /// The change recorded on the last call to <see cref="AddUpdate"/>.
+        /// The changes recorded on calls to <see cref="AddUpdate"/> since the last update.
         /// </summary>
-        RevisedEdit m_LastRevision;
+        RevisedEdit[] m_Revisions;
 
         /// <summary>
         /// Info about the current feature that's selected for update.
@@ -498,8 +498,22 @@ namespace Backsight.Editor.UI
                 return false;
             }
 
-            // Remember the revision that will be applied by ApplyUpdate
-            m_LastRevision = new RevisedEdit(revisedEdit, changes);
+            // Remember the revision that will be applied by ApplyRevision. In the vast majority of cases,
+            // there should only be one revised edit per editing dialog. Currently, the only situation
+            // where more than one revision is involved is an update where both sides of a subdivided line
+            // get updated.
+
+            var rev = new RevisedEdit(revisedEdit, changes);
+            if (m_Revisions == null)
+            {
+                m_Revisions = new RevisedEdit[] { rev };
+            }
+            else
+            {
+                Array.Resize<RevisedEdit>(ref m_Revisions, m_Revisions.Length + 1);
+                m_Revisions[m_Revisions.Length - 1] = rev;
+            }
+
             return true;
         }
 
@@ -511,7 +525,7 @@ namespace Backsight.Editor.UI
         internal bool FinishCommand(CommandUI cmd)
         {
             // A prior call to AddUpdate should have been made
-            if (m_LastRevision == null)
+            if (m_Revisions == null || m_Revisions.Length == 0)
                 throw new InvalidOperationException("UpdateUI.FinishCommand - revised edit not available");
 
         	// Delete the command.
@@ -527,7 +541,7 @@ namespace Backsight.Editor.UI
                 Run(m_SelectedFeature);
 
 	        // Propagate the change (breaking if an operation can no longer be calculated, which assigns m_Problem)
-            ApplyLastRevision();
+            ApplyRevision();
 
 	        // Ensure info window is shown
 	        m_Info.OnFinishUpdate(m_Problem);
@@ -538,9 +552,9 @@ namespace Backsight.Editor.UI
         }
 
         /// <summary>
-        /// Applies the last revision (as noted on a prior call to <see cref="AddUpdate"/>).
+        /// Applies a revised edit (as noted on a prior call to <see cref="AddUpdate"/>).
         /// </summary>
-        void ApplyLastRevision()
+        void ApplyRevision()
         {
             UpdateOperation uop;
 
@@ -549,7 +563,7 @@ namespace Backsight.Editor.UI
 
             if (m_CurrentUpdate == null)
             {
-                uop = new UpdateOperation(new RevisedEdit[] { m_LastRevision });
+                uop = new UpdateOperation(m_Revisions);
                 m_CurrentUpdate = new UpdateEditingContext(uop);
             }
             else
@@ -559,8 +573,11 @@ namespace Backsight.Editor.UI
 
                 // Include the latest revision
                 uop = m_CurrentUpdate.UpdateSource;
-                uop.AddRevisedEdit(m_LastRevision);
+                foreach (RevisedEdit rev in m_Revisions)
+                    uop.AddRevisedEdit(rev);
             }
+
+            m_Revisions = null;
 
             try
             {

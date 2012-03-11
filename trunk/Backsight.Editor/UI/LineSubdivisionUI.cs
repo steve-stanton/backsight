@@ -175,8 +175,6 @@ namespace Backsight.Editor.UI
             if (m_Dialog==null && m_UpDial==null)
                 throw new Exception("LineSubdivisionUI.DialFinish - No dialog!");
 
-            // If we are doing an update, alter the original operation.
-            //ISpatialDisplay view = ActiveDisplay;
             UpdateUI up = this.Update;
 
             if (up!=null)
@@ -189,11 +187,32 @@ namespace Backsight.Editor.UI
                     return false;
                 }
 
-                // Remember the changes as part of the UI object (the original edit remains
-                // unchanged for now)
-                UpdateItemCollection changes = m_UpDial.GetUpdateItems();
-                if (!up.AddUpdate(pop, changes))
-                    return false;
+                // Ensure we've got the edit for the primary face
+                if (!pop.IsPrimaryFace)
+                {
+                    pop = pop.OtherSide;
+                    Debug.Assert(pop != null);
+                    Debug.Assert(pop.IsPrimaryFace);
+                }
+
+                // Package up any changes to the primary face
+                UpdateItemCollection changes = pop.GetUpdateItems(m_UpDial.WorkingFace1);
+                if (changes.Count > 0)
+                    up.AddUpdate(pop, changes);
+
+                // If a second face has just been defined, append a new edit.
+                LineSubdivisionFace face2 = m_UpDial.WorkingFace2;
+                if (face2 != null)
+                {
+                    if (pop.OtherSide == null)
+                        AddOtherSide(pop, face2);
+                    else
+                    {
+                        changes = pop.OtherSide.GetUpdateItems(face2);
+                        if (changes.Count > 0)
+                            up.AddUpdate(pop.OtherSide, changes);
+                    }
+                }
             }
             else
             {
@@ -209,6 +228,27 @@ namespace Backsight.Editor.UI
 
         	// Get the base class to finish up.
 	        return FinishCommand();
+        }
+
+        /// <summary>
+        /// Saves a new edit that defines an alternate face for a previously subdivided line.
+        /// </summary>
+        /// <param name="firstSide">The edit that initially subdivided the line.</param>
+        /// <param name="altFace">The definition of the alternate face</param>
+        void AddOtherSide(LineSubdivisionOperation firstSide, LineSubdivisionFace altFace)
+        {
+            try
+            {
+                LineSubdivisionOperation op = new LineSubdivisionOperation(firstSide.Parent, altFace.ObservedLengths, altFace.IsEntryFromEnd);
+                op.OtherSide = firstSide;
+                op.Execute();
+                firstSide.OtherSide = op;
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace, ex.Message);
+            }
         }
     }
 }

@@ -41,12 +41,13 @@ namespace Backsight.Editor.Forms
         readonly UpdateUI m_UpdCmd;
 
         /// <summary>
-        /// The line that is currently selected (if defined, it should be one of the lines in m_CurrentFace)
+        /// The line that is currently selected (if defined, it should be one of the transient
+        /// lines in m_CurrentFace).
         /// </summary>
         LineFeature m_SelectedLine;
 
         /// <summary>
-        /// The line subdivision involved.
+        /// The line subdivision involved (always relates to the primary face)
         /// </summary>
         LineSubdivisionOperation m_pop;
 
@@ -56,7 +57,7 @@ namespace Backsight.Editor.Forms
         LineSubdivisionFace m_Face1;
 
         /// <summary>
-        /// The working copy of the alternate face (if there is one)
+        /// The working copy of the alternate face (if there is one).
         /// </summary>
         LineSubdivisionFace m_Face2;
 
@@ -110,41 +111,39 @@ namespace Backsight.Editor.Forms
             if (feat == null)
                 throw new InvalidOperationException("Unexpected update object");
 
-            // If it's a line, remember it.
-            m_SelectedLine = (feat as LineFeature);
+            // Get the edit that created the primary face
             m_pop = (feat.Creator as LineSubdivisionOperation);
             Debug.Assert(m_pop != null);
 
+            if (!m_pop.IsPrimaryFace)
+            {
+                m_pop = m_pop.OtherSide;
+                Debug.Assert(m_pop != null);
+                Debug.Assert(m_pop.IsPrimaryFace);
+            }
+
             // Grab something we throw away if the user decides to cancel
-            m_Face1 = CreateWorkingFace(m_pop.PrimaryFace);
-            m_Face2 = CreateWorkingFace(m_pop.AlternateFace);
+            m_Face1 = CreateWorkingFace(m_pop.Face);
+            m_Face2 = (m_pop.OtherSide == null ? null : CreateWorkingFace(m_pop.OtherSide.Face));
 
             // If we have two faces, the "New Face" button means you want to switch to the other face.
             if (m_Face2 != null)
                 newFaceButton.Text = "&Other Face";
 
-            // Default to the working initially with the primary face (which must always exist)
-            m_CurrentFace = m_Face1;
+            // Default to the face containing the initially selected feature
+            m_CurrentFace = (feat.Creator == m_pop ? m_Face1 : m_Face2);
 
             // If a line was selected, remember where it is in our working copy (and if it's actually on
             // the alternate face, make that the initial face for editing).
+            m_SelectedLine = null;
             LineFeature selectedLine = (feat as LineFeature);
             if (selectedLine != null)
             {
-                int lineIndex = Array.FindIndex<LineFeature>(m_pop.PrimaryFace.Sections, t => t == selectedLine);
+                LineFeature[] sections = (m_CurrentFace == m_Face1 ? m_pop.Face.Sections : m_pop.OtherSide.Face.Sections);
+                int lineIndex = Array.FindIndex<LineFeature>(sections, t => t == selectedLine);
+
                 if (lineIndex >= 0)
-                {
-                    m_SelectedLine = m_Face1.Sections[lineIndex];
-                }
-                else if (m_pop.AlternateFace != null)
-                {
-                    lineIndex = Array.FindIndex<LineFeature>(m_pop.AlternateFace.Sections, t => t == selectedLine);
-                    if (lineIndex >= 0)
-                    {
-                        m_CurrentFace = m_Face2;
-                        m_SelectedLine = m_Face2.Sections[lineIndex];
-                    }
-                }
+                    m_SelectedLine = m_CurrentFace.Sections[lineIndex];
             }
 
             // Disable the option to flip annotation if annotation is currently invisible
@@ -367,7 +366,7 @@ namespace Backsight.Editor.Forms
             // not in spatial index).
             FeatureFactory ff = new ThrowawayFeatureFactory(m_pop);
             ff.LineType = m_pop.Parent.EntityType;
-            face.CreateSections(m_pop.Parent, ff);
+            face.CreateSections(m_pop.Parent, ff, false);
 
             // And calculate initial geometry
             face.CalculateGeometry(m_pop.Parent, null);
@@ -391,12 +390,19 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// Obtains update items for each revised section.
+        /// The working copy of the primary face
         /// </summary>
-        /// <returns>The items representing the change.</returns>
-        internal UpdateItemCollection GetUpdateItems()
+        internal LineSubdivisionFace WorkingFace1
         {
-            return m_pop.GetUpdateItems(m_Face1, m_Face2);
+            get { return m_Face1; }
+        }
+
+        /// <summary>
+        /// The working copy of the alternate face (if there is one).
+        /// </summary>
+        internal LineSubdivisionFace WorkingFace2
+        {
+            get { return m_Face2; }
         }
     }
 }

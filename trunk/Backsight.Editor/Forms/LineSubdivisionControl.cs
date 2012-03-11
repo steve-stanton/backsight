@@ -79,7 +79,7 @@ namespace Backsight.Editor.Forms
 
             if (op!=null)
             {
-                LineFeature[] sections = op.PrimaryFace.Sections;
+                LineFeature[] sections = op.Face.Sections;
                 m_Distances = new List<Distance>(sections.Length);
                 foreach (LineFeature s in sections)
                     m_Distances.Add(new Distance(s.ObservedLength));

@@ -150,7 +150,7 @@
             // chainsRadioButton
             // 
             this.chainsRadioButton.AutoSize = true;
-            this.chainsRadioButton.Location = new System.Drawing.Point(173, 22);
+            this.chainsRadioButton.Location = new System.Drawing.Point(213, 22);
             this.chainsRadioButton.Name = "chainsRadioButton";
             this.chainsRadioButton.Size = new System.Drawing.Size(67, 20);
             this.chainsRadioButton.TabIndex = 2;
@@ -162,7 +162,7 @@
             // feetRadioButton
             // 
             this.feetRadioButton.AutoSize = true;
-            this.feetRadioButton.Location = new System.Drawing.Point(102, 22);
+            this.feetRadioButton.Location = new System.Drawing.Point(130, 22);
             this.feetRadioButton.Name = "feetRadioButton";
             this.feetRadioButton.Size = new System.Drawing.Size(53, 20);
             this.feetRadioButton.TabIndex = 1;
@@ -174,7 +174,7 @@
             // metersRadioButton
             // 
             this.metersRadioButton.AutoSize = true;
-            this.metersRadioButton.Location = new System.Drawing.Point(20, 22);
+            this.metersRadioButton.Location = new System.Drawing.Point(32, 22);
             this.metersRadioButton.Name = "metersRadioButton";
             this.metersRadioButton.Size = new System.Drawing.Size(67, 20);
             this.metersRadioButton.TabIndex = 0;
