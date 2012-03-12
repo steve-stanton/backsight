@@ -123,8 +123,8 @@ namespace Backsight.Editor.Forms
             }
 
             // Grab something we throw away if the user decides to cancel
-            m_Face1 = CreateWorkingFace(m_pop.Face);
-            m_Face2 = (m_pop.OtherSide == null ? null : CreateWorkingFace(m_pop.OtherSide.Face));
+            m_Face1 = CreateWorkingFace(m_pop.Face, true);
+            m_Face2 = (m_pop.OtherSide == null ? null : CreateWorkingFace(m_pop.OtherSide.Face, false));
 
             // If we have two faces, the "New Face" button means you want to switch to the other face.
             if (m_Face2 != null)
@@ -319,7 +319,7 @@ namespace Backsight.Editor.Forms
 
                         // Create the new face (for use in preview only)
                         m_Face2 = new LineSubdivisionFace(dists, m_Face1.IsEntryFromEnd);
-                        InitializeWorkingFace(m_Face2);
+                        InitializeWorkingFace(m_Face2, false);
 
                         newFaceButton.Text = "&Other Face";
                     }
@@ -345,8 +345,9 @@ namespace Backsight.Editor.Forms
         /// Creates a working copy of an existing face.
         /// </summary>
         /// <param name="face">The face to copy</param>
+        /// <param name="isPrimaryFace">Is the specified face the primary face?</param>
         /// <returns>The working copy</returns>
-        LineSubdivisionFace CreateWorkingFace(LineSubdivisionFace face)
+        LineSubdivisionFace CreateWorkingFace(LineSubdivisionFace face, bool isPrimaryFace)
         {
             if (face == null)
                 return null;
@@ -356,17 +357,22 @@ namespace Backsight.Editor.Forms
             LineSubdivisionFace result = new LineSubdivisionFace(distances, face.IsEntryFromEnd);
 
             // Create sections and calculate geometry
-            InitializeWorkingFace(result);
+            InitializeWorkingFace(result, isPrimaryFace);
             return result;
         }
 
-        void InitializeWorkingFace(LineSubdivisionFace face)
+        /// <summary>
+        /// Initialize the sections for a working copy of a subdivision face.
+        /// </summary>
+        /// <param name="face">A transient face to create sections for</param>
+        /// <param name="isPrimaryFace">Is the specified face the primary face?</param>
+        void InitializeWorkingFace(LineSubdivisionFace face, bool isPrimaryFace)
         {
             // Create throwaway line sections (without any feature IDs, not associated with any session,
             // not in spatial index).
             FeatureFactory ff = new ThrowawayFeatureFactory(m_pop);
             ff.LineType = m_pop.Parent.EntityType;
-            face.CreateSections(m_pop.Parent, ff, false);
+            face.CreateSections(m_pop.Parent, ff, isPrimaryFace);
 
             // And calculate initial geometry
             face.CalculateGeometry(m_pop.Parent, null);

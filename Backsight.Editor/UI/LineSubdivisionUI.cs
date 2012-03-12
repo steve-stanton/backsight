@@ -176,6 +176,7 @@ namespace Backsight.Editor.UI
                 throw new Exception("LineSubdivisionUI.DialFinish - No dialog!");
 
             UpdateUI up = this.Update;
+            bool doAbort = false;
 
             if (up!=null)
             {
@@ -213,6 +214,11 @@ namespace Backsight.Editor.UI
                             up.AddUpdate(pop.OtherSide, changes);
                     }
                 }
+
+                // If all we've done is add a new face, UpdateUI.AddUpdate wouldn't have been
+                // called, which will later lead to an exception from UpdateUI.FinishCommand (via
+                // the FinishCommand done below). So remember to abort in that case.
+                doAbort = (up.HasRevisions == false);
             }
             else
             {
@@ -227,7 +233,10 @@ namespace Backsight.Editor.UI
             KillDialogs();
 
         	// Get the base class to finish up.
-	        return FinishCommand();
+            if (doAbort)
+                return AbortCommand();
+            else
+	            return FinishCommand();
         }
 
         /// <summary>

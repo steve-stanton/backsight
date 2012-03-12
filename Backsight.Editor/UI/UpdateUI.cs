@@ -480,6 +480,14 @@ namespace Backsight.Editor.UI
         }
 
         /// <summary>
+        /// Have any revised edits been recorded via a call to <see cref="AddUpdate"/>
+        /// </summary>
+        internal bool HasRevisions
+        {
+            get { return (m_Revisions != null && m_Revisions.Length > 0); }
+        }
+
+        /// <summary>
         /// Remembers details for an updated edit.
         /// </summary>
         /// <param name="revisedEdit">The edit that is being revised</param>
@@ -525,7 +533,7 @@ namespace Backsight.Editor.UI
         internal bool FinishCommand(CommandUI cmd)
         {
             // A prior call to AddUpdate should have been made
-            if (m_Revisions == null || m_Revisions.Length == 0)
+            if (HasRevisions == false)
                 throw new InvalidOperationException("UpdateUI.FinishCommand - revised edit not available");
 
         	// Delete the command.
