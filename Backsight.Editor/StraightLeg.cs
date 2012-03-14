@@ -137,6 +137,10 @@ namespace Backsight.Editor
                     bearing += (m_StartAngle - Math.PI);
             }
 
+            // Just return if there aren't any spans (avoids returning pos as null)
+            if (this.Count == 0)
+                return;
+
             // Create a straight span
             StraightSpan span = new StraightSpan(this, pos, bearing, sfac);
 
