@@ -298,20 +298,6 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Draws a previously saved path.
-        /// </summary>
-        /// <param name="preview">True if the path should be drawn in preview 
-        /// mode (i.e. in the normal construction colour, with miss-connects
-        /// shown as dotted lines).</param>
-        /*
-        void Draw(bool preview)
-        {
-            foreach (Leg leg in m_Legs)
-                leg.Draw(preview);
-        }
-        */
-
-        /// <summary>
         /// Executes this operation.
         /// </summary>
         internal void Execute()
@@ -568,7 +554,7 @@ void CePath::DrawAngles	( const CePoint* const pFrom
         /// <param name="feature">The feature to find.</param>
         /// <returns>The leg that created the feature (or null if the leg
         /// could not be found).</returns>
-        Leg GetLeg(Feature feature)
+        internal Leg GetLeg(Feature feature)
         {
             foreach (Leg leg in m_Legs)
             {
@@ -937,7 +923,7 @@ void CePath::CreateAngleText ( CPtrList& text
                 return null;
 
             // Make an extra leg with the specified distances.
-            ExtraLeg newLeg = new ExtraLeg(this, after, dists);
+            ExtraLeg newLeg = new ExtraLeg(after, dists);
 
             // Create features for the extra leg.
             newLeg.MakeFeatures(this);

@@ -755,8 +755,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         */
 
         /// <summary>
-        /// The central angle for this leg (assuming the
-        /// <see cref="IsCulDeSac"/> property is true)
+        /// The central angle for this leg (assuming the <see cref="IsCulDeSac"/> property is true)
         /// </summary>
         internal double CentralAngle
         {
@@ -823,7 +822,7 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         /// Records the radius of this leg.
         /// </summary>
         /// <param name="radius">The radius to assign.</param>
-        void SetRadius(Distance radius)
+        internal void SetRadius(Distance radius)
         {
             m_Radius = radius;
         }

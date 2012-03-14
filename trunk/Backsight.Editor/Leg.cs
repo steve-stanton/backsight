@@ -199,7 +199,6 @@ namespace Backsight.Editor
                 else
                     return NumSpan;
             }
-            //get { return m_Distances.Length; }
         }
 
         public bool HasEndPoint(int index)
@@ -245,7 +244,7 @@ namespace Backsight.Editor
         /// Does this leg contain a staggered face (with distances on both sides of the
         /// underlying line)?
         /// </summary>
-        bool IsStaggered
+        internal bool IsStaggered
         {
             get { return (m_FaceNumber != 0); }
         }
@@ -795,7 +794,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// </summary>
         /// <param name="feat">The feature to look for.</param>
         /// <returns>The index of the feature (-1 if not found).</returns>
-        int GetIndex(Feature feat)
+        internal int GetIndex(Feature feat)
         {
             for (int i=0; i<m_Spans.Length; i++)
             {

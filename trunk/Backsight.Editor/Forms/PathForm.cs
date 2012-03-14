@@ -20,6 +20,7 @@ using System.Drawing;
 
 using Backsight.Editor.Operations;
 using Backsight.Editor.UI;
+using Backsight.Editor.Properties;
 
 namespace Backsight.Editor.Forms
 {
@@ -97,6 +98,7 @@ namespace Backsight.Editor.Forms
             m_Command = command;
             m_From = from;
             m_To = to;
+            previewLabel.Text = String.Empty;
 
             SetZeroValues();
         }
@@ -149,6 +151,8 @@ namespace Backsight.Editor.Forms
                 m_Focus = toTextBox;
                 OnSelectPoint(m_To);
             }
+
+            //autoPreviewCheckBox.Checked = Settings.Default.AutoPreviewPath;
         }
 
         /// <summary>
@@ -479,14 +483,14 @@ namespace Backsight.Editor.Forms
             // Put focus back in the data entry box
             pathTextBox.Focus();
         }
-
+        /*
         private void previewButton_Click(object sender, EventArgs e)
         {
             // If the entered path parses ok, do the adjustment
             if (ParsePath())
                 Adjust();
         }
-
+        */
         private void endCurveButton_Click(object sender, EventArgs e)
         {
             // Stick an /EC at the end of the edit box.
@@ -495,6 +499,9 @@ namespace Backsight.Editor.Forms
 
         private void pathTextBox_TextChanged(object sender, EventArgs e)
         {
+            // Cancel any previous auto-preview
+            previewTimer.Stop();
+
             // If we previously had an adjustment dialog, cancel it.
             // This should also end up calling this->OnDestroyAdj
 
@@ -510,13 +517,21 @@ namespace Backsight.Editor.Forms
             // The preview button should be enabled only if there is
             // something defined for the path.
             CheckPreview();
+
+            //if (autoPreviewCheckBox.Checked)
+                previewTimer.Start();
         }
 
         void CheckPreview()
         {
-            previewButton.Enabled = (m_To != null &&
-                                     m_From != null &&
-                                     pathTextBox.Text.Trim().Length > 0);
+            /*
+            if (autoPreviewCheckBox.Checked)
+                previewButton.Enabled = false;
+            else
+                previewButton.Enabled = (m_To != null &&
+                                         m_From != null &&
+                                         pathTextBox.Text.Trim().Length > 0);
+             */
         }
 
         void NoPreview()
@@ -700,6 +715,61 @@ namespace Backsight.Editor.Forms
         {
             string s = p.FormattedKey;
             return (s.Length == 0 ? p.InternalId.ToString() : s);
+        }
+
+        private void previewTimer_Tick(object sender, EventArgs e)
+        {
+            // Stop the timer - the user has to make a further change to the entered path
+            // in order to rework the auto-preview
+            previewTimer.Stop();
+            okButton.Enabled = false;
+
+            // If there's any problem working out the preview, we won't draw the path
+            m_DrawPath = false;
+
+            try
+            {
+                // Don't use ParsePath, as that may display a message box
+                string str = GetEnteredPath();
+                m_Items = PathParser.GetPathItems(str, EditingController.Current.EntryUnit);
+
+                if (m_Items.Length > 0)
+                {
+                    Leg[] legs = PathParser.CreateLegs(m_Items);
+                    m_PathData = new PathInfo(m_From, m_To, legs);
+
+                    double prec = m_PathData.Precision;
+                    if (Math.Abs(prec) < MathConstants.TINY)
+                        previewLabel.Text = "Exact fit";
+                    else
+                        previewLabel.Text = String.Format("1:{0}", (uint)prec);
+                    
+                    m_DrawPath = true;
+                    m_Command.ErasePainting();
+
+                    okButton.Enabled = true;
+                }
+            }
+
+            catch
+            {
+                // Indicate that the path cannot be parsed
+                previewLabel.Text = "Cannot generate preview";
+            }
+        }
+
+        private void autoPreviewCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+         /* 
+            CheckPreview();
+            Settings.Default.AutoPreviewPath = autoPreviewCheckBox.Checked;
+            Settings.Default.Save();
+          */
+        }
+
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            Save();
         }
     }
 }

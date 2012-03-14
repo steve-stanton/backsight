@@ -281,7 +281,7 @@ namespace Backsight.Editor.Forms
             angleTextBox.Text = RadianValue.AsShortString(m_Radians);
         }
 
-        double SignedAngle
+        internal double SignedAngle
         {
             get
             {

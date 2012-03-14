@@ -21,7 +21,7 @@ using Backsight.Editor.Observations;
 
 namespace Backsight.Editor.Forms
 {
-    /// <written by="Steve Stanton" was="CdAngle"/>
+    /// <written by="Steve Stanton" was="CdCurve"/>
     /// <summary>
     /// Dialog for new users who aren't familiar with how to specify circular arcs as
     /// part of the dialog for creating a new connection path.
