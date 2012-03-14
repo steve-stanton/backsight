@@ -22,6 +22,7 @@ namespace Backsight.Editor.Forms
     /// <summary>
     /// Dialog for showing the results of the adjustment performed for a connection path.
     /// </summary>
+    /// <remarks>Not currently used (formerly displayed from <see cref="PathForm"/>)</remarks>
     partial class AdjustmentForm : Form
     {
         #region Class data

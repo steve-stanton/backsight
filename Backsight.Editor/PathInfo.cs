@@ -62,6 +62,11 @@ namespace Backsight.Editor
         /// </summary>
         double m_ScaleFactor;
 
+        /// <summary>
+        /// The precision denominator (0 for a perfect match).
+        /// </summary>
+        double m_Precision;
+
         #endregion
 
         #region Constructors
@@ -98,6 +103,7 @@ namespace Backsight.Editor
             m_IsAdjusted = false;
             m_Rotation = 0.0;
             m_ScaleFactor = 0.0;
+            m_Precision = 0.0;
         }
 
         #endregion
@@ -253,6 +259,7 @@ namespace Backsight.Editor
             m_IsAdjusted = true;
             m_Rotation = rotation;
             m_ScaleFactor = sfac;
+            m_Precision = precision;
 
             return true;
         }
@@ -278,6 +285,18 @@ namespace Backsight.Editor
             {
                 EnsureAdjusted();
                 return m_ScaleFactor;
+            }
+        }
+
+        /// <summary>
+        /// The precision denominator (0 for a perfect match).
+        /// </summary>
+        internal double Precision
+        {
+            get
+            {
+                EnsureAdjusted();
+                return m_Precision;
             }
         }
     }

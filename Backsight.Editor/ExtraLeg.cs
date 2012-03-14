@@ -31,11 +31,6 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The editing operation that contains this leg.
-        /// </summary>
-        PathOperation m_Parent;
-
-        /// <summary>
         /// The leg that this extra leg coincides with.
         /// </summary>
         Leg m_Base;
@@ -46,14 +41,12 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Creates a new <c>ExtraLeg</c>
-        /// <param name="parent">The editing operation that contains this leg.</param>
         /// <param name="baseLeg">The leg this one is based on.</param>
         /// <param name="dists">The observed distances for this leg.</param>
         /// </summary>
-        internal ExtraLeg(PathOperation parent, Leg baseLeg, Distance[] dists)
+        internal ExtraLeg(Leg baseLeg, Distance[] dists)
             : base(dists.Length)
         {
-            m_Parent = parent;
             m_Base = baseLeg;
             
             // Hold the distance observations in the base class.
