@@ -1330,5 +1330,13 @@ namespace Backsight.Editor
 
             return m_DataServer;
         }
+
+        /// <summary>
+        /// The main screen (largely comprised of a control for displaying the current map model).
+        /// </summary>
+        internal Form MainForm
+        {
+            get { return m_Main; }
+        }
     }
 }

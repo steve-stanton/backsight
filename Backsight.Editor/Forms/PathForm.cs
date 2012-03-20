@@ -743,7 +743,7 @@ namespace Backsight.Editor.Forms
                         previewLabel.Text = "Exact fit";
                     else
                         previewLabel.Text = String.Format("1:{0}", (uint)prec);
-                    
+
                     m_DrawPath = true;
                     m_Command.ErasePainting();
 
@@ -751,9 +751,16 @@ namespace Backsight.Editor.Forms
                 }
             }
 
-            catch
+            // Indicate that the path cannot be parsed (in the case of an ApplicationException, assume
+            // the exception message is informational).
+
+            catch (ApplicationException ae)
             {
-                // Indicate that the path cannot be parsed
+                previewLabel.Text = ae.Message;
+            }
+
+            catch (Exception)
+            {
                 previewLabel.Text = "Cannot generate preview";
             }
         }

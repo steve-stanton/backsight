@@ -152,12 +152,12 @@ namespace Backsight.Editor
             else
             {
                 // The field after the BC HAS to be an angle.
-                throw new Exception("Angle does not follow BC");
+                throw new ApplicationException("Angle does not follow BC");
             }
 
             // Must be followed by radius.
             if (items[nexti].ItemType != PathItemType.Radius)
-                throw new Exception("Radius does not follow angle");
+                throw new ApplicationException("Radius does not follow angle");
 
             // Get the radius
             Distance radius = items[nexti].GetDistance();
@@ -435,7 +435,7 @@ namespace Backsight.Editor
                 }
 
                 string msg = String.Format("Unexpected qualifier '{0}'", str);
-                throw new Exception(msg);
+                throw new ApplicationException(msg);
             }
 
             // If we have a multiplier, it must be immediately followed
@@ -444,7 +444,7 @@ namespace Backsight.Editor
             if (str[0] == '*')
             {
                 if (nc == 1)
-                    throw new Exception("Unexpected '*' character");
+                    throw new ApplicationException("Unexpected '*' character");
 
                 // Pick up the repeat count (not sure if the digits need to be
                 // followed by white space, or whether non-numeric digits are valid,
@@ -456,13 +456,13 @@ namespace Backsight.Editor
                 if (!Int32.TryParse(num, out repeat) || repeat < 2)
                 {
                     string msg = String.Format("Unexpected repeat count in '{0}'", str);
-                    throw new Exception(msg);
+                    throw new ApplicationException(msg);
                 }
 
                 if (repeat < 2)
                 {
                     string msg = String.Format("Unexpected repeat count in '{0}'", str);
-                    throw new Exception(msg);
+                    throw new ApplicationException(msg);
                 }
 
                 // Duplicate the last item using the repeat count.
@@ -531,7 +531,7 @@ namespace Backsight.Editor
 
                 // Bad angle.
                 string msg = String.Format("Malformed angle '{0}'", str);
-                throw new Exception(msg);
+                throw new ApplicationException(msg);
             }
             else
             {
@@ -544,7 +544,7 @@ namespace Backsight.Editor
                 if (!Double.TryParse(num, out val))
                 {
                     string msg = String.Format("Malformed value '{0}'", str);
-                    throw new Exception(msg);
+                    throw new ApplicationException(msg);
                 }
 
                 // If we didn't get right to the end, we may have distance units,
@@ -555,7 +555,7 @@ namespace Backsight.Editor
                     if (unit == null)
                     {
                         string msg = String.Format("Malformed value '{0}'", str);
-                        throw new Exception(msg);
+                        throw new ApplicationException(msg);
                     }
                 }
 
@@ -604,7 +604,7 @@ namespace Backsight.Editor
                 if (match == null)
                 {
                     string msg = String.Format("No units with abbreviation '{0}'", abbrev);
-                    throw new Exception(msg);
+                    throw new ApplicationException(msg);
                 }
 
                 // If the units should be made the new default, do it so
@@ -717,12 +717,12 @@ namespace Backsight.Editor
                             // after the BC (enough for an angle, a radius, and an EC).
 
                             if (curve)
-                                throw new Exception("Nested curve detected");
+                                throw new ApplicationException("Nested curve detected");
 
                             curve = true;
 
                             if ((ibc + 4) > m_Items.Count)
-                                throw new Exception("BC not followed by angle, radius, and EC");
+                                throw new ApplicationException("BC not followed by angle, radius, and EC");
 
                             ibc = i;
                             break;
@@ -733,7 +733,7 @@ namespace Backsight.Editor
                             // If we have an EC, confirm that we were in a curve.
 
                             if (!curve)
-                                throw new Exception("EC was not preceded by BC");
+                                throw new ApplicationException("EC was not preceded by BC");
 
                             curve = false;
                             break;
@@ -748,7 +748,7 @@ namespace Backsight.Editor
 
                             // All values must point to the data entry units.
                             if (item.Units==null)
-                                throw new Exception("Value has no unit of measurement");
+                                throw new ApplicationException("Value has no unit of measurement");
 
                             if (!curve)
                                 item.ItemType = PathItemType.Distance;
@@ -794,23 +794,23 @@ namespace Backsight.Editor
                             {
                                 // Can't have deflections inside a curve.
                                 if (item.ItemType == PathItemType.Deflection)
-                                    throw new Exception("Deflection not allowed within curve definition");
+                                    throw new ApplicationException("Deflection not allowed within curve definition");
 
                                 if (i == (ibc + 1))
                                     item.ItemType = PathItemType.BcAngle;
                                 else if (i == (ibc + 2))
                                     item.ItemType = PathItemType.EcAngle;
                                 else
-                                    throw new Exception("Extraneous angle inside curve definition");
+                                    throw new ApplicationException("Extraneous angle inside curve definition");
                             }
                             else
                             {
                                 if (i > 0 && m_Items[i-1].ItemType == PathItemType.Angle)
-                                    throw new Exception("More than 1 angle at the end of a straight");
+                                    throw new ApplicationException("More than 1 angle at the end of a straight");
 
                                 // Also, it makes no sense to have an angle right after an EC.
                                 if (i > 0 && m_Items[i - 1].ItemType == PathItemType.EC)
-                                    throw new Exception("Angle after EC makes no sense");
+                                    throw new ApplicationException("Angle after EC makes no sense");
                             }
 
                             break;
@@ -829,10 +829,10 @@ namespace Backsight.Editor
                             // In other words, it can come at ibc+3 through ibc+5.
 
                             if (!curve)
-                                throw new Exception("Extraneous '/' character");
+                                throw new ApplicationException("Extraneous '/' character");
 
                             if (i < ibc + 3 || i > ibc + 5)
-                                throw new Exception("Misplaced '/' character");
+                                throw new ApplicationException("Misplaced '/' character");
 
                             break;
                         }
@@ -843,10 +843,10 @@ namespace Backsight.Editor
                             // a specific range of valid positions with respect to the BC.
 
                             if (!curve)
-                                throw new Exception("Counter-clockwise indicator detected outside curve definition");
+                                throw new ApplicationException("Counter-clockwise indicator detected outside curve definition");
 
                             if (i < ibc + 3 || i > ibc + 4)
-                                throw new Exception("Misplaced 'cc' characters");
+                                throw new ApplicationException("Misplaced 'cc' characters");
 
                             break;
                         }
@@ -857,10 +857,10 @@ namespace Backsight.Editor
                             // and must be immediately after the BC.
 
                             if (!curve)
-                                throw new Exception("Central angle detected outside curve definition");
+                                throw new ApplicationException("Central angle detected outside curve definition");
 
                             if (i != ibc + 1)
-                                throw new Exception("Central angle does not follow immediately after BC");
+                                throw new ApplicationException("Central angle does not follow immediately after BC");
 
                             break;
                         }
@@ -871,7 +871,7 @@ namespace Backsight.Editor
                             // Miss-connections & omit points must always follow on from a PAT_DISTANCE.
 
                             if (i == 0 || m_Items[i - 1].ItemType != PathItemType.Distance)
-                                throw new Exception("Miss-Connect or Omit-Point is not preceded by a distance");
+                                throw new ApplicationException("Miss-Connect or Omit-Point is not preceded by a distance");
 
                             break;
                         }
@@ -899,7 +899,7 @@ namespace Backsight.Editor
 
             // Error if we got to the end, and any curve was not closed.
             if (curve)
-                throw new Exception("Circular arc does not have an EC");
+                throw new ApplicationException("Circular arc does not have an EC");
         }
 
         /// <summary>
@@ -936,7 +936,7 @@ namespace Backsight.Editor
         {
             // Confirm that we have something to repeat.
             if (m_Items.Count == 0)
-                throw new Exception("Nothing to repeat");
+                throw new ApplicationException("Nothing to repeat");
 
             // If the last item was a PAT_MC, get to the value before that.
             int prev = m_Items.Count - 1;
@@ -949,7 +949,7 @@ namespace Backsight.Editor
 
             // It can only be a PAT_VALUE.
             if (type != PathItemType.Value)
-                throw new Exception("Unexpected repeat multiplier");
+                throw new ApplicationException("Unexpected repeat multiplier");
 
             // Make copies of the last value.
             for (int i = 1; i < repeat; i++)

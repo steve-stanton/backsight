@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -26,6 +27,9 @@ using Backsight.Forms;
 
 namespace Backsight.Editor.Forms
 {
+    /// <summary>
+    /// Dialog for updating a connection path.
+    /// </summary>
     partial class UpdatePathForm : Form
     {
         #region Class data
@@ -41,41 +45,19 @@ namespace Backsight.Editor.Forms
         readonly PathOperation m_pop;
 
         /// <summary>
-        /// The total number of legs.
-        /// </summary>
-        //int m_NumLeg; -- use NumLeg property
-
-        /// <summary>
-        /// Index of the current leg.
-        /// </summary>
-        int m_CurLeg;
-
-        /// <summary>
         /// Working copy of the legs in the connection path.
         /// </summary>
         readonly List<Leg> m_Legs;
 
         /// <summary>
-        /// The line that is currently selected.
+        /// Index of the current leg (points into m_Legs).
         /// </summary>
-        LineFeature m_SelectedLine; // was m_pSelArc
-
-        // Relating to the adjusted path ...
+        int m_CurLeg;
 
         /// <summary>
-        /// Current rotation.
+        /// The geometry for the spans on the current leg
         /// </summary>
-        double m_Rotation;
-
-        /// <summary>
-        /// Scale factor
-        /// </summary>
-        double m_ScaleFac;
-
-        /// <summary>
-        /// The current precision
-        /// </summary>
-	    uint m_Precision;
+        ILineGeometry[] m_LegSections;
 
         #endregion
 
@@ -89,6 +71,7 @@ namespace Backsight.Editor.Forms
         internal UpdatePathForm(UpdateUI update)
         {
             InitializeComponent();
+            Owner = EditingController.Current.MainForm;
 
             if (update == null)
                 throw new ArgumentNullException();
@@ -96,10 +79,6 @@ namespace Backsight.Editor.Forms
             m_UpdCmd = update;
 	        m_CurLeg = -1;
 	        m_pop = null;
-	        m_SelectedLine = null;
-	        m_ScaleFac = 0.0;
-	        m_Rotation = 0.0;
-	        m_Precision = 0;
 
             // Get the object that was selected for update.
             m_pop = (m_UpdCmd.GetOp() as PathOperation);
@@ -107,7 +86,7 @@ namespace Backsight.Editor.Forms
                 throw new ArgumentException("Cannot obtain original connection path for update");
 
             // Get a working copy of the connection path legs
-            // TODO - This may not be suitable in a situation where staggered legs have been created
+            // TODO - This will not be suitable in a situation where staggered legs have been created
             Leg[] legs = PathParser.CreateLegs(m_pop.EntryString, m_pop.EntryUnit);
             m_Legs = new List<Leg>(legs);
         }
@@ -128,8 +107,12 @@ namespace Backsight.Editor.Forms
             insBeforeRadioButton.Checked = true;
             brkBeforeRadioButton.Checked = true;
 
+            // Only let the user flip annotations if they're currently visible
+            flipDistButton.Enabled = EditingController.Current.AreLineAnnotationsDrawn;
+
             // Display the precision of the connection path.
-            ShowPrecision();
+            PathInfo p = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, m_Legs.ToArray());
+            ShowPrecision(p);
 
             // A feature on the connection path should have been selected - determine which leg it's part of
             Leg leg = null;
@@ -137,11 +120,12 @@ namespace Backsight.Editor.Forms
             if (f != null)
             {
                 leg = m_pop.GetLeg(f);
-                m_CurLeg = m_pop.GetLegIndex(leg);
+                int legIndex = m_pop.GetLegIndex(leg);
+                SetCurrentLeg(legIndex);
             }
 
             if (m_CurLeg < 0)
-                m_CurLeg = 0;
+                SetCurrentLeg(0);
 
             if (leg == null)
                 Refresh(-1);
@@ -164,8 +148,7 @@ namespace Backsight.Editor.Forms
                     else
                         leg.StartAngle = dial.SignedAngle;
 
-                    ShowPrecision();
-                    m_UpdCmd.ErasePainting();
+                    Rework();
                 }
             }
         }
@@ -182,43 +165,46 @@ namespace Backsight.Editor.Forms
                 MessageBox.Show("You cannot break a staggered leg.");
                 return;
             }
-            /*
 
-	// Get the address of the selected distance.
-    CeDistance* pDist = GetSel();
-	if ( !pDist ) {
-		AfxMessageBox("You must first select a distance from the list.");
-		return;
-	}
+            // Get the selected distance
+            Distance dist = GetSel();
+            if (dist == null)
+            {
+                MessageBox.Show("You must first select a distance from the list.");
+                return;
+            }
 
-	// Are we breaking before or after the currently selected distance?
-	CButton* pButton = (CButton*)GetDlgItem(IDC_BRK_BEFORE);
-	const LOGICAL isBefore = (pButton->GetCheck()==1);
+            // Are we breaking before or after the currently selected distance?
+            bool isBefore = brkBeforeRadioButton.Checked;
 
-	// You can't break at the very beginning or end of the leg.
-	INT4 index = pLeg->GetIndex(*pDist);
+            // You can't break at the very beginning or end of the leg.
+            int index = leg.GetIndex(dist);
+            if (isBefore && index == 0)
+            {
+                MessageBox.Show("You can't break at the very beginning of the leg.");
+                return;
+            }
 
-	if ( isBefore && index==0 ) {
-		AfxMessageBox("You can't break at the very beginning of the leg.");
-		return;
-	}
+            if (!isBefore && (index + 1) == leg.Count)
+            {
+                MessageBox.Show("You can't break at the very end of the leg.");
+                return;
+            }
 
-	if ( !isBefore && (index+1)==pLeg->GetCount() ) {
-		AfxMessageBox("You can't break at the very end of the leg.");
-		return;
-	}
+            // Break the leg.
+            if (!isBefore)
+                index++;
 
-	// Break the leg.
-	if ( !isBefore ) index++;
-	CeLeg* pNewLeg = pLeg->Break(*m_pop,index);
-	if ( !pNewLeg ) return;
+            Leg newLeg = leg.Break(index);
+            if (newLeg == null)
+                return;
 
-	// Make the new leg the current one, and select
-	// the very first distance.
-	m_NumLeg++;
-	m_CurLeg++;
-	Refresh(0);
-             */
+            // Make the new leg the current one, and select the very first distance.
+            int legIndex = m_Legs.IndexOf(leg);
+            Debug.Assert(legIndex >= 0);
+            m_Legs.Insert(legIndex+1, newLeg);
+            SetCurrentLeg(legIndex + 1);
+            Refresh(0);
         }
 
         private void curveButton_Click(object sender, EventArgs e)
@@ -236,8 +222,7 @@ namespace Backsight.Editor.Forms
                         leg.SetCentralAngle(dial.CentralAngle);
                         leg.SetRadius(dial.Radius);
                         leg.IsClockwise = dial.IsClockwise;
-                        ShowPrecision();
-                        m_UpdCmd.ErasePainting();
+                        Rework();
                     }
                 }
             }
@@ -251,8 +236,7 @@ namespace Backsight.Editor.Forms
                         leg.SetExitAngle(dial.ExitAngle);
                         leg.SetRadius(dial.Radius);
                         leg.IsClockwise = dial.IsClockwise;
-                        ShowPrecision();
-                        m_UpdCmd.ErasePainting();
+                        Rework();
                     }
                 }
             }
@@ -263,52 +247,56 @@ namespace Backsight.Editor.Forms
             Leg leg = CurrentLeg;
             if (leg == null)
                 return;
-            /*
-	// Get the address of the selected distance.
-	CeDistance* pDist = GetSel();
-	if ( !pDist ) {
-		AfxMessageBox("You must first select a distance from the list.");
-		return;
-	}
 
-	// Are we inserting before or after the currently selected distance?
-	CButton* pButton = (CButton*)GetDlgItem(IDC_INS_BEFORE);
-	const LOGICAL isBefore = (pButton->GetCheck()==1);
+            Distance dist = GetSel();
+            if (dist == null)
+            {
+                MessageBox.Show("You must first select a distance from the list.");
+                return;
+            }
 
-	// Display dialog for a new distance.
-	CdDist dial(0,FALSE);
-	if ( dial.DoModal()==IDOK ) {
+            // Are we inserting before or after the currently selected distance?
+            bool isBefore = insBeforeRadioButton.Checked;
+ 
+            // Get the user to specify a new distance.
+            using (var dial = new DistForm(dist, false))
+            {
+                if (dial.ShowDialog() == DialogResult.OK)
+                {
+                    // Insert the new distance into the current leg.
+                    Distance newDist = dial.Distance;
+                    int index = leg.Insert(newDist, dist, isBefore, true);
+                    Rework();
+                    Refresh(index);
+                }
+            }
+        }
 
-		// Erase the path.
-		m_pop->Erase(m_Rotation,m_ScaleFac);
+        /// <summary>
+        /// Recalculates the path after some sort of change, and erases painting so that it can
+        /// be redrawn in idle time.
+        /// </summary>
+        void Rework()
+        {
+            // Rework the geometry for the sections on the current leg
+            PathInfo path = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, m_Legs.ToArray());
+            m_LegSections = path.GetSections(m_CurLeg);
 
-		// Insert the new distance into the path.
-		//const LOGICAL wantLine = dial.WantLine();
-		const LOGICAL wantLine = TRUE;
-		const CeDistance& newdist = dial.GetDistance();
-		INT4 index = pLeg->Insert(newdist,*pDist,isBefore,wantLine);
+            ShowPrecision(path);
 
-		// Show the precision and draw the path.
-		ShowPrecision();
-		Paint();
-
-		// Fix up the list of distances in this dialog.
-		Refresh(index);
-
-	}
-             */
+            m_UpdCmd.ErasePainting();
         }
 
         private void nextButton_Click(object sender, EventArgs e)
         {
-            m_CurLeg++;
+            SetCurrentLeg(m_CurLeg + 1);
             if (m_CurLeg < NumLeg)
                 Refresh(0);
         }
 
         private void previousButton_Click(object sender, EventArgs e)
         {
-            m_CurLeg--;
+            SetCurrentLeg(m_CurLeg - 1);
             if (m_CurLeg >= 0)
                 Refresh(-1);
         }
@@ -325,34 +313,37 @@ namespace Backsight.Editor.Forms
             m_UpdCmd.DialFinish(this);
         }
 
-        void Paint()
-        {
-            ISpatialDisplay display = m_UpdCmd.ActiveDisplay;
-            Render(display);
-        }
-
         /// <summary>
         /// Does any painting that this dialog does.
         /// </summary>
         /// <param name="display">The display to draw to</param>
         internal void Render(ISpatialDisplay display)
         {
+            // Draw the original path (in pale gray)
+            IDrawStyle gray = new DrawStyle(Color.LightGray);
+            m_pop.Render(display, gray, true);
+
             // Draw the current path (in magenta).
             PathInfo p = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, m_Legs.ToArray());
             p.Render(display);
 
             // Highlight the currently selected line.
-            if (m_SelectedLine != null)
-                m_SelectedLine.Render(display, new HighlightStyle());
+            int index = distancesListBox.SelectedIndex;
+            if (index >= 0 && index < m_LegSections.Length)
+            {
+                IDrawStyle style = new HighlightStyle();
+                ILineGeometry geom = m_LegSections[index];
+                if (geom is IClockwiseCircularArcGeometry)
+                    style.Render(display, (IClockwiseCircularArcGeometry)geom);
+                else
+                    style.Render(display, new IPosition[] { geom.Start, geom.End });
+            }
         }
 
         void Refresh(int index)
         {
             if (m_CurLeg < 0 || m_CurLeg >= NumLeg)
                 return;
-
-            // Erase anything that is currently highlighted.
-            //if (m_pSelArc) m_pSelArc->UnHighlight();
 
             this.Text = String.Format("Leg {0} of {1}", m_CurLeg + 1, NumLeg);
 
@@ -388,51 +379,34 @@ namespace Backsight.Editor.Forms
             // You can't create a new face if the leg is already staggered.
             newFaceButton.Enabled = (leg.IsStaggered == false);
 
-            /*
-	CeExtraLeg* pExtra = dynamic_cast<CeExtraLeg*>(pLeg);
-	if ( pExtra )
-		GetDlgItem(IDC_SECOND_FACE)->ShowWindow(SW_SHOW);
-	else
-		GetDlgItem(IDC_SECOND_FACE)->ShowWindow(SW_HIDE);
-             */
+            // Indicate whether we're on the second face
+            secondFaceLabel.Visible = (leg as ExtraLeg) != null;
 
             // List the observed distances for the leg.
             distancesListBox.Items.Clear();
             if (leg.Count == 0)
             {
                 distancesListBox.Items.Add("see central angle");
+                distancesListBox.SelectedIndex = 0;
             }
             else
             {
-                List<Distance> dists = new List<Distance>();
-                leg.GetSpans(dists);
-                distancesListBox.Items.AddRange(dists.ToArray());
+                Distance[] dists = leg.GetObservedDistances();
+                distancesListBox.Items.AddRange(dists);
+
+                // Select the first (or last) item in the list.
+                if (index < 0)
+                    distancesListBox.SelectedIndex = dists.Length - 1;
+                else if (index < dists.Length)
+                    distancesListBox.SelectedIndex = index;
             }
-
-            /*
-	// Select the first (or last) item in the list.
-	if ( !nList ) {
-		pList->SetCurSel(-1);
-		OnSelchangeList();
-		return;
-	}
-
-	if ( index < 0 )
-		pList->SetCurSel(pList->GetCount()-1);
-	else if ( index < pList->GetCount() )
-		pList->SetCurSel(index);
-
-	OnSelchangeList();
-             */
 
             // Always leave the focus in the list of distances.
             distancesListBox.Focus();
         }
 
-        void ShowPrecision()
+        void ShowPrecision(PathInfo p)
         {
-            PathInfo p = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, m_Legs.ToArray());
-
             // If it's REALLY good, show 1 billion.
             double prec = p.Precision;
             uint iPrec = (prec < Constants.TINY ? 1000000000 : (uint)prec);
@@ -458,41 +432,10 @@ namespace Backsight.Editor.Forms
             m_UpdCmd.ErasePainting();
         }
 
-        /*
-void CdUpdatePath::OnSelchangeList() 
-{
-	// What leg are we on?
-	CeLeg* pLeg = m_pop->GetpLeg(m_CurLeg);
-	assert(pLeg);
-
-	// If it doesn't have any observed distances, it must
-	// be defined via the central angle, so just draw the
-	// arc.
-	if ( pLeg->GetCount() == 0 ) {
-		m_pSelArc = dynamic_cast<CeArc*>(pLeg->GetpFeature(0));
-		if ( m_pSelArc ) m_pSelArc->Highlight();
-		return;
-	}
-
-	// Get the currently selected distance.
-	CeDistance* pDist = GetSel();
-	if ( !pDist ) return;
-
-	// Use the index of the span to get the corresponding
-	// feature and draw it. If there isn't one, draw a
-	// dotted line instead.
-	INT4 index = pLeg->GetIndex(*pDist);
-	if ( index<0 ) return;
-
-	m_pSelArc = dynamic_cast<CeArc*>(pLeg->GetpFeature(index));
-	if ( m_pSelArc ) m_pSelArc->Highlight();
-}
-         */
-
         private void updateButton_Click(object sender, EventArgs e)
         {
             // Get the selected distance.
-            Distance d = (distancesListBox.SelectedItem as Distance);
+            Distance d = GetSel();
             if (d == null)
             {
                 MessageBox.Show("You must first select a distance from the list.");
@@ -505,24 +448,17 @@ void CdUpdatePath::OnSelchangeList()
             {
                 if (dist.ShowDialog(this) == DialogResult.OK)
                 {
-                    // Change the displayed distance
-                    /*
-                     * from LineSubdivisionUpdateForm
-                    m_CurrentFace.ObservedLengths[listBox.SelectedIndex] = dist.Distance;
-                    m_CurrentFace.Sections[listBox.SelectedIndex].ObservedLength = dist.Distance;
-                    m_UpdCmd.ErasePainting();
-                    RefreshList();
-                     */
+                    // Change the distance stored in the leg
+                    Leg leg = this.CurrentLeg;
+                    int spanIndex = distancesListBox.SelectedIndex;
+                    SpanInfo spanInfo = leg.GetSpanData(spanIndex);
+                    spanInfo.ObservedDistance = dist.Distance;
 
-                    /*was
-		m_pop->Erase(m_Rotation,m_ScaleFac);
-		*pDist = dist.GetDistance();
-		CListBox* pList = (CListBox*)GetDlgItem(IDC_LIST);
-		INT4 index = pList->GetCurSel();
-		ShowPrecision();
-		Paint();
-		Refresh(index);
-                     */
+                    // Change the displayed distance
+                    distancesListBox.Items[spanIndex] = spanInfo.ObservedDistance;
+
+                    Rework();
+                    Refresh(spanIndex);
                 }
             }
         }
@@ -532,26 +468,14 @@ void CdUpdatePath::OnSelchangeList()
             Leg leg = CurrentLeg;
             if (leg == null)
                 return;
-            /*
-	CeObjectList feats;
-	pLeg->GetFeatures(*m_pop,feats);
 
-	CeListIter loop(&feats);
-	CeFeature* pFeat;
+            foreach (SpanInfo span in leg.Spans)
+            {
+                if (span.HasLine)
+                    span.ObservedDistance.ToggleIsFlipped();
+            }
 
-	for ( pFeat = (CeFeature*)loop.GetHead();
-		  pFeat;
-		  pFeat = (CeFeature*)loop.GetNext() ) {
-
-		CeArc* pArc = dynamic_cast<CeArc*>(pFeat);
-		if ( pArc ) {
-			CeLine* pLine = pArc->GetpLine();
-			pLine->SetDistFlipped(!pLine->IsDistFlipped());
-		}
-	}
-
-	GetpDraw()->InvalidateRect(0);
-             */
+            m_UpdCmd.ErasePainting();
         }
 
         /// <summary>
@@ -568,6 +492,25 @@ void CdUpdatePath::OnSelchangeList()
             }
         }
 
+        void SetCurrentLeg(int legIndex)
+        {
+            // Do nothing if the leg is unchanged
+            if (legIndex == m_CurLeg)
+                return;
+
+            if (legIndex < 0 || legIndex >= m_Legs.Count)
+                throw new IndexOutOfRangeException();
+
+            // Remember the new leg
+            m_CurLeg = legIndex;
+
+            // Calculate the rotation and scaling
+            PathInfo path = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, m_Legs.ToArray());
+
+            // Obtain the spans on the current leg
+            m_LegSections = path.GetSections(legIndex);
+        }
+
         private void newFaceButton_Click(object sender, EventArgs e)
         {
             Leg leg = CurrentLeg;
@@ -577,30 +520,53 @@ void CdUpdatePath::OnSelchangeList()
             // Get the observed length of the leg (in meters on the ground).
             double len = leg.GetTotal();
 
-            // Present a data entry dialog for the new face.
-            using (LegForm dial = new LegForm(len))
+            try
             {
-                if (dial.ShowDialog() != DialogResult.OK)
-                    return;
+                this.WindowState = FormWindowState.Minimized;
 
-                // Create the new face and insert it after the current leg.
+                // Present a data entry dialog for the new face.
+                using (LegForm dial = new LegForm(len))
+                {
+                    if (dial.ShowDialog() != DialogResult.OK)
+                        return;
+
+                    // Create the new face and insert it after the current leg.
+
+                    // Must be at least two distances
+                    Distance[] dists = dial.Distances;
+                    if (dists == null || dists.Length < 2)
+                    {
+                        MessageBox.Show("The new face must have at least two spans");
+                        return;
+                    }
+
+                    // Default annotations to the flip side
+                    foreach (Distance d in dists)
+                        d.IsAnnotationFlipped = true;
+
+                    // Insert the new face
+                    ExtraLeg newLeg = new ExtraLeg(leg, dists);
+
+                    // Create features for the extra leg.
+                    //newLeg.MakeFeatures(this);
+
+                    // Insert the new leg into our array of legs.
+                    int legIndex = m_Legs.IndexOf(leg);
+                    m_Legs.Insert(legIndex + 1, newLeg);
+
+                    leg.FaceNumber = 1;
+                    newLeg.FaceNumber = 2;
+
+                    // Make the new face the current leg, and select the very first distance.
+                    SetCurrentLeg(m_CurLeg + 1);
+                    Refresh(0);
+                }
             }
-            /*
-	UINT4 nDist = dial.GetNumDist();
-	CeDistance* dists = dial.GetDists();
-	CeLeg* pNewLeg = m_pop->InsertFace(pLeg,nDist,dists);
-	if ( !pNewLeg ) return;
 
-
-	// Get the features that were created and draw them (this
-	// is so that distance annotations will show, so that the
-	// user can flip them if necessary).
-
-	// Make the new face the current leg, and select the very first distance.
-	m_NumLeg++;
-	m_CurLeg++;
-	Refresh(0);
-             */
+            finally
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
         }
     }
 }

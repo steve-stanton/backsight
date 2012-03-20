@@ -37,6 +37,9 @@ namespace Backsight.Editor
         /// The data that defines each span on this leg (should always contain at least
         /// one element).
         /// </summary>
+        /// <remarks>When dealing with cul-de-sacs that are defined only with a central angle (no distances),
+        /// this will be an array containing one element, with a null observed distance.
+        /// </remarks>
         SpanInfo[] m_Spans;
 
         /// <summary>
@@ -59,6 +62,25 @@ namespace Backsight.Editor
             m_FaceNumber = 0;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Leg"/> class that corresponds to
+        /// the end of another leg (for use when breaking a straight leg).
+        /// </summary>
+        /// <param name="copy">The original leg</param>
+        /// <param name="startIndex">The array index of the first span that should be copied.</param>
+        protected Leg(Leg copy, int startIndex)
+        {
+            int nSpan = copy.m_Spans.Length - startIndex;
+            if (nSpan <= 0)
+                throw new IndexOutOfRangeException();
+
+            // Perform shallow copy
+            m_Spans = new SpanInfo[nSpan];
+            Array.Copy(copy.m_Spans, startIndex, m_Spans, 0, nSpan); 
+
+            m_FaceNumber = copy.m_FaceNumber;
+        }
+
         #endregion
 
         abstract public Circle Circle { get; }
@@ -77,11 +99,31 @@ namespace Backsight.Editor
         /// <param name="sfac">Scale factor to apply to distances.</param>
         abstract public void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac);
 
-        abstract internal void Draw (bool preview);
+        /// <summary>
+        /// Obtains the geometry for spans along this leg (to be called only via implementations of <see cref="GetSections"/>).
+        /// </summary>
+        /// <param name="start">The position for the start of the leg.
+        /// <param name="bearing">The bearing of the leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        /// <param name="spans">Information for the spans coinciding with this leg (may be different from the
+        /// spans associated with this leg when dealing with an instance of <see cref="ExtraLeg"/>)</param>
+        /// <returns>The sections along this leg</returns>
+        abstract internal ILineGeometry[] GetSpanSections(IPosition start, double bearing, double sfac, SpanInfo[] spans);
 
-        //[Obsolete]
-        //abstract internal void Save(FeatureFactory ff, List<PointFeature> createdPoints, ref IPosition terminal,
-        //                                ref double bearing, double sfac);
+        /// <summary>
+        /// Obtains the geometry for spans along this leg.
+        /// </summary>
+        /// <param name="start">The position for the start of the leg.
+        /// <param name="bearing">The bearing of the leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        /// <returns>The sections along this leg</returns>
+        /// <returns>The <see cref="ExtraLeg"/> class provides an override</returns>
+        internal virtual ILineGeometry[] GetSections(IPosition start, double bearing, double sfac)
+        {
+            return GetSpanSections(start, bearing, sfac, m_Spans);
+        }
+
+        abstract internal void Draw (bool preview);
 
         /// <summary>
         /// Creates spatial features (points and lines) for this leg. The created
@@ -429,14 +471,14 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Loads a list of distances with the observed lengths of each span on
+        /// Obtains the observed lengths of each span on
         /// this leg. In the case of cul-de-sacs that have no observed span,
         /// the distance will be derived from the central angle and radius.
-        /// This function is called by <see cref="PathOperation.GetSpans"/>.
         /// </summary>
-        /// <param name="distances">The list of Distance objects to load.</param>
-        internal void GetSpans(List<Distance> distances)
+        internal Distance[] GetObservedDistances()
         {
+            List<Distance> distances = new List<Distance>();
+
             foreach (SpanInfo sd in m_Spans)
             {
                 Distance d = sd.ObservedDistance;
@@ -453,6 +495,8 @@ namespace Backsight.Editor
                 else
                     distances.Add(d);
             }
+
+            return distances.ToArray();
         }
 
         /// <summary>
@@ -701,13 +745,13 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// <summary>
         /// Inserts an extra distance into this leg.
         /// </summary>
-        /// <param name="newdist">The new (transient) distance to insert.</param>
+        /// <param name="newdist">The new distance to insert.</param>
         /// <param name="curdist">A distance that this leg already knows about.</param>
         /// <param name="isBefore">Should the new distance go before the existing one?</param>
         /// <param name="wantLine">Should a new line be created (it won't happen until rollforward
         /// occurs, but it will get marked to happen).</param>
         /// <returns>The index where the extra distance was saved.</returns>
-        int Insert(Distance newdist, Distance curdist, bool isBefore, bool wantLine)
+        internal int Insert(Distance newdist, Distance curdist, bool isBefore, bool wantLine)
         {
             // Get the index of the currently defined distance.
             int index = GetIndex(curdist);
@@ -777,7 +821,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         /// </summary>
         /// <param name="dist">The distance to look for.</param>
         /// <returns>The index of the distance (-1 if not found).</returns>
-        int GetIndex(Distance dist)
+        internal int GetIndex(Distance dist)
         {
             for (int i=0; i<m_Spans.Length; i++)
             {
@@ -816,42 +860,19 @@ void CeLeg::MakeText ( const CeVertex& bs
         }
 
         /// <summary>
-        /// Breaks this leg into two legs. The break must leave at least one distance
-        /// in each of the resultant legs.
+        /// Truncates this leg by discarding one or more spans at the end (for use when breaking
+        /// straight legs).
         /// </summary>
-        /// <param name="index">The index of the span that should be at the start of the extra leg.
-        /// Should be greater than zero.</param>
-        /// <param name="to">The leg to move stuff to. Must have enough space to hold the extra stuff.</param>
-        /// <returns>True if moved ok.</returns>
-        internal bool MoveEndLeg(int index, Leg to)
+        /// <param name="truncatedLength">The number of spans that should be retained.</param>
+        /// <exception cref="ArgumentException">If the truncated length would lead to an empty leg, or nothing
+        /// would be truncated.</exception>
+        protected void TruncateLeg(int truncatedLength)
         {
-            // Destination MUST have exactly the right size.
-            if (to.NumSpan != (this.NumSpan-index))
-                return false;
+            if (truncatedLength <= 0 || truncatedLength >= m_Spans.Length)
+                throw new ArgumentException();
 
-            // Transfer stuff to the new leg.
-            for (int iSrc=index, iDst=0; iSrc<NumSpan; iSrc++, iDst++)
-                to.m_Spans[iDst] = m_Spans[iSrc];
-
-            // Check for special case where the entire leg has been
-            // copied (this isn't really expected to happen).
-            if (index==0)
-            {
-                m_Spans = null;
-                return true;
-            }
-
-            int numSpan = index;
-            SpanInfo[] newSpans = new SpanInfo[numSpan];
-
-            // Copy over the initial stuff.
-            for (int i=0; i<numSpan; i++)
-                newSpans[i] = m_Spans[i];
-
-            // Replace the original array with the new one.
-            m_Spans = newSpans;
-
-            return true;
+            // Shrink the array (throwaway the spans at the end)
+            Array.Resize<SpanInfo>(ref m_Spans, truncatedLength);
         }
 
         /// <summary>
@@ -1340,6 +1361,14 @@ void CeLeg::MakeText ( const CeVertex& bs
                 return null;
             else
                 return m_Spans[index];
+        }
+
+        /// <summary>
+        /// The data that defines each span on this leg (should always contain at least one element).
+        /// </summary>
+        internal SpanInfo[] Spans
+        {
+            get { return m_Spans; }
         }
     }
 }

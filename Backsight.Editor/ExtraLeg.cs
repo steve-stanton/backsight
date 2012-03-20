@@ -57,6 +57,14 @@ namespace Backsight.Editor
         #endregion
 
         /// <summary>
+        /// The leg that this extra leg coincides with.
+        /// </summary>
+        internal Leg BaseLeg
+        {
+            get { return m_Base; }
+        }
+
+        /// <summary>
         /// The circle (if any) that this leg falls on.
         /// </summary>
         public override Circle Circle
@@ -125,6 +133,34 @@ namespace Backsight.Editor
         public override void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac)
         {
             // Do nothing.
+        }
+
+        /// <summary>
+        /// Obtains the geometry for spans along this leg (to be called only via implementations of <see cref="GetSections"/>).
+        /// </summary>
+        /// <param name="start">The position for the start of the leg.
+        /// <param name="bearing">The bearing of the leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        /// <param name="spans">Information for the spans coinciding with this leg (may be different from the
+        /// spans associated with this leg when dealing with an instance of <see cref="ExtraLeg"/>)</param>
+        /// <returns>The sections along this leg</returns>
+        internal override ILineGeometry[] GetSpanSections(IPosition start, double bearing, double sfac, SpanInfo[] spans)
+        {
+            // This method should only be called via GetSections below (meaning we should never end up here)
+            throw new ApplicationException();
+        }
+
+        /// <summary>
+        /// Obtains the geometry for spans along this leg.
+        /// </summary>
+        /// <param name="start">The position for the start of the leg.
+        /// <param name="bearing">The bearing of the leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        /// <returns>The sections along this leg</returns>
+        internal override ILineGeometry[] GetSections(IPosition start, double bearing, double sfac)
+        {
+            // The base should never be an instance of ExtraLeg
+            return m_Base.GetSpanSections(start, bearing, sfac, this.Spans);
         }
 
         /// <summary>

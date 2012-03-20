@@ -20,6 +20,7 @@ using System.Collections.Generic;
 
 using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
+using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -278,14 +279,14 @@ namespace Backsight.Editor
 
             if (nspan==0)
             {
-                span.Get(0);
+                span.Get(this, 0);
                 span.Render(display);
             }
             else
             {
                 for (int i = 0; i < nspan; i++)
                 {
-                    span.Get(i);
+                    span.Get(this, i);
                     span.Render(display);
                 }
             }
@@ -294,6 +295,125 @@ namespace Backsight.Editor
             pos = span.EC;
             bearing = span.ExitBearing;
         }
+
+        /// <summary>
+        /// Obtains the geometry for spans along this leg.
+        /// </summary>
+        /// <param name="bc">The position for the start of the leg.
+        /// <param name="bcBearing">The bearing on entry into the leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        /// <param name="spans">Information for the spans coinciding with this leg (may be different from the
+        /// spans associated with this leg when dealing with an instance of <see cref="ExtraLeg"/>)</param>
+        /// <returns>The sections along this leg</returns>
+        internal override ILineGeometry[] GetSpanSections(IPosition bc, double bcBearing, double sfac, SpanInfo[] spans)
+        {
+            // Can't do anything if the leg radius isn't defined
+            if (m_Radius == null)
+                throw new InvalidOperationException("Cannot create sections for circular leg with undefined radius");
+
+            var result = new ILineGeometry[spans.Length];
+
+            // Use supplied stuff to derive info on the center and EC.
+            IPosition center;
+            IPosition ec;
+            double bearingToBC;
+            double ecBearing;
+            GetPositions(bc, bcBearing, sfac, out center, out bearingToBC, out ec, out ecBearing);
+
+            // Define the underlying circle
+            ICircleGeometry circle = new CircleGeometry(PointGeometry.Create(center), BasicGeom.Distance(center, bc));
+
+            // Handle case where the leg is a cul-de-sac with no observed spans
+            if (spans.Length == 1 && spans[0].ObservedDistance == null)
+            {
+                result[0] = new CircularArcGeometry(circle, bc, ec, IsClockwise);
+                return result;
+            }
+
+            /// Initialize scaling factor for distances in cul-de-sacs (ratio of the length calculated from
+            /// the CA & Radius, versus the observed distances that were actually specified). For curves that
+            /// are not cul-de-sacs, this will be 1.0
+            double culFactor = 1.0;
+            if (IsCulDeSac)
+            {
+                double obsv = GetTotal();
+                if (obsv > MathConstants.TINY)
+                    culFactor = Length.Meters / obsv;
+            }
+
+            IPosition sPos = bc;
+            IPosition ePos = null;
+            bool isClockwise = IsClockwise;
+            double radius = m_Radius.Meters;
+            double edist = 0.0;
+
+            for (int i = 0; i < result.Length; i++, sPos = ePos)
+            {
+                // Add on the unscaled distance
+                edist += spans[i].ObservedDistance.Meters;
+
+                // Get the angle subtended at the center of the circle. We use
+                // unscaled values here, since the scale factors would cancel out.
+                // However, we DO apply any cul-de-sac scaling factor, to account
+                // for the fact that the distance may be inconsistent with the
+                // curve length derived from the CA and radius. For example, it
+                // is possible that the calculated curve length=200, although the
+                // total of the observed spans is somehow only 100. In that case,
+                // if the supplied distance is 50, we actually want to use a
+                // value of 50 * (200/100) = 100.
+
+                double angle = (edist * culFactor) / radius;
+
+                // Get the bearing of the point with respect to the center of the circle.
+
+                double bearing;
+
+                if (isClockwise)
+                    bearing = bearingToBC + angle;
+                else
+                    bearing = bearingToBC - angle;
+
+                // Calculate the position using the scaled radius.
+                ePos = Geom.Polar(center, bearing, radius * sfac);
+
+                result[i] = new CircularArcGeometry(circle, sPos, ePos, isClockwise);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the position of a point on the circular leg.
+        /// </summary>
+        /// <param name="dist">The (unscaled) distance to the desired point.</param>
+        /// <returns>The position.</returns>
+        IPosition GetPoint(double dist, IPosition center, double radius, double culFactor, double bearingToBC, double sfac)
+        {
+            // Get the angle subtended at the center of the circle. We use
+            // unscaled values here, since the scale factors would cancel out.
+            // However, we DO apply any cul-de-sac scaling factor, to account
+            // for the fact that the distance may be inconsistent with the
+            // curve length derived from the CA and radius. For example, it
+            // is possible that the calculated curve length=200, although the
+            // total of the observed spans is somehow only 100. In that case,
+            // if the supplied distance is 50, we actually want to use a
+            // value of 50 * (200/100) = 100.
+
+            double angle = (dist * culFactor) / radius;
+
+            // Get the bearing of the point with respect to the center of the circle.
+
+            double bearing;
+
+            if (IsClockwise)
+                bearing = bearingToBC + angle;
+            else
+                bearing = bearingToBC - angle;
+
+            // Calculate the position using the scaled radius.
+            return Geom.Polar(center, bearing, radius * sfac);
+        }
+
 
         /// <summary>
         /// Draws a previously saved leg.
@@ -393,7 +513,7 @@ namespace Backsight.Editor
             {
                 // Get info for the current span (this defines the
                 // adjusted start and end positions, among other things).
-                span.Get(i);
+                span.Get(this, i);
 
                 // Create the geometry for the point at the end of the span
                 SpanInfo data = GetSpanData(i);
