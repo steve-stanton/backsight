@@ -26,14 +26,9 @@ namespace Backsight.Editor
     /// <summary>
     /// A single span in a straight leg.
     /// </summary>
-    class StraightSpan
+    class StraightSpan : Span
     {
         #region Class data
-
-        /// <summary>
-        /// The leg this span relates to.
-        /// </summary>
-        StraightLeg m_Leg;
 
         /// <summary>
         /// Position of start of leg.
@@ -92,14 +87,12 @@ namespace Backsight.Editor
         /// <summary>
         /// Creates a new <c>StraightSpan</c>
         /// </summary>
-        /// <param name="leg">The leg that this span falls on.</param>
         /// <param name="start">The position of the start of the leg.</param>
         /// <param name="bearing">The bearing of the leg.</param>
         /// <param name="sfac">The scale factor to apply to distances on the leg.</param>
-        internal StraightSpan(StraightLeg leg, IPosition start, double bearing, double sfac)
+        internal StraightSpan(IPosition start, double bearing, double sfac)
         {
             // Hold on to the supplied stuff.
-            m_Leg = leg;
             m_LegStartN = start.Y;
             m_LegStartE = start.X;
             m_SinBearing = Math.Sin(bearing);
@@ -151,17 +144,18 @@ namespace Backsight.Editor
         /// <summary>
         /// Gets info for a specific span on a leg.
         /// </summary>
+        /// <param name="leg">The leg this span is part of</param>
         /// <param name="index">Index of the span to get.</param>
-        internal void Get(int index)
+        internal void Get(Leg leg, int index)
         {
             // Ask the leg to return the distance to the start and the
             // end of the requested span.
             double sdist, edist;
-            m_Leg.GetDistances(index, out sdist, out edist);
+            leg.GetDistances(index, out sdist, out edist);
 
             // See if the span has a line and a terminal point.
-            m_IsLine = m_Leg.HasLine(index);
-            m_IsEndPoint = m_Leg.HasEndPoint(index);
+            m_IsLine = leg.HasLine(index);
+            m_IsEndPoint = leg.HasEndPoint(index);
 
             // Define the start position.
             if (index==0)

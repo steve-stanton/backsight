@@ -58,6 +58,20 @@ namespace Backsight.Editor
             m_IsDeflection = false;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StraightLeg"/> class that corresponds to
+        /// the end of another leg (for use when breaking a leg).
+        /// </summary>
+        /// <param name="copy">The original leg</param>
+        /// <param name="startIndex">The array index of the first span that should be copied.</param>
+        StraightLeg(StraightLeg copy, int startIndex)
+            : base(copy, startIndex)
+        {
+            // Stick in a (clockwise) angle of 180 degrees.
+            m_StartAngle = Math.PI;
+            m_IsDeflection = false;
+        }
+
         #endregion
 
         /// <summary>
@@ -129,30 +143,55 @@ namespace Backsight.Editor
         public override void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac)
         {
             // Add on any initial angle (it may be a deflection).
-            if (Math.Abs(m_StartAngle) > Double.Epsilon)
-            {
-                if (m_IsDeflection)
-                    bearing += m_StartAngle;
-                else
-                    bearing += (m_StartAngle - Math.PI);
-            }
+            bearing = AddStartAngle(bearing);
 
             // Just return if there aren't any spans (avoids returning pos as null)
             if (this.Count == 0)
                 return;
 
             // Create a straight span
-            StraightSpan span = new StraightSpan(this, pos, bearing, sfac);
+            StraightSpan span = new StraightSpan(pos, bearing, sfac);
 
             // Draw each visible span in turn.
             for (int i = 0; i < this.Count; i++)
             {
-                span.Get(i);
+                span.Get(this, i);
                 span.Render(display);
             }
 
             // Return the end position of the last span.
             pos = span.End;
+        }
+
+        /// <summary>
+        /// Obtains the geometry for spans along this leg.
+        /// </summary>
+        /// <param name="pos">The position for the start of the leg.
+        /// <param name="bearing">The bearing of the leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        /// <param name="spans">Information for the spans coinciding with this leg (may be different from the
+        /// spans associated with this leg when dealing with an instance of <see cref="ExtraLeg"/>)</param>
+        /// <returns>The sections along this leg</returns>
+        internal override ILineGeometry[] GetSpanSections(IPosition pos, double bearing, double sfac, SpanInfo[] spans)
+        {
+            var result = new ILineGeometry[spans.Length];
+
+            double sinBearing = Math.Sin(bearing);
+            double cosBearing = Math.Cos(bearing);
+
+            IPosition sPos = pos;
+            IPosition ePos = null;
+
+            double edist = 0.0;
+
+            for (int i = 0; i < result.Length; i++, sPos=ePos)
+            {
+                edist += (spans[i].ObservedDistance.Meters * sfac);
+                ePos = new Position(pos.X + (edist * sinBearing), pos.Y + (edist * cosBearing));
+                result[i] = new LineSegmentGeometry(sPos, ePos);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -227,6 +266,22 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Adds on any angle at the start of this leg.
+        /// </summary>
+        /// <param name="bearing">The bearing at the end of the preceding leg.</param>
+        /// <returns>The bearing of this leg (in radians)</returns>
+        internal double AddStartAngle(double bearing)
+        {
+            if (Math.Abs(m_StartAngle) < MathConstants.TINY)
+                return bearing;
+
+            if (m_IsDeflection)
+                return bearing + m_StartAngle;
+            else
+                return bearing + m_StartAngle - Math.PI;
+        }
+
+        /// <summary>
         /// Defines the geometry for this leg.
         /// </summary>
         /// <param name="ctx">The context in which the geometry is being calculated</param>
@@ -239,23 +294,17 @@ namespace Backsight.Editor
             // Much like the Save method...
 
             // Add on any initial angle (it may be a deflection).
-            if (Math.Abs(m_StartAngle) > MathConstants.TINY)
-            {
-                if (m_IsDeflection)
-                    bearing += m_StartAngle;
-                else
-                    bearing += (m_StartAngle - Math.PI);
-            }
+            bearing = AddStartAngle(bearing);
 
             // Create a straight span
-            StraightSpan span = new StraightSpan(this, terminal, bearing, sfac);
+            StraightSpan span = new StraightSpan(terminal, bearing, sfac);
 
             int nspan = this.Count;
             for (int i = 0; i < nspan; i++)
             {
                 // Get info for the current span (this defines the
                 // adjusted start and end positions, among other things).
-                span.Get(i);
+                span.Get(this, i);
 
                 // Create the geometry for the point at the end of the span
                 SpanInfo data = GetSpanData(i);
@@ -384,7 +433,7 @@ namespace Backsight.Editor
         LineFeature SaveInsert(StraightSpan span, int index, PathOperation creator, bool isLast)
         {
             // Get the end positions for the new span.
-            span.Get(index);
+            span.Get(this, index);
 
             // Make sure the start and end points have been rounded to
             // the internal resolution.
@@ -607,11 +656,10 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         /// Breaks this leg into two legs. The break must leave at least
         /// one distance in each of the resultant legs.
         /// </summary>
-        /// <param name="op">The connection path that contains this leg.</param>
         /// <param name="index">The index of the span that should be at the
         /// start of the extra leg.</param>
         /// <returns>The extra leg (at the end of the original leg).</returns>
-        Leg Break(PathOperation op, int index)
+        internal StraightLeg Break(int index)
         {
             // Can't break right at the start or end.
             int nTotal = this.Count;
@@ -619,18 +667,10 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
                 return null;
 
             // Create a new straight leg with the right number of spans.
-            int nSpan = nTotal - index;
-            StraightLeg newLeg = new StraightLeg(nSpan);
+            StraightLeg newLeg = new StraightLeg(this, index);
 
-            // Tell the operation to insert the new leg.
-            if (!op.InsertLeg(this, newLeg))
-                return null;
-
-            // Stick in a (clockwise) angle of 180 degrees.
-            newLeg.StartAngle = Math.PI;
-
-            // Move observations etc from the end of the original leg.
-            MoveEndLeg(index, newLeg);
+            // Retain the spans prior to that
+            TruncateLeg(index);
 
             return newLeg;
         }

@@ -431,23 +431,6 @@ namespace Backsight.Editor.Operations
 
             return tot;
         }
-
-        /// <summary>
-        /// Gets the observed lengths of each span on this path. In the case of
-        /// cul-de-sacs that have no observed span, the distance will be derived
-        /// from the central angle and radius.
-        /// </summary>
-        /// <returns>The distances for this path (with an array length that equals
-        /// the value of the <see cref="Count"/> property).</returns>
-        Distance[] GetSpans()
-        {
-            List<Distance> result = new List<Distance>(GetCount());
-
-            foreach (Leg leg in m_Legs)
-                leg.GetSpans(result);
-
-            return result.ToArray();
-        }
         /*
 //	@mfunc	Draw observed angles recorded as part of this op.
 //
@@ -779,6 +762,7 @@ void CePath::CreateAngleText ( CPtrList& text
             get { return m_Legs.Count; }
         }
 
+        /*
         /// <summary>
         /// Inserts an extra leg into this connection path.
         /// </summary>
@@ -799,6 +783,7 @@ void CePath::CreateAngleText ( CPtrList& text
             m_Legs.Insert(index+1, newLeg);
             return true;
         }
+        */
 
         /// <summary>
         /// The point where the path starts.
@@ -906,6 +891,7 @@ void CePath::CreateAngleText ( CPtrList& text
             get { return m_DefaultEntryUnit; }
         }
 
+        /*
         /// <summary>
         /// Inserts a second face for a leg in this path.
         /// </summary>
@@ -936,6 +922,7 @@ void CePath::CreateAngleText ( CPtrList& text
 
             return newLeg;
         }
+        */
 
         /// <summary>
         /// Gets the positions that define the end points of each leg in

@@ -24,16 +24,9 @@ namespace Backsight.Editor
     /// <summary>
     /// A single span in a circular leg.
     /// </summary>
-    class CircularSpan
+    class CircularSpan : Span
     {
         #region Class data
-
-        // Supplied to constructor ...
-
-        /// <summary>
-        /// The leg this span relates to.
-        /// </summary>
-        readonly CircularLeg m_Leg;
 
         /// <summary>
         /// The scale factor to apply to distances on the leg.
@@ -132,7 +125,6 @@ namespace Backsight.Editor
         internal CircularSpan(CircularLeg leg, IPosition bc, double bcbearing, double sfac)
         {
             // Hold on to the supplied stuff.
-            m_Leg = leg;
             m_BC = bc;
             m_ScaleFactor = sfac;
             m_EntryBearing = bcbearing;
@@ -238,13 +230,14 @@ namespace Backsight.Editor
         /// <summary>
         /// Gets info for a specific span on a leg.
         /// </summary>
+        /// <param name="leg">The leg this span is part of</param>
         /// <param name="index">Index of the span to get.</param>
-        internal void Get(int index)
+        internal void Get(Leg leg, int index)
         {
             // If we are dealing with a cul-de-sac that has no observed spans,
             // just return the complete curve. It MUST be visible. Note that
             // only legs that are cul-de-sacs can have no spans.
-            if (m_Leg.Count==0)
+            if (leg.Count==0)
             {
                 m_Start = m_BC;
                 m_End = m_EC;
@@ -256,11 +249,11 @@ namespace Backsight.Editor
             // Ask the leg to return the distance to the start and the
             // end of the requested span.
             double sdist, edist;
-            m_Leg.GetDistances(index, out sdist, out edist);
+            leg.GetDistances(index, out sdist, out edist);
 
             // See if the span has a line and a terminal point.
-            m_IsLine = m_Leg.HasLine(index);
-            m_IsEndPoint = m_Leg.HasEndPoint(index);
+            m_IsLine = leg.HasLine(index);
+            m_IsEndPoint = leg.HasEndPoint(index);
 
             // Define the start position (easy if it's the 1st span).
             if (index==0)

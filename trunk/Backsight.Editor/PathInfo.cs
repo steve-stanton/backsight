@@ -1,5 +1,5 @@
 // <remarks>
-// Copyright 2007 - Steve Stanton. This file is part of Backsight
+// Copyright 2008 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 
 using Backsight.Editor.Operations;
@@ -23,8 +24,7 @@ namespace Backsight.Editor
     /// <written by="Steve Stanton" on="26-MAR-2008"/>
     /// <summary>
     /// Information about a connection path. This acts as a helper for the <see cref="PathForm"/> dialog.
-    /// It's sort of a
-    /// half-way between the fairly unstructured world of the dialog class, and the
+    /// It's sort of a half-way between the fairly unstructured world of the dialog class, and the
     /// regimented world of the operation class.
     /// </summary>
     class PathInfo
@@ -298,6 +298,43 @@ namespace Backsight.Editor
                 EnsureAdjusted();
                 return m_Precision;
             }
+        }
+
+        /// <summary>
+        /// Obtains line sections for a specific leg in this path.
+        /// </summary>
+        /// <param name="legIndex">The index of the required leg</param>
+        /// <returns>The corresponding sections</returns>
+        internal ILineGeometry[] GetSections(int legIndex)
+        {
+            EnsureAdjusted();
+
+            // Initialize position to the start of the path.
+            IPosition p = new Position(m_From);
+
+            // Initial bearing is whatever the rotation is.
+            double bearing = m_Rotation;
+
+            // Get the position at the start of the required leg. Don't go too far if the required leg is actually
+            // a second face.
+            int n = legIndex;
+            if (m_Legs[n] is ExtraLeg)
+            {
+                Debug.Assert(n > 0);
+                n--;
+            }
+
+            for (int i = 0; i < n; i++)
+                m_Legs[i].Project(ref p, ref bearing, m_ScaleFactor);
+
+            // We've now got the position at the start of the required leg, and the bearing of the previous leg.
+            // If the leg we actually want if a straight leg (or an extra leg layered on a straight), add on any
+            // initial angle.
+            StraightLeg sLeg = (m_Legs[n] as StraightLeg);
+            if (sLeg != null)
+                bearing = sLeg.AddStartAngle(bearing);
+
+            return m_Legs[legIndex].GetSections(p, bearing, m_ScaleFactor);
         }
     }
 }
