@@ -94,14 +94,6 @@ namespace Backsight.Editor
         /// The features created by this editing operation (may be an empty array, but
         /// never null).
         /// </summary>
-        /// <remarks>
-        /// All features created by an operation <b>must</b> be explicitly referenced by
-        /// the concrete operation class. This is necessary because the reference that
-        /// the <c>Feature</c> class has to it's creating operation is not persisted
-        /// (not serialized). The <c>Operation.OnLoad</c> method is responsible for
-        /// restoring the <c>Feature->Operation</c> reference, and that depends on the
-        /// <c>Operation.Features</c> property.
-        /// </remarks>
         abstract internal Feature[] Features { get; }
 
         /// <summary>
@@ -249,8 +241,7 @@ namespace Backsight.Editor
         /// Performs any processing that needs to be done just before the position of
         /// a referenced feature is changed.
         /// </summary>
-        /// <param name="f">The feature that is about to be moved  - something that
-        /// the <c>IFeatureDependent</c> is dependent on (not null).</param>
+        /// <param name="f">The feature that is about to be moved (not null).</param>
         /// <param name="ctx">The context in which the move is being made (not null).</param>
         public void OnFeatureMoving(Feature f, UpdateEditingContext context)
         {
