@@ -118,7 +118,6 @@
     <Compile Include="NewProjectEvent.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
-    <Compile Include="CircularSpan.cs" />
     <Compile Include="ClosedShape.cs" />
     <Compile Include="ControlPoint.cs" />
     <Compile Include="ControlRange.cs" />
@@ -139,7 +138,6 @@
     <Compile Include="Project.cs" />
     <Compile Include="ProjectDatabase.cs" />
     <Compile Include="ProjectSettings.cs" />
-    <Compile Include="Span.cs" />
     <Compile Include="TextEditReader.cs" />
     <Compile Include="EntityBlock.cs" />
     <Compile Include="EntityFile.cs" />
@@ -698,7 +696,6 @@
     <Compile Include="Forms\StyleFile.cs" />
     <Compile Include="SpanInfo.cs" />
     <Compile Include="StraightLeg.cs" />
-    <Compile Include="StraightSpan.cs" />
     <Compile Include="TextCheck.cs" />
     <Compile Include="TextEditWriter.cs" />
     <Compile Include="ThrowawayFeatureFactory.cs" />

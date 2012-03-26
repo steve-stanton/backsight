@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Drawing;
 
 using Backsight.Editor.Operations;
+using Backsight.Forms;
 
 namespace Backsight.Editor
 {
@@ -130,8 +131,7 @@ namespace Backsight.Editor
         /// <param name="display">The display to draw to</param>
         internal void Render(ISpatialDisplay display)
         {
-            if (!EnsureAdjusted())
-                return;
+            EnsureAdjusted();
 
             // Do nothing if the scale factor is undefined.
             if (Math.Abs(m_ScaleFactor) < MathConstants.TINY)
@@ -143,12 +143,72 @@ namespace Backsight.Editor
             // Initial bearing is whatever the rotation is.
             double bearing = m_Rotation;
 
-            // Get each leg to draw itself
-            foreach (Leg leg in m_Legs)
-                leg.Render(display, ref gotend, ref bearing, m_ScaleFactor);
+            for (int i = 0; i < m_Legs.Length; i++)
+            {
+                Leg leg = m_Legs[i];
+
+                // Include any angle specified at the start of the leg
+                StraightLeg sLeg = (leg as StraightLeg);
+                if (sLeg != null)
+                    bearing = sLeg.AddStartAngle(bearing);
+
+                // Determine exit bearing for circular leg (do it now, in case an extra leg complicates matters below)
+                double exitBearing = bearing;
+                CircularLeg cLeg = (leg as CircularLeg);
+                if (cLeg != null)
+                    exitBearing = cLeg.GetExitBearing(gotend, bearing, m_ScaleFactor);
+
+                // Obtain geometry for each span and draw
+                ILineGeometry[] sections = leg.GetSections(gotend, bearing, m_ScaleFactor);
+                DrawSpans(display, leg.Spans, sections);
+
+                // If we're dealing with the first face of a staggered leg, render the second face
+                if (leg.FaceNumber == 1)
+                {
+                    i++;
+                    Debug.Assert(i < m_Legs.Length);
+                    leg = m_Legs[i];
+                    Debug.Assert(leg is ExtraLeg);
+                    Debug.Assert(leg.FaceNumber == 2);
+
+                    sections = leg.GetSections(gotend, bearing, m_ScaleFactor);
+                    DrawSpans(display, leg.Spans, sections);
+                }
+
+                // Get to the end of the leg
+                gotend = sections[sections.Length - 1].End;
+                bearing = exitBearing;
+            }
 
             // Re-draw the terminal points to ensure that their color is on top.
             DrawEnds(display);
+        }
+
+        /// <summary>
+        /// Renders the geometry for the spans along a leg.
+        /// </summary>
+        /// <param name="display">The display to draw to</param>
+        /// <param name="spans">Information about each observed span</param>
+        /// <param name="sections">The geometry that corresponds to each span</param>
+        void DrawSpans(ISpatialDisplay display, SpanInfo[] spans, ILineGeometry[] sections)
+        {
+            Debug.Assert(spans.Length == sections.Length);
+            IDrawStyle solidStyle = EditingController.Current.Style(Color.Magenta);
+            IDrawStyle dottedStyle = new DottedStyle(Color.Magenta);
+
+            for (int i = 0; i < spans.Length; i++)
+            {
+                ILineGeometry geom = sections[i];
+                IDrawStyle style = (spans[i].HasLine ? solidStyle : dottedStyle);
+
+                if (geom is IClockwiseCircularArcGeometry)
+                    style.Render(display, (IClockwiseCircularArcGeometry)geom);
+                else
+                    style.Render(display, new IPosition[] { geom.Start, geom.End });
+
+                if (spans[i].HasEndPoint)
+                    solidStyle.Render(display, geom.End);
+            }
         }
 
         /// <summary>
@@ -167,22 +227,19 @@ namespace Backsight.Editor
         /// <summary>
         /// Ensures the Adjust method has been called.
         /// </summary>
-        /// <returns>True if path data has been successfully adjusted. False if a
-        /// call to <c>Adjust</c> failed.</returns>
-        internal bool EnsureAdjusted()
+        void EnsureAdjusted()
         {
-            if (m_IsAdjusted)
-                return true;
+            if (!m_IsAdjusted)
+            {
+                double de;				// Misclosure in eastings
+                double dn;				// Misclosure in northings
+                double prec;			// Precision
+                double length;			// Total observed length
+                double rotation;		// Rotation for adjustment
+                double sfac;			// Adjustment scaling factor
 
-            double de;				// Misclosure in eastings
-            double dn;				// Misclosure in northings
-            double prec;			// Precision
-            double length;			// Total observed length
-            double rotation;		// Rotation for adjustment
-            double sfac;			// Adjustment scaling factor
-
-            Adjust(out dn, out de, out prec, out length, out rotation, out sfac);
-            return m_IsAdjusted;
+                Adjust(out dn, out de, out prec, out length, out rotation, out sfac);
+            }
         }
 
         /// <summary>
@@ -194,8 +251,7 @@ namespace Backsight.Editor
         /// <param name="length">Total observed length.</param>
         /// <param name="rotation">The clockwise rotation to apply (in radians).</param>
         /// <param name="sfac">The scaling factor to apply.</param>
-        /// <returns>True if adjusted ok.</returns>
-        internal bool Adjust(out double dN, out double dE, out double precision, out double length,
+        void Adjust(out double dN, out double dE, out double precision, out double length,
                     out double rotation, out double sfac)
         {
             dN = dE = precision = length = rotation = 0.0;
@@ -260,8 +316,6 @@ namespace Backsight.Editor
             m_Rotation = rotation;
             m_ScaleFactor = sfac;
             m_Precision = precision;
-
-            return true;
         }
 
         /// <summary>

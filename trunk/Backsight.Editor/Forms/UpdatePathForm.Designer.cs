@@ -154,7 +154,7 @@ namespace Backsight.Editor.Forms
             this.newFaceButton.Size = new System.Drawing.Size(111, 28);
             this.newFaceButton.TabIndex = 31;
             this.newFaceButton.TabStop = false;
-            this.newFaceButton.Text = "New Fac&e";
+            this.newFaceButton.Text = "Ne&w Face";
             this.newFaceButton.UseVisualStyleBackColor = true;
             this.newFaceButton.Click += new System.EventHandler(this.newFaceButton_Click);
             // 
@@ -166,7 +166,7 @@ namespace Backsight.Editor.Forms
             this.flipDistButton.Size = new System.Drawing.Size(111, 28);
             this.flipDistButton.TabIndex = 30;
             this.flipDistButton.TabStop = false;
-            this.flipDistButton.Text = "Flip Ann&otations";
+            this.flipDistButton.Text = "Flip Annotation&s";
             this.flipDistButton.UseVisualStyleBackColor = true;
             this.flipDistButton.Click += new System.EventHandler(this.flipDistButton_Click);
             // 
