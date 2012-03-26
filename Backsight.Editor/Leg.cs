@@ -17,10 +17,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Geometry;
-using Backsight.Editor.Observations;
 
 namespace Backsight.Editor
 {
@@ -97,7 +97,7 @@ namespace Backsight.Editor
         /// <param name="bearing">The bearing at the end of the previous leg. Updated
         /// for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        abstract public void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac);
+        //abstract public void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac);
 
         /// <summary>
         /// Obtains the geometry for spans along this leg (to be called only via implementations of <see cref="GetSections"/>).
@@ -219,7 +219,7 @@ namespace Backsight.Editor
         /// the position for the end of the leg.</param>
         /// <param name="bearing">The bearing at the end of the previous leg. Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        abstract internal void CreateGeometry(EditingContext ctx, ref IPosition terminal, ref double bearing, double sfac);
+        //abstract internal void CreateGeometry(EditingContext ctx, ref IPosition terminal, ref double bearing, double sfac);
 
         abstract internal bool Rollforward (ref PointFeature insert, PathOperation op,
                                                 ref IPosition terminal, ref double bearing, double sfac);

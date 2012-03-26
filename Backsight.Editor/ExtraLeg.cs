@@ -14,10 +14,9 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 
-using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -121,6 +120,7 @@ namespace Backsight.Editor
             // results.
         }
 
+        /*
         /// <summary>
         /// Draws this leg
         /// </summary>
@@ -134,6 +134,7 @@ namespace Backsight.Editor
         {
             // Do nothing.
         }
+        */
 
         /// <summary>
         /// Obtains the geometry for spans along this leg (to be called only via implementations of <see cref="GetSections"/>).
@@ -275,6 +276,7 @@ namespace Backsight.Editor
             //return m_Base.SaveFace(op, this);
         }
 
+        /*
         /// <summary>
         /// Defines the geometry for this leg (for use during deserialization).
         /// </summary>
@@ -287,5 +289,6 @@ namespace Backsight.Editor
         {
             throw new NotImplementedException("ExtraLeg.CreateGeometry");
         }
+         */
     }
 }

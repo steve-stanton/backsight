@@ -14,12 +14,12 @@
 // </remarks>
 
 using System;
-using System.Drawing;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 
-using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
+using Backsight.Editor.Operations;
 using Backsight.Geometry;
 
 namespace Backsight.Editor
@@ -258,6 +258,7 @@ namespace Backsight.Editor
             }
         }
 
+        /*
         /// <summary>
         /// Draws this leg
         /// </summary>
@@ -294,6 +295,25 @@ namespace Backsight.Editor
             // Update BC info to refer to the EC.
             pos = span.EC;
             bearing = span.ExitBearing;
+        }
+        */
+
+        /// <summary>
+        /// Calculates the exit bearing for this leg.
+        /// </summary>
+        /// <param name="bc">The position for the start of the leg.
+        /// <param name="bcBearing">The bearing on entry into the leg.</param>
+        /// <param name="sfac">Scale factor to apply to distances.</param>
+        /// <returns>The bearing at the end of this leg (in radians).</returns>
+        internal double GetExitBearing(IPosition bc, double bcBearing, double sfac)
+        {
+            IPosition center;
+            IPosition ec;
+            double bearingToBC;
+            double ecBearing;
+            GetPositions(bc, bcBearing, sfac, out center, out bearingToBC, out ec, out ecBearing);
+
+            return ecBearing;
         }
 
         /// <summary>
@@ -487,6 +507,7 @@ namespace Backsight.Editor
             return m_Circle;
         }
 
+        /*
         /// <summary>
         /// Defines the geometry for this leg.
         /// </summary>
@@ -533,7 +554,9 @@ namespace Backsight.Editor
             terminal = span.EC;
             bearing = span.ExitBearing;
         }
+        */
 
+        /*
         /// <summary>
         /// Adds a circle to the map, suitable for this leg. Called by <see cref="CircularLeg.Save"/>.
         /// </summary>
@@ -553,6 +576,7 @@ namespace Backsight.Editor
             m_Circle = creator.MapModel.AddCircle(centerPoint, span.ScaledRadius);
             return m_Circle;
         }
+        */
 
         /// <summary>
         /// Rollforward this leg.
@@ -1271,6 +1295,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
              */
         }
 
+        /*
         /// <summary>
         /// Records the circle for this leg. This also ensures that the circle has the
         /// correct radius. However, it does NOT alter the circle's center position, since
@@ -1286,6 +1311,7 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             if (m_Circle!=null)
                 m_Circle.Radius = span.ScaledRadius;
         }
+        */
 
         /// <summary>
         /// Loads a list of the features that were created by this leg.

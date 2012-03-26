@@ -14,14 +14,10 @@
 // </remarks>
 
 using System;
-using System.Text;
 using System.Drawing;
-using System.Diagnostics;
-using System.Collections.Generic;
 
 using Backsight.Editor.Operations;
 using Backsight.Geometry;
-using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -111,14 +107,8 @@ namespace Backsight.Editor
         /// <param name="sfac">Scaling factor to apply. Default=1.0</param>
         public override void Project(ref IPosition pos, ref double bearing, double sfac)
         {
-            // Add on any initial angle (it may be a deflection).
-            if (Math.Abs(m_StartAngle) > Double.Epsilon)
-            {
-                if (m_IsDeflection)
-                    bearing += m_StartAngle;
-                else
-                    bearing += (m_StartAngle - Math.PI);
-            }
+            // Add on any initial angle
+            bearing = AddStartAngle(bearing);
 
             // Get the total length of the leg.
             double length = GetTotal() * sfac;
@@ -131,6 +121,7 @@ namespace Backsight.Editor
             pos = new Position(pos.X + dE, pos.Y + dN);
         }
 
+        /*
         /// <summary>
         /// Draws this leg
         /// </summary>
@@ -162,6 +153,7 @@ namespace Backsight.Editor
             // Return the end position of the last span.
             pos = span.End;
         }
+        */
 
         /// <summary>
         /// Obtains the geometry for spans along this leg.
@@ -281,6 +273,7 @@ namespace Backsight.Editor
                 return bearing + m_StartAngle - Math.PI;
         }
 
+        /*
         /// <summary>
         /// Defines the geometry for this leg.
         /// </summary>
@@ -291,8 +284,6 @@ namespace Backsight.Editor
         /// <param name="sfac">Scale factor to apply to distances.</param>
         internal override void CreateGeometry(EditingContext ctx, ref IPosition terminal, ref double bearing, double sfac)
         {
-            // Much like the Save method...
-
             // Add on any initial angle (it may be a deflection).
             bearing = AddStartAngle(bearing);
 
@@ -323,6 +314,7 @@ namespace Backsight.Editor
             // Return the end position of the last span.
             terminal = span.End;
         }
+        */
 
         /// <summary>
         /// Rollforward this leg.
@@ -398,6 +390,7 @@ namespace Backsight.Editor
              */
         }
 
+        /*
         PointFeature EnsurePointExists(FeatureFactory ff, IPointGeometry pg, List<PointFeature> createdPoints, PointFeature veryEnd)
         {
             // If the position coincides with the very last point in a connection path,
@@ -421,7 +414,9 @@ namespace Backsight.Editor
             //ff.CreatePointFeature();
             return null;
         }
+        */
 
+        /*
         /// <summary>
         /// Saves a newly inserted span.
         /// </summary>
@@ -475,6 +470,7 @@ namespace Backsight.Editor
             span.HasLine = true;
             return map.AddLine(pS, pE, map.DefaultLineType, creator);
         }
+        */
 
         /*
 //	@mfunc	Draw any angles for this leg.

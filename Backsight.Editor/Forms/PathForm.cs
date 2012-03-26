@@ -610,6 +610,7 @@ namespace Backsight.Editor.Forms
             return false;
         }
 
+        /*
         /// <summary>
         /// Adjusts a validated path.
         /// </summary>
@@ -662,6 +663,7 @@ namespace Backsight.Editor.Forms
                 return;
             }
         }
+        */
 
         /// <summary>
         /// Takes action when the adjustment result dialog has been cancelled (user

@@ -338,20 +338,92 @@ namespace Backsight.Editor.Operations
         {
             // Get the rotation & scale factor to apply.
             PathInfo pd = new PathInfo(this);
-            double rotation = pd.RotationInRadians;
-            double sfac = pd.ScaleFactor;
 
             // Go through each leg, creating the geometry for each span...
+            // (the following is based on the logic of PathInfo.Render)
 
             // Initialize position to the start of the path.
             IPosition gotend = m_From;
 
             // Initial bearing is whatever the desired rotation is.
-            double bearing = rotation;
+            double bearing = pd.RotationInRadians;
+            double sfac = pd.ScaleFactor;
 
-            // Go through each leg, asking them to make features.
-            foreach (Leg leg in m_Legs)
-                leg.CreateGeometry(ctx, ref gotend, ref bearing, sfac);
+            for (int i = 0; i < m_Legs.Count; i++)
+            {
+                Leg leg = m_Legs[i];
+
+                // Include any angle specified at the start of the leg
+                StraightLeg sLeg = (leg as StraightLeg);
+                if (sLeg != null)
+                    bearing = sLeg.AddStartAngle(bearing);
+
+                // Determine exit bearing for circular leg (do it now, in case an extra leg complicates matters below)
+                double exitBearing = bearing;
+                CircularLeg cLeg = (leg as CircularLeg);
+                if (cLeg != null)
+                {
+                    IPosition center, ec;
+                    double bear2bc;
+                    cLeg.GetPositions(gotend, bearing, sfac, out center, out bear2bc, out ec, out exitBearing);
+
+                    // The circle should have been created already, but with an undefined radius
+                    Circle circle = cLeg.Circle;
+                    Debug.Assert(circle != null);
+                    circle.Radius = cLeg.Radius * sfac;
+                    circle.CenterPoint.ApplyPointGeometry(ctx, PointGeometry.Create(center));
+                }
+
+                // Obtain geometry for each span and assign to attached features
+                ILineGeometry[] sections = leg.GetSections(gotend, bearing, sfac);
+                AttachGeometry(ctx, leg.Spans, sections);
+
+                // If we're dealing with the first face of a staggered leg, render the second face
+                if (leg.FaceNumber == 1)
+                {
+                    i++;
+                    Debug.Assert(i < m_Legs.Count);
+                    leg = m_Legs[i];
+                    Debug.Assert(leg is ExtraLeg);
+                    Debug.Assert(leg.FaceNumber == 2);
+
+                    sections = leg.GetSections(gotend, bearing, sfac);
+                    AttachGeometry(ctx, leg.Spans, sections);
+                }
+
+                // Get to the end of the leg
+                gotend = sections[sections.Length - 1].End;
+                bearing = exitBearing;
+            }
+        }
+
+        /// <summary>
+        /// Attaches geometry to the spans along a leg.
+        /// </summary>
+        /// <param name="ctx">The context in which the geometry is being defined.</param>
+        /// <param name="spans">Information about each observed span</param>
+        /// <param name="sections">The geometry that corresponds to each span</param>
+        void AttachGeometry(EditingContext ctx, SpanInfo[] spans, ILineGeometry[] sections)
+        {
+            Debug.Assert(spans.Length == sections.Length);
+
+            for (int i = 0; i < spans.Length; i++)
+            {
+                SpanInfo data = spans[i];
+                Feature feat = data.CreatedFeature;
+                PointFeature endPoint = null;
+
+                if (feat is PointFeature)
+                    endPoint = (PointFeature)feat;
+                else if (feat is LineFeature)
+                    endPoint = (feat as LineFeature).EndPoint;
+
+                if (endPoint != null && endPoint.PointGeometry == null)
+                {
+                    PointGeometry pg = PointGeometry.Create(sections[i].End);
+                    endPoint.ApplyPointGeometry(ctx, pg);
+                }
+            }
         }
 
         /// <summary>
@@ -393,6 +465,7 @@ namespace Backsight.Editor.Operations
             return result;
         }
 
+        /*
         /// <summary>
         /// Returns adjustment parameters (the bare bones).
         /// </summary>
@@ -410,6 +483,7 @@ namespace Backsight.Editor.Operations
 
             return pd.Adjust(out dN, out dE, out precision, out length, out rotation, out sfac);
         }
+        */
 
         /// <summary>
         /// Returns the total number of observed spans for this connection path.
@@ -705,18 +779,11 @@ void CePath::CreateAngleText ( CPtrList& text
         /// <returns>The precision</returns>
         internal uint GetPrecision()
         {
-            double de;				// Misclosure in eastings
-            double dn;				// Misclosure in northings
-            double prec;			// Precision
-            double length;			// Total observed length
-            double rotation;		// Rotation for adjustment
-            double sfac;			// Adjustment scaling factor
-
             PathInfo pd = new PathInfo(this);
-            pd.Adjust(out dn, out de, out prec, out length, out rotation, out sfac);
+            double prec = pd.Precision;
 
             // If it's REALLY good, return 1 billion.
-            if (prec > (double)0xFFFFFFFF)
+            if (prec > (double)0xFFFFFFFF || prec == 0.0)
                 return 1000000000;
             else
                 return (uint)prec;
@@ -924,6 +991,7 @@ void CePath::CreateAngleText ( CPtrList& text
         }
         */
 
+        /*
         /// <summary>
         /// Gets the positions that define the end points of each leg in
         /// this path. The first position corresponds to the from-point,
@@ -962,7 +1030,9 @@ void CePath::CreateAngleText ( CPtrList& text
 
             return result;
         }
+        */
 
+        /*
         /// <summary>
         /// Returns the two end positions for a specific leg in this connection path.
         /// </summary>
@@ -997,6 +1067,7 @@ void CePath::CreateAngleText ( CPtrList& text
 
             return true;
         }
+        */
 
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.

@@ -13,12 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Diagnostics;
-
-using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
-using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -33,7 +28,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// The observed distance for the span. May be null when dealing
-        /// with a cul-de-sac that was specified with center point and central angle).
+        /// with a cul-de-sac that was specified with center point and central angle.
         /// </summary>
         Distance m_Distance;
 
@@ -66,7 +61,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// The observed distances for the span. May be null when dealing
-        /// with a cul-de-sac that was specified with center point and central angle).
+        /// with a cul-de-sac that was specified with center point and central angle.
         /// </summary>
         internal Distance ObservedDistance
         {
@@ -128,6 +123,7 @@ namespace Backsight.Editor
             get { return !IsOmitPoint; }
         }
 
+        /*
         /// <summary>
         /// Is this span marked as a miss-connect (meaning that a line should not be
         /// added to the map).
@@ -137,12 +133,13 @@ namespace Backsight.Editor
             get { return (m_Switches & LegItemFlag.MissConnect)!=0; }
             set { SetFlag(LegItemFlag.MissConnect, value); }
         }
+        */
 
         /// <summary>
         /// Should the end point for this span be omitted (determined via
         /// the relevant flag bit in the <see cref="Flags"/> property).
         /// </summary>
-        internal bool IsOmitPoint
+        bool IsOmitPoint
         {
             get { return (m_Switches & LegItemFlag.OmitPoint)!=0; }
             set { SetFlag(LegItemFlag.OmitPoint, value); }
