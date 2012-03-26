@@ -481,7 +481,7 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Discards any IDs that may have been reserved (but which are no longer needed). This
-        /// should be called in situations where a use cancels from a data entry dialog.
+        /// should be called in situations where a user cancels from a data entry dialog.
         /// </summary>
         internal void FreeAllReservedIds()
         {
