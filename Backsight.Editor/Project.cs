@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using Backsight.Environment;
 
 namespace Backsight.Editor
 {
@@ -214,7 +215,7 @@ namespace Backsight.Editor
         void LoadDataFiles(string folderName, uint[] fileNums)
         {
             Trace.Write("Reading data...");
-            EditDeserializer ed = new EditDeserializer(m_MapModel);
+            EditDeserializer ed = new EditDeserializer(this);
             Session lastSession = null;
             IdManager idMan = m_MapModel.IdManager;
 
@@ -328,6 +329,54 @@ namespace Backsight.Editor
             string dataFile = Path.Combine(dataFolder, ProjectDatabase.GetDataFileName(c.EditSequence));
             string changeText = EditSerializer.GetSerializedString<Change>(DataField.Edit, c);
             File.WriteAllText(dataFile, changeText);
+        }
+
+        /// <summary>
+        /// The default entity type for point features.
+        /// </summary>
+        internal IEntity DefaultPointType
+        {
+            get
+            {
+                int entityId = m_Settings.DefaultPointType;
+                return EnvironmentContainer.FindEntityById(entityId);
+            }
+        }
+
+        /// <summary>
+        /// The default entity type for line features.
+        /// </summary>
+        internal IEntity DefaultLineType
+        {
+            get
+            {
+                int entityId = m_Settings.DefaultLineType;
+                return EnvironmentContainer.FindEntityById(entityId);
+            }
+        }
+
+        /// <summary>
+        /// The default entity type for polygon labels.
+        /// </summary>
+        internal IEntity DefaultPolygonType
+        {
+            get
+            {
+                int entityId = m_Settings.DefaultPolygonType;
+                return EnvironmentContainer.FindEntityById(entityId);
+            }
+        }
+
+        /// <summary>
+        /// The default entity type for miscellaneous text features.
+        /// </summary>
+        internal IEntity DefaultTextType
+        {
+            get
+            {
+                int entityId = m_Settings.DefaultTextType;
+                return EnvironmentContainer.FindEntityById(entityId);
+            }
         }
     }
 }

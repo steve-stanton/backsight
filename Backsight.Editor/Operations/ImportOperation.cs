@@ -28,6 +28,11 @@ namespace Backsight.Editor.Operations
         #region Class data
 
         /// <summary>
+        /// A name that identifies the source of the data (e.g. a file name).
+        /// </summary>
+        string m_Source;
+
+        /// <summary>
         /// The features that were imported.
         /// </summary>
         Feature[] m_Data;
@@ -42,6 +47,7 @@ namespace Backsight.Editor.Operations
         internal ImportOperation()
             : base()
         {
+            m_Source = String.Empty;
             m_Data = null;
         }
 
@@ -53,6 +59,11 @@ namespace Backsight.Editor.Operations
         internal ImportOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
+            if (editDeserializer.IsNextField(DataField.Source))
+                m_Source = editDeserializer.ReadString(DataField.Source);
+            else
+                m_Source = String.Empty;
+
             m_Data = editDeserializer.ReadPersistentArray<Feature>(DataField.Features);
         }
 
@@ -64,6 +75,7 @@ namespace Backsight.Editor.Operations
         /// <param name="source">The data source to use for the import</param>
         internal void Execute(FileImportSource source)
         {
+            m_Source = source.FileName;
             m_Data = source.Load(this);
             Complete();
         }
@@ -135,6 +147,7 @@ namespace Backsight.Editor.Operations
         public override void WriteData(EditSerializer editSerializer)
         {
             base.WriteData(editSerializer);
+            editSerializer.WriteString(DataField.Source, m_Source);
             editSerializer.WritePersistentArray<Feature>(DataField.Features, this.Features);
         }
     }

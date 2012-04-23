@@ -546,6 +546,9 @@ namespace Backsight.Editor
                 AttributeData.Load(feats);
                 mapModel.AddToIndex(feats);
 
+                // Define user-perceived IDs if necessary
+                CreateIds(feats);
+
                 // Ensure user-perceived ID objects have been indexed too
                 mapModel.AddFeatureIds(feats);
             }
@@ -562,6 +565,17 @@ namespace Backsight.Editor
 
             // Save the edit to the database
             m_Session.SaveOperation(this);
+        }
+
+        /// <summary>
+        /// Creates user-perceived IDs for features that should have one.
+        /// </summary>
+        /// <param name="features">The features to assign IDs to</param>
+        /// <remarks>This implementation does nothing. The <see cref="LineSubdivisionOperation"/>
+        /// and <see cref="PathOperation"/> class override.</remarks>
+        internal virtual void CreateIds(Feature[] features)
+        {
+            // Do nothing
         }
 
         /// <summary>

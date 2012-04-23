@@ -15,8 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 
 using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
@@ -33,33 +31,16 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// First angle. Either at the BC, or a central angle. In radians. It's
-        /// a central angle if the <see cref="IsCulDeSac"/> property is true.
+        /// Observations defining the shape of the circular leg.
         /// </summary>
-        double m_Angle1;
-
-        /// <summary>
-        /// The angle at the EC (in radians). This will only be defined if the FLG_TWOANGLES
-        /// flag bit is set (if not set, this value will be 0.0).
-        /// </summary>
-        double m_Angle2;
-
-        /// <summary>
-        /// Observed radius. There will be a slight difference betweeen this value and the
-        /// adjusted radius available via <see cref="m_Circle"/>
-        /// </summary>
-        Distance m_Radius;
+        readonly CircularLegMetrics m_Metrics;
 
         /// <summary>
         /// The circle that this leg sits on. The radius defined as part of this instance is
-        /// the adjusted radius (see also <seealso cref="m_Radius"/>)
+        /// the adjusted radius. This may well be slightly different from the observed radius that is
+        /// defined as part of the leg metrics.
         /// </summary>
         Circle m_Circle;
-
-        /// <summary>
-        /// Flag bits
-        /// </summary>
-        CircularLegFlag m_Flag;
 
         #endregion
 
@@ -74,22 +55,10 @@ namespace Backsight.Editor
         internal CircularLeg(Distance radius, bool clockwise, int nspan)
             : base(nspan)
         {
-            // Angles were not specified.
-            m_Angle1 = 0.0;
-            m_Angle2 = 0.0;
-
-            // Start out with undefined flag.
-            m_Flag = 0;
-
-            // Remember the radius.
-            m_Radius = radius;
+            m_Metrics = new CircularLegMetrics(radius, clockwise);
 
             // The circle for this leg won't be known till we create a span.
             m_Circle = null;
-
-            // Remember if its NOT a clockwise curve.
-            if (!clockwise)
-                m_Flag |= CircularLegFlag.CounterClockwise;
         }
 
         #endregion
@@ -97,33 +66,25 @@ namespace Backsight.Editor
         /// <summary>
         /// The circle that this leg sits on.
         /// </summary>
-        public override Circle Circle
+        internal override Circle Circle
         {
             get { return m_Circle; }
         }
 
         /// <summary>
-        /// Observed radius.
-        /// </summary>
-        internal Distance ObservedRadius
-        {
-            get { return m_Radius; }
-        }
-
-        /// <summary>
         /// The total length of this leg, in meters on the ground.
         /// </summary>
-        public override ILength Length
+        internal override ILength Length
         {
             get
             {
                 // If we have a cul-de-sac, we can determine the length using
                 // just the central angle & the radius. Otherwise ask the base
                 // class to return the total observed length.
-                if (IsCulDeSac)
+                if (m_Metrics.IsCulDeSac)
                 {
-                    double radius = m_Radius.Meters;
-                    return new Length((MathConstants.PIMUL2 - m_Angle1) * radius);
+                    double radius = this.RadiusInMeters;
+                    return new Length((MathConstants.PIMUL2 - m_Metrics.CentralAngle) * radius);
                 }
                 else
                     return new Length(base.GetTotal());
@@ -139,7 +100,7 @@ namespace Backsight.Editor
         /// <param name="bearing">The bearing at the end of the previous leg. Updated for
         /// this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances (default=1.0).</param>
-        public override void Project(ref IPosition pos, ref double bearing, double sfac)
+        internal override void Project(ref IPosition pos, ref double bearing, double sfac)
         {
             // Get circle info
             IPosition center, ec;
@@ -149,6 +110,14 @@ namespace Backsight.Editor
             // Stick results into return variables
             pos = ec;
             bearing = ebearing;
+        }
+
+        /// <summary>
+        /// Observations defining the shape of the circular leg.
+        /// </summary>
+        internal CircularLegMetrics Metrics
+        {
+            get { return m_Metrics; }
         }
 
         /// <summary>
@@ -162,11 +131,11 @@ namespace Backsight.Editor
         /// <param name="bear2bc">Bearing from the centre to the BC.</param>
         /// <param name="ec">Position of the EC.</param>
         /// <param name="ebearing">Exit bearing.</param>
-        public void GetPositions(IPosition bc, double sbearing, double sfac,
+        internal void GetPositions(IPosition bc, double sbearing, double sfac,
                             out IPosition center, out double bear2bc, out IPosition ec, out double ebearing)
         {
             // Have we got a cul-de-sac?
-            bool cul = IsCulDeSac;
+            bool cul = m_Metrics.IsCulDeSac;
 
             // Remember reverse bearing if we have a cul-de-sac.
             double revbearing = sbearing + Math.PI;
@@ -175,10 +144,10 @@ namespace Backsight.Editor
             double bearing = sbearing;
 
             // Counter-clockwise?
-            bool ccw = (m_Flag & CircularLegFlag.CounterClockwise)!=0;
+            bool ccw = (m_Metrics.IsClockwise == false);
 
             // Get radius in meters on the ground (and scale it).
-            double radius = m_Radius.Meters * sfac;
+            double radius = RadiusInMeters * sfac;
 
             // Get to the center (should really get to the P.I., but not sure
             // where that is when the curve is > half a circle -- need to
@@ -186,17 +155,21 @@ namespace Backsight.Editor
 
             if (cul)
             {
+                double halfAngle = m_Metrics.CentralAngle * 0.5;
+
                 if (ccw)
-                    bearing -= (m_Angle1*0.5);
+                    bearing -= halfAngle;
                 else
-                    bearing += (m_Angle1*0.5);
+                    bearing += halfAngle;
             }
             else
             {
+                double entryAngle = m_Metrics.EntryAngle;
+
                 if (ccw)
-                    bearing -= (Math.PI-m_Angle1);
+                    bearing -= (Math.PI - entryAngle);
                 else
-                    bearing += (Math.PI-m_Angle1);
+                    bearing += (Math.PI - entryAngle);
             }
 
             double dE = radius * Math.Sin(bearing);
@@ -215,10 +188,12 @@ namespace Backsight.Editor
             // to the total circumference.
             if (cul)
             {
+                double ca = m_Metrics.CentralAngle;
+
                 if (ccw)
-                    bearing -= (Math.PI-m_Angle1);
+                    bearing -= (Math.PI - ca);
                 else
-                    bearing += (Math.PI-m_Angle1);
+                    bearing += (Math.PI - ca);
             }
             else
             {
@@ -245,11 +220,7 @@ namespace Backsight.Editor
             else
             {
                 // If we have a second angle, use that
-                double angle;
-                if (IsTwoAngles)
-                    angle = m_Angle2;
-                else
-                    angle = m_Angle1;
+                double angle = m_Metrics.ExitAngle;
 
                 if (ccw)
                     ebearing = bearing - (Math.PI-angle);
@@ -257,46 +228,6 @@ namespace Backsight.Editor
                     ebearing = bearing + (Math.PI-angle);
             }
         }
-
-        /*
-        /// <summary>
-        /// Draws this leg
-        /// </summary>
-        /// <param name="display">The display to draw to</param>
-        /// <param name="pos">The position for the start of the leg. Updated to be
-        /// the position for the end of the leg.</param>
-        /// <param name="bearing">The bearing at the end of the previous leg. Updated
-        /// for this leg.</param>
-        /// <param name="sfac">Scale factor to apply to distances.</param>
-        public override void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac)
-        {
-            //	Create an undefined circular span
-            CircularSpan span = new CircularSpan(this, pos, bearing, sfac);
-
-            // Draw each visible span in turn. Note that for cul-de-sacs, there may be
-            // no observed spans.
-
-            int nspan = this.Count;
-
-            if (nspan==0)
-            {
-                span.Get(this, 0);
-                span.Render(display);
-            }
-            else
-            {
-                for (int i = 0; i < nspan; i++)
-                {
-                    span.Get(this, i);
-                    span.Render(display);
-                }
-            }
-
-            // Update BC info to refer to the EC.
-            pos = span.EC;
-            bearing = span.ExitBearing;
-        }
-        */
 
         /// <summary>
         /// Calculates the exit bearing for this leg.
@@ -328,7 +259,7 @@ namespace Backsight.Editor
         internal override ILineGeometry[] GetSpanSections(IPosition bc, double bcBearing, double sfac, SpanInfo[] spans)
         {
             // Can't do anything if the leg radius isn't defined
-            if (m_Radius == null)
+            if (m_Metrics.ObservedRadius == null)
                 throw new InvalidOperationException("Cannot create sections for circular leg with undefined radius");
 
             var result = new ILineGeometry[spans.Length];
@@ -346,7 +277,7 @@ namespace Backsight.Editor
             // Handle case where the leg is a cul-de-sac with no observed spans
             if (spans.Length == 1 && spans[0].ObservedDistance == null)
             {
-                result[0] = new CircularArcGeometry(circle, bc, ec, IsClockwise);
+                result[0] = new CircularArcGeometry(circle, bc, ec, m_Metrics.IsClockwise);
                 return result;
             }
 
@@ -354,7 +285,7 @@ namespace Backsight.Editor
             /// the CA & Radius, versus the observed distances that were actually specified). For curves that
             /// are not cul-de-sacs, this will be 1.0
             double culFactor = 1.0;
-            if (IsCulDeSac)
+            if (m_Metrics.IsCulDeSac)
             {
                 double obsv = GetTotal();
                 if (obsv > MathConstants.TINY)
@@ -363,8 +294,8 @@ namespace Backsight.Editor
 
             IPosition sPos = bc;
             IPosition ePos = null;
-            bool isClockwise = IsClockwise;
-            double radius = m_Radius.Meters;
+            bool isClockwise = m_Metrics.IsClockwise;
+            double radius = RadiusInMeters;
             double edist = 0.0;
 
             for (int i = 0; i < result.Length; i++, sPos = ePos)
@@ -425,43 +356,13 @@ namespace Backsight.Editor
 
             double bearing;
 
-            if (IsClockwise)
+            if (m_Metrics.IsClockwise)
                 bearing = bearingToBC + angle;
             else
                 bearing = bearingToBC - angle;
 
             // Calculate the position using the scaled radius.
             return Geom.Polar(center, bearing, radius * sfac);
-        }
-
-
-        /// <summary>
-        /// Draws a previously saved leg.
-        /// </summary>
-        /// <param name="preview">True if the path should be drawn in preview
-        /// mode (i.e. in the normal construction colour, with miss-connects
-        /// shown as dotted lines).</param>
-        internal override void Draw(bool preview)
-        {
-            // Identical to StraightLeg.Draw...
-
-            EditingController ec = EditingController.Current;
-            ISpatialDisplay display = ec.ActiveDisplay;
-            IDrawStyle style = ec.DrawStyle;
-
-            int nfeat = this.Count;
-
-            for (int i = 0; i < nfeat; i++)
-            {
-                Feature feat = GetFeature(i);
-                if (feat != null)
-                {
-                    if (preview)
-                        feat.Draw(display, Color.Magenta);
-                    else
-                        feat.Render(display, style);
-                }
-            }
         }
 
         /// <summary>
@@ -486,7 +387,7 @@ namespace Backsight.Editor
             // We have to create a geometry object at this stage, so that the circle can be
             // cross-referenced to created arcs. However, it's not fully defined because the
             // circle radius will likely be zero at this stage.
-            result.Geometry = new ArcGeometry(m_Circle, from, to, IsClockwise);
+            result.Geometry = new ArcGeometry(m_Circle, from, to, m_Metrics.IsClockwise);
 
             return result;
         }
@@ -506,77 +407,6 @@ namespace Backsight.Editor
             m_Circle.AddReferences();
             return m_Circle;
         }
-
-        /*
-        /// <summary>
-        /// Defines the geometry for this leg.
-        /// </summary>
-        /// <param name="ctx">The context in which the geometry is being calculated</param>
-        /// <param name="terminal">The position for the start of the leg. Updated to be
-        /// the position for the end of the leg.</param>
-        /// <param name="bearing">The bearing at the end of the previous leg. Updated for this leg.</param>
-        /// <param name="sfac">Scale factor to apply to distances.</param>
-        internal override void CreateGeometry(EditingContext ctx, ref IPosition terminal, ref double bearing, double sfac)
-        {
-            // Create an undefined circular span
-            CircularSpan span = new CircularSpan(this, terminal, bearing, sfac);
-
-            // The circle should have been created already, but with an undefined radius
-            Debug.Assert(m_Circle != null);
-            m_Circle.Radius = span.ScaledRadius;
-            m_Circle.CenterPoint.ApplyPointGeometry(ctx, PointGeometry.Create(span.Center));
-
-            // Create geometry for each span. Note that for cul-de-sacs, there may be
-            // no observed spans.
-            int nspan = Math.Max(1, this.Count);
-
-            for (int i = 0; i < nspan; i++)
-            {
-                // Get info for the current span (this defines the
-                // adjusted start and end positions, among other things).
-                span.Get(this, i);
-
-                // Create the geometry for the point at the end of the span
-                SpanInfo data = GetSpanData(i);
-                Feature feat = data.CreatedFeature;
-                PointFeature endPoint = null;
-
-                if (feat is PointFeature)
-                    endPoint = (PointFeature)feat;
-                else if (feat is LineFeature)
-                    endPoint = (feat as LineFeature).EndPoint;
-
-                if (endPoint != null && endPoint.PointGeometry == null)
-                    endPoint.ApplyPointGeometry(ctx, PointGeometry.Create(span.End));
-            }
-
-            // Update BC info to refer to the EC.
-            terminal = span.EC;
-            bearing = span.ExitBearing;
-        }
-        */
-
-        /*
-        /// <summary>
-        /// Adds a circle to the map, suitable for this leg. Called by <see cref="CircularLeg.Save"/>.
-        /// </summary>
-        /// <param name="creator">The edit operation containing the leg</param>
-        /// <param name="createdPoints">Newly created point features</param>
-        /// <param name="span">The span that's being saved</param>
-        /// <returns>The circle for the span (may be a circle that previously existed)</returns>
-        Circle AddCircle(PathOperation creator, List<PointFeature> createdPoints, CircularSpan span)
-        {
-            // If a circle was previously created, just return that.
-            if (m_Circle!=null)
-                return m_Circle;
-
-            // Add the circle (checks if it's already there).
-            // This will cross-reference the center point to the circle.
-            PointFeature centerPoint = creator.EnsurePointExists(span.Center, createdPoints);
-            m_Circle = creator.MapModel.AddCircle(centerPoint, span.ScaledRadius);
-            return m_Circle;
-        }
-        */
 
         /// <summary>
         /// Rollforward this leg.
@@ -899,177 +729,15 @@ void CeCircularLeg::DrawAngles ( const CePoint* const pFrom
         */
 
         /// <summary>
-        /// The central angle for this leg (assuming the <see cref="IsCulDeSac"/> property is true)
+        /// The observed radius, in meters (0 if the radius is undefined).
         /// </summary>
-        internal double CentralAngle
-        {
-            get { return m_Angle1; }
-        }
-
-        /// <summary>
-        /// The entry angle for this leg (assuming it isn't a cul-de-sac -
-        /// see the <see cref="IsCulDeSac"/> property)
-        /// </summary>
-        internal double EntryAngle
-        {
-            get { return m_Angle1; }
-        }
-
-        /// <summary>
-        /// The exit angle for this leg (assuming it isn't a cul-de-sac -
-        /// see the <see cref="IsCulDeSac"/> property)
-        /// </summary>
-        internal double ExitAngle
+        internal double RadiusInMeters
         {
             get
             {
-                if (IsTwoAngles)
-                    return m_Angle2;
-                else
-                    return m_Angle1;
+                Distance d = m_Metrics.ObservedRadius;
+                return (d == null ? 0.0 : d.Meters);
             }
-        }
-
-        /// <summary>
-        /// Defines this leg using the info in another leg. This does NOT
-        /// touch the base class in any way.
-        /// </summary>
-        /// <param name="master"></param>
-        void Define(CircularLeg master)
-        {
-            m_Angle1 = master.m_Angle1;
-            m_Angle2 = master.m_Angle2;
-            m_Radius = master.m_Radius;
-            m_Flag = master.m_Flag;
-            m_Circle = master.m_Circle;
-        }
-
-        /// <summary>
-        /// Is this leg has been defined?. This just confirms that the
-        /// radius is defined.
-        /// </summary>
-        bool IsDefined
-        {
-            get { return (m_Radius!=null && m_Radius.IsDefined); }
-        }
-
-        /// <summary>
-        /// Is the leg directed clockwise?
-        /// </summary>
-        public bool IsClockwise
-        {
-            get { return (m_Flag & CircularLegFlag.CounterClockwise) == 0; }
-            set { SetFlag(CircularLegFlag.CounterClockwise, !value); }
-        }
-
-        /// <summary>
-        /// Records the radius of this leg.
-        /// </summary>
-        /// <param name="radius">The radius to assign.</param>
-        internal void SetRadius(Distance radius)
-        {
-            m_Radius = radius;
-        }
-
-        /// <summary>
-        /// The observed radius, in meters
-        /// </summary>
-        public double Radius
-        {
-            get { return (m_Radius == null ? 0.0 : m_Radius.Meters); }
-        }
-
-        /// <summary>
-        /// Sets the entry (BC) angle. Note that when setting both the entry
-        /// and exit angles, this function should be called BEFORE a call to
-        /// <see cref="SetExitAngle"/>. This function should NOT be called
-        /// for cul-de-sacs (use <see cref="SetCentralAngle"/> instead).
-        /// </summary>
-        /// <param name="bangle">The angle to assign, in radians.</param>
-        internal void SetEntryAngle(double bangle)
-        {
-            // Store the specified angle.
-            m_Angle1 = bangle;
-
-            // This leg is not a cul-de-sac.
-            IsCulDeSac = false;
-        }
-
-        /// <summary>
-        /// Sets the exit (BC) angle. Note that when setting both the entry and
-        /// exit angles, this function should be called AFTER a call to
-        /// <see cref="SetEntryAngle"/>. This function should NOT be called
-        /// for cul-de-sacs (use <see cref="SetCentralAngle"/> instead).
-        /// </summary>
-        /// <param name="eangle">The angle to assign, in radians.</param>
-        internal void SetExitAngle(double eangle)
-        {
-            // If the angle is the same as the entry angle, store an
-            // undefined exit angle, and set the flag bit to indicate
-            // that only the entry angle is valid.
-
-            if (Math.Abs(m_Angle1 - eangle) < MathConstants.TINY)
-            {
-                m_Angle2 = 0.0;
-                IsTwoAngles = false;
-            }
-            else
-            {
-                m_Angle2 = eangle;
-                IsTwoAngles = true;
-            }
-
-            // This leg is not a cul-de-sac.
-            IsCulDeSac = false;
-        }
-
-        /// <summary>
-        /// Sets the central angle for this leg. The leg will be flagged
-        /// as being a cul-de-sac. 
-        /// </summary>
-        /// <param name="cangle">The central angle, in radians.</param>
-        internal void SetCentralAngle(double cangle)
-        {
-            // Store the central angle.
-            m_Angle1 = cangle;
-
-            // The other angle is unused.
-            m_Angle2 = 0.0;
-            IsTwoAngles = false;
-
-            // This leg is a cul-de-sac
-            IsCulDeSac = true;
-        }
-
-        /// <summary>
-        /// Is the leg flagged as a cul-de-sac?
-        /// </summary>
-        public bool IsCulDeSac
-        {
-            get { return (m_Flag & CircularLegFlag.CulDeSac) != 0; }
-            private set { SetFlag(CircularLegFlag.CulDeSac, value); }
-        }
-
-        /// <summary>
-        /// Does this leg have two angles?
-        /// </summary>
-        bool IsTwoAngles
-        {
-            get { return (m_Flag & CircularLegFlag.TwoAngles) != 0; }
-            set { SetFlag(CircularLegFlag.TwoAngles, value); }
-        }
-
-        /// <summary>
-        /// Sets flag bit(s)
-        /// </summary>
-        /// <param name="flag">The flag bit(s) to set</param>
-        /// <param name="setting">True to set, false to clear</param>
-        void SetFlag(CircularLegFlag flag, bool setting)
-        {
-            if (setting)
-                m_Flag |= flag;
-            else
-                m_Flag &= (~flag);
         }
 
         /// <summary>

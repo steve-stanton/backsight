@@ -31,6 +31,7 @@ namespace Backsight.Editor
         Y,
         Z,
         Id,
+        Ids,
         Point,
         Points,
         NewPoint,
@@ -133,5 +134,8 @@ namespace Backsight.Editor
         GroupId,
         LowestId,
         HighestId,
+        Source,
+        PointType,
+        LineType,
     }
 }

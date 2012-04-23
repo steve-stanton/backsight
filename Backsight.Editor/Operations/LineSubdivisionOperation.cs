@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Editor.Observations;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
 {
@@ -72,7 +73,7 @@ namespace Backsight.Editor.Operations
         {
             m_Line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
             m_Face = editDeserializer.ReadPersistent<LineSubdivisionFace>(DataField.Face);
-            FeatureStub[] sections = editDeserializer.ReadFeatureStubArray(DataField.Result);
+            //FeatureStub[] sections = editDeserializer.ReadFeatureStubArray(DataField.Result);
 
             if (editDeserializer.IsNextField(DataField.OtherSide))
             {
@@ -82,11 +83,59 @@ namespace Backsight.Editor.Operations
                 OtherSide.OtherSide = this;
             }
 
+            Project p = editDeserializer.Project;
+            IEntity pointType = editDeserializer.ReadEntity(DataField.PointType);
+            FeatureStub[] sections = CreateStubs(p, pointType, m_Line.EntityType);
+
             DeserializationFactory result = new DeserializationFactory(this, sections);
             ProcessFeatures(result);
+
+            // Apply any IDs
+            if (editDeserializer.IsNextField(DataField.Ids))
+                editDeserializer.ReadIdMappings(DataField.Ids);
         }
 
         #endregion
+
+        /// <summary>
+        /// Creates stubs for all items that will be created by executing this edit.
+        /// </summary>
+        /// <param name="p">The project the stubs relate to.</param>
+        /// <param name="pointType">The entity type for created points</param>
+        /// <param name="lineType">The entity type for created lines</param>
+        /// <returns></returns>
+        FeatureStub[] CreateStubs(Project p, IEntity pointType, IEntity lineType)
+        {
+            List<FeatureStub> stubList = new List<FeatureStub>();
+            uint sequence = this.InternalId.ItemSequence;
+
+            // Reserve two items for each span (except for the last)
+            int nSpan = m_Face.ObservedLengths.Length;
+            for (int i=0; i<nSpan; i++)
+            {
+                if (i < (nSpan-1))
+                    stubList.Add(CreateStub(++sequence, pointType));
+
+                stubList.Add(CreateStub(++sequence, lineType));
+            }
+
+            // Remember the last internal ID that has been allocated
+            p.SetLastItem(sequence);
+
+            return stubList.ToArray();
+        }
+
+        /// <summary>
+        /// Creates a stub for an item in this path.
+        /// </summary>
+        /// <param name="itemSequence">The sequence number to assign to the stub</param>
+        /// <param name="ent">The entity type for the stub</param>
+        /// <returns>The created stub</returns>
+        FeatureStub CreateStub(uint itemSequence, IEntity ent)
+        {
+            InternalIdValue iid = new InternalIdValue(itemSequence);
+            return new FeatureStub(this, iid, ent, null);
+        }
 
         /// <summary>
         /// The line that was subdivided.
@@ -118,16 +167,27 @@ namespace Backsight.Editor.Operations
         /// </summary>
         internal void Execute()
         {
-            FeatureFactory ff = new FeatureFactory(this);
+            // Create stubs for all items that will be created.
+            Project p = EditingController.Current.Project;
+            FeatureStub[] stubs = CreateStubs(p, p.DefaultPointType, m_Line.EntityType);
 
-            // There's no need to actually define anything in the factory as far as points are
-            // concerned - the ProcessFeatures method will end up using the default entity type
-            // for points, and assign new feature IDs if necessary.
-
-            // Same deal for lines. In that caee, ProcessFeatures creates sections that are
-            // like the subdivided line.
-
+            // And create features, geometry, and IDs
+            DeserializationFactory ff = new DeserializationFactory(this, stubs);
             base.Execute(ff);
+        }
+
+        /// <summary>
+        /// Creates user-perceived IDs for features that should have one.
+        /// </summary>
+        /// <param name="features">The features to assign IDs to</param>
+        /// <remarks>Called via <see cref="Execute"/></remarks>
+        internal override void CreateIds(Feature[] features)
+        {
+            foreach (Feature f in features)
+            {
+                if (f is PointFeature)
+                    f.SetNextId();
+            }
         }
 
         /// <summary>
@@ -279,12 +339,14 @@ namespace Backsight.Editor.Operations
 
             editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_Line);
             editSerializer.WritePersistent<LineSubdivisionFace>(DataField.Face, m_Face);
-            editSerializer.WriteFeatureStubArray(DataField.Result, this.Features);
 
             // When we initially write the primary face, this will always be undefined. Only the
             // alternate face will write out the reference to the other side.
             if (OtherSide != null)
                 editSerializer.WriteInternalId(DataField.OtherSide, OtherSide.InternalId);
+
+            editSerializer.WriteEntity(DataField.PointType, EditingController.Current.Project.DefaultPointType);
+            editSerializer.WriteIdMappings(DataField.Ids, this.Features);
         }
 
         /// <summary>

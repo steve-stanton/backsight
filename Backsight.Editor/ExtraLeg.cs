@@ -66,7 +66,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The circle (if any) that this leg falls on.
         /// </summary>
-        public override Circle Circle
+        internal override Circle Circle
         {
             get { return m_Base.Circle; }
         }
@@ -74,7 +74,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The total observed length of this leg, on the ground.
         /// </summary>
-        public override ILength Length
+        internal override ILength Length
         {
             get
             {
@@ -113,28 +113,12 @@ namespace Backsight.Editor
         /// <param name="bearing">The bearing at the end of the previous leg.
         /// Updated for this leg.</param>
         /// <param name="sfac">Scale factor to apply to distances (default=1.0).</param>
-        public override void Project(ref IPosition pos, ref double bearing, double sfac)
+        internal override void Project(ref IPosition pos, ref double bearing, double sfac)
         {
             // Do nothing. Projecting to the end is done when the
             // base leg is processed. Extra legs are based on those
             // results.
         }
-
-        /*
-        /// <summary>
-        /// Draws this leg
-        /// </summary>
-        /// <param name="display">The display to draw to</param>
-        /// <param name="pos">The position for the start of the leg. Updated to be
-        /// the position for the end of the leg.</param>
-        /// <param name="bearing">The bearing at the end of the previous leg. Updated
-        /// for this leg.</param>
-        /// <param name="sfac">Scale factor to apply to distances.</param>
-        public override void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac)
-        {
-            // Do nothing.
-        }
-        */
 
         /// <summary>
         /// Obtains the geometry for spans along this leg (to be called only via implementations of <see cref="GetSections"/>).
@@ -164,6 +148,7 @@ namespace Backsight.Editor
             return m_Base.GetSpanSections(start, bearing, sfac, this.Spans);
         }
 
+        /*
         /// <summary>
         /// Draws a previously saved leg.
         /// </summary>
@@ -174,6 +159,7 @@ namespace Backsight.Editor
         {
             // Do nothing.
         }
+        */
 
         /// <summary>
         /// Creates a line feature that corresponds to one of the spans on this leg.

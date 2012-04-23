@@ -17,6 +17,7 @@ using System;
 using System.Text;
 
 using Backsight.Environment;
+using System.Collections.Generic;
 
 namespace Backsight.Editor
 {
@@ -123,6 +124,38 @@ namespace Backsight.Editor
                 stubs[i] = new FeatureStub(features[i]);
 
             WritePersistentArray<FeatureStub>(field, stubs);
+        }
+
+        /// <summary>
+        /// Writes any ID mappings for an array of spatial features (writes nothing if none of the supplied
+        /// features have a native ID).
+        /// </summary>
+        /// <param name="field">The tag that identifies the item.</param>
+        /// <param name="features">The features that may be associated with instances of <see cref="NativeId"/></param>
+        internal void WriteIdMappings(DataField field, Feature[] features)
+        {
+            IdMapping[] mappings = GetIdMappings(features);
+            if (mappings.Length > 0)
+                WritePersistentArray<IdMapping>(field, mappings);
+        }
+
+        /// <summary>
+        /// Obtains any ID mappings for the features that are associated with an instance of <see cref="NativeId"/>
+        /// </summary>
+        /// <param name="features">The features of interest</param>
+        /// <returns>The ID mappings for those features that have a native ID (never null, but could be an empty array).</returns>
+        IdMapping[] GetIdMappings(Feature[] features)
+        {
+            List<IdMapping> result = new List<IdMapping>(features.Length);
+
+            foreach (Feature f in features)
+            {
+                NativeId id = (f.FeatureId as NativeId);
+                if (id != null)
+                    result.Add(new IdMapping(f.InternalId, id.RawId));
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>
