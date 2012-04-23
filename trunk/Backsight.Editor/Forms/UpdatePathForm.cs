@@ -59,6 +59,8 @@ namespace Backsight.Editor.Forms
         /// </summary>
         ILineGeometry[] m_LegSections;
 
+        readonly PathEditor m_Edits;
+
         #endregion
 
         #region Constructors
@@ -89,6 +91,8 @@ namespace Backsight.Editor.Forms
             // TODO - This will not be suitable in a situation where staggered legs have been created
             Leg[] legs = PathParser.CreateLegs(m_pop.EntryString, m_pop.EntryUnit);
             m_Legs = new List<Leg>(legs);
+
+            m_Edits = new PathEditor(legs);
         }
 
         #endregion
@@ -148,6 +152,7 @@ namespace Backsight.Editor.Forms
                     else
                         leg.StartAngle = dial.SignedAngle;
 
+                    m_Edits.SetStartAngle(m_CurLeg, dial.SignedAngle, dial.IsDeflection);
                     Rework();
                 }
             }
@@ -195,6 +200,8 @@ namespace Backsight.Editor.Forms
             if (!isBefore)
                 index++;
 
+            m_Edits.BreakLeg(m_CurLeg, index);
+
             Leg newLeg = leg.Break(index);
             if (newLeg == null)
                 return;
@@ -213,15 +220,19 @@ namespace Backsight.Editor.Forms
             if (leg == null)
                 return;
 
-            if (leg.IsCulDeSac)
+            CircularLegMetrics metrics = leg.Metrics;
+
+            if (metrics.IsCulDeSac)
             {
                 using (CulDeSacForm dial = new CulDeSacForm(leg))
                 {
                     if (dial.ShowDialog() == DialogResult.OK)
                     {
-                        leg.SetCentralAngle(dial.CentralAngle);
-                        leg.SetRadius(dial.Radius);
-                        leg.IsClockwise = dial.IsClockwise;
+                        metrics.SetCentralAngle(dial.CentralAngle);
+                        metrics.SetRadius(dial.Radius);
+                        metrics.IsClockwise = dial.IsClockwise;
+                        var newMetrics = new CircularLegMetrics(dial.Radius, dial.IsClockwise, dial.CentralAngle);
+                        m_Edits.SetArcMetrics(m_CurLeg, newMetrics);
                         Rework();
                     }
                 }
@@ -232,10 +243,12 @@ namespace Backsight.Editor.Forms
                 {
                     if (dial.ShowDialog() == DialogResult.OK)
                     {
-                        leg.SetEntryAngle(dial.EntryAngle);
-                        leg.SetExitAngle(dial.ExitAngle);
-                        leg.SetRadius(dial.Radius);
-                        leg.IsClockwise = dial.IsClockwise;
+                        metrics.SetEntryAngle(dial.EntryAngle);
+                        metrics.SetExitAngle(dial.ExitAngle);
+                        metrics.SetRadius(dial.Radius);
+                        metrics.IsClockwise = dial.IsClockwise;
+                        var newMetrics = new CircularLegMetrics(dial.Radius, dial.IsClockwise, dial.EntryAngle, dial.ExitAngle);
+                        m_Edits.SetArcMetrics(m_CurLeg, newMetrics);
                         Rework();
                     }
                 }
@@ -265,6 +278,7 @@ namespace Backsight.Editor.Forms
                 {
                     // Insert the new distance into the current leg.
                     Distance newDist = dial.Distance;
+                    m_Edits.InsertSpan(m_CurLeg, newDist, dist, isBefore);
                     int index = leg.Insert(newDist, dist, isBefore, true);
                     Rework();
                     Refresh(index);
@@ -457,6 +471,7 @@ namespace Backsight.Editor.Forms
                     // Change the displayed distance
                     distancesListBox.Items[spanIndex] = spanInfo.ObservedDistance;
 
+                    m_Edits.UpdateSpan(m_CurLeg, spanIndex, dist.Distance);
                     Rework();
                     Refresh(spanIndex);
                 }
@@ -468,6 +483,8 @@ namespace Backsight.Editor.Forms
             Leg leg = CurrentLeg;
             if (leg == null)
                 return;
+
+            m_Edits.FlipLegAnnotations(m_CurLeg);
 
             foreach (SpanInfo span in leg.Spans)
             {

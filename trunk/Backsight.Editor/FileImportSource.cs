@@ -65,5 +65,13 @@ namespace Backsight.Editor
         /// <param name="creator">The editing operation creating the features.</param>
         /// <returns>The features that correspond to the content of the file</returns>
         abstract internal Feature[] LoadFeatures(string fileName, Operation creator);
+
+        /// <summary>
+        /// The file specification of the import source.
+        /// </summary>
+        internal string FileName
+        {
+            get { return m_FileName; }
+        }
     }
 }

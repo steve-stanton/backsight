@@ -100,6 +100,7 @@
     <Compile Include="AttributeData.cs" />
     <Compile Include="AutoCad\AcLayerEntitySet.cs" />
     <Compile Include="BasicList.cs" />
+    <Compile Include="CircularLegMetrics.cs" />
     <Compile Include="DbUtil.cs" />
     <Compile Include="EndSessionEvent.cs" />
     <Compile Include="Forms\NewProjectForm.cs">
@@ -115,6 +116,7 @@
       <DependentUpon>OpenProjectForm.cs</DependentUpon>
     </Compile>
     <Compile Include="IdAllocation.cs" />
+    <Compile Include="IdMapping.cs" />
     <Compile Include="NewProjectEvent.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
@@ -134,6 +136,7 @@
     <Compile Include="Change.cs" />
     <Compile Include="NewSessionEvent.cs" />
     <Compile Include="Operations\RevisedEdit.cs" />
+    <Compile Include="PathEditor.cs" />
     <Compile Include="PersonalIdServer.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="ProjectDatabase.cs" />
@@ -1057,6 +1060,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram2.cd" />
+    <None Include="ClassDiagram3.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

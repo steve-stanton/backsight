@@ -366,8 +366,7 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Records the feature ID for this feature. This function is called by
-        /// <c>IdPacket.CreateId</c> and <c>IdHandle.DeleteId</c>.
+        /// Records the feature ID for this feature.
         /// <para/>
         /// If a not-null ID is supplied, it will throw an exception if the feature
         /// already has an ID. To avoid that, the original ID must be successfully

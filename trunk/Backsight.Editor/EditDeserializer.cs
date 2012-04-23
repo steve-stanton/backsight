@@ -79,9 +79,9 @@ namespace Backsight.Editor
         readonly Dictionary<string, ConstructorInfo> m_Constructors;
 
         /// <summary>
-        /// The map model that deserialized data will be loaded into (not null).
+        /// The project that's being loaded (not null).
         /// </summary>
-        readonly CadastralMapModel m_MapModel;
+        readonly Project m_Project;
 
         /// <summary>
         /// The edit (if any) that is currently being deserialized (defined as a result
@@ -99,16 +99,16 @@ namespace Backsight.Editor
         /// <see cref="EditDeserializer"/>. Before attempting to deserialize anything,
         /// you must also define a reader using <see cref="SetReader"/>.
         /// </summary>
-        /// <param name="mapModel">The map model to load deserialized data into (not null).</param>
-        /// <exception cref="ArgumentNullException">If the supplied map model is null.</exception>
+        /// <param name="p">The project that's being loaded</param>
+        /// <exception cref="ArgumentNullException">If the supplied project is null.</exception>
         /// <exception cref="ApplicationException">If no deserialization constructors can be found
         /// in the current assembly.</exception>
-        internal EditDeserializer(CadastralMapModel mapModel)
+        internal EditDeserializer(Project p)
         {
-            if (mapModel == null)
+            if (p == null)
                 throw new ArgumentNullException();
 
-            m_MapModel = mapModel;
+            m_Project = p;
             m_CurrentEdit = null;
             m_Constructors = LoadConstructors();
 
@@ -128,11 +128,19 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The project that's being loaded (not null).
+        /// </summary>
+        internal Project Project
+        {
+            get { return m_Project; }
+        }
+
+        /// <summary>
         /// The map model that deserialized data is loaded into (not null).
         /// </summary>
         internal CadastralMapModel MapModel
         {
-            get { return m_MapModel; }
+            get { return m_Project.Model; }
         }
 
         /// <summary>
@@ -402,7 +410,7 @@ namespace Backsight.Editor
             if (id.IsEmpty)
                 return default(T);
 
-            return m_MapModel.Find<T>(id);
+            return MapModel.Find<T>(id);
         }
 
         /// <summary>
@@ -419,7 +427,7 @@ namespace Backsight.Editor
             for (int i=0; i<result.Length; i++)
             {
                 InternalIdValue id = new InternalIdValue(ids[i]);
-                result[i] = m_MapModel.Find<T>(id);
+                result[i] = MapModel.Find<T>(id);
                 Debug.Assert(result[i] != null);                 
             }
 
@@ -446,10 +454,10 @@ namespace Backsight.Editor
             if (IsNextField(nativeField))
             {
                 uint nativeKey = m_Reader.ReadUInt32(nativeField.ToString());
-                NativeId nid = m_MapModel.FindNativeId(nativeKey);
+                NativeId nid = MapModel.FindNativeId(nativeKey);
 
                 if (nid == null)
-                    return m_MapModel.AddNativeId(nativeKey);
+                    return MapModel.AddNativeId(nativeKey);
                 else
                     return nid;
             }
@@ -457,15 +465,35 @@ namespace Backsight.Editor
             if (IsNextField(foreignField))
             {
                 string key = m_Reader.ReadString(foreignField.ToString());
-                ForeignId fid = m_MapModel.FindForeignId(key);
+                ForeignId fid = MapModel.FindForeignId(key);
 
                 if (fid == null)
-                    return m_MapModel.AddForeignId(key);
+                    return MapModel.AddForeignId(key);
                 else
                     return fid;
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Reads back an array of ID mappings, associating the user-perceived IDs with the
+        /// corresponding spatial features.
+        /// </summary>
+        /// <param name="field">A tag associated with the array</param>
+        internal void ReadIdMappings(DataField field)
+        {
+            if (!IsNextField(field))
+                return;
+
+            IdMapping[] mapping = ReadPersistentArray<IdMapping>(field);
+
+            foreach (var m in mapping)
+            {
+                NativeId nid = MapModel.AddNativeId(m.RawId);
+                Feature f = MapModel.Find<Feature>(m.InternalId);
+                f.SetId(nid);
+            }
         }
 
         /// <summary>

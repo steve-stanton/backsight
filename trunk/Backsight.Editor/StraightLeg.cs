@@ -79,7 +79,7 @@ namespace Backsight.Editor
             set { m_StartAngle = value; }
         }
 
-        public override Circle Circle
+        internal override Circle Circle
         {
             get { return null; }
         }
@@ -92,7 +92,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The total observed length of this leg
         /// </summary>
-        public override ILength Length
+        internal override ILength Length
         {
             get { return new Length(GetTotal()); }
         }
@@ -105,7 +105,7 @@ namespace Backsight.Editor
         /// <param name="bearing">The initial bearing (e.g. if the previous leg was also
         /// a straight leg from A to B, the bearing is from A through B).</param>
         /// <param name="sfac">Scaling factor to apply. Default=1.0</param>
-        public override void Project(ref IPosition pos, ref double bearing, double sfac)
+        internal override void Project(ref IPosition pos, ref double bearing, double sfac)
         {
             // Add on any initial angle
             bearing = AddStartAngle(bearing);
@@ -121,40 +121,6 @@ namespace Backsight.Editor
             pos = new Position(pos.X + dE, pos.Y + dN);
         }
 
-        /*
-        /// <summary>
-        /// Draws this leg
-        /// </summary>
-        /// <param name="display">The display to draw to</param>
-        /// <param name="pos">The position for the start of the leg. Updated to be
-        /// the position for the end of the leg.</param>
-        /// <param name="bearing">The bearing at the end of the previous leg. Updated
-        /// for this leg.</param>
-        /// <param name="sfac">Scale factor to apply to distances.</param>
-        public override void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac)
-        {
-            // Add on any initial angle (it may be a deflection).
-            bearing = AddStartAngle(bearing);
-
-            // Just return if there aren't any spans (avoids returning pos as null)
-            if (this.Count == 0)
-                return;
-
-            // Create a straight span
-            StraightSpan span = new StraightSpan(pos, bearing, sfac);
-
-            // Draw each visible span in turn.
-            for (int i = 0; i < this.Count; i++)
-            {
-                span.Get(this, i);
-                span.Render(display);
-            }
-
-            // Return the end position of the last span.
-            pos = span.End;
-        }
-        */
-
         /// <summary>
         /// Obtains the geometry for spans along this leg.
         /// </summary>
@@ -167,6 +133,15 @@ namespace Backsight.Editor
         internal override ILineGeometry[] GetSpanSections(IPosition pos, double bearing, double sfac, SpanInfo[] spans)
         {
             var result = new ILineGeometry[spans.Length];
+
+            // A leg with just one span, but no observed distance is due to the fact that the Leg constructor
+            // that accepts a span count will always produce an array with at least one span (this covers cul-de-sacs
+            // defined only with a central angle). May be better to handle it there.
+            if (spans.Length == 1 && spans[0].ObservedDistance == null)
+            {
+                result[0] = new LineSegmentGeometry(pos, pos);
+                return result;
+            }
 
             double sinBearing = Math.Sin(bearing);
             double cosBearing = Math.Cos(bearing);
@@ -186,6 +161,7 @@ namespace Backsight.Editor
             return result;
         }
 
+        /*
         /// <summary>
         /// Draws a previously saved leg.
         /// </summary>
@@ -212,6 +188,7 @@ namespace Backsight.Editor
                 }
             }
         }
+        */
 
         //internal override void Save(FeatureFactory ff, List<PointFeature> createdPoints,
         //                            ref IPosition terminal, ref double bearing, double sfac)

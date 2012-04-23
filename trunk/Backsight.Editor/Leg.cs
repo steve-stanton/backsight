@@ -19,8 +19,6 @@ using System.Diagnostics;
 
 using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
-using Backsight.Environment;
-using Backsight.Geometry;
 
 namespace Backsight.Editor
 {
@@ -83,21 +81,10 @@ namespace Backsight.Editor
 
         #endregion
 
-        abstract public Circle Circle { get; }
-        abstract public ILength Length { get; }
+        abstract internal Circle Circle { get; }
+        abstract internal ILength Length { get; }
         abstract internal IPosition Center { get; }
-        abstract public void Project (ref IPosition pos, ref double bearing, double sfac);
-
-        /// <summary>
-        /// Draws this leg
-        /// </summary>
-        /// <param name="display">The display to draw to</param>
-        /// <param name="pos">The position for the start of the leg. Updated to be
-        /// the position for the end of the leg.</param>
-        /// <param name="bearing">The bearing at the end of the previous leg. Updated
-        /// for this leg.</param>
-        /// <param name="sfac">Scale factor to apply to distances.</param>
-        //abstract public void Render(ISpatialDisplay display, ref IPosition pos, ref double bearing, double sfac);
+        abstract internal void Project(ref IPosition pos, ref double bearing, double sfac);
 
         /// <summary>
         /// Obtains the geometry for spans along this leg (to be called only via implementations of <see cref="GetSections"/>).
@@ -123,7 +110,7 @@ namespace Backsight.Editor
             return GetSpanSections(start, bearing, sfac, m_Spans);
         }
 
-        abstract internal void Draw (bool preview);
+        //abstract internal void Draw (bool preview);
 
         /// <summary>
         /// Creates spatial features (points and lines) for this leg. The created
@@ -141,7 +128,6 @@ namespace Backsight.Editor
         {
             PointFeature from = startPoint;
             PointFeature to = null;
-            InternalIdValue itemId = new InternalIdValue(maxSequence);
 
             // If we're dealing with a circular arc, create the underlying circle (and a
             // center point). The radius of the circle is undefined at this stage, but the
@@ -151,12 +137,10 @@ namespace Backsight.Editor
             // another point in the map (it could even coincide with another circular leg in
             // the same connection path).
 
+            maxSequence++;
             CircularLeg cLeg = (this as CircularLeg);
             if (cLeg != null)
-            {
-                itemId.ItemSequence++;
-                cLeg.CreateCircle(ff, itemId.ToString());
-            }
+                cLeg.CreateCircle(ff, maxSequence.ToString());
 
             int nSpan = m_Spans.Length;
             for (int i = 0; i < nSpan; i++, from = to)
@@ -167,16 +151,15 @@ namespace Backsight.Editor
                 // at the very end of the connection path).
 
                 to = null;
+                maxSequence++;
+
                 if (span.HasEndPoint)
                 {
                     if (i == (nSpan - 1))
                         to = lastPoint;
 
                     if (to == null)
-                    {
-                        itemId.ItemSequence++;
-                        to = ff.CreatePointFeature(itemId.ToString());
-                    }
+                        to = ff.CreatePointFeature(maxSequence.ToString());
 
                     Debug.Assert(to != null);
                 }
@@ -185,11 +168,20 @@ namespace Backsight.Editor
                 // directive may well be used to finish a leg without a point, so the first
                 // span in the next leg can't have a line).
 
+                maxSequence++;
                 if (span.HasLine && from != null)
                 {
-                    itemId.ItemSequence++;
-                    LineFeature line = CreateLine(ff, itemId.ToString(), from, to);
+                    LineFeature line = CreateLine(ff, maxSequence.ToString(), from, to);
                     line.ObservedLength = span.ObservedDistance;
+
+                    // Alternate faces should by non-topological. And mark as "void" so that it can be
+                    // skipped on export to AutoCad.
+                    if (m_FaceNumber == 2)
+                    {
+                        line.SetTopology(false); // should probably be false already
+                        line.IsVoid = true;
+                    }
+
                     span.CreatedFeature = line;
                 }
                 else
@@ -198,7 +190,7 @@ namespace Backsight.Editor
                 }
             }
 
-            return itemId.ItemSequence;
+            return maxSequence;
         }
 
         /// <summary>
@@ -232,7 +224,7 @@ namespace Backsight.Editor
         /// The number of observed distances (may be 0 when dealing with cul-de-sacs
         /// that are defined in terms on a center point and central angle).
         /// </summary>
-        public int Count
+        internal int Count
         {
             get
             {
@@ -243,7 +235,7 @@ namespace Backsight.Editor
             }
         }
 
-        public bool HasEndPoint(int index)
+        internal bool HasEndPoint(int index)
         {
             SpanInfo sd = GetSpanData(index);
 
@@ -334,7 +326,7 @@ namespace Backsight.Editor
         /// Gets the total observed length of this leg
         /// </summary>
         /// <returns>The sum of the observed lengths for this leg, in meters on the ground</returns>
-        public double GetTotal()
+        internal double GetTotal()
         {
             double total = 0.0;
 
@@ -355,7 +347,7 @@ namespace Backsight.Editor
         /// <param name="index">Index of the required span.</param>
         /// <param name="sdist">Distance to the start of the span.</param>
         /// <param name="edist">Distance to the end of the span.</param>
-        public void GetDistances(int index, out double sdist, out double edist)
+        internal void GetDistances(int index, out double sdist, out double edist)
         {
             // Confirm required index is in range.
             if (index >= NumSpan)
@@ -639,7 +631,7 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="index">The index of the span in question.</param>
         /// <returns>True if line feature will be produced.</returns>
-        public bool HasLine(int index)
+        internal bool HasLine(int index)
         {
             // No feature if the span index is out of range.
             SpanInfo sd = GetSpanData(index);
@@ -1037,6 +1029,7 @@ void CeLeg::MakeText ( const CeVertex& bs
         }
         */
 
+        /*
         /// <summary>
         /// Creates a set of line segments (and points) for this leg. This function is called
         /// only when adding features to an <see cref="ExtraLeg"/>. THIS leg needs to be the
@@ -1128,7 +1121,9 @@ void CeLeg::MakeText ( const CeVertex& bs
 
             return true;
         }
+        */
 
+        /*
         /// <summary>
         /// Updates a set of line segments (and points) for this leg. This function is called only when
         /// rolling forward an <see cref="ExtraLeg"/>. THIS leg needs to be the second face of a pair
@@ -1142,8 +1137,6 @@ void CeLeg::MakeText ( const CeVertex& bs
         internal bool UpdateSegments(IPointGeometry insert, PathOperation op,
                                         IPosition spos, IPosition epos)
         {
-            throw new NotImplementedException("Leg.UpdateSegments");
-            /*
             Debug.Assert(NumSpan>0);
             if (NumSpan==0)
                 return false;
@@ -1189,9 +1182,10 @@ void CeLeg::MakeText ( const CeVertex& bs
             }
 
             return true;
-             */
         }
+        */
 
+        /*
         /// <summary>
         /// Creates a set of circular arcs (and points) for this leg. This function is called only when
         /// adding features to an <see cref="ExtraLeg"/>. THIS leg needs to be the second face of a
@@ -1278,7 +1272,9 @@ void CeLeg::MakeText ( const CeVertex& bs
 
             return true;
         }
+        */
 
+        /*
         /// <summary>
         /// Updates a set of arcs (and points) for this leg. This function is called only when
         /// rolling forward an <see cref="ExtraLeg"/>. THIS leg needs to be the second face of
@@ -1295,8 +1291,6 @@ void CeLeg::MakeText ( const CeVertex& bs
         internal bool UpdateCurves(IPointGeometry insert, PathOperation op, IPosition spos, IPosition epos,
                             Circle circle, bool iscw)
         {
-            throw new NotImplementedException();
-            /*
             Debug.Assert(NumSpan>0);
             if (NumSpan==0)
                 return false;
@@ -1346,8 +1340,8 @@ void CeLeg::MakeText ( const CeVertex& bs
             }
 
             return true;
-             */
         }
+        */
 
         /// <summary>
         /// Gets the data defining the span at the specified array index.

@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Editor.Observations;
+using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
 {
@@ -92,12 +93,67 @@ namespace Backsight.Editor.Operations
             Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
             m_Legs = new List<Leg>(legs);
 
-            FeatureStub[] stubs = editDeserializer.ReadFeatureStubArray(DataField.Result);
+            Project p = editDeserializer.Project;
+            IEntity pointType = editDeserializer.ReadEntity(DataField.PointType);
+            IEntity lineType = editDeserializer.ReadEntity(DataField.LineType);
+            FeatureStub[] stubs = CreateStubs(p, pointType, lineType);
+
             DeserializationFactory result = new DeserializationFactory(this, stubs);
+            result.PointType = pointType;
+            result.LineType = lineType;
+
+            // Create feature objects
             ProcessFeatures(result);
+
+            // Apply any IDs
+            if (editDeserializer.IsNextField(DataField.Ids))
+                editDeserializer.ReadIdMappings(DataField.Ids);
         }
 
         #endregion
+
+        /// <summary>
+        /// Creates stubs for all items that might be created by executing this edit.
+        /// </summary>
+        /// <param name="p">The project the stubs relate to.</param>
+        /// <param name="pointType">The entity type for created points</param>
+        /// <param name="lineType">The entity type for created lines</param>
+        /// <returns></returns>
+        FeatureStub[] CreateStubs(Project p, IEntity pointType, IEntity lineType)
+        {
+            List<FeatureStub> stubList = new List<FeatureStub>();
+            uint sequence = this.InternalId.ItemSequence;
+
+            foreach (Leg leg in m_Legs)
+            {
+                // Reserve item for point at center of circular arc (if it is one)
+                stubList.Add(CreateStub(++sequence, pointType));
+
+                // Reserve two items for each span along the leg
+                for (int i = 0; i < leg.Spans.Length; i++)
+                {
+                    stubList.Add(CreateStub(++sequence, pointType));
+                    stubList.Add(CreateStub(++sequence, lineType));
+                }
+            }
+
+            // Remember the last internal ID that has been allocated
+            p.SetLastItem(sequence);
+
+            return stubList.ToArray();
+        }
+
+        /// <summary>
+        /// Creates a stub for an item in this path.
+        /// </summary>
+        /// <param name="itemSequence">The sequence number to assign to the stub</param>
+        /// <param name="ent">The entity type for the stub</param>
+        /// <returns>The created stub</returns>
+        FeatureStub CreateStub(uint itemSequence, IEntity ent)
+        {
+            InternalIdValue iid = new InternalIdValue(itemSequence);
+            return new FeatureStub(this, iid, ent, null);
+        }
 
         /// <summary>
         /// A user-perceived title for this operation.
@@ -306,8 +362,27 @@ namespace Backsight.Editor.Operations
             if (m_From==null || m_To==null)
                 throw new Exception("PathOperation.Execute -- terminal(s) not defined.");
 
-            FeatureFactory ff = new FeatureFactory(this);
+            // Create stubs for all items that will be created.
+            Project p = EditingController.Current.Project;
+            FeatureStub[] stubs = CreateStubs(p, p.DefaultPointType, p.DefaultLineType);
+
+            // And create features, geometry, and IDs
+            DeserializationFactory ff = new DeserializationFactory(this, stubs);
             base.Execute(ff);
+        }
+
+        /// <summary>
+        /// Creates user-perceived IDs for features that should have one.
+        /// </summary>
+        /// <param name="features">The features to assign IDs to</param>
+        /// <remarks>Called via <see cref="Execute"/></remarks>
+        internal override void CreateIds(Feature[] features)
+        {
+            foreach (Feature f in features)
+            {
+                if (f is PointFeature)
+                    f.SetNextId();
+            }
         }
 
         /// <summary>
@@ -370,7 +445,7 @@ namespace Backsight.Editor.Operations
                     // The circle should have been created already, but with an undefined radius
                     Circle circle = cLeg.Circle;
                     Debug.Assert(circle != null);
-                    circle.Radius = cLeg.Radius * sfac;
+                    circle.Radius = cLeg.RadiusInMeters * sfac;
                     circle.CenterPoint.ApplyPointGeometry(ctx, PointGeometry.Create(center));
                 }
 
@@ -426,6 +501,7 @@ namespace Backsight.Editor.Operations
             }
         }
 
+        /*
         /// <summary>
         /// Ensures a point feature exists at a specific location in the map model.
         /// </summary>
@@ -464,6 +540,7 @@ namespace Backsight.Editor.Operations
 
             return result;
         }
+        */
 
         /*
         /// <summary>
@@ -1081,7 +1158,9 @@ void CePath::CreateAngleText ( CPtrList& text
             editSerializer.WriteFeatureRef<PointFeature>(DataField.To, m_To);
             editSerializer.WriteString(DataField.EntryString, m_EntryString);
             editSerializer.WriteDistanceUnit(DataField.DefaultEntryUnit, m_DefaultEntryUnit);
-            editSerializer.WriteFeatureStubArray(DataField.Result, this.Features);
+            editSerializer.WriteEntity(DataField.PointType, EditingController.Current.Project.DefaultPointType);
+            editSerializer.WriteEntity(DataField.LineType, EditingController.Current.Project.DefaultLineType);
+            editSerializer.WriteIdMappings(DataField.Ids, this.Features);
         }
 
         /// <summary>

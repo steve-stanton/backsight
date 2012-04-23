@@ -82,10 +82,12 @@ namespace Backsight.Editor.Forms
         {
             InitializeComponent();
 
-            m_Angle1 = leg.EntryAngle;
-            m_Angle2 = leg.ExitAngle;
-            m_Radius = new Distance(leg.ObservedRadius);
-            m_IsClockwise = leg.IsClockwise;
+            CircularLegMetrics metrics = leg.Metrics;
+
+            m_Angle1 = metrics.EntryAngle;
+            m_Angle2 = metrics.ExitAngle;
+            m_Radius = new Distance(metrics.ObservedRadius);
+            m_IsClockwise = metrics.IsClockwise;
             m_IsDefined = true;
         }
 

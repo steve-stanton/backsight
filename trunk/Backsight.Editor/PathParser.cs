@@ -184,16 +184,17 @@ namespace Backsight.Editor
 
             // Create the leg.
             CircularLeg leg = new CircularLeg(radius, clockwise, ndist);
+            CircularLegMetrics metrics = leg.Metrics;
 
             // Set the entry angle or the central angle, depending on what we have.
             if (cul)
-                leg.SetCentralAngle(cangle);
+                metrics.SetCentralAngle(cangle);
             else
-                leg.SetEntryAngle(bangle);
+                metrics.SetEntryAngle(bangle);
 
             // Assign second angle if we have one.
             if (twoangles)
-                leg.SetExitAngle(eangle);
+                metrics.SetExitAngle(eangle);
 
             // Assign each distance, starting one after the radius.
             ndist = 0;

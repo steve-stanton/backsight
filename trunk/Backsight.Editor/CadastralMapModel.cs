@@ -124,11 +124,9 @@ namespace Backsight.Editor
             m_Index = null; // new EditingIndex();
 
             // Create an ID manager only if a database can be reached
-            /*
             IDataServer ds = EditingController.Current.DataServer;
             if (ds != null && ds.CanConnect())
                 m_IdManager = new IdManager();
-             */
 
             m_Features = new Dictionary<InternalIdValue, Feature>(1000);
             m_NativeIds = new Dictionary<uint, NativeId>(1000);
@@ -390,6 +388,7 @@ namespace Backsight.Editor
             return f;
         }
 
+        /*
         /// <summary>
         /// Ensures a point feature exists at a specific location in this map model.
         /// The caller is responsible for assigning any ID that the new point should have.
@@ -423,6 +422,7 @@ namespace Backsight.Editor
 
             return pf;
         }
+        */
 
         /// <summary>
         /// Creates a new line feature that connects two points.
@@ -747,6 +747,10 @@ namespace Backsight.Editor
                 throw new NotImplementedException("SetDefaultEntityType");
         }
 
+        // The Default*Type properties are deprecated because they depend on a static method
+        // that refers to one specific project (which may not be defined during deserialization).
+
+        [Obsolete("Use Project.DefaultPointType instead")]
         internal IEntity DefaultPointType
         {
             get
@@ -756,6 +760,7 @@ namespace Backsight.Editor
             }
         }
 
+        [Obsolete("Use Project.DefaultLineType instead")]
         internal IEntity DefaultLineType
         {
             get
@@ -765,6 +770,7 @@ namespace Backsight.Editor
             }
         }
 
+        [Obsolete("Use Project.DefaultPolygonType instead")]
         internal IEntity DefaultPolygonType
         {
             get
@@ -774,6 +780,7 @@ namespace Backsight.Editor
             }
         }
 
+        [Obsolete("Use Project.DefaultTextType instead")]
         internal IEntity DefaultTextType
         {
             get
