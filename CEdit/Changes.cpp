@@ -44,6 +44,109 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+IdFactory::IdFactory()
+{
+	m_MaxId = 0;
+
+	// Load translations from a specific location
+	LoadMappings("C:\\Backsight\\CEdit\\Entities.txt", m_EntityMap);
+	LoadMappings("C:\\Backsight\\CEdit\\Templates.txt", m_TemplateMap);
+}
+
+void IdFactory::LoadMappings(LPCTSTR fileName, CMapStringToPtr& index)
+{
+	FILE* fp = fopen(fileName,"r");
+	char buf[1024];
+
+	while ( fgets(buf,sizeof(buf),fp) )
+	{
+		// Grab the buffer into a CString, trim off any leading and trailing whitespace.
+		CString str(buf);
+		str.TrimLeft();
+		str.TrimRight();
+
+		// Skip blank records.
+		int nc = str.GetLength();
+		if ( nc==0 ) continue;
+
+		int eqpos = str.Find('=');
+		if (eqpos > 0)
+		{
+			CString ids = str.Left(eqpos);
+			ids.TrimLeft();
+			ids.TrimRight();
+
+			unsigned int id;
+			sscanf((LPCTSTR)ids, "%d", &id);
+			CString entName(str.Mid(eqpos+1));
+			entName.TrimLeft();
+			entName.TrimRight();
+
+			// I THINK that SetAt creates a new copy
+			index.SetAt(entName, (void*)id);
+		}
+	}
+
+	fclose(fp);
+}
+
+int IdFactory::LookupId(CMapStringToPtr& index, LPCTSTR name)
+{
+	void* result;
+	if (index.Lookup(name, result))
+		return (int)result;
+	else
+		return 0;
+}
+
+unsigned int IdFactory::GetNextId(void* p)
+{
+	m_MaxId++;
+
+	if (p != 0)
+		m_ObjectIds.SetAt(p, (void*)m_MaxId);
+
+	return m_MaxId;
+}
+
+unsigned int IdFactory::FindId(void* p) const
+{
+	void* result;
+	if (m_ObjectIds.Lookup(p, result))
+		return (unsigned int)result;
+
+	assert(1==0);
+	return 0;
+}
+
+int IdFactory::GetEntityId(LPCTSTR entName)
+{
+	return LookupId(m_EntityMap, entName);
+}
+
+int IdFactory::GetFontId(LPCTSTR fontTitle)
+{
+	return 0;
+}
+
+int IdFactory::GetTableId(LPCTSTR tableName)
+{
+	return 123;
+}
+
+int IdFactory::GetTemplateId(LPCTSTR templateName)
+{
+	return LookupId(m_TemplateMap, templateName);
+}
+
+int IdFactory::GetGroupId(LPCTSTR groupName)
+{
+	return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 LPCTSTR Change_c::GetTypeName() const
 {
 	static LPCTSTR typeName = "Change";
@@ -58,10 +161,10 @@ void Change_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-NewProjectEvent_c::NewProjectEvent_c(unsigned int sequence, const CTime& when,
+NewProjectEvent_c::NewProjectEvent_c(IdFactory& idf, const CTime& when,
 		LPCTSTR projectId, LPCTSTR projectName, int layerId, LPCTSTR defaultSystem,
 		LPCTSTR userName, LPCTSTR machineName)
-		: Change_c(sequence, when)
+		: Change_c(idf, when)
 {
 	ProjectId = projectId;
     ProjectName = projectName;
@@ -90,8 +193,8 @@ void NewProjectEvent_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-NewSessionEvent_c::NewSessionEvent_c(unsigned int sequence, const CTime& when, LPCTSTR userName, LPCTSTR machineName)
-		: Change_c(sequence, when)
+NewSessionEvent_c::NewSessionEvent_c(IdFactory& idf, const CTime& when, LPCTSTR userName, LPCTSTR machineName)
+		: Change_c(idf, when)
 {
 	UserName = userName;
 	MachineName = machineName;
@@ -112,8 +215,8 @@ void NewSessionEvent_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-EndSessionEvent_c::EndSessionEvent_c(unsigned int sequence, const CTime& when)
-		: Change_c(sequence, when)
+EndSessionEvent_c::EndSessionEvent_c(IdFactory& idf, const CTime& when)
+		: Change_c(idf, when)
 {
 }
 
@@ -125,16 +228,8 @@ LPCTSTR EndSessionEvent_c::GetTypeName() const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-IdAllocation_c::IdAllocation_c(unsigned int sequence, const CTime& when)
-		: Change_c(sequence, when)
-{
-	GroupId = 0;
-	LowestId = 0;
-	HighestId = 0;
-}
-
-IdAllocation_c::IdAllocation_c(unsigned int sequence, const CTime& when, int groupId, int lowestId, int highestId)
-		: Change_c(sequence, when)
+IdAllocation_c::IdAllocation_c(IdFactory& idf, const CTime& when, int groupId, int lowestId, int highestId)
+		: Change_c(idf, when)
 {
 	GroupId = groupId;
 	LowestId = lowestId;
@@ -157,28 +252,8 @@ void IdAllocation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-IdMapping_c::IdMapping_c(unsigned int internalId, unsigned int rawId)
-{
-	InternalId = internalId;
-	RawId = rawId;
-}
-
-LPCTSTR IdMapping_c::GetTypeName() const
-{
-	static LPCTSTR typeName = "IdMapping";
-	return typeName;
-}
-
-void IdMapping_c::WriteData(EditSerializer& s) const
-{
-    s.WriteInternalId(DataField_Id, InternalId);
-    s.WriteUInt32(DataField_Key, RawId);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 // static
-void Operation_c::LoadExportFeatures(EditSerializer& s, const CeOperation& op, CPtrArray& exportFeatures)
+void Operation_c::LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtrArray& exportFeatures)
 {
 	CeObjectList obList;
 	op.GetFeatures(obList);
@@ -190,7 +265,7 @@ void Operation_c::LoadExportFeatures(EditSerializer& s, const CeOperation& op, C
 		  f;
 		  f = (const CeFeature*)loop.GetNext() )
 	{
-		Feature_c* xf = Feature_c::CreateExportFeature(s, *f);
+		Feature_c* xf = Feature_c::CreateExportFeature(idf, *f);
 		exportFeatures.Add(xf);
 	}
 }
@@ -222,12 +297,12 @@ void Operation_c::ReleaseIdMappingArray(CPtrArray* idMappings)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-AttachPointOperation_c::AttachPointOperation_c(EditSerializer& s, const CTime& when, const CeAttachPoint& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+AttachPointOperation_c::AttachPointOperation_c(IdFactory& idf, const CTime& when, const CeAttachPoint& op)
+	: Operation_c(idf, when)
 {
 	Line = op.GetpArc();
 	PositionRatio = op.GetPositionRatio();
-	Point = new FeatureStub_c(s, *(op.GetpPoint()));
+	Point = new FeatureStub_c(idf, *(op.GetpPoint()));
 }
 
 AttachPointOperation_c::~AttachPointOperation_c()
@@ -252,9 +327,13 @@ void AttachPointOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-DeletionOperation_c::DeletionOperation_c(EditSerializer& s, const CTime& when, const CeDeletion& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+DeletionOperation_c::DeletionOperation_c(IdFactory& idf, const CTime& when, const CeDeletion& op)
+	: Operation_c(idf, when)
 {
+	// To be consistent, we would normally hold on to an array of void pointers, and convert to
+	// internal IDs on the WriteData call. Just convert now, since a deletion can never make
+	// forward references.
+
 	CeObjectList* dels = op.GetDeletions();
 	CeListIter loop(dels);
 	void* pThing;
@@ -263,7 +342,7 @@ DeletionOperation_c::DeletionOperation_c(EditSerializer& s, const CTime& when, c
 		  pThing;
 		  pThing = loop.GetNext() )
 	{
-		unsigned int iid = s.GetInternalId(pThing);
+		unsigned int iid = idf.FindId(pThing);
 		assert(iid < this->Sequence);
 		Deletions.Add(iid);
 	}
@@ -283,10 +362,10 @@ void DeletionOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-GetControlOperation_c::GetControlOperation_c(EditSerializer& s, const CTime& when, const CeGetControl& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+GetControlOperation_c::GetControlOperation_c(IdFactory& idf, const CTime& when, const CeGetControl& op)
+	: Operation_c(idf, when)
 {
-	Operation_c::LoadExportFeatures(s, op, Points);
+	Operation_c::LoadExportFeatures(idf, op, Points);
 }
 
 GetControlOperation_c::~GetControlOperation_c()
@@ -308,18 +387,18 @@ void GetControlOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-ImportOperation_c::ImportOperation_c(EditSerializer& s, const CTime& when, const CeImport& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+ImportOperation_c::ImportOperation_c(IdFactory& idf, const CTime& when, const CeImport& op)
+	: Operation_c(idf, when)
 {
 	Source = op.GetFile();
-	Operation_c::LoadExportFeatures(s, op, Features);
+	Operation_c::LoadExportFeatures(idf, op, Features);
 }
 
-ImportOperation_c::ImportOperation_c(EditSerializer& s, const CTime& when, const CeGetBackground& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+ImportOperation_c::ImportOperation_c(IdFactory& idf, const CTime& when, const CeGetBackground& op)
+	: Operation_c(idf, when)
 {
 	Source = op.GetFile();
-	Operation_c::LoadExportFeatures(s, op, Features);
+	Operation_c::LoadExportFeatures(idf, op, Features);
 }
 
 ImportOperation_c::~ImportOperation_c()
@@ -343,26 +422,26 @@ void ImportOperation_c::WriteData(EditSerializer& s) const
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntersectDirectionAndDistanceOperation_c::IntersectDirectionAndDistanceOperation_c(
-	EditSerializer& s, const CTime& when, const CeIntersectDirDist& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+	IdFactory& idf, const CTime& when, const CeIntersectDirDist& op)
+	: Operation_c(idf, when)
 {
 	Direction = Direction_c::CreateExportDirection(op.GetpDir());
 	Distance = Observation_c::CreateExportLength(op.GetpDist());
 	From = op.GetpDistFrom();
 	IsDefault = op.IsDefault();
-	To = new FeatureStub_c(s, *(op.GetpIntersect()));
+	To = new FeatureStub_c(idf, *(op.GetpIntersect()));
 
 	CeArc* dirLine = op.GetpDirArc();
 	if (dirLine == 0)
 		DirLine = 0;
 	else
-		DirLine = new FeatureStub_c(s, *dirLine);
+		DirLine = new FeatureStub_c(idf, *dirLine);
 
 	CeArc* distLine = op.GetpDistArc();
 	if (distLine == 0)
 		DistLine = 0;
 	else
-		DistLine = new FeatureStub_c(s, *distLine);
+		DistLine = new FeatureStub_c(idf, *distLine);
 }
 
 IntersectDirectionAndDistanceOperation_c::~IntersectDirectionAndDistanceOperation_c()
@@ -399,33 +478,33 @@ void IntersectDirectionAndDistanceOperation_c::WriteData(EditSerializer& s) cons
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-IntersectDirectionAndLineOperation_c::IntersectDirectionAndLineOperation_c(EditSerializer& s, const CTime& when, const CeIntersectDirLine& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+IntersectDirectionAndLineOperation_c::IntersectDirectionAndLineOperation_c(IdFactory& idf, const CTime& when, const CeIntersectDirLine& op)
+	: Operation_c(idf, when)
 {
 	Direction = Direction_c::CreateExportDirection(op.GetpDir());
 	Line = op.GetpArc();
 	IsSplit = op.IsSplit();
 	CloseTo = op.GetpCloseTo();
-	Intersection = new FeatureStub_c(s, *(op.GetpIntersect()));
+	Intersection = new FeatureStub_c(idf, *(op.GetpIntersect()));
 
 	CeArc* dirLine = op.GetpDirArc();
 	if (dirLine == 0)
 		DirLine = 0;
 	else
-		DirLine = new FeatureStub_c(s, *dirLine);
+		DirLine = new FeatureStub_c(idf, *dirLine);
 
 	CeArc* beforeSplit = op.GetpArcBeforeSplit();
 	if (beforeSplit == 0)
 		LineA = 0;
 	else
-		LineA = s.GetInternalId(beforeSplit);
+		LineA = idf.GetNextId(beforeSplit);
 
 
 	CeArc* afterSplit = op.GetpArcAfterSplit();
 	if (afterSplit == 0)
 		LineB = 0;
 	else
-		LineB = s.GetInternalId(afterSplit);
+		LineB = idf.GetNextId(afterSplit);
 }
 
 IntersectDirectionAndLineOperation_c::~IntersectDirectionAndLineOperation_c()
@@ -462,24 +541,24 @@ void IntersectDirectionAndLineOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-IntersectTwoDirectionsOperation_c::IntersectTwoDirectionsOperation_c(EditSerializer& s, const CTime& when, const CeIntersectDir& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+IntersectTwoDirectionsOperation_c::IntersectTwoDirectionsOperation_c(IdFactory& idf, const CTime& when, const CeIntersectDir& op)
+	: Operation_c(idf, when)
 {
 	Direction1 = Direction_c::CreateExportDirection(op.GetpDir1());
 	Direction2 = Direction_c::CreateExportDirection(op.GetpDir2());
-	To = new FeatureStub_c(s, *(op.GetpIntersect()));
+	To = new FeatureStub_c(idf, *(op.GetpIntersect()));
 
 	CeArc* line1 = op.GetpArc1();
 	if (line1 == 0)
 		Line1 = 0;
 	else
-		Line1 = new FeatureStub_c(s, *line1);
+		Line1 = new FeatureStub_c(idf, *line1);
 
 	CeArc* line2 = op.GetpArc2();
 	if (line2 == 0)
 		Line2 = 0;
 	else
-		Line2 = new FeatureStub_c(s, *line2);
+		Line2 = new FeatureStub_c(idf, *line2);
 }
 
 IntersectTwoDirectionsOperation_c::~IntersectTwoDirectionsOperation_c()
@@ -514,27 +593,27 @@ void IntersectTwoDirectionsOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-IntersectTwoDistancesOperation_c::IntersectTwoDistancesOperation_c(EditSerializer& s, const CTime& when, const CeIntersectDist& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+IntersectTwoDistancesOperation_c::IntersectTwoDistancesOperation_c(IdFactory& idf, const CTime& when, const CeIntersectDist& op)
+	: Operation_c(idf, when)
 {
 	Distance1 = Observation_c::CreateExportLength(op.GetpDist1());
 	From1 = op.GetpFrom1();
 	Distance2 = Observation_c::CreateExportLength(op.GetpDist2());
 	From2 = op.GetpFrom2();
 	IsDefault = op.IsDefault();
-	To = new FeatureStub_c(s, *(op.GetpIntersect()));
+	To = new FeatureStub_c(idf, *(op.GetpIntersect()));
 
 	CeArc* line1 = op.GetpArc1();
 	if (line1 == 0)
 		Line1 = 0;
 	else
-		Line1 = new FeatureStub_c(s, *line1);
+		Line1 = new FeatureStub_c(idf, *line1);
 
 	CeArc* line2 = op.GetpArc2();
 	if (line2 == 0)
 		Line2 = 0;
 	else
-		Line2 = new FeatureStub_c(s, *line2);
+		Line2 = new FeatureStub_c(idf, *line2);
 }
 
 IntersectTwoDistancesOperation_c::~IntersectTwoDistancesOperation_c()
@@ -573,39 +652,39 @@ void IntersectTwoDistancesOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-IntersectTwoLinesOperation_c::IntersectTwoLinesOperation_c(EditSerializer& s, const CTime& when, const CeIntersectLine& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+IntersectTwoLinesOperation_c::IntersectTwoLinesOperation_c(IdFactory& idf, const CTime& when, const CeIntersectLine& op)
+	: Operation_c(idf, when)
 {
 	Line1 = op.GetpArc1();
 	IsSplit1 = op.IsSplit1();
 	Line2 = op.GetpArc2();
 	IsSplit2 = op.IsSplit2();
 	CloseTo = op.GetpCloseTo();
-	Intersection = new FeatureStub_c(s, *(op.GetpIntersect()));
+	Intersection = new FeatureStub_c(idf, *(op.GetpIntersect()));
 
 	CeArc* line1a = op.GetpArc1a();
 	if (line1a == 0)
 		Line1a = 0;
 	else
-		Line1a = s.GetInternalId(line1a);
+		Line1a = idf.GetNextId(line1a);
 
 	CeArc* line1b = op.GetpArc1b();
 	if (line1b == 0)
 		Line1b = 0;
 	else
-		Line1b = s.GetInternalId(line1b);
+		Line1b = idf.GetNextId(line1b);
 
 	CeArc* line2a = op.GetpArc2a();
 	if (line2a == 0)
 		Line2a = 0;
 	else
-		Line2a = s.GetInternalId(line2a);
+		Line2a = idf.GetNextId(line2a);
 
 	CeArc* line2b = op.GetpArc2b();
 	if (line2b == 0)
 		Line2b = 0;
 	else
-		Line2b = s.GetInternalId(line2b);
+		Line2b = idf.GetNextId(line2b);
 }
 
 IntersectTwoLinesOperation_c::~IntersectTwoLinesOperation_c()
@@ -643,19 +722,19 @@ void IntersectTwoLinesOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-LineExtensionOperation_c::LineExtensionOperation_c(EditSerializer& s, const CTime& when, const CeArcExtension& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+LineExtensionOperation_c::LineExtensionOperation_c(IdFactory& idf, const CTime& when, const CeArcExtension& op)
+	: Operation_c(idf, when)
 {
 	ExtendLine = (void*)op.GetpExtendArc();
 	IsExtendFromEnd = op.IsExtendFromEnd();
 	Length = new Distance_c(op.GetLength());
-	NewPoint = new FeatureStub_c(s, *(op.GetpNewPoint()));
+	NewPoint = new FeatureStub_c(idf, *(op.GetpNewPoint()));
 
 	const CeArc* newLine = op.GetpNewArc();
 	if (newLine == 0)
 		NewLine = 0;
 	else
-		NewLine = new FeatureStub_c(s, *newLine);
+		NewLine = new FeatureStub_c(idf, *newLine);
 }
 
 LineExtensionOperation_c::~LineExtensionOperation_c()
@@ -725,8 +804,8 @@ void LineSubdivisionFace_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-LineSubdivisionOperation_c::LineSubdivisionOperation_c(EditSerializer& s, const CTime& when, const CeArcSubdivision& op, unsigned int otherSide)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+LineSubdivisionOperation_c::LineSubdivisionOperation_c(IdFactory& idf, const CTime& when, const CeArcSubdivision& op, unsigned int otherSide)
+	: Operation_c(idf, when)
 {
 	Line = op.GetpParent();
 	OtherSide = otherSide;
@@ -743,9 +822,8 @@ LineSubdivisionOperation_c::LineSubdivisionOperation_c(EditSerializer& s, const 
 
 	CeObjectList* sections = op.GetSectionList(faceIndex);
 	CeArc* firstArc = (CeArc*)sections->GetpFirst();
-	PointType = s.GetEntityId(firstArc->GetpWhat());
+	PointType = idf.GetEntityId(firstArc->GetpWhat());
 
-	unsigned int maxSequence = this->Sequence;
 	CeListIter loop(sections);
 	CeArc* a;
 
@@ -756,14 +834,13 @@ LineSubdivisionOperation_c::LineSubdivisionOperation_c(EditSerializer& s, const 
 		CePoint* p = a->GetEndPoint();
 		if (p->GetpCreator() == (CeOperation*)&op)
 		{
-			maxSequence++;
-			s.SetInternalId(p, maxSequence);
+			unsigned int iid = idf.GetNextId(p);
 
 			// If the point has a user-perceived ID, remember the mapping
 			unsigned int rawId = Feature_c::GetRawId(*p);
 			if (rawId != 0)
 			{
-				IdMapping_c* m = new IdMapping_c(maxSequence, rawId);
+				IdMapping_c* m = new IdMapping_c(iid, rawId);
 
 				if (Ids == 0)
 					Ids = new CPtrArray();
@@ -772,8 +849,7 @@ LineSubdivisionOperation_c::LineSubdivisionOperation_c(EditSerializer& s, const 
 			}
 		}
 
-		maxSequence++;
-		s.SetInternalId(a, maxSequence);
+		idf.GetNextId(a);
 	}
 }
 
@@ -807,8 +883,8 @@ void LineSubdivisionOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-MoveTextOperation_c::MoveTextOperation_c(EditSerializer& s, const CTime& when, const CeMoveLabel& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+MoveTextOperation_c::MoveTextOperation_c(IdFactory& idf, const CTime& when, const CeMoveLabel& op)
+	: Operation_c(idf, when)
 {
 	CeLabel* label = op.GetpLabel();
 	Text = label;
@@ -848,8 +924,8 @@ void MoveTextOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-NewCircleOperation_c::NewCircleOperation_c(EditSerializer& s, const CTime& when, const CeNewCircle& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+NewCircleOperation_c::NewCircleOperation_c(IdFactory& idf, const CTime& when, const CeNewCircle& op)
+	: Operation_c(idf, when)
 {
 	Center = op.GetCentre();
 	Radius = Observation_c::CreateExportLength(op.GetRadius());
@@ -859,14 +935,14 @@ NewCircleOperation_c::NewCircleOperation_c(EditSerializer& s, const CTime& when,
 		CeArc* arc = op.GetpArc();
 		CePoint* cp = arc->GetStartPoint();
 		assert(cp->GetpCreator() == (CeOperation*)&op);
-		ClosingPoint = new FeatureStub_c(s, *cp);
+		ClosingPoint = new FeatureStub_c(idf, *cp);
 	}
 	else
 	{
 		ClosingPoint = 0;
 	}
 
-	Arc = new FeatureStub_c(s, *(op.GetpArc()));
+	Arc = new FeatureStub_c(idf, *(op.GetpArc()));
 }
 
 NewCircleOperation_c::~NewCircleOperation_c()
@@ -897,10 +973,10 @@ void NewCircleOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-NewLineOperation_c::NewLineOperation_c(EditSerializer& s, const CTime& when, const CeNewArc& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+NewLineOperation_c::NewLineOperation_c(IdFactory& idf, const CTime& when, const CeNewArc& op)
+	: Operation_c(idf, when)
 {
-	NewLine = new LineFeature_c(s, *(op.GetpArc()));
+	NewLine = new LineFeature_c(idf, *(op.GetpArc()));
 }
 
 NewLineOperation_c::~NewLineOperation_c()
@@ -922,10 +998,10 @@ void NewLineOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-NewPointOperation_c::NewPointOperation_c(EditSerializer& s, const CTime& when, const CeNewPoint& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+NewPointOperation_c::NewPointOperation_c(IdFactory& idf, const CTime& when, const CeNewPoint& op)
+	: Operation_c(idf, when)
 {
-	NewPoint = new PointFeature_c(s, *(op.GetpPoint()));
+	NewPoint = new PointFeature_c(idf, *(op.GetpPoint()));
 }
 
 NewPointOperation_c::~NewPointOperation_c()
@@ -947,10 +1023,10 @@ void NewPointOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-NewTextOperation_c::NewTextOperation_c(EditSerializer& s, const CTime& when, const CeNewLabel& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+NewTextOperation_c::NewTextOperation_c(IdFactory& idf, const CTime& when, const CeNewLabel& op)
+	: Operation_c(idf, when)
 {
-	Text = new TextFeature_c(s, *(op.GetpLabel()));
+	Text = new TextFeature_c(idf, *(op.GetpLabel()));
 }
 
 NewTextOperation_c::~NewTextOperation_c()
@@ -972,8 +1048,8 @@ void NewTextOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-ParallelLineOperation_c::ParallelLineOperation_c(EditSerializer& s, const CTime& when, const CeArcParallel& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+ParallelLineOperation_c::ParallelLineOperation_c(IdFactory& idf, const CTime& when, const CeArcParallel& op)
+	: Operation_c(idf, when)
 {
 	RefLine = op.GetpRefArc();
 	Offset = Observation_c::CreateExportLength(op.GetpOffset());
@@ -985,15 +1061,15 @@ ParallelLineOperation_c::ParallelLineOperation_c(EditSerializer& s, const CTime&
 	if (start == 0)
 		StartPoint = 0;
 	else
-		StartPoint = new FeatureStub_c(s, *start);
+		StartPoint = new FeatureStub_c(idf, *start);
 
 	CePoint* end = op.GetEndPoint();
 	if (end == 0)
 		EndPoint = 0;
 	else
-		EndPoint = new FeatureStub_c(s, *end);
+		EndPoint = new FeatureStub_c(idf, *end);
 
-	ParLine = new FeatureStub_c(s, *(op.GetpParArc()));
+	ParLine = new FeatureStub_c(idf, *(op.GetpParArc()));
 }
 
 ParallelLineOperation_c::~ParallelLineOperation_c()
@@ -1037,8 +1113,8 @@ void ParallelLineOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-PathOperation_c::PathOperation_c(EditSerializer& s, const CTime& when, const CePath& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath& op)
+	: Operation_c(idf, when)
 {
 	From = op.GetpFrom();
 	To = op.GetpTo();
@@ -1054,13 +1130,13 @@ PathOperation_c::PathOperation_c(EditSerializer& s, const CTime& when, const CeP
 	if (fp == 0)
 		PointType = 0;
 	else
-		PointType = s.GetEntityId(fp->GetpWhat());
+		PointType = idf.GetEntityId(fp->GetpWhat());
 
 	CeArc* fa = Feature_c::GetFirstArc(features);
 	if (fa == 0)
 		LineType = 0;
 	else
-		LineType = s.GetEntityId(fa->GetpWhat());
+		LineType = idf.GetEntityId(fa->GetpWhat());
 
 	// The data entry string will have units attached to every observed distance,
 	// so it shouldn't matter what value we use for the default entry units.
@@ -1074,11 +1150,12 @@ PathOperation_c::PathOperation_c(EditSerializer& s, const CTime& when, const CeP
 
 	for (int i=0; i<op.GetNumLeg(); i++)
 	{
-		maxSequence++;
 		CeLeg* leg = op.GetpLeg(i);
+
+		// Assign ID for center point (if it's there). If the leg doesn't have a center
+		// point (e.g. it's a straight leg), this just reserves an ID
 		CePoint* center = leg->GetpCentrePoint(op);
-		if (center != 0)
-			s.SetInternalId(center, maxSequence);
+		idf.GetNextId(center);
 
 		// Cul-de-sacs may have no observed distances, but they still generate a line
 		unsigned short nSpan = leg->GetCount();
@@ -1112,11 +1189,9 @@ PathOperation_c::PathOperation_c(EditSerializer& s, const CTime& when, const CeP
 			}
 
 			// The point (if there is one) always gets the next ID number
-			maxSequence++;
+			idf.GetNextId(p);
 			if (p != 0)
 			{
-				s.SetInternalId(p, maxSequence);
-
 				// If the point has a user-perceived ID, remember the mapping
 				unsigned int rawId = Feature_c::GetRawId(*p);
 				if (rawId != 0)
@@ -1131,14 +1206,8 @@ PathOperation_c::PathOperation_c(EditSerializer& s, const CTime& when, const CeP
 			}
 
 			// Lines were never assigned IDs in CEdit.
-			maxSequence++;
-			if (a != 0)
-				s.SetInternalId(a, maxSequence);
+			idf.GetNextId(a);
 		}
-
-		// Ensure the serializer knows about the last sequence number (this covers a case
-		// where the very last span was a miss-connect)
-		s.SetMaxInternalId(maxSequence);
 	}
 }
 
@@ -1170,11 +1239,11 @@ void PathOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-PolygonSubdivisionOperation_c::PolygonSubdivisionOperation_c(EditSerializer& s, const CTime& when, const CeAreaSubdivision& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+PolygonSubdivisionOperation_c::PolygonSubdivisionOperation_c(IdFactory& idf, const CTime& when, const CeAreaSubdivision& op)
+	: Operation_c(idf, when)
 {
 	Label = op.GetpLabel();
-	Operation_c::LoadExportFeatures(s, op, Lines);
+	Operation_c::LoadExportFeatures(idf, op, Lines);
 }
 
 PolygonSubdivisionOperation_c::~PolygonSubdivisionOperation_c()
@@ -1200,18 +1269,18 @@ void PolygonSubdivisionOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-RadialOperation_c::RadialOperation_c(EditSerializer& s, const CTime& when, const CeRadial& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+RadialOperation_c::RadialOperation_c(IdFactory& idf, const CTime& when, const CeRadial& op)
+	: Operation_c(idf, when)
 {
 	Direction = Direction_c::CreateExportDirection(op.GetpDirection());
 	Length = Observation_c::CreateExportLength(op.GetpLength());
-	To = new FeatureStub_c(s, *(op.GetpPoint()));
+	To = new FeatureStub_c(idf, *(op.GetpPoint()));
 
 	CeArc* line = op.GetpArc();
 	if (line == 0)
 		Line = 0;
 	else
-		Line = new FeatureStub_c(s, *line);
+		Line = new FeatureStub_c(idf, *line);
 }
 
 RadialOperation_c::~RadialOperation_c()
@@ -1242,8 +1311,8 @@ void RadialOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-SetTopologyOperation_c::SetTopologyOperation_c(EditSerializer& s, const CTime& when, const CeSetTopology& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+SetTopologyOperation_c::SetTopologyOperation_c(IdFactory& idf, const CTime& when, const CeSetTopology& op)
+	: Operation_c(idf, when)
 {
 	Line = op.GetpArc();
 }
@@ -1262,8 +1331,8 @@ void SetTopologyOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-SimpleLineSubdivisionOperation_c::SimpleLineSubdivisionOperation_c(EditSerializer& s, const CTime& when, const CePointOnLine& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+SimpleLineSubdivisionOperation_c::SimpleLineSubdivisionOperation_c(IdFactory& idf, const CTime& when, const CePointOnLine& op)
+	: Operation_c(idf, when)
 {
 	Line = op.GetpArc();
 	Distance = new Distance_c(*(op.GetpDistance()));
@@ -1278,9 +1347,9 @@ SimpleLineSubdivisionOperation_c::SimpleLineSubdivisionOperation_c(EditSerialize
 		IsFromEnd = FALSE;
 	}
 
-	NewPoint = new FeatureStub_c(s, *(op.GetpNewPoint()));
-	NewLine1 = s.GetInternalId(op.GetpNewArc1());
-	NewLine2 = s.GetInternalId(op.GetpNewArc2());
+	NewPoint = new FeatureStub_c(idf, *(op.GetpNewPoint()));
+	NewLine1 = idf.GetNextId(op.GetpNewArc1());
+	NewLine2 = idf.GetNextId(op.GetpNewArc2());
 }
 
 SimpleLineSubdivisionOperation_c::~SimpleLineSubdivisionOperation_c()
@@ -1308,8 +1377,8 @@ void SimpleLineSubdivisionOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-TextRotationOperation_c::TextRotationOperation_c(EditSerializer& s, const CTime& when, const CeSetLabelRotation& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+TextRotationOperation_c::TextRotationOperation_c(IdFactory& idf, const CTime& when, const CeSetLabelRotation& op)
+	: Operation_c(idf, when)
 {
 	Rotation = op.GetRotation();
 }
@@ -1328,14 +1397,14 @@ void TextRotationOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-TrimLineOperation_c::TrimLineOperation_c(EditSerializer& s, const CTime& when, const CeArcTrim& op)
-	: Operation_c(s.GetInternalId((void*)&op), when)
+TrimLineOperation_c::TrimLineOperation_c(IdFactory& idf, const CTime& when, const CeArcTrim& op)
+	: Operation_c(idf, when)
 {
-	LoadIdArray(s, op.GetArcs(), Lines);
-	LoadIdArray(s, op.GetPoints(), Points);	
+	LoadIdArray(idf, op.GetArcs(), Lines);
+	LoadIdArray(idf, op.GetPoints(), Points);	
 }
 
-void TrimLineOperation_c::LoadIdArray(EditSerializer& s, CeObjectList* features, CUIntArray& ids)
+void TrimLineOperation_c::LoadIdArray(IdFactory& idf, CeObjectList* features, CUIntArray& ids)
 {
 	CeListIter loop(features);
 	void* pThing;
@@ -1344,7 +1413,7 @@ void TrimLineOperation_c::LoadIdArray(EditSerializer& s, CeObjectList* features,
 		  pThing;
 		  pThing = loop.GetNext() )
 	{
-		unsigned int iid = s.GetInternalId(pThing);
+		unsigned int iid = idf.FindId(pThing);
 		assert(iid < this->Sequence);
 		ids.Add(iid);
 	}

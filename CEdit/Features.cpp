@@ -2,6 +2,7 @@
 #include "DataField.h"
 #include "EditSerializer.h"
 #include "Features.h"
+#include "Changes.h"
 #include <assert.h>
 
 #ifdef _CEDIT
@@ -68,10 +69,10 @@ void FeatureId_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-FeatureStub_c::FeatureStub_c(EditSerializer& s, const CeFeature& f)
+FeatureStub_c::FeatureStub_c(IdFactory& idf, const CeFeature& f)
 {
-	InternalId = s.GetInternalId((void*)&f);
-	EntityId = s.GetEntityId(f.GetpWhat());
+	InternalId = idf.GetNextId();
+	EntityId = idf.GetEntityId(f.GetpWhat());
 
 	CeFeatureId* pFid = f.GetpId();
 	if (pFid == 0)
@@ -110,19 +111,19 @@ void FeatureStub_c::WriteData(EditSerializer& s) const
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 // static
-Feature_c* Feature_c::CreateExportFeature(EditSerializer& s, const CeFeature& f)
+Feature_c* Feature_c::CreateExportFeature(IdFactory& idf, const CeFeature& f)
 {
 	const CePoint* point = dynamic_cast<const CePoint*>(&f);
 	if (point != 0)
-		return new PointFeature_c(s, *point);
+		return new PointFeature_c(idf, *point);
 
 	const CeArc* line = dynamic_cast<const CeArc*>(&f);
 	if (line != 0)
-		return new LineFeature_c(s, *line);
+		return new LineFeature_c(idf, *line);
 
 	const CeLabel* label = dynamic_cast<const CeLabel*>(&f);
 	if (label != 0)
-		return new TextFeature_c(s, *label);
+		return new TextFeature_c(idf, *label);
 
 	assert(1==0);
 	return 0;
@@ -191,9 +192,9 @@ CePoint* Feature_c::GetFirstPoint(CeObjectList& features)
 }
 
 
-Feature_c::Feature_c(EditSerializer& s, const CeFeature& f)
+Feature_c::Feature_c(IdFactory& idf, const CeFeature& f)
 {
-	Stub = new FeatureStub_c(s, f);
+	Stub = new FeatureStub_c(idf, f);
 }
 
 Feature_c::~Feature_c()
@@ -248,8 +249,8 @@ void PointGeometry_c::Init(double x, double y)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-PointFeature_c::PointFeature_c(EditSerializer& s, const CePoint& p)
-	: Feature_c(s, p)
+PointFeature_c::PointFeature_c(IdFactory& idf, const CePoint& p)
+	: Feature_c(idf, p)
 {
 	Geom = new PointGeometry_c(*(p.GetpVertex()));
 }
@@ -439,8 +440,8 @@ void SectionGeometry_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-LineFeature_c::LineFeature_c(EditSerializer& s, const CeArc& line)
-	: Feature_c(s, line)
+LineFeature_c::LineFeature_c(IdFactory& idf, const CeArc& line)
+	: Feature_c(idf, line)
 {
 	From = line.GetStartPoint();
 	To = line.GetEndPoint();
@@ -539,7 +540,7 @@ void LineFeature_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-TextGeometry_c::TextGeometry_c(EditSerializer& s, const CeText& text)
+TextGeometry_c::TextGeometry_c(IdFactory& idf, const CeText& text)
 {
 	CeFont* font = text.GetpFont();
 	if (font == 0)
@@ -548,7 +549,7 @@ TextGeometry_c::TextGeometry_c(EditSerializer& s, const CeText& text)
 	{
 		CString ft;
 		font->GetFontTitle(ft);
-		Font = s.GetFontId((LPCTSTR)ft);
+		Font = idf.GetFontId((LPCTSTR)ft);
 	}
 
 	Position.X = (__int64)(text.GetEasting() * 1000000.0);
@@ -583,8 +584,8 @@ void TextGeometry_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-KeyTextGeometry_c::KeyTextGeometry_c(EditSerializer& s, const CeKeyText& text)
-	: TextGeometry_c(s, text)
+KeyTextGeometry_c::KeyTextGeometry_c(IdFactory& idf, const CeKeyText& text)
+	: TextGeometry_c(idf, text)
 {
 	// Nothing to do
 }
@@ -597,11 +598,11 @@ LPCTSTR KeyTextGeometry_c::GetTypeName() const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-RowTextGeometry_c::RowTextGeometry_c(EditSerializer& s, const CeRowText& text)
-	: TextGeometry_c(s, text)
+RowTextGeometry_c::RowTextGeometry_c(IdFactory& idf, const CeRowText& text)
+	: TextGeometry_c(idf, text)
 {
-	TableId = s.GetTableId(text.GetRow()->GetpSchema()->GetName());
-	TemplateId = s.GetTemplateId(text.GetTemplate()->GetName());
+	TableId = idf.GetTableId(text.GetRow()->GetpSchema()->GetName());
+	TemplateId = idf.GetTemplateId(text.GetTemplate()->GetName());
 }
 
 LPCTSTR RowTextGeometry_c::GetTypeName() const
@@ -619,8 +620,8 @@ void RowTextGeometry_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-MiscTextGeometry_c::MiscTextGeometry_c(EditSerializer& s, const CeMiscText& text)
-	: TextGeometry_c(s, text)
+MiscTextGeometry_c::MiscTextGeometry_c(IdFactory& idf, const CeMiscText& text)
+	: TextGeometry_c(idf, text)
 {
 	text.GetText(Text);
 }
@@ -639,22 +640,22 @@ void MiscTextGeometry_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-TextFeature_c::TextFeature_c(EditSerializer& s, const CeLabel& label)
-	: Feature_c(s, label)
+TextFeature_c::TextFeature_c(IdFactory& idf, const CeLabel& label)
+	: Feature_c(idf, label)
 {
 	CeText* text = label.GetpText();
 
 	CeKeyText* keyText = dynamic_cast<CeKeyText*>(text);
 	if (keyText != 0)
-		Geom = new KeyTextGeometry_c(s, *keyText);
+		Geom = new KeyTextGeometry_c(idf, *keyText);
 
 	CeMiscText* miscText = dynamic_cast<CeMiscText*>(text);
 	if (miscText != 0)
-		Geom = new MiscTextGeometry_c(s, *miscText);
+		Geom = new MiscTextGeometry_c(idf, *miscText);
 
 	CeRowText* rowText = dynamic_cast<CeRowText*>(text);
 	if (rowText != 0)
-		Geom = new RowTextGeometry_c(s, *rowText);
+		Geom = new RowTextGeometry_c(idf, *rowText);
 
 	assert(Geom != 0);
 
