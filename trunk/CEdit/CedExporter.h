@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef _CEDIT
-class CeSession;
+class CeOperation;
 class CeMap;
 #else
 #include "CEditStubs.h"
@@ -10,18 +10,13 @@ class CeMap;
 class CedExporter
 {
 public:
-	CedExporter(EditSerializer& s);
+	CedExporter();
 	virtual ~CedExporter(void);
-	void ExportMap();
-	unsigned int GenerateIds(CeMap* cedFile, CMapPtrToPtr& objectIds);
+	void CreateExport(CeMap* cedFile);
 
 private:
-	void ExportSession(CeSession& session);
-	unsigned int WriteOperation(Operation_c* op);
-	unsigned int ExportOperation(const CTime& when, const CeOperation& op);
 	void FillGuidString(CString& s) const;
-
-private:
-	EditSerializer& m_Serializer;
+	void FillComputerName(CString& name) const;
+	void AppendExportItems(const CTime& when, const CeOperation& op, IdFactory& idf, CPtrArray& exportItems);
 };
 

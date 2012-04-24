@@ -44,6 +44,39 @@ class PointGeometry_c;
 class PointFeature_c;
 class TextFeature_c;
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+class IdFactory
+{
+public:
+	IdFactory(void);
+
+	// Obtain an ID for something that isn't represented within a CED file
+	unsigned int GetNextId()
+	{
+		m_MaxId++;
+		return m_MaxId;
+	}
+
+	unsigned int GetNextId(void* o);
+	unsigned int FindId(void* o) const;
+
+	int GetEntityId(LPCTSTR entName);
+	int GetFontId(LPCTSTR fontTitle);
+	int GetTableId(LPCTSTR tableName);
+	int GetTemplateId(LPCTSTR templateName);
+	int GetGroupId(LPCTSTR groupName);
+
+private:
+	void LoadMappings(LPCTSTR fileName, CMapStringToPtr& index);
+	int LookupId(CMapStringToPtr& index, LPCTSTR name);
+
+private:
+	unsigned int m_MaxId;
+	CMapPtrToPtr m_ObjectIds;
+	CMapStringToPtr m_EntityMap;
+	CMapStringToPtr m_TemplateMap;
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,13 +84,22 @@ class Change_c : public Persistent_c
 {
 public:
 	unsigned int Sequence;
-	const CTime& When;
+	CTime When;
 
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
 
 protected:
-	Change_c(unsigned int sequence, const CTime& when) : Sequence(sequence), When(when) {}
+	Change_c(unsigned int sequence, const CTime& when) : Sequence(sequence)
+	{
+		When = when;
+	}
+
+	Change_c(IdFactory& idFactory, const CTime& when)
+	{
+		Sequence = idFactory.GetNextId();
+		When = when;
+	}
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +114,7 @@ public:
     CString UserName;
     CString MachineName;
 
-	NewProjectEvent_c(unsigned int sequence, const CTime& when,
+	NewProjectEvent_c(IdFactory& idf, const CTime& when,
 		LPCTSTR projectId, LPCTSTR projectName, int layerId, LPCTSTR defaultSystem,
 		LPCTSTR userName, LPCTSTR machineName);
 
@@ -88,7 +130,7 @@ public:
     CString UserName;
     CString MachineName;
 
-	NewSessionEvent_c(unsigned int sequence, const CTime& when, LPCTSTR userName, LPCTSTR machineName);
+	NewSessionEvent_c(IdFactory& idf, const CTime& when, LPCTSTR userName, LPCTSTR machineName);
 
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
@@ -99,7 +141,7 @@ public:
 class EndSessionEvent_c : public Change_c
 {
 public:
-	EndSessionEvent_c(unsigned int sequence, const CTime& when);
+	EndSessionEvent_c(IdFactory& idf, const CTime& when);
 
 	virtual LPCTSTR GetTypeName() const;
 };
@@ -113,22 +155,7 @@ public:
     int LowestId;
     int HighestId;
 
-	IdAllocation_c(unsigned int sequence, const CTime& when);
-	IdAllocation_c(unsigned int sequence, const CTime& when, int groupId, int lowestId, int highestId);
-
-	virtual LPCTSTR GetTypeName() const;
-	virtual void WriteData(EditSerializer& s) const;
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-class IdMapping_c : Persistent_c
-{
-public:
-	unsigned int InternalId;
-	unsigned int RawId;
-
-	IdMapping_c(unsigned int internalId, unsigned int rawId);
+	IdAllocation_c(IdFactory& idf, const CTime& when, int groupId, int lowestId, int highestId);
 
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
@@ -139,13 +166,15 @@ public:
 class Operation_c : public Change_c
 {
 public:
-	static void LoadExportFeatures(EditSerializer& s, const CeOperation& op, CPtrArray& exportFeatures);
+	static void LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtrArray& exportFeatures);
 	static void ReleaseExportFeatures(CPtrArray& exportFeatures);
 	static void ReleaseIdMappingArray(CPtrArray* idMappings);
 
 protected:
 	Operation_c(unsigned int sequence, const CTime& when)
 		: Change_c(sequence, when) {}
+	Operation_c(IdFactory& idFactory, const CTime& when)
+		: Change_c(idFactory, when) {}
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,7 +186,7 @@ public:
 	unsigned int PositionRatio;
 	FeatureStub_c* Point;
 
-	AttachPointOperation_c(EditSerializer& s, const CTime& when, const CeAttachPoint& op);
+	AttachPointOperation_c(IdFactory& idf, const CTime& when, const CeAttachPoint& op);
 
 	virtual ~AttachPointOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -171,7 +200,7 @@ class DeletionOperation_c : public Operation_c
 public:
 	CUIntArray Deletions;
 
-	DeletionOperation_c(EditSerializer& s, const CTime& when, const CeDeletion& op);
+	DeletionOperation_c(IdFactory& idf, const CTime& when, const CeDeletion& op);
 
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
@@ -184,7 +213,7 @@ class GetControlOperation_c : public Operation_c
 public:
 	CPtrArray Points;
 
-	GetControlOperation_c(EditSerializer& s, const CTime& when, const CeGetControl& op);
+	GetControlOperation_c(IdFactory& idf, const CTime& when, const CeGetControl& op);
 
 	virtual ~GetControlOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -199,8 +228,8 @@ public:
 	CString Source;
 	CPtrArray Features;
 
-	ImportOperation_c(EditSerializer& s, const CTime& when, const CeImport& op);
-	ImportOperation_c(EditSerializer& s, const CTime& when, const CeGetBackground& op);
+	ImportOperation_c(IdFactory& idf, const CTime& when, const CeImport& op);
+	ImportOperation_c(IdFactory& idf, const CTime& when, const CeGetBackground& op);
 
 	virtual ~ImportOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -220,7 +249,7 @@ public:
 	FeatureStub_c* DirLine;
     FeatureStub_c* DistLine;
 
-	IntersectDirectionAndDistanceOperation_c(EditSerializer& s, const CTime& when, const CeIntersectDirDist& op);
+	IntersectDirectionAndDistanceOperation_c(IdFactory& idf, const CTime& when, const CeIntersectDirDist& op);
 
 	virtual ~IntersectDirectionAndDistanceOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -241,7 +270,7 @@ public:
     unsigned int LineA;
     unsigned int LineB;
 
-	IntersectDirectionAndLineOperation_c(EditSerializer& s, const CTime& when, const CeIntersectDirLine& op);
+	IntersectDirectionAndLineOperation_c(IdFactory& idf, const CTime& when, const CeIntersectDirLine& op);
 
 	virtual ~IntersectDirectionAndLineOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -259,7 +288,7 @@ public:
     FeatureStub_c* Line1;
     FeatureStub_c* Line2;
 
-	IntersectTwoDirectionsOperation_c(EditSerializer& s, const CTime& when, const CeIntersectDir& op);
+	IntersectTwoDirectionsOperation_c(IdFactory& idf, const CTime& when, const CeIntersectDir& op);
 
 	virtual ~IntersectTwoDirectionsOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -280,7 +309,7 @@ public:
     FeatureStub_c* Line1;
     FeatureStub_c* Line2;
 
-	IntersectTwoDistancesOperation_c(EditSerializer& s, const CTime& when, const CeIntersectDist& op);
+	IntersectTwoDistancesOperation_c(IdFactory& idf, const CTime& when, const CeIntersectDist& op);
 
 	virtual ~IntersectTwoDistancesOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -303,7 +332,7 @@ public:
     unsigned int Line2a;
     unsigned int Line2b;
 
-	IntersectTwoLinesOperation_c(EditSerializer& s, const CTime& when, const CeIntersectLine& op);
+	IntersectTwoLinesOperation_c(IdFactory& idf, const CTime& when, const CeIntersectLine& op);
 
 	virtual ~IntersectTwoLinesOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -321,7 +350,7 @@ public:
     FeatureStub_c* NewLine;
     FeatureStub_c* NewPoint;
 
-	LineExtensionOperation_c(EditSerializer& s, const CTime& when, const CeArcExtension& op);
+	LineExtensionOperation_c(IdFactory& idf, const CTime& when, const CeArcExtension& op);
 
 	virtual ~LineExtensionOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -354,7 +383,7 @@ public:
 	int PointType;
 	CPtrArray* Ids;
 
-	LineSubdivisionOperation_c(EditSerializer& s, const CTime& when, const CeArcSubdivision& op, unsigned int otherSide);
+	LineSubdivisionOperation_c(IdFactory& idf, const CTime& when, const CeArcSubdivision& op, unsigned int otherSide);
 
 	virtual ~LineSubdivisionOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -374,7 +403,7 @@ public:
     PointGeometry_c* OldPolPosition;
     PointGeometry_c* NewPosition;
 
-	MoveTextOperation_c(EditSerializer& s, const CTime& when, const CeMoveLabel& op);
+	MoveTextOperation_c(IdFactory& idf, const CTime& when, const CeMoveLabel& op);
 
 	virtual ~MoveTextOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -391,7 +420,7 @@ public:
 	FeatureStub_c* ClosingPoint;
 	FeatureStub_c* Arc;
 
-	NewCircleOperation_c(EditSerializer& s, const CTime& when, const CeNewCircle& op);
+	NewCircleOperation_c(IdFactory& idf, const CTime& when, const CeNewCircle& op);
 
 	virtual ~NewCircleOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -405,7 +434,7 @@ class NewLineOperation_c : public Operation_c
 public:
 	LineFeature_c* NewLine; 
 
-	NewLineOperation_c(EditSerializer& s, const CTime& when, const CeNewArc& op);
+	NewLineOperation_c(IdFactory& idf, const CTime& when, const CeNewArc& op);
 
 	virtual ~NewLineOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -419,7 +448,7 @@ class NewPointOperation_c : public Operation_c
 public:
 	PointFeature_c* NewPoint;
 
-	NewPointOperation_c(EditSerializer& s, const CTime& when, const CeNewPoint& op);
+	NewPointOperation_c(IdFactory& idf, const CTime& when, const CeNewPoint& op);
 
 	virtual ~NewPointOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -433,7 +462,7 @@ class NewTextOperation_c : public Operation_c
 public:
 	TextFeature_c* Text;
 
-	NewTextOperation_c(EditSerializer& s, const CTime& when, const CeNewLabel& op);
+	NewTextOperation_c(IdFactory& idf, const CTime& when, const CeNewLabel& op);
 
 	virtual ~NewTextOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -454,7 +483,7 @@ public:
 	FeatureStub_c* EndPoint;
 	FeatureStub_c* ParLine;
 
-	ParallelLineOperation_c(EditSerializer& s, const CTime& when, const CeArcParallel& op);
+	ParallelLineOperation_c(IdFactory& idf, const CTime& when, const CeArcParallel& op);
 
 	virtual ~ParallelLineOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -474,7 +503,7 @@ public:
 	int LineType;
 	CPtrArray* Ids;
 
-	PathOperation_c(EditSerializer& s, const CTime& when, const CePath& op);
+	PathOperation_c(IdFactory& idf, const CTime& when, const CePath& op);
 
 	virtual ~PathOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -493,7 +522,7 @@ public:
 	void* Label;
 	CPtrArray Lines;
 
-	PolygonSubdivisionOperation_c(EditSerializer& s, const CTime& when, const CeAreaSubdivision& op);
+	PolygonSubdivisionOperation_c(IdFactory& idf, const CTime& when, const CeAreaSubdivision& op);
 
 	virtual ~PolygonSubdivisionOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -510,7 +539,7 @@ public:
 	FeatureStub_c* To;
 	FeatureStub_c* Line;
 
-	RadialOperation_c(EditSerializer& s, const CTime& when, const CeRadial& radial);
+	RadialOperation_c(IdFactory& idf, const CTime& when, const CeRadial& radial);
 
 	virtual ~RadialOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -524,7 +553,7 @@ class SetTopologyOperation_c : public Operation_c
 public:
 	void* Line;
 
-	SetTopologyOperation_c(EditSerializer& s, const CTime& when, const CeSetTopology& op);
+	SetTopologyOperation_c(IdFactory& idf, const CTime& when, const CeSetTopology& op);
 
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
@@ -542,7 +571,7 @@ public:
 	FeatureStub_c* NewPoint;
     unsigned int NewLine2;
 
-	SimpleLineSubdivisionOperation_c(EditSerializer& s, const CTime& when, const CePointOnLine& op);
+	SimpleLineSubdivisionOperation_c(IdFactory& idf, const CTime& when, const CePointOnLine& op);
 
 	virtual ~SimpleLineSubdivisionOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -556,7 +585,7 @@ class TextRotationOperation_c : public Operation_c
 public:
     double Rotation;
 
-	TextRotationOperation_c(EditSerializer& s, const CTime& when, const CeSetLabelRotation& op);
+	TextRotationOperation_c(IdFactory& idf, const CTime& when, const CeSetLabelRotation& op);
 
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
@@ -570,13 +599,13 @@ public:
 	CUIntArray Lines;
 	CUIntArray Points;
 
-	TrimLineOperation_c(EditSerializer& s, const CTime& when, const CeArcTrim& op);
+	TrimLineOperation_c(IdFactory& idf, const CTime& when, const CeArcTrim& op);
 
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
 
 private:
-	void LoadIdArray(EditSerializer& s, CeObjectList* features, CUIntArray& ids);
+	void LoadIdArray(IdFactory& idf, CeObjectList* features, CUIntArray& ids);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

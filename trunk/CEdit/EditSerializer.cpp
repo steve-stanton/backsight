@@ -6,60 +6,9 @@
 #include "Changes.h"
 #include "EditSerializer.h"
 
-EditSerializer::EditSerializer(TextEditWriter& writer)
-	: m_Writer(writer)
+EditSerializer::EditSerializer(const IdFactory& idFactory, TextEditWriter& writer)
+	: m_IdFactory(idFactory), m_Writer(writer)
 {
-	m_MaxId = 0;
-
-	// Load translations from a specific location
-	LoadMappings("C:\\Backsight\\CEdit\\Entities.txt", m_EntityMap);
-	LoadMappings("C:\\Backsight\\CEdit\\Templates.txt", m_TemplateMap);
-}
-
-void EditSerializer::LoadMappings(LPCTSTR fileName, CMapStringToPtr& index)
-{
-	FILE* fp = fopen(fileName,"r");
-	char buf[1024];
-
-	while ( fgets(buf,sizeof(buf),fp) )
-	{
-		// Grab the buffer into a CString, trim off any leading and trailing whitespace.
-		CString str(buf);
-		str.TrimLeft();
-		str.TrimRight();
-
-		// Skip blank records.
-		int nc = str.GetLength();
-		if ( nc==0 ) continue;
-
-		int eqpos = str.Find('=');
-		if (eqpos > 0)
-		{
-			CString ids = str.Left(eqpos);
-			ids.TrimLeft();
-			ids.TrimRight();
-
-			unsigned int id;
-			sscanf((LPCTSTR)ids, "%d", &id);
-			CString entName(str.Mid(eqpos+1));
-			entName.TrimLeft();
-			entName.TrimRight();
-
-			// I THINK that SetAt creates a new copy
-			index.SetAt(entName, (void*)id);
-		}
-	}
-
-	fclose(fp);
-}
-
-int EditSerializer::LookupId(CMapStringToPtr& index, LPCTSTR name)
-{
-	void* result;
-	if (index.Lookup(name, result))
-		return (int)result;
-	else
-		return 0;
 }
 
 void EditSerializer::WritePersistentArray(DataField field, const CPtrArray& a)
@@ -330,42 +279,13 @@ void EditSerializer::WriteDateTime(DataField field, const CTime& when)
 /// <param name="id">The internal ID to write</param>
 void EditSerializer::WriteInternalId(DataField field, unsigned int id)
 {
+	assert(id > 0);
     m_Writer.WriteInternalId(DataFields[field], id);
-}
-
-unsigned int EditSerializer::GetInternalId()
-{
-	m_MaxId++;
-	return m_MaxId;
-}
-
-unsigned int EditSerializer::GetInternalId(void* p)
-{
-	void* result;
-	if (m_ObjectIds.Lookup(p, result))
-		return (unsigned int)result;
-
-	m_MaxId++;
-	m_ObjectIds.SetAt(p, (void*)m_MaxId);
-	return m_MaxId;
-}
-
-void EditSerializer::SetInternalId(void* p, unsigned int iid)
-{
-	assert(iid > m_MaxId);
-	m_MaxId = iid;
-	m_ObjectIds.SetAt(p, (void*)m_MaxId);
-}
-
-void EditSerializer::SetMaxInternalId(unsigned int maxId)
-{
-	assert(maxId >= m_MaxId);
-	m_MaxId = maxId;
 }
 
 void EditSerializer::WriteFeatureRef(DataField field, void* feature)
 {
-	unsigned int iid = GetInternalId(feature);
+	unsigned int iid = m_IdFactory.FindId(feature);
 	m_Writer.WriteInternalId(DataFields[field], iid);
 }
 
@@ -394,63 +314,4 @@ void EditSerializer::WriteBegin(DataField field, LPCTSTR exportedTypeName)
 void EditSerializer::WriteEnd()
 {
 	m_Writer.WriteEndObject();
-}
-
-int EditSerializer::GetEntityId(LPCTSTR entName)
-{
-	return LookupId(m_EntityMap, entName);
-}
-
-int EditSerializer::GetTemplateId(LPCTSTR templateName)
-{
-	return LookupId(m_TemplateMap, templateName);
-}
-
-int EditSerializer::GetFontId(LPCTSTR fontTitle)
-{
-	return 0;
-}
-
-#ifdef _CEDIT
-#include "CeIdManager.h"
-#include "CeIdHandle.h"
-#include "CeIdGroup.h"
-#include "CeIdRange.h"
-else
-#include "CEditStubs.h"
-#endif
-
-void EditSerializer::WriteIdAllocations(const CTime& when)
-{
-	CeIdManager* idMan = CeIdHandle::GetIdManager();
-	IdAllocation_c a(0, when);
-
-	unsigned int nGroup = idMan->GetNumGroup();
-	for (unsigned int i=0; i<nGroup; i++)
-	{
-		const CeIdGroup* group = idMan->GetpGroup(i);
-		a.GroupId = GetGroupId((LPCTSTR)(group->GetGroupName()));
-		const CPtrList& ranges = group->GetIdRanges();
-
-		POSITION pos = ranges.GetHeadPosition();
-		while ( pos )
-		{
-			CeIdRange* range = (CeIdRange*)ranges.GetNext(pos);
-			a.LowestId = (int)range->GetMin();
-			a.HighestId = (int)range->GetMax();
-			m_MaxId++;
-			a.Sequence = m_MaxId;
-			WritePersistent(DataField_Edit, a);
-		}
-	}
-}
-
-int EditSerializer::GetGroupId(LPCTSTR groupName)
-{
-	return 0;
-}
-
-int EditSerializer::GetTableId(LPCTSTR tableName)
-{
-	return 123;
 }

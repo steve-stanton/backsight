@@ -2,6 +2,7 @@
 
 class EditSerializer;
 class FeatureId_c;
+class IdFactory;
 
 #include "Persistent.h"
 
@@ -55,14 +56,11 @@ public:
 	unsigned int EntityId;
 	const FeatureId_c* Id;
 
-	FeatureStub_c(EditSerializer& s, const CeFeature& f);
+	FeatureStub_c(IdFactory& idf, const CeFeature& f);
 
 	virtual ~FeatureStub_c();
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
-
-//private:
-//	unsigned int GetRawId(const CeFeature& f);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,14 +74,14 @@ public:
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
 
-	static Feature_c* CreateExportFeature(EditSerializer& s, const CeFeature& f);
+	static Feature_c* CreateExportFeature(IdFactory& idf, const CeFeature& f);
 	static unsigned int GetRawId(const CeFeature& f);
 	static CeArc* GetFirstArc(CeObjectList& features);
 	static CePoint* GetFirstPoint(CeObjectList& features);
 
 
 protected:
-	Feature_c(EditSerializer& s, const CeFeature& f);
+	Feature_c(IdFactory& idf, const CeFeature& f);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +110,7 @@ class PointFeature_c : public Feature_c
 public:
 	PointGeometry_c* Geom;
 
-	PointFeature_c(EditSerializer& s, const CePoint& p);
+	PointFeature_c(IdFactory& idf, const CePoint& p);
 
 	virtual ~PointFeature_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -187,7 +185,7 @@ public:
 	LineGeometry_c* Geom;
 	bool IsTopological;
 
-	LineFeature_c(EditSerializer& s, const CeArc& line);
+	LineFeature_c(IdFactory& idf, const CeArc& line);
 
 	virtual ~LineFeature_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -208,7 +206,7 @@ public:
 	double Height;
 	double Rotation;
 
-	TextGeometry_c(EditSerializer& s, const CeText& text);
+	TextGeometry_c(IdFactory& idf, const CeText& text);
 
 	virtual ~TextGeometry_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -220,7 +218,7 @@ public:
 class KeyTextGeometry_c : public TextGeometry_c
 {
 public:
-	KeyTextGeometry_c(EditSerializer& s, const CeKeyText& text);
+	KeyTextGeometry_c(IdFactory& idf, const CeKeyText& text);
 
 	virtual LPCTSTR GetTypeName() const;
 };
@@ -233,7 +231,7 @@ public:
 	int TableId;
 	int TemplateId;
 
-	RowTextGeometry_c(EditSerializer& s, const CeRowText& text);
+	RowTextGeometry_c(IdFactory& idf, const CeRowText& text);
 
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
@@ -246,7 +244,7 @@ class MiscTextGeometry_c : public TextGeometry_c
 public:
 	CString Text;
 
-	MiscTextGeometry_c(EditSerializer& s, const CeMiscText& text);
+	MiscTextGeometry_c(IdFactory& idf, const CeMiscText& text);
 
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
@@ -261,7 +259,7 @@ public:
 	bool IsTopological;
 	PointGeometry_c* PolygonPosition;
 
-	TextFeature_c(EditSerializer& s, const CeLabel& label);
+	TextFeature_c(IdFactory& idf, const CeLabel& label);
 
 	virtual ~TextFeature_c();
 	virtual LPCTSTR GetTypeName() const;
