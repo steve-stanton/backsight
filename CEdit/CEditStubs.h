@@ -149,6 +149,8 @@ class CeLine
 {
 public:
 	virtual ~CeLine() = 0;
+	CeLocation* const GetpStart ( void ) const { return 0; }
+	CeLocation* const GetpEnd ( void ) const { return 0; }
 };
 
 class CeSegment : public CeLine
@@ -189,12 +191,15 @@ public:
 	CePoint* GetStartPoint ( void ) const { return 0; }
 	CePoint* GetEndPoint ( void ) const { return 0; }
 	CeLine*	const GetpLine ( void ) const { return 0; }
+	CeLocation* const GetpStart ( void ) const { return 0; }
+	CeLocation* const GetpEnd ( void ) const { return 0; }
 };
 
 class CeObjectList //: public CeClass
 {
 public:
 	CeClass* const GetpFirst ( void ) const { return 0; }
+	void Remove ( void ) {}
 };
 
 class CeOperation
@@ -219,7 +224,7 @@ class CeListIter
 {
 public:
 	CeListIter (const CeClass* const pThing) {}
-	CeListIter (const CeObjectList* const pList) {}
+	CeListIter (const CeObjectList* const pList, bool wantDels = FALSE) {}
 	void* GetHead ( void ) { return 0; }
 	void* GetNext ( void ) { return 0; }
 };

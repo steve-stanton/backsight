@@ -71,7 +71,7 @@ void FeatureId_c::WriteData(EditSerializer& s) const
 
 FeatureStub_c::FeatureStub_c(IdFactory& idf, const CeFeature& f)
 {
-	InternalId = idf.GetNextId();
+	InternalId = idf.GetNextId((void*)&f);
 	EntityId = idf.GetEntityId(f.GetpWhat());
 
 	CeFeatureId* pFid = f.GetpId();
@@ -86,6 +86,13 @@ FeatureStub_c::FeatureStub_c(IdFactory& idf, const CeFeature& f)
 		else
 			Id = new FeatureId_c(f.FormatKey());
 	}
+}
+
+FeatureStub_c::FeatureStub_c(IdFactory& idf, unsigned int entityId, void* cedObject)
+{
+	InternalId = idf.GetNextId(cedObject);
+	EntityId = entityId;
+	Id = 0;
 }
 
 FeatureStub_c::~FeatureStub_c()
@@ -158,7 +165,7 @@ unsigned int Feature_c::GetRawId(const CeFeature& f)
 // static
 CeArc* Feature_c::GetFirstArc(CeObjectList& features)
 {
-	CeListIter loop(&features);
+	CeListIter loop(&features, TRUE);
 	CeFeature* f;
 
 	for ( f = (CeFeature*)loop.GetHead();
@@ -195,6 +202,11 @@ CePoint* Feature_c::GetFirstPoint(CeObjectList& features)
 Feature_c::Feature_c(IdFactory& idf, const CeFeature& f)
 {
 	Stub = new FeatureStub_c(idf, f);
+}
+
+Feature_c::Feature_c(IdFactory& idf, unsigned int entityId, void* cedObject)
+{
+	Stub = new FeatureStub_c(idf, entityId, cedObject);
 }
 
 Feature_c::~Feature_c()
@@ -252,7 +264,18 @@ void PointGeometry_c::Init(double x, double y)
 PointFeature_c::PointFeature_c(IdFactory& idf, const CePoint& p)
 	: Feature_c(idf, p)
 {
-	Geom = new PointGeometry_c(*(p.GetpVertex()));
+	const CeLocation* loc = p.GetpVertex();
+	Geom = new PointGeometry_c(*loc);
+
+	// Additionally index the location for the point. This tackles a problem in obtaining
+	// internal IDs for line terminals (see comments in LineFeature_c constructor).
+	idf.AddIndexEntry((void*)loc, this->Stub->InternalId);
+}
+
+PointFeature_c::PointFeature_c(IdFactory& idf, unsigned int entityId, const CeLocation& loc)
+	: Feature_c(idf, entityId, (void*)&loc)
+{
+	Geom = new PointGeometry_c(loc);
 }
 
 PointFeature_c::~PointFeature_c()
@@ -443,8 +466,30 @@ void SectionGeometry_c::WriteData(EditSerializer& s) const
 LineFeature_c::LineFeature_c(IdFactory& idf, const CeArc& line)
 	: Feature_c(idf, line)
 {
-	From = line.GetStartPoint();
-	To = line.GetEndPoint();
+	// The From and To fields are held as Backsight internal IDs rather than pointers to
+	// CEdit objects. This helps to re-inforce the idea that the terminal points must
+	// exist BEFORE the line can be created (they must NEVER be objects created by a
+	// subsequent editing operation).
+	
+	// The lookup is done using the CeLocation pointers (not CePoint) because CEdit would let
+	// you have lines without full-fledged terminal points. During export to Backsight, extra
+	// points may need to be fabricated up front. However, rather than creating extra CePoint
+	// objects (which usually relate to persistent data in CED files), the fabricated points
+	// are instances of PointFeature_c that are added to an extra import operation, which appears
+	// at the very start of the export file. The fact that these fabricated points exist is
+	// made known by indexing their ID via the underlying CeLocation.
+
+	// Meanwhile, when PointFeature_c objects are created for real CePoint features, I
+	// cross-reference BOTH the CePoint and the CeLocation to the assigned Backsight ID.
+
+	// This is what makes it possible to do a lookup by CeLocation at this stage.
+
+	From = idf.FindId(line.GetpStart());
+	To = idf.FindId(line.GetpEnd());
+
+	assert(From > 0);
+	assert(To > 0);
+
 	IsTopological = line.IsTopological();
 
 	// Start by assuming that we've got a CeSegment (which doesn't need any geometry object for serialization)
@@ -530,8 +575,8 @@ void LineFeature_c::WriteData(EditSerializer& s) const
 {
 	Feature_c::WriteData(s);
 
-    s.WriteFeatureRef(DataField_From, From);
-    s.WriteFeatureRef(DataField_To, To);
+	s.WriteInternalId(DataField_From, From);
+    s.WriteInternalId(DataField_To, To);
     s.WriteBool(DataField_Topological, IsTopological);
 
     if (Geom != 0)
