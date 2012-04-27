@@ -45,7 +45,7 @@ void TextEditWriter::WriteUInt32(LPCTSTR name, unsigned int value)
 void TextEditWriter::WriteInt64(LPCTSTR name, __int64 value)
 {
 	char buf[32];
-	sprintf(buf, "%i64d", value);
+	sprintf(buf, "%I64d", value);
     WriteValue(name, buf);
 }
 
