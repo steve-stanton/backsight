@@ -28,54 +28,6 @@ void EditSerializer::WritePersistentArray(DataField field, const CPtrArray& a)
     WriteEnd();
 }
 
-/*
-/// <summary>
-/// Writes an array of <see cref="FeatureStub"/>, creating them from the supplied
-/// feature array.
-/// </summary>
-/// <param name="field">The tag that identifies the item.</param>
-/// <param name="features">The features to convert into stubs before writing them out.</param>
-void EditSerializer::WriteFeatureStubArray(DataField field, Feature[] features)
-{
-    var stubs = new FeatureStub[features.Length];
-
-    for (int i = 0; i < stubs.Length; i++)
-        stubs[i] = new FeatureStub(features[i]);
-
-    WritePersistentArray<FeatureStub>(field, stubs);
-}
-
-/// <summary>
-/// Writes an array of simple types to a storage medium.
-/// </summary>
-/// <typeparam name="T">The type of objects within the array (as it is known to the instance
-/// that refers to it)</typeparam>
-/// <param name="field">The tag that identifies the array.</param>
-/// <param name="array">The array to write (may be null)</param>
-void EditSerializer::WriteSimpleArray<T>(DataField field, T[] array) where T : IConvertible
-{
-    string name = DataFields[field];
-
-    if (array == null)
-    {
-        m_Writer.WriteString(name, "null");
-    }
-    else
-    {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < array.Length; i++)
-        {
-            if (i > 0)
-                sb.Append(";");
-
-            sb.Append(array[i].ToString());
-        }
-
-        m_Writer.WriteString(name, sb.ToString());
-    }
-}
-*/
-
 void EditSerializer::WriteSimpleArray(DataField field, const CUIntArray& a)
 {
 	CString result;

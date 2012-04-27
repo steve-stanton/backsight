@@ -57,6 +57,7 @@ public:
 	const FeatureId_c* Id;
 
 	FeatureStub_c(IdFactory& idf, const CeFeature& f);
+	FeatureStub_c(IdFactory& idf, unsigned int entityId, void* cedObject);
 
 	virtual ~FeatureStub_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -82,6 +83,7 @@ public:
 
 protected:
 	Feature_c(IdFactory& idf, const CeFeature& f);
+	Feature_c(IdFactory& idf, unsigned int entityId, void* cedObject);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,6 +113,7 @@ public:
 	PointGeometry_c* Geom;
 
 	PointFeature_c(IdFactory& idf, const CePoint& p);
+	PointFeature_c(IdFactory& idf, unsigned int entityId, const CeLocation& loc);
 
 	virtual ~PointFeature_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -180,8 +183,8 @@ public:
 class LineFeature_c : public Feature_c
 {
 public:
-	void* From;
-	void* To;
+	unsigned int From;
+	unsigned int To;
 	LineGeometry_c* Geom;
 	bool IsTopological;
 

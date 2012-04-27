@@ -8,6 +8,7 @@
 #include "CeIdManager.h"
 #include "CeIdGroup.h"
 #include "CeIdRange.h"
+#include "CeIdHandle.h"
 #include "CeOperation.h"
 #else
 #include "CEditStubs.h"
@@ -16,6 +17,7 @@
 #include "Changes.h"
 #include "TextEditWriter.h"
 #include "EditSerializer.h"
+#include "Features.h"
 #include "CedExporter.h"
 
 
@@ -87,7 +89,7 @@ void CedExporter::CreateExport(CeMap* cedFile)
 	int layerId = 10; // Survey layer
 	items.Add(new NewProjectEvent_c(idFactory, now, (LPCTSTR)guid, mapName, layerId, "UTM83-14", "CEdit", (LPCTSTR)machineName));
 
-	// Invent a pseudo-session to enclose all ID allocations
+	// Invent a pseudo-session to enclose all ID allocations (and any other stuff)
 	items.Add(new NewSessionEvent_c(idFactory, now, "CEdit", ""));
 
 	CeIdManager* idMan = CeIdHandle::GetIdManager();
@@ -106,6 +108,17 @@ void CedExporter::CreateExport(CeMap* cedFile)
 			items.Add(new IdAllocation_c(idFactory, now, groupId, range->GetMin(), range->GetMax()));
 		}
 	}
+	
+	// Generate any points that will be needed for line ends (whereas CEdit would let you have lines without
+	// an end point, Backsight requires them)
+	ImportOperation_c* extra = new ImportOperation_c(idFactory, now);
+	GenerateExtraPoints(cedFile, idFactory, extra->Features);
+
+	// Represent the points as an import operation
+	if (extra->Features.GetSize() == 0)
+		delete extra;
+	else
+		items.Add(extra);
 
 	items.Add(new EndSessionEvent_c(idFactory, now));
 
@@ -169,7 +182,7 @@ void CedExporter::CreateExport(CeMap* cedFile)
 	delete tw;
 	fclose(fp);
 
-	// Write the index file
+	// Write the index entry file
 	fp = fopen((LPCTSTR)indexFileName, "w");
 	fprintf(fp, "%s", (LPCTSTR)guid);
 	fclose(fp);
@@ -330,4 +343,71 @@ void CedExporter::AppendExportItems(const CTime& when, const CeOperation& op, Id
 		exportItems.Add(new AttachPointOperation_c(idf, when, (const CeAttachPoint&)op));
 		return;
 	}
+}
+
+void CedExporter::GenerateExtraPoints(CeMap* cedFile, IdFactory& idf, CPtrArray& extraPoints)
+{
+	CPSEPtrList& sessions = cedFile->GetSessions();
+	POSITION spos = sessions.GetHeadPosition();
+	CeObjectList features;
+
+	// Index of the locations that have been accounted for - the key is a CeLocation pointer,
+	// the value is unused.
+	CMapPtrToPtr locIndex;
+
+	while (spos != 0)
+	{
+		CeSession* session = (CeSession*)sessions.GetNext(spos);
+		const CPSEPtrList& ops = session->GetOperations();
+		POSITION opos = ops.GetHeadPosition();
+
+		while (opos != 0)
+		{
+			CeOperation* op = (CeOperation*)ops.GetNext(opos);
+			op->GetFeatures(features);
+
+			CeListIter* loop = new CeListIter(&features, TRUE);
+			CeFeature* f;
+
+			// Note the locations of points created by the edit
+			for (f = (CeFeature*)loop->GetHead(); f; f = (CeFeature*)loop->GetNext())
+			{
+				const CePoint* point = dynamic_cast<const CePoint*>(f);
+				if (point != 0)
+				{
+					const CeLocation* loc = point->GetpVertex();
+					locIndex.SetAt((void*)loc, 0);
+				}
+			}
+
+			// Process the lines created by the edit. For each terminal, check whether the
+			// location is already noted. If not, we need to fabricate a point.
+			for (f = (CeFeature*)loop->GetHead(); f; f = (CeFeature*)loop->GetNext())
+			{
+				const CeArc* line = dynamic_cast<const CeArc*>(f);
+				if (line != 0)
+				{
+					CheckForExtraPoint(line->GetpStart(), locIndex, idf, extraPoints);
+					CheckForExtraPoint(line->GetpEnd(), locIndex, idf, extraPoints);
+				}
+			}
+
+			features.Remove();
+			delete loop;
+		}
+	}
+}
+
+void CedExporter::CheckForExtraPoint(const CeLocation* loc, CMapPtrToPtr& locIndex, IdFactory& idf, CPtrArray& extraPoints)
+{
+	// Nothing to do if the location has already been noted
+	void* x;
+	if (locIndex.Lookup((void*)loc, x))
+		return;
+
+	// Generate an extra point
+	unsigned int entityId = 0; // TODO
+	PointFeature_c* p = new PointFeature_c(idf, entityId, *loc);
+	extraPoints.Add(p);
+	locIndex.SetAt((void*)loc, (void*)p->Stub->InternalId); // I don't think we really need the ID, but hold it just in case
 }

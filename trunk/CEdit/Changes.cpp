@@ -110,6 +110,13 @@ unsigned int IdFactory::GetNextId(void* p)
 	return m_MaxId;
 }
 
+// Adds an additional index entry (this makes it possible to relate more than one CED object
+// to the same Backsight ID).
+void IdFactory::AddIndexEntry(void* p, unsigned int id)
+{
+	m_ObjectIds.SetAt(p, (void*)id);
+}
+
 unsigned int IdFactory::FindId(void* p) const
 {
 	void* result;
@@ -253,20 +260,51 @@ void IdAllocation_c::WriteData(EditSerializer& s) const
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 // static
-void Operation_c::LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtrArray& exportFeatures)
+void Operation_c::LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtrArray& exportFeatures, bool doPointsFirst)
 {
 	CeObjectList obList;
 	op.GetFeatures(obList);
 
-	CeListIter loop(&obList);
+	CeListIter loop(&obList, TRUE);
 	const CeFeature* f;
 
-	for ( f = (const CeFeature*)loop.GetHead();
-		  f;
-		  f = (const CeFeature*)loop.GetNext() )
+	if (doPointsFirst)
 	{
-		Feature_c* xf = Feature_c::CreateExportFeature(idf, *f);
-		exportFeatures.Add(xf);
+		for ( f = (const CeFeature*)loop.GetHead();
+			  f;
+			  f = (const CeFeature*)loop.GetNext() )
+		{
+			const CePoint* p = dynamic_cast<const CePoint*>(f);
+			if (p != 0)
+			{
+				Feature_c* xf = Feature_c::CreateExportFeature(idf, *f);
+				exportFeatures.Add(xf);
+			}
+		}
+
+		// Repeat for non-points
+
+		for ( f = (const CeFeature*)loop.GetHead();
+			  f;
+			  f = (const CeFeature*)loop.GetNext() )
+		{
+			const CePoint* p = dynamic_cast<const CePoint*>(f);
+			if (p == 0)
+			{
+				Feature_c* xf = Feature_c::CreateExportFeature(idf, *f);
+				exportFeatures.Add(xf);
+			}
+		}
+	}
+	else
+	{
+		for ( f = (const CeFeature*)loop.GetHead();
+			  f;
+			  f = (const CeFeature*)loop.GetNext() )
+		{
+			Feature_c* xf = Feature_c::CreateExportFeature(idf, *f);
+			exportFeatures.Add(xf);
+		}
 	}
 }
 
@@ -335,7 +373,7 @@ DeletionOperation_c::DeletionOperation_c(IdFactory& idf, const CTime& when, cons
 	// forward references.
 
 	CeObjectList* dels = op.GetDeletions();
-	CeListIter loop(dels);
+	CeListIter loop(dels, TRUE);
 	void* pThing;
 
 	for ( pThing = loop.GetHead();
@@ -387,18 +425,24 @@ void GetControlOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+ImportOperation_c::ImportOperation_c(IdFactory& idf, const CTime& when)
+	: Operation_c(idf, when)
+{
+	Source = "";
+}
+
 ImportOperation_c::ImportOperation_c(IdFactory& idf, const CTime& when, const CeImport& op)
 	: Operation_c(idf, when)
 {
 	Source = op.GetFile();
-	Operation_c::LoadExportFeatures(idf, op, Features);
+	Operation_c::LoadExportFeatures(idf, op, Features, TRUE);
 }
 
 ImportOperation_c::ImportOperation_c(IdFactory& idf, const CTime& when, const CeGetBackground& op)
 	: Operation_c(idf, when)
 {
 	Source = op.GetFile();
-	Operation_c::LoadExportFeatures(idf, op, Features);
+	Operation_c::LoadExportFeatures(idf, op, Features, TRUE);
 }
 
 ImportOperation_c::~ImportOperation_c()
@@ -417,6 +461,11 @@ void ImportOperation_c::WriteData(EditSerializer& s) const
 	Operation_c::WriteData(s);
 	s.WriteString(DataField_Source, Source);
     s.WritePersistentArray(DataField_Features, Features);
+}
+
+void ImportOperation_c::Add(Feature_c* f)
+{
+	Features.Add(f);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -824,7 +873,7 @@ LineSubdivisionOperation_c::LineSubdivisionOperation_c(IdFactory& idf, const CTi
 	CeArc* firstArc = (CeArc*)sections->GetpFirst();
 	PointType = idf.GetEntityId(firstArc->GetpWhat());
 
-	CeListIter loop(sections);
+	CeListIter loop(sections, TRUE);
 	CeArc* a;
 
 	for ( a = (CeArc*)loop.GetHead();
@@ -1406,7 +1455,7 @@ TrimLineOperation_c::TrimLineOperation_c(IdFactory& idf, const CTime& when, cons
 
 void TrimLineOperation_c::LoadIdArray(IdFactory& idf, CeObjectList* features, CUIntArray& ids)
 {
-	CeListIter loop(features);
+	CeListIter loop(features, TRUE);
 	void* pThing;
 
 	for ( pThing = loop.GetHead();

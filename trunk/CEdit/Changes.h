@@ -58,8 +58,9 @@ public:
 		return m_MaxId;
 	}
 
-	unsigned int GetNextId(void* o);
-	unsigned int FindId(void* o) const;
+	unsigned int GetNextId(void* p);
+	unsigned int FindId(void* p) const;
+	void AddIndexEntry(void* p, unsigned int id);
 
 	int GetEntityId(LPCTSTR entName);
 	int GetFontId(LPCTSTR fontTitle);
@@ -73,7 +74,11 @@ private:
 
 private:
 	unsigned int m_MaxId;
+
+	// The key is a void pointer to some sort of persistent object in a ced file, the
+	// value is the Backsight internal ID
 	CMapPtrToPtr m_ObjectIds;
+
 	CMapStringToPtr m_EntityMap;
 	CMapStringToPtr m_TemplateMap;
 };
@@ -166,7 +171,7 @@ public:
 class Operation_c : public Change_c
 {
 public:
-	static void LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtrArray& exportFeatures);
+	static void LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtrArray& exportFeatures, bool doPointsFirst=FALSE);
 	static void ReleaseExportFeatures(CPtrArray& exportFeatures);
 	static void ReleaseIdMappingArray(CPtrArray* idMappings);
 
@@ -222,18 +227,22 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+class Feature_c;
+
 class ImportOperation_c : public Operation_c
 {
 public:
 	CString Source;
 	CPtrArray Features;
 
+	ImportOperation_c(IdFactory& idf, const CTime& when);
 	ImportOperation_c(IdFactory& idf, const CTime& when, const CeImport& op);
 	ImportOperation_c(IdFactory& idf, const CTime& when, const CeGetBackground& op);
 
 	virtual ~ImportOperation_c();
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
+	virtual void Add(Feature_c* f);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
