@@ -79,7 +79,35 @@ namespace Backsight.Editor
         internal MultiSegmentGeometry(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Data = editDeserializer.ReadSimpleArray<byte>(DataField.Data);
+            if (editDeserializer.IsNextField(DataField.Data))
+            {
+                m_Data = editDeserializer.ReadSimpleArray<byte>(DataField.Data);
+            }
+            else
+            {
+                // LineString is supported to simplify export from CEdit, might be a good idea to take
+                // this approach always. Assumes 2D, with X preceding Y. Each coordinate pair is separated
+                // with a comma, with a space between each X and Y (e.g. "123 345,124 349,129 341")
+
+                string s = editDeserializer.ReadString(DataField.LineString);
+                string[] xys = s.Split(',');
+                IPointGeometry[] positions = new IPointGeometry[xys.Length];
+
+                for (int i = 0; i < xys.Length; i++)
+                {
+                    string xy = xys[i].Trim();
+
+                    int blankPos = xy.IndexOf(' ');
+                    if (blankPos <= 0)
+                        throw new FormatException();
+
+                    double x = Double.Parse(xy.Substring(0, blankPos));
+                    double y = Double.Parse(xy.Substring(blankPos+1));
+                    positions[i] = new PointGeometry(x, y);
+                }
+
+                SetPackedData(positions);
+            }
         }
 
         #endregion
