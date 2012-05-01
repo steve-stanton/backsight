@@ -1246,11 +1246,7 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 				if (rawId != 0)
 				{
 					IdMapping_c* m = new IdMapping_c(maxSequence, rawId);
-
-					if (Ids == 0)
-						Ids = new CPtrArray();
-
-					Ids->Add(m);
+					Ids.Add(m);
 				}
 			}
 
@@ -1262,7 +1258,7 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 
 PathOperation_c::~PathOperation_c()
 {
-	Operation_c::ReleaseIdMappingArray(Ids);
+	Operation_c::ReleaseIdMappingArray(&Ids);
 }
 
 LPCTSTR PathOperation_c::GetTypeName() const
@@ -1282,8 +1278,8 @@ void PathOperation_c::WriteData(EditSerializer& s) const
     s.WriteInt32(DataField_PointType, PointType);
     s.WriteInt32(DataField_LineType, LineType);
 
-	if (Ids != 0)
-		s.WritePersistentArray(DataField_Ids, *Ids);
+	if (Ids.GetSize() > 0)
+		s.WritePersistentArray(DataField_Ids, Ids);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

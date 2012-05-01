@@ -510,7 +510,7 @@ public:
 	int DefaultEntryUnit;
 	int PointType;
 	int LineType;
-	CPtrArray* Ids;
+	CPtrArray Ids;
 
 	PathOperation_c(IdFactory& idf, const CTime& when, const CePath& op);
 

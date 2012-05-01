@@ -26,6 +26,10 @@ Observation_c* Observation_c::CreateExportLength(const CeObservation* o)
 	if (o == 0)
 		return 0;
 
+#ifdef _CEDIT
+	objectstore::touch(o, false);
+#endif
+
 	const CeDistance* d = dynamic_cast<const CeDistance*>(o);
 	if (d != 0)
 		return new Distance_c(*d);
@@ -131,6 +135,10 @@ Direction_c* Direction_c::CreateExportDirection(const CeDirection* d)
 {
 	if (d == 0)
 		return 0;
+
+#ifdef _CEDIT
+	objectstore::touch(d, false);
+#endif
 
 	const CeAngle* a = dynamic_cast<const CeAngle*>(d);
 	if (a != 0)

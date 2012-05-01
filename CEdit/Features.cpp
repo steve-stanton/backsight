@@ -261,21 +261,39 @@ void PointGeometry_c::Init(double x, double y)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include "CedExporter.h"
+
 PointFeature_c::PointFeature_c(IdFactory& idf, const CePoint& p)
 	: Feature_c(idf, p)
 {
 	const CeLocation* loc = p.GetpVertex();
 	Geom = new PointGeometry_c(*loc);
 
-	// Additionally index the location for the point. This tackles a problem in obtaining
-	// internal IDs for line terminals (see comments in LineFeature_c constructor).
-	idf.AddIndexEntry((void*)loc, this->Stub->InternalId);
+	// Additionally index the location for the point AND any coincident locations (that haven't
+	// been recorded already). This tackles a problem in obtaining internal IDs for line terminals
+	// (see comments in LineFeature_c constructor).
+	IndexAllLocations(idf, loc, this->Stub->InternalId);
 }
 
 PointFeature_c::PointFeature_c(IdFactory& idf, unsigned int entityId, const CeLocation& loc)
 	: Feature_c(idf, entityId, (void*)&loc)
 {
 	Geom = new PointGeometry_c(loc);
+	IndexAllLocations(idf, &loc, this->Stub->InternalId);
+}
+
+// static
+void PointFeature_c::IndexAllLocations(IdFactory& idf, const CeLocation* loc, unsigned int id)
+{
+	CPtrArray locs;
+	CedExporter::GetAllCoincidentLocations(loc, locs);
+
+	for (int i=0; i<locs.GetSize(); i++)
+	{
+		void* pLoc = locs.GetAt(i);
+		if (idf.FindId(pLoc) == 0)
+			idf.AddIndexEntry(pLoc, id);
+	}
 }
 
 PointFeature_c::~PointFeature_c()
@@ -299,6 +317,19 @@ void PointFeature_c::WriteData(EditSerializer& s) const
 
 MultiSegmentGeometry_c::MultiSegmentGeometry_c(const CeMultiSegment& ms)
 {
+	for (int i=0; i<(int)ms.GetNumVertex(); i++)
+	{
+		const CeLocation* const loc = ms[i];
+		CString xy;
+		if (i == 0)
+			xy.Format("%lf %lf", loc->GetEasting(), loc->GetNorthing());
+		else
+			xy.Format(",%lf %lf", loc->GetEasting(), loc->GetNorthing());
+
+		LineString += xy;
+	}
+
+	/*
 	unsigned int np = ms.GetNumVertex();
 	__int64* x = new __int64[np];
 	__int64* y = new __int64[np];
@@ -320,7 +351,8 @@ MultiSegmentGeometry_c::MultiSegmentGeometry_c(const CeMultiSegment& ms)
     int sizeDataX = np * (8-nx); 
     int sizeDataY = np * (8-ny);
 
-	Data = new __int8[sizeHeader + sizeDataX + sizeDataY];
+	Length = sizeHeader + sizeDataX + sizeDataY;
+	Data = new __int8[Length];
 
     // Define the header
     Data[0] = (byte)nx;
@@ -362,11 +394,12 @@ MultiSegmentGeometry_c::MultiSegmentGeometry_c(const CeMultiSegment& ms)
 
 	delete[] x;
 	delete[] y;
+	*/
 }
 
 MultiSegmentGeometry_c::~MultiSegmentGeometry_c()
 {
-	delete[] Data;
+	//delete[] Data;
 }
 
 // Counts the number of common high order bytes in an int64 array
@@ -422,7 +455,8 @@ LPCTSTR MultiSegmentGeometry_c::GetTypeName() const
 
 void MultiSegmentGeometry_c::WriteData(EditSerializer& s) const
 {
-	s.WriteByteArray(DataField_Data, Data, Length);
+	//s.WriteByteArray(DataField_Data, Data, Length);
+	s.WriteString(DataField_LineString, (LPCTSTR)LineString);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

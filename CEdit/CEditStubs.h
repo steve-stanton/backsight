@@ -125,11 +125,42 @@ public:
 	CeOperation* GetpCreator ( void ) const { return 0; }
 };
 
+class CeLocation;
+
+class CeTileData
+{
+public:
+	const CeTileData* GetpTail ( void ) const { return 0; } // to add
+	const CeTileData* GetpPrev ( void ) const { return 0; } // to add
+	unsigned int GetNumLoc ( void ) const { return 0; } // to add
+	const CeLocation** GetpLocations ( void ) const { return (const CeLocation**)Data; } // to add
+
+private:
+	CeLocation** Data;
+};
+
+class CeTile
+{
+public:
+	const CeTileData* const GetpTileData ( void ) const { return 0; }
+};
+
+class CeTileId
+{
+public:
+	CeTile* GetpTile ( void ) const { return 0; }
+};
+
 class CeLocation
 {
 public:
 	double GetEasting ( void ) const { return 0.0; }
 	double GetNorthing ( void ) const { return 0.0; }
+	const CeTileId&	GetTileID ( void ) const { return TileId; }
+	bool operator== ( const CeLocation& rhs ) const { return FALSE; }
+
+private:
+	CeTileId TileId;
 };
 
 class CeVertex
