@@ -133,7 +133,8 @@ enum DataField
     DataField_HighestId,
 	DataField_Source,
     DataField_PointType,
-    DataField_LineType
+    DataField_LineType,
+	DataField_LineString
 };
 
 static const char* DataFields[] =
@@ -248,5 +249,6 @@ static const char* DataFields[] =
 	stringify(HighestId),
 	stringify(Source),
     stringify(PointType),
-    stringify(LineType)
+    stringify(LineType),
+	stringify(LineString)
 };

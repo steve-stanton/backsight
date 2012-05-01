@@ -345,6 +345,12 @@ void CedExporter::AppendExportItems(const CTime& when, const CeOperation& op, Id
 	}
 }
 
+#ifdef _CEDIT
+#include "CeListIter.h"
+#include "CePoint.h"
+#include "CeArc.h"
+#endif
+
 void CedExporter::GenerateExtraPoints(CeMap* cedFile, IdFactory& idf, CPtrArray& extraPoints)
 {
 	CPSEPtrList& sessions = cedFile->GetSessions();
@@ -372,11 +378,15 @@ void CedExporter::GenerateExtraPoints(CeMap* cedFile, IdFactory& idf, CPtrArray&
 			// Note the locations of points created by the edit
 			for (f = (CeFeature*)loop->GetHead(); f; f = (CeFeature*)loop->GetNext())
 			{
+#ifdef _CEDIT
+				objectstore::touch(f, false);
+#endif
 				const CePoint* point = dynamic_cast<const CePoint*>(f);
 				if (point != 0)
 				{
-					const CeLocation* loc = point->GetpVertex();
-					locIndex.SetAt((void*)loc, 0);
+					// Note ALL coincident locations (since those may have been used as line
+					// terminals rather than the original location).
+					RecordLocations(*point, locIndex);
 				}
 			}
 
@@ -410,4 +420,47 @@ void CedExporter::CheckForExtraPoint(const CeLocation* loc, CMapPtrToPtr& locInd
 	PointFeature_c* p = new PointFeature_c(idf, entityId, *loc);
 	extraPoints.Add(p);
 	locIndex.SetAt((void*)loc, (void*)p->Stub->InternalId); // I don't think we really need the ID, but hold it just in case
+}
+
+void CedExporter::RecordLocations(const CePoint& p, CMapPtrToPtr& locIndex) 
+{
+	CPtrArray locs;
+	const CeLocation* loc = p.GetpVertex();
+	GetAllCoincidentLocations(loc, locs);
+
+	for (int i=0; i<locs.GetSize(); i++)
+	{
+		void* pLoc = locs.GetAt(i);
+		locIndex.SetAt(pLoc, 0);
+	}
+}
+
+#ifdef _CEDIT
+#include "CeTile.h"
+#include "CeTileId.h"
+#include "CeTileData.h"
+#include "CeLocation.h"
+#endif
+
+// static
+void CedExporter::GetAllCoincidentLocations(const CeLocation* loc, CPtrArray& locs)
+{
+	if (loc == 0)
+		return;
+
+	const CeTileId& tileId = loc->GetTileID();
+	const CeTile* t = tileId.GetpTile();
+	
+	for (const CeTileData* td = t->GetpTileData()->GetpTail(); td; td = td->GetpPrev())
+	{
+		int nLoc = (int)td->GetNumLoc();
+		const CeLocation** tLocs = td->GetpLocations();
+
+		for (int i=0; i<nLoc; i++)
+		{
+			const CeLocation* tLoc = tLocs[i];
+			if ((*loc) == (*tLoc))
+				locs.Add((void*)tLoc);
+		}
+	}
 }

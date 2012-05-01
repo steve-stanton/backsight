@@ -111,7 +111,7 @@ void EditSerializer::RadiansAsShortString(char* res, double value)
 	if ( sdeg<0.0 )
 		sprintf(res, "-%d-%d", ideg, imins);
 	else
-		sprintf(res, "&d-%d", ideg, imins);
+		sprintf(res, "%d-%d", ideg, imins);
 
 	// Append seconds if they'll show.
     if (secs>=0.001)

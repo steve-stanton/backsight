@@ -118,6 +118,8 @@ public:
 	virtual ~PointFeature_c();
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
+
+	static void IndexAllLocations(IdFactory& idf, const CeLocation* loc, unsigned int id);
 };
 
 
@@ -133,8 +135,9 @@ public:
 class MultiSegmentGeometry_c : public LineGeometry_c
 {
 public:
-	unsigned int Length;
-	__int8* Data;
+	//unsigned int Length;
+	//__int8* Data;
+	CString LineString;
 
 	MultiSegmentGeometry_c(const CeMultiSegment& mseg);
 
