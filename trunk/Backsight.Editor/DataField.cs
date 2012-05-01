@@ -137,5 +137,6 @@ namespace Backsight.Editor
         Source,
         PointType,
         LineType,
+        LineString,
     }
 }
