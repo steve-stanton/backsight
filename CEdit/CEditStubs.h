@@ -151,6 +151,9 @@ public:
 	CeTile* GetpTile ( void ) const { return 0; }
 };
 
+class CeOperation;
+class CePoint;
+
 class CeLocation
 {
 public:
@@ -158,6 +161,7 @@ public:
 	double GetNorthing ( void ) const { return 0.0; }
 	const CeTileId&	GetTileID ( void ) const { return TileId; }
 	bool operator== ( const CeLocation& rhs ) const { return FALSE; }
+	CePoint* GetpPoint(const CeOperation& op, const bool onlyActive) const { return 0; }
 
 private:
 	CeTileId TileId;
@@ -219,8 +223,8 @@ public:
 class CeArc : public CeFeature
 {
 public:
-	CePoint* GetStartPoint ( void ) const { return 0; }
-	CePoint* GetEndPoint ( void ) const { return 0; }
+	//CePoint* GetStartPoint ( void ) const { return 0; }
+	//CePoint* GetEndPoint ( void ) const { return 0; }
 	CeLine*	const GetpLine ( void ) const { return 0; }
 	CeLocation* const GetpStart ( void ) const { return 0; }
 	CeLocation* const GetpEnd ( void ) const { return 0; }

@@ -192,7 +192,7 @@ LPCTSTR Direction_c::GetTypeName() const
 void Direction_c::WriteData(EditSerializer& s) const
 {
 	if (Offset != 0)
-		Offset->WriteData(s);
+        s.WritePersistent(DataField_Offset, *Offset);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

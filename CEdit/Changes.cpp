@@ -21,6 +21,7 @@
 #include "CeIntersectDirLine.h"
 #include "CeIntersectDist.h"
 #include "CeIntersectLine.h"
+#include "CeLocation.h"
 #include "CeMoveLabel.h"
 #include "CeNewArc.h"
 #include "CeNewCircle.h"
@@ -52,6 +53,7 @@ IdFactory::IdFactory()
 	// Load translations from a specific location
 	LoadMappings("C:\\Backsight\\CEdit\\Entities.txt", m_EntityMap);
 	LoadMappings("C:\\Backsight\\CEdit\\Templates.txt", m_TemplateMap);
+	LoadMappings("C:\\Backsight\\CEdit\\IdGroups.txt", m_IdGroupMap);
 }
 
 void IdFactory::LoadMappings(LPCTSTR fileName, CMapStringToPtr& index)
@@ -107,6 +109,13 @@ unsigned int IdFactory::GetNextId(void* p)
 	if (p != 0)
 		m_ObjectIds.SetAt(p, (void*)m_MaxId);
 
+	CePoint* pt = dynamic_cast<CePoint*>((CeClass*)p);
+	if (pt != 0)
+	{
+		const CeLocation* loc = pt->GetpVertex();
+		PointFeature_c::IndexAllLocations(*this, loc, m_MaxId);
+	}
+
 	return m_MaxId;
 }
 
@@ -123,7 +132,6 @@ unsigned int IdFactory::FindId(void* p) const
 	if (m_ObjectIds.Lookup(p, result))
 		return (unsigned int)result;
 
-	assert(1==0);
 	return 0;
 }
 
@@ -149,7 +157,7 @@ int IdFactory::GetTemplateId(LPCTSTR templateName)
 
 int IdFactory::GetGroupId(LPCTSTR groupName)
 {
-	return 0;
+	return LookupId(m_IdGroupMap, groupName);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -858,6 +866,7 @@ LineSubdivisionOperation_c::LineSubdivisionOperation_c(IdFactory& idf, const CTi
 {
 	Line = op.GetpParent();
 	OtherSide = otherSide;
+	Ids = 0;
 
 	int faceIndex;
 
@@ -880,8 +889,8 @@ LineSubdivisionOperation_c::LineSubdivisionOperation_c(IdFactory& idf, const CTi
 		  a;
 		  a = (CeArc*)loop.GetNext() )
 	{
-		CePoint* p = a->GetEndPoint();
-		if (p->GetpCreator() == (CeOperation*)&op)
+		CePoint* p = a->GetpEnd()->GetpPoint(op, FALSE);
+		if (p != 0 && p->GetpCreator() == (CeOperation*)&op)
 		{
 			unsigned int iid = idf.GetNextId(p);
 
@@ -982,7 +991,7 @@ NewCircleOperation_c::NewCircleOperation_c(IdFactory& idf, const CTime& when, co
 	if (dynamic_cast<CeOffsetPoint*>(op.GetRadius()) == 0)
 	{
 		CeArc* arc = op.GetpArc();
-		CePoint* cp = arc->GetStartPoint();
+		CePoint* cp = arc->GetpStart()->GetpPoint(op, FALSE);
 		assert(cp->GetpCreator() == (CeOperation*)&op);
 		ClosingPoint = new FeatureStub_c(idf, *cp);
 	}
@@ -1195,8 +1204,6 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 	// Allocate IDs for every leg plus 2 for every span (regardless of whether it
 	// has a line feature).
 
-	unsigned int maxSequence = this->Sequence;
-
 	for (int i=0; i<op.GetNumLeg(); i++)
 	{
 		CeLeg* leg = op.GetpLeg(i);
@@ -1229,7 +1236,7 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 				}
 				else
 				{
-					p = a->GetEndPoint();
+					p = a->GetpEnd()->GetpPoint(op, FALSE);
 
 					// Don't assign ID to the end point if it's the end of the path
 					if (p == op.GetpTo())
@@ -1238,14 +1245,14 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 			}
 
 			// The point (if there is one) always gets the next ID number
-			idf.GetNextId(p);
+			unsigned int iid = idf.GetNextId(p);
 			if (p != 0)
 			{
 				// If the point has a user-perceived ID, remember the mapping
 				unsigned int rawId = Feature_c::GetRawId(*p);
 				if (rawId != 0)
 				{
-					IdMapping_c* m = new IdMapping_c(maxSequence, rawId);
+					IdMapping_c* m = new IdMapping_c(iid, rawId);
 					Ids.Add(m);
 				}
 			}
