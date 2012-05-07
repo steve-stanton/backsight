@@ -272,7 +272,7 @@ PointFeature_c::PointFeature_c(IdFactory& idf, const CePoint& p)
 	// Additionally index the location for the point AND any coincident locations (that haven't
 	// been recorded already). This tackles a problem in obtaining internal IDs for line terminals
 	// (see comments in LineFeature_c constructor).
-	IndexAllLocations(idf, loc, this->Stub->InternalId);
+	//IndexAllLocations(idf, loc, this->Stub->InternalId);
 }
 
 PointFeature_c::PointFeature_c(IdFactory& idf, unsigned int entityId, const CeLocation& loc)
