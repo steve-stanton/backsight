@@ -33,6 +33,12 @@ namespace Backsight.Editor
         TextReader m_Reader;
 
         /// <summary>
+        /// The line of text AFTER the current line (used to peek ahead).
+        /// </summary>
+        string m_NextLine;
+
+        /*
+        /// <summary>
         /// The line of text AFTER the current line (used to peek ahead), broken into tokens
         /// that are separated by commas.
         /// </summary>
@@ -43,6 +49,7 @@ namespace Backsight.Editor
         /// a call to <see cref="ReadNextLine"/>.
         /// </summary>
         int m_NextIndex;
+        */
 
         #endregion
 
@@ -104,7 +111,6 @@ namespace Backsight.Editor
         /// (null if there is no more text).</returns>
         string ReadNextLine()
         {
-            /*
             string result = m_NextLine;
 
             // You get back null on reaching the end
@@ -114,7 +120,8 @@ namespace Backsight.Editor
                 m_NextLine = m_NextLine.Trim();
 
             return result;
-            */
+
+            /*
             string result = PeekNext;
 
             // Point to the array item we'll return next time
@@ -143,6 +150,7 @@ namespace Backsight.Editor
             }
 
             return result;
+             */
         }
 
         /// <summary>
@@ -151,7 +159,8 @@ namespace Backsight.Editor
         /// </summary>
         string PeekNext
         {
-            get { return (m_NextLine == null ? null : m_NextLine[m_NextIndex]); }
+            get { return m_NextLine; }
+            //get { return (m_NextLine == null ? null : m_NextLine[m_NextIndex]); }
         }
 
         /// <summary>
