@@ -141,6 +141,8 @@ namespace Backsight.Editor.Forms
 
         private void databaseButton_Click(object sender, EventArgs e)
         {
+            // The connection dialog is currently disabled while I figure out how to
+            // remove an explicit dependency on SQLServer
             throw new NotImplementedException();
             /*
             ConnectionForm dial = new ConnectionForm();
@@ -162,7 +164,7 @@ namespace Backsight.Editor.Forms
             {
 
                 // Splash screen isn't shown here, so provide user with a visual cue
-                openLastButton.Text = "Opening "+lastProjectName+" ...";
+                openLastButton.Text = "Opening " + lastProjectName + " ...";
                 openLastButton.BackColor = Color.Yellow;
                 openLastButton.Refresh();
 
@@ -174,6 +176,7 @@ namespace Backsight.Editor.Forms
             {
                 MessageBox.Show(String.Format("Error reading {0} ({1})", lastProjectName, ex.Message));
                 Trace.Write(ex.StackTrace);
+                openLastButton.BackColor = openFileButton.BackColor;
                 openLastButton.Enabled = false;
             }
         }
