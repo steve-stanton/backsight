@@ -1044,8 +1044,32 @@ NewLineOperation_c::~NewLineOperation_c()
 
 LPCTSTR NewLineOperation_c::GetTypeName() const
 {
-	static LPCTSTR typeName = "NewLineOperation";
-	return typeName;
+	LineGeometry_c* geom = NewLine->Geom;
+
+	if (geom == 0)
+	{
+		static LPCTSTR segmentEditName = "NewSegmentOperation";
+		return segmentEditName;
+	}
+
+	// Only arcs or complete circles can be created via this NewLineOperation (multisegments come
+	// in only via imports, sections come in via other edits).
+
+	ArcGeometry_c* arc = dynamic_cast<ArcGeometry_c*>(geom);
+	if (arc != 0)
+	{
+		if (NewLine->From == NewLine->To)
+		{
+			static LPCTSTR circleEditName = "NewCircleOperation";
+			return circleEditName;
+		}
+
+		static LPCTSTR arcEditName = "NewArcOperation";
+		return arcEditName;
+	}
+
+	assert (1==0);
+	return 0;
 }
 
 void NewLineOperation_c::WriteData(EditSerializer& s) const
@@ -1094,8 +1118,31 @@ NewTextOperation_c::~NewTextOperation_c()
 
 LPCTSTR NewTextOperation_c::GetTypeName() const
 {
-	static LPCTSTR typeName = "NewTextOperation";
-	return typeName;
+	TextGeometry_c* geom = Text->Geom;
+
+	KeyTextGeometry_c* keyText = dynamic_cast<KeyTextGeometry_c*>(geom);
+	if (keyText != 0)
+	{
+		static LPCTSTR keyTextEditName = "NewKeyTextOperation";
+		return keyTextEditName;
+	}
+
+	MiscTextGeometry_c* miscText = dynamic_cast<MiscTextGeometry_c*>(geom);
+	if (miscText != 0)
+	{
+		static LPCTSTR miscTextEditName = "NewMiscTextOperation";
+		return miscTextEditName;
+	}
+
+	RowTextGeometry_c* rowText = dynamic_cast<RowTextGeometry_c*>(geom);
+	if (rowText != 0)
+	{
+		static LPCTSTR rowTextEditName = "NewRowTextOperation";
+		return rowTextEditName;
+	}
+
+	assert(1==0);
+	return 0;
 }
 
 void NewTextOperation_c::WriteData(EditSerializer& s) const
