@@ -176,10 +176,7 @@ namespace Backsight.Editor
                 ps.IsAutoNumber = false;
 
             // Remember default entity types for points, lines, text, polygons
-            ps.DefaultPointType = layer.DefaultPointType.Id;
-            ps.DefaultLineType = layer.DefaultLineType.Id;
-            ps.DefaultPolygonType = layer.DefaultPolygonType.Id;
-            ps.DefaultTextType = layer.DefaultTextType.Id;
+            ps.SetEntityTypeDefaults(layer);
 
             // Save the settings
             string settingsFileName = Path.Combine(dataFolder, "settings.txt");
@@ -217,14 +214,7 @@ namespace Backsight.Editor
                 return null;
 
             string settingsFileName = Path.Combine(settingsFolderName, "settings.txt");
-
-            try
-            {
-                return ProjectSettings.CreateInstance(settingsFileName);
-            }
-
-            catch { }
-            return null;
+            return ProjectSettings.CreateInstance(settingsFileName);
         }
 
         /// <summary>

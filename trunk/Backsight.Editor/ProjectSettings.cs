@@ -14,9 +14,11 @@
 // </remarks>
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Xml.Serialization;
 
+using Backsight.Environment;
 using Backsight.Forms;
 
 namespace Backsight.Editor
@@ -182,6 +184,11 @@ namespace Backsight.Editor
         /// <returns>The data read from the input file</returns>
         public static ProjectSettings CreateInstance(string fileName)
         {
+            // If the file doesn't already exist, create something. The file won't have any defaults for entity types, because
+            // we don't know the map layer here - they'll get defined when the map layer is picked up by Project.LoadDataFiles.
+            if (!File.Exists(fileName))
+                new ProjectSettings().WriteXML(fileName);
+
             XmlSerializer xs = new XmlSerializer(typeof(ProjectSettings));
             using (TextReader reader = new StreamReader(fileName))
             {
@@ -381,6 +388,31 @@ namespace Backsight.Editor
         {
             get { return m_SplashPercents; }
             set { m_SplashPercents = Set<string>(value); }
+        }
+
+        /// <summary>
+        /// Ensures default entity types have been defined.
+        /// </summary>
+        /// <param name="layer">The map layer for the project</param>
+        internal void SetEntityTypeDefaults(ILayer layer)
+        {
+            if (layer == null)
+            {
+                Trace.WriteLine("ProjectSettings.SetEntityTypeDefaults: Undefined layer");
+                return;
+            }
+
+            if (DefaultPointType == 0)
+                DefaultPointType = layer.DefaultPointType.Id;
+
+            if (DefaultLineType == 0)
+                DefaultLineType = layer.DefaultLineType.Id;
+
+            if (DefaultPolygonType == 0)
+                DefaultPolygonType = layer.DefaultPolygonType.Id;
+
+            if (DefaultTextType == 0)
+                DefaultTextType = layer.DefaultTextType.Id;
         }
     }
 }

@@ -65,7 +65,7 @@ namespace Backsight.Editor.Forms
             this.openLastButton.Size = new System.Drawing.Size(256, 25);
             this.openLastButton.TabIndex = 0;
             this.openLastButton.Text = "&Open last project";
-            this.toolTip.SetToolTip(this.openLastButton, "You will be asked to pick an existing cedx file");
+            this.toolTip.SetToolTip(this.openLastButton, "Re-opens the project with the name shown");
             this.openLastButton.UseVisualStyleBackColor = false;
             this.openLastButton.Click += new System.EventHandler(this.openLastButton_Click);
             // 
@@ -78,7 +78,7 @@ namespace Backsight.Editor.Forms
             this.openFileButton.TabIndex = 7;
             this.openFileButton.TabStop = false;
             this.openFileButton.Text = "Open anothe&r project";
-            this.toolTip.SetToolTip(this.openFileButton, "You will be asked to pick an existing cedx file");
+            this.toolTip.SetToolTip(this.openFileButton, "You will be asked to pick an existing project");
             this.openFileButton.UseVisualStyleBackColor = true;
             this.openFileButton.Click += new System.EventHandler(this.openFileButton_Click);
             // 
@@ -91,8 +91,7 @@ namespace Backsight.Editor.Forms
             this.newProjectButton.TabIndex = 6;
             this.newProjectButton.TabStop = false;
             this.newProjectButton.Text = "Create a &new project";
-            this.toolTip.SetToolTip(this.newProjectButton, "Look at all projects that have been registered in the database (with option to create" +
-                    " new projects)");
+            this.toolTip.SetToolTip(this.newProjectButton, "Create a brand new project");
             this.newProjectButton.UseVisualStyleBackColor = true;
             this.newProjectButton.Click += new System.EventHandler(this.newProjectButton_Click);
             // 

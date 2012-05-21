@@ -32,7 +32,7 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The database that contains this project.
+        /// The database that contains this project (not null).
         /// </summary>
         readonly ProjectDatabase m_Container;
 
@@ -47,7 +47,7 @@ namespace Backsight.Editor
         NewProjectEvent m_ProjectInfo;
 
         /// <summary>
-        /// The current user's project settings.
+        /// The current user's project settings (not null).
         /// </summary>
         readonly ProjectSettings m_Settings;
 
@@ -69,11 +69,14 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="Project"/> class
         /// upon creation of a brand new project.
         /// </summary>
-        /// <param name="container">The container for this project.</param>
+        /// <param name="container">The container for this project (not null).</param>
         /// <param name="projectId">The unique ID for the project.</param>
-        /// <param name="ps">The initial project settings.</param>
+        /// <param name="ps">The initial project settings (not null).</param>
         internal Project(ProjectDatabase container, Guid projectId, ProjectSettings ps)
         {
+            if (container == null || ps == null)
+                throw new ArgumentNullException();
+
             m_Container = container;
             m_Id = projectId;
             m_Settings = ps;
@@ -236,6 +239,13 @@ namespace Backsight.Editor
                         if (edit is NewProjectEvent)
                         {
                             m_ProjectInfo = (NewProjectEvent)edit;
+
+                            // If the project settings don't have default entity types, initialize them with
+                            // the layer defaults. This covers a case where the settings file has been lost, and
+                            // automatically re-created by ProjectSettings.CreateInstance.
+
+                            var layer = EnvironmentContainer.FindLayerById(m_ProjectInfo.LayerId);
+                            m_Settings.SetEntityTypeDefaults(layer);
                         }
                         else if (edit is NewSessionEvent)
                         {

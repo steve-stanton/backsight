@@ -63,7 +63,15 @@ namespace Backsight.Editor
             //LineType lt = LineType.Continuous;
             //MessageBox.Show(lt.Name);
 
-            Application.Run(new MainForm(args));
+            try
+            {
+                Application.Run(new MainForm(args));
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace, ex.Message);
+            }
             /*
             EditSerializer es = new EditSerializer();
 
