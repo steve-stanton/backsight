@@ -81,7 +81,7 @@ void EditSerializer::WriteRadians(DataField field, double value)
 void EditSerializer::RadiansAsShortString(char* res, double value)
 {
     // Convert to decimal degrees (possibly signed).
-    const double RADTODEG = 360.0 / 3.14159265358979323846;
+    const double RADTODEG = 360.0 / (2.0 * 3.14159265358979323846);
 	double sdeg = value * RADTODEG;
 
     // Get the degrees, minutes, and seconds, all unsigned.
@@ -106,6 +106,10 @@ void EditSerializer::RadiansAsShortString(char* res, double value)
 		imins = 0;
 		ideg++;
 	}
+
+	// Normalize the degrees to be in the range [0,359]
+	while (ideg >= 360)
+		ideg -= 360;
 
 	// Create the return string, making sure that the sign is there.
 	if ( sdeg<0.0 )
