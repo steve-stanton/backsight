@@ -102,9 +102,18 @@ namespace Backsight.Data
             if (String.IsNullOrEmpty(m_Path))
                 throw new InvalidOperationException("Input path hasn't been defined");
 
-            this.Data.Clear();
-            this.Data.ReadXml(m_Path);
-            this.Data.AcceptChanges();
+            try
+            {
+                this.Data.Clear();
+                this.Data.EnforceConstraints = false;
+                this.Data.ReadXml(m_Path);
+                this.Data.AcceptChanges();
+            }
+
+            catch (Exception ex)
+            {
+                int junk = 0;
+            }
         }
 
         public void Write()
