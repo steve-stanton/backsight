@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 namespace Backsight.Editor.Observations
@@ -24,7 +25,7 @@ namespace Backsight.Editor.Observations
     /// An "angle" is an angle taken from a point, with respect to a backsight
     /// that provides the reference orientation.
     /// </summary>
-    class AngleDirection : Direction
+    class AngleDirection : Direction, IFeatureRef
     {
         #region Class data
 
@@ -62,7 +63,9 @@ namespace Backsight.Editor.Observations
         internal AngleDirection(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            ReadData(editDeserializer, out m_Backsight, out m_From, out m_Observation);
+            m_Backsight = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.Backsight);
+            m_From = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.From);
+            m_Observation = editDeserializer.ReadRadians(DataField.Value);
         }
 
         /// <summary>
@@ -209,17 +212,29 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// Ensures that a persistent field has been associated with a spatial feature.
         /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="backsight">The backsight point.</param>
-        /// <param name="from">The occupied station.</param>
-        /// <param name="value">The angle in radians. A negated value indicates an anticlockwise angle.</param>
-        static void ReadData(EditDeserializer editDeserializer, out PointFeature backsight, out PointFeature from, out RadianValue value)
+        /// <param name="field">A tag associated with the item</param>
+        /// <param name="feature">The feature to assign to the field (not null).</param>
+        /// <returns>
+        /// True if a matching field was processed. False if the field is not known to this
+        /// class (may be known to another class in the type hierarchy).
+        /// </returns>
+        public bool ApplyFeatureRef(DataField field, Feature feature)
         {
-            backsight = editDeserializer.ReadFeatureRef<PointFeature>(DataField.Backsight);
-            from = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From);
-            value = editDeserializer.ReadRadians(DataField.Value);
+            switch (field)
+            {
+                case DataField.Backsight:
+                    m_Backsight = (PointFeature)feature;
+                    return true;
+
+                case DataField.From:
+                    m_From = (PointFeature)feature;
+                    return true;
+
+            }
+
+            return false;
         }
     }
 }

@@ -89,6 +89,12 @@ namespace Backsight.Editor
         /// </summary>
         Operation m_CurrentEdit;
 
+        /// <summary>
+        /// Any forward references that have been encountered during deserialization. Should be used only
+        /// when deserializing from a file exported from the old CEdit system.
+        /// </summary>
+        readonly List<ForwardRef> m_ForwardRefs;
+
         #endregion
 
         #region Constructors
@@ -111,6 +117,7 @@ namespace Backsight.Editor
             m_Project = p;
             m_CurrentEdit = null;
             m_Constructors = LoadConstructors();
+            m_ForwardRefs = new List<ForwardRef>();
 
             if (m_Constructors.Count == 0)
                 throw new ApplicationException("Cannot find any deserialization constructors");
@@ -410,7 +417,45 @@ namespace Backsight.Editor
             if (id.IsEmpty)
                 return default(T);
 
-            return MapModel.Find<T>(id);
+            T result = MapModel.Find<T>(id);
+            if (result == null)
+                throw new ApplicationException(String.Format("Cannot locate forward reference {0} (type={1})", id, typeof(T).Name));
+
+            return result;
+        }
+
+        internal T ReadFeatureRef<T>(IFeatureRef referenceFrom, DataField field) where T : Feature
+        {
+            InternalIdValue id = m_Reader.ReadInternalId(field.ToString());
+            if (id.IsEmpty)
+                return default(T);
+
+            T result = MapModel.Find<T>(id);
+            if (result == null)
+            {
+                var fwRef = new ForwardRef(referenceFrom, field, id);
+                m_ForwardRefs.Add(fwRef);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Applies any forward references that were detected during prior calls to <see cref="ReadFeatureRef"/>
+        /// </summary>
+        /// <exception cref="ApplicationException">If any forward reference could not be resolved.</exception>
+        internal void ApplyForwardRefs()
+        {
+            CadastralMapModel model = MapModel;
+
+            foreach (ForwardRef fwRef in m_ForwardRefs)
+            {
+                Feature f = model.Find<Feature>(fwRef.InternalId);
+                if (f == null)
+                    throw new ApplicationException("Cannot locate forward reference " + fwRef.InternalId);
+
+                fwRef.ReferenceFrom.ApplyFeatureRef(fwRef.Field, f);
+            }
         }
 
         /// <summary>
@@ -428,7 +473,11 @@ namespace Backsight.Editor
             {
                 InternalIdValue id = new InternalIdValue(ids[i]);
                 result[i] = MapModel.Find<T>(id);
-                Debug.Assert(result[i] != null);                 
+                if (result[i] == null)
+                {
+                    int junk = 0;
+                }
+                //Debug.Assert(result[i] != null);                 
             }
 
             return result;
@@ -490,7 +539,10 @@ namespace Backsight.Editor
 
             foreach (var m in mapping)
             {
-                NativeId nid = MapModel.AddNativeId(m.RawId);
+                NativeId nid = MapModel.FindNativeId(m.RawId);
+                if (nid == null)
+                    nid = MapModel.AddNativeId(m.RawId);
+
                 Feature f = MapModel.Find<Feature>(m.InternalId);
                 f.SetId(nid);
             }
