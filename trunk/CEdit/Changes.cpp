@@ -54,6 +54,7 @@ IdFactory::IdFactory()
 	LoadMappings("C:\\Backsight\\CEdit\\Entities.txt", m_EntityMap);
 	LoadMappings("C:\\Backsight\\CEdit\\Templates.txt", m_TemplateMap);
 	LoadMappings("C:\\Backsight\\CEdit\\IdGroups.txt", m_IdGroupMap);
+	LoadMappings("C:\\Backsight\\CEdit\\Schemas.txt", m_TableMap);
 }
 
 void IdFactory::LoadMappings(LPCTSTR fileName, CMapStringToPtr& index)
@@ -104,6 +105,13 @@ int IdFactory::LookupId(CMapStringToPtr& index, LPCTSTR name)
 
 unsigned int IdFactory::GetNextId(void* p)
 {
+	//if (p != 0)
+	//{
+	//	unsigned int res = FindId(p);
+	//	if (res != 0)
+	//		return res;
+	//}
+
 	m_MaxId++;
 
 	if (p != 0)
@@ -147,7 +155,7 @@ int IdFactory::GetFontId(LPCTSTR fontTitle)
 
 int IdFactory::GetTableId(LPCTSTR tableName)
 {
-	return 123;
+	return LookupId(m_TableMap, tableName);
 }
 
 int IdFactory::GetTemplateId(LPCTSTR templateName)
@@ -1284,12 +1292,12 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 				else
 				{
 					p = a->GetpEnd()->GetpPoint(op, FALSE);
-
-					// Don't assign ID to the end point if it's the end of the path
-					if (p == op.GetpTo())
-						p = 0;
 				}
 			}
+
+			// Don't assign ID to the end point if it's the end of the path
+			if (p == op.GetpTo())
+				p = 0;
 
 			// The point (if there is one) always gets the next ID number
 			unsigned int iid = idf.GetNextId(p);

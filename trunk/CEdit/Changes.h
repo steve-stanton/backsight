@@ -82,6 +82,7 @@ private:
 	CMapStringToPtr m_EntityMap;
 	CMapStringToPtr m_TemplateMap;
 	CMapStringToPtr m_IdGroupMap;
+	CMapStringToPtr m_TableMap;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
