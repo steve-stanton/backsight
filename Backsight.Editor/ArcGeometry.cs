@@ -27,7 +27,7 @@ namespace Backsight.Editor
     /// <summary>
     /// The geometry for a circular arc.
     /// </summary>
-    class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry
+    class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry, IFeatureRef
     {
         #region Class data
 
@@ -64,8 +64,7 @@ namespace Backsight.Editor
 
             if (editDeserializer.IsNextField(DataField.Center))
             {
-                PointFeature center = editDeserializer.ReadFeatureRef<PointFeature>(DataField.Center);
-                Debug.Assert(center != null);
+                PointFeature center = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.Center);
 
                 // The arc is the first arc attached to the circle. However, we cannot
                 // calculate the radius just yet because the bc/ec points are not persisted
@@ -77,18 +76,47 @@ namespace Backsight.Editor
                 // undefined if the geometry is calculated, since calculation only occurs
                 // after deserialization has been completed).
 
-                m_Circle = new Circle(center, 0.0);
-                center.AddReference(m_Circle);
+                if (center != null)
+                    ApplyFeatureRef(DataField.Center, center);
             }
             else
             {
-                ArcFeature firstArc = editDeserializer.ReadFeatureRef<ArcFeature>(DataField.FirstArc);
-                Debug.Assert(firstArc != null);
-                m_Circle = firstArc.Circle;
+                ArcFeature firstArc = editDeserializer.ReadFeatureRef<ArcFeature>(this, DataField.FirstArc);
+                if (firstArc != null)
+                    ApplyFeatureRef(DataField.FirstArc, firstArc);
             }
         }
 
         #endregion
+
+        /// <summary>
+        /// Ensures that a persistent field has been associated with a spatial feature.
+        /// </summary>
+        /// <param name="field">A tag associated with the item</param>
+        /// <param name="feature">The feature to assign to the field (not null).</param>
+        /// <returns>
+        /// True if a matching field was processed. False if the field is not known to this
+        /// class (may be known to another class in the type hierarchy).
+        /// </returns>
+        public bool ApplyFeatureRef(DataField field, Feature feature)
+        {
+            if (field == DataField.Center)
+            {
+                PointFeature center = (PointFeature)feature;
+                m_Circle = new Circle(center, 0.0);
+                center.AddReference(m_Circle);
+                return true;
+            }
+
+            if (field == DataField.FirstArc)
+            {
+                ArcFeature firstArc = (ArcFeature)feature;
+                m_Circle = firstArc.Circle;
+                return true;
+            }
+
+            return false;
+        }
 
         #region ICircularArcGeometry Members
 

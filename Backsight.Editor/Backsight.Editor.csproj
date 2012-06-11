@@ -115,8 +115,10 @@
     <Compile Include="Forms\OpenProjectForm.designer.cs">
       <DependentUpon>OpenProjectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ForwardRef.cs" />
     <Compile Include="IdAllocation.cs" />
     <Compile Include="IdMapping.cs" />
+    <Compile Include="IFeatureRef.cs" />
     <Compile Include="NewProjectEvent.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />

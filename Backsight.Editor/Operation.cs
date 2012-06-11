@@ -326,7 +326,13 @@ namespace Backsight.Editor
             Feature[] feats = GetRequiredFeatures();
 
             foreach (Feature f in feats)
+            {
+                if (f == null)
+                {
+                    int junk = 0;
+                }
                 f.AddReference(this);
+            }
         }
 
         /// <summary>
@@ -355,6 +361,13 @@ namespace Backsight.Editor
             Feature[] fa = GetRequiredFeatures();
             foreach (Feature f in fa)
             {
+                if (f == null)
+                {
+                    // TESTING - allow nulls for now
+                    int junk = 0;
+                    //continue;
+                }
+
                 Operation op = f.Creator;
                 if (!result.Contains(op))
                     result.Add(op);

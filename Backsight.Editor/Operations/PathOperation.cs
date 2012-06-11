@@ -85,29 +85,37 @@ namespace Backsight.Editor.Operations
         internal PathOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_From = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From);
-            m_To = editDeserializer.ReadFeatureRef<PointFeature>(DataField.To);
-            m_EntryString = editDeserializer.ReadString(DataField.EntryString);
-            m_DefaultEntryUnit = editDeserializer.ReadDistanceUnit(DataField.DefaultEntryUnit);
+            try
+            {
+                m_From = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From);
+                m_To = editDeserializer.ReadFeatureRef<PointFeature>(DataField.To);
+                m_EntryString = editDeserializer.ReadString(DataField.EntryString);
+                m_DefaultEntryUnit = editDeserializer.ReadDistanceUnit(DataField.DefaultEntryUnit);
 
-            Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
-            m_Legs = new List<Leg>(legs);
+                Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
+                m_Legs = new List<Leg>(legs);
 
-            Project p = editDeserializer.Project;
-            IEntity pointType = editDeserializer.ReadEntity(DataField.PointType);
-            IEntity lineType = editDeserializer.ReadEntity(DataField.LineType);
-            FeatureStub[] stubs = CreateStubs(p, pointType, lineType);
+                Project p = editDeserializer.Project;
+                IEntity pointType = editDeserializer.ReadEntity(DataField.PointType);
+                IEntity lineType = editDeserializer.ReadEntity(DataField.LineType);
+                FeatureStub[] stubs = CreateStubs(p, pointType, lineType);
 
-            DeserializationFactory result = new DeserializationFactory(this, stubs);
-            result.PointType = pointType;
-            result.LineType = lineType;
+                DeserializationFactory result = new DeserializationFactory(this, stubs);
+                result.PointType = pointType;
+                result.LineType = lineType;
 
-            // Create feature objects
-            ProcessFeatures(result);
+                // Create feature objects
+                ProcessFeatures(result);
 
-            // Apply any IDs
-            if (editDeserializer.IsNextField(DataField.Ids))
-                editDeserializer.ReadIdMappings(DataField.Ids);
+                // Apply any IDs
+                if (editDeserializer.IsNextField(DataField.Ids))
+                    editDeserializer.ReadIdMappings(DataField.Ids);
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         #endregion

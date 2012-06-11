@@ -196,7 +196,13 @@ namespace Backsight.Editor.Operations
         internal override void ProcessFeatures(FeatureFactory ff)
         {
             foreach (Feature f in m_Deletions)
+            {
+                // TESTING - allow nulls for now
                 ff.Deactivate(f);
+
+                //if (f != null)
+                //    ff.Deactivate(f);
+            }
         }
 
         /// <summary>
