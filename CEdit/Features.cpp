@@ -686,7 +686,7 @@ RowTextGeometry_c::RowTextGeometry_c(IdFactory& idf, const CeRowText& text)
 
 LPCTSTR RowTextGeometry_c::GetTypeName() const
 {
-	static LPCTSTR typeName = "RowTextGeometry";
+	static LPCTSTR typeName = "RowTextContent";
 	return typeName;
 }
 
