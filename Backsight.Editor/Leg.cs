@@ -32,6 +32,23 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
+        /// A sequence number for this leg (denoting the order in which the leg was created during
+        /// the lifetime of a project).
+        /// <para/>
+        /// When dealing with transient legs (such as those created for the sake of preview), the sequence
+        /// number may be undefined (with a value of <see cref="InternalIdValue.Empty"/>). You must
+        /// explicitly assign the sequence value in situations where it is significant.
+        /// </summary>
+        /// <remarks>In the context of something like a connection path, each successive leg
+        /// will have a sequence number that is one less than the sequence assigned to features
+        /// on that leg. For example, successive legs might have sequence values of 10, 25, 30.
+        /// <para/>
+        /// Now suppose you later update the path by inserting an extra leg into the sequence.
+        /// In that case, the sequence may end up as 10, 400, 25, 30.
+        /// </remarks>
+        InternalIdValue Sequence { get; set; }
+
+        /// <summary>
         /// The data that defines each span on this leg (should always contain at least
         /// one element).
         /// </summary>
