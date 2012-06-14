@@ -116,9 +116,9 @@ namespace Backsight.Editor
 
             internal override void Apply(List<Leg> legs)
             {
-                Leg leg = legs[(int)LegIndex];
-                SpanInfo spanInfo = leg.GetSpanData((int)m_SpanIndex);
-                spanInfo.ObservedDistance = m_Value;
+                //Leg leg = legs[(int)LegIndex];
+                //SpanInfo spanInfo = leg.GetSpanData((int)m_SpanIndex);
+                //spanInfo.ObservedDistance = m_Value;
             }
         }
 

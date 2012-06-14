@@ -45,19 +45,19 @@ namespace Backsight.Editor.Forms
         readonly PathOperation m_pop;
 
         /// <summary>
-        /// Working copy of the legs in the connection path.
+        /// Working copy of the leg faces in the connection path.
         /// </summary>
-        readonly List<Leg> m_Legs;
+        readonly List<LegFace> m_Faces;
 
         /// <summary>
-        /// Index of the current leg (points into m_Legs).
+        /// Index of the current leg face (points into m_Faces).
         /// </summary>
-        int m_CurLeg;
+        int m_CurFaceIndex;
 
         /// <summary>
-        /// The geometry for the spans on the current leg
+        /// The geometry for the spans on the current leg face
         /// </summary>
-        ILineGeometry[] m_LegSections;
+        ILineGeometry[] m_FaceSections;
 
         readonly PathEditor m_Edits;
 
@@ -79,7 +79,7 @@ namespace Backsight.Editor.Forms
                 throw new ArgumentNullException();
 
             m_UpdCmd = update;
-	        m_CurLeg = -1;
+	        m_CurFaceIndex = -1;
 	        m_pop = null;
 
             // Get the object that was selected for update.
@@ -90,7 +90,15 @@ namespace Backsight.Editor.Forms
             // Get a working copy of the connection path legs
             // TODO - This will not be suitable in a situation where staggered legs have been created
             Leg[] legs = PathParser.CreateLegs(m_pop.EntryString, m_pop.EntryUnit);
-            m_Legs = new List<Leg>(legs);
+
+            m_Faces = new List<LegFace>();
+            foreach (Leg leg in legs)
+            {
+                m_Faces.Add(leg.PrimaryFace);
+
+                if (leg.AlternateFace != null)
+                    m_Faces.Add(leg.AlternateFace);
+            }
 
             m_Edits = new PathEditor(legs);
         }
@@ -98,11 +106,28 @@ namespace Backsight.Editor.Forms
         #endregion
 
         /// <summary>
-        /// The number of legs in the (possibly revised) connection path.
+        /// The number of leg faces in the (possibly revised) connection path.
         /// </summary>
-        int NumLeg
+        int NumFace
         {
-            get { return m_Legs.Count; }
+            get { return m_Faces.Count; }
+        }
+
+        /// <summary>
+        /// Obtains the legs associated with the currently defined faces.
+        /// </summary>
+        /// <returns>The legs currently defined for the path.</returns>
+        Leg[] GetLegs()
+        {
+            var result = new List<Leg>(m_Faces.Count);
+
+            foreach (LegFace face in m_Faces)
+            {
+                if (face.FaceNumber != 2)
+                    result.Add(face.Leg);
+            }
+
+            return result.ToArray();
         }
 
         private void UpdatePathForm_Shown(object sender, EventArgs e)
@@ -115,7 +140,7 @@ namespace Backsight.Editor.Forms
             flipDistButton.Enabled = EditingController.Current.AreLineAnnotationsDrawn;
 
             // Display the precision of the connection path.
-            PathInfo p = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, m_Legs.ToArray());
+            PathInfo p = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, GetLegs());
             ShowPrecision(p);
 
             // A feature on the connection path should have been selected - determine which leg it's part of
@@ -125,11 +150,11 @@ namespace Backsight.Editor.Forms
             {
                 leg = m_pop.GetLeg(f);
                 int legIndex = m_pop.GetLegIndex(leg);
-                SetCurrentLeg(legIndex);
+                SetCurrentFace(legIndex);
             }
 
-            if (m_CurLeg < 0)
-                SetCurrentLeg(0);
+            if (m_CurFaceIndex < 0)
+                SetCurrentFace(0);
 
             if (leg == null)
                 Refresh(-1);
@@ -139,7 +164,7 @@ namespace Backsight.Editor.Forms
 
         private void angleButton_Click(object sender, EventArgs e)
         {
-            StraightLeg leg = (CurrentLeg as StraightLeg);
+            StraightLeg leg = (CurrentFace.Leg as StraightLeg);
             if (leg == null)
                 return;
 
@@ -152,7 +177,7 @@ namespace Backsight.Editor.Forms
                     else
                         leg.StartAngle = dial.SignedAngle;
 
-                    m_Edits.SetStartAngle(m_CurLeg, dial.SignedAngle, dial.IsDeflection);
+                    m_Edits.SetStartAngle(m_CurFaceIndex, dial.SignedAngle, dial.IsDeflection);
                     Rework();
                 }
             }
@@ -160,7 +185,8 @@ namespace Backsight.Editor.Forms
 
         private void breakButton_Click(object sender, EventArgs e)
         {
-            StraightLeg leg = (CurrentLeg as StraightLeg);
+            LegFace face = this.CurrentFace;
+            StraightLeg leg = (face.Leg as StraightLeg);
             if (leg == null)
                 return;
 
@@ -183,14 +209,14 @@ namespace Backsight.Editor.Forms
             bool isBefore = brkBeforeRadioButton.Checked;
 
             // You can't break at the very beginning or end of the leg.
-            int index = leg.GetIndex(dist);
+            int index = leg.PrimaryFace.GetIndex(dist);
             if (isBefore && index == 0)
             {
                 MessageBox.Show("You can't break at the very beginning of the leg.");
                 return;
             }
 
-            if (!isBefore && (index + 1) == leg.Count)
+            if (!isBefore && (index + 1) == face.Count)
             {
                 MessageBox.Show("You can't break at the very end of the leg.");
                 return;
@@ -200,23 +226,23 @@ namespace Backsight.Editor.Forms
             if (!isBefore)
                 index++;
 
-            m_Edits.BreakLeg(m_CurLeg, index);
+            m_Edits.BreakLeg(m_CurFaceIndex, index);
 
-            Leg newLeg = leg.Break(index);
+            StraightLeg newLeg = leg.Break(index);
             if (newLeg == null)
                 return;
 
             // Make the new leg the current one, and select the very first distance.
-            int legIndex = m_Legs.IndexOf(leg);
-            Debug.Assert(legIndex >= 0);
-            m_Legs.Insert(legIndex+1, newLeg);
-            SetCurrentLeg(legIndex + 1);
+            int faceIndex = m_Faces.IndexOf(face);
+            Debug.Assert(faceIndex >= 0);
+            m_Faces.Insert(faceIndex+1, newLeg.PrimaryFace);
+            SetCurrentFace(faceIndex + 1);
             Refresh(0);
         }
 
         private void curveButton_Click(object sender, EventArgs e)
         {
-            CircularLeg leg = (CurrentLeg as CircularLeg);
+            CircularLeg leg = (CurrentFace.Leg as CircularLeg);
             if (leg == null)
                 return;
 
@@ -232,7 +258,7 @@ namespace Backsight.Editor.Forms
                         metrics.SetRadius(dial.Radius);
                         metrics.IsClockwise = dial.IsClockwise;
                         var newMetrics = new CircularLegMetrics(dial.Radius, dial.IsClockwise, dial.CentralAngle);
-                        m_Edits.SetArcMetrics(m_CurLeg, newMetrics);
+                        m_Edits.SetArcMetrics(m_CurFaceIndex, newMetrics);
                         Rework();
                     }
                 }
@@ -248,7 +274,7 @@ namespace Backsight.Editor.Forms
                         metrics.SetRadius(dial.Radius);
                         metrics.IsClockwise = dial.IsClockwise;
                         var newMetrics = new CircularLegMetrics(dial.Radius, dial.IsClockwise, dial.EntryAngle, dial.ExitAngle);
-                        m_Edits.SetArcMetrics(m_CurLeg, newMetrics);
+                        m_Edits.SetArcMetrics(m_CurFaceIndex, newMetrics);
                         Rework();
                     }
                 }
@@ -257,8 +283,8 @@ namespace Backsight.Editor.Forms
 
         private void insertButton_Click(object sender, EventArgs e)
         {
-            Leg leg = CurrentLeg;
-            if (leg == null)
+            LegFace face = CurrentFace;
+            if (face == null)
                 return;
 
             Distance dist = GetSel();
@@ -278,8 +304,8 @@ namespace Backsight.Editor.Forms
                 {
                     // Insert the new distance into the current leg.
                     Distance newDist = dial.Distance;
-                    m_Edits.InsertSpan(m_CurLeg, newDist, dist, isBefore);
-                    int index = leg.Insert(newDist, dist, isBefore, true);
+                    m_Edits.InsertSpan(m_CurFaceIndex, newDist, dist, isBefore);
+                    int index = face.Insert(newDist, dist, isBefore, true);
                     Rework();
                     Refresh(index);
                 }
@@ -293,25 +319,24 @@ namespace Backsight.Editor.Forms
         void Rework()
         {
             // Rework the geometry for the sections on the current leg
-            PathInfo path = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, m_Legs.ToArray());
-            m_LegSections = path.GetSections(m_CurLeg);
+            var path = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, GetLegs());
+            m_FaceSections = path.GetSections(CurrentFace);
 
             ShowPrecision(path);
-
             m_UpdCmd.ErasePainting();
         }
 
         private void nextButton_Click(object sender, EventArgs e)
         {
-            SetCurrentLeg(m_CurLeg + 1);
-            if (m_CurLeg < NumLeg)
+            SetCurrentFace(m_CurFaceIndex + 1);
+            if (m_CurFaceIndex < NumFace)
                 Refresh(0);
         }
 
         private void previousButton_Click(object sender, EventArgs e)
         {
-            SetCurrentLeg(m_CurLeg - 1);
-            if (m_CurLeg >= 0)
+            SetCurrentFace(m_CurFaceIndex - 1);
+            if (m_CurFaceIndex >= 0)
                 Refresh(-1);
         }
 
@@ -338,15 +363,15 @@ namespace Backsight.Editor.Forms
             m_pop.Render(display, gray, true);
 
             // Draw the current path (in magenta).
-            PathInfo p = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, m_Legs.ToArray());
+            PathInfo p = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, GetLegs());
             p.Render(display);
 
             // Highlight the currently selected line.
             int index = distancesListBox.SelectedIndex;
-            if (index >= 0 && index < m_LegSections.Length)
+            if (index >= 0 && index < m_FaceSections.Length)
             {
                 IDrawStyle style = new HighlightStyle();
-                ILineGeometry geom = m_LegSections[index];
+                ILineGeometry geom = m_FaceSections[index];
                 if (geom is IClockwiseCircularArcGeometry)
                     style.Render(display, (IClockwiseCircularArcGeometry)geom);
                 else
@@ -354,19 +379,25 @@ namespace Backsight.Editor.Forms
             }
         }
 
+        /// <summary>
+        /// Refreshes the display upon selection of a specific observed distance.
+        /// </summary>
+        /// <param name="index">The array index of the currently selected distance (-1 if nothing is
+        /// currently selected).</param>
         void Refresh(int index)
         {
-            if (m_CurLeg < 0 || m_CurLeg >= NumLeg)
+            if (m_CurFaceIndex < 0 || m_CurFaceIndex >= NumFace)
                 return;
 
-            this.Text = String.Format("Leg {0} of {1}", m_CurLeg + 1, NumLeg);
+            this.Text = String.Format("Leg {0} of {1}", m_CurFaceIndex + 1, NumFace);
 
             // Enable the back/next buttons, depending on what leg we're on.
-            previousButton.Enabled = (m_CurLeg > 0);
-            nextButton.Enabled = (m_CurLeg + 1 < NumLeg);
+            previousButton.Enabled = (m_CurFaceIndex > 0);
+            nextButton.Enabled = (m_CurFaceIndex + 1 < NumFace);
 
-            // Get the corresponding leg.
-            Leg leg = CurrentLeg;
+            // Get the corresponding face.
+            LegFace face = CurrentFace;
+            Leg leg = face.Leg;
 
             // If it's a curve, enable the circular arc button and disable the angle & break buttons.
             if (leg is CircularLeg)
@@ -384,7 +415,7 @@ namespace Backsight.Editor.Forms
 
                 // Enable the angle button so long as the preceding leg exists, and is also a straight leg.
                 bool isPrevStraight = false;
-                if (m_CurLeg > 0 && m_Legs[m_CurLeg - 1] is StraightLeg)
+                if (m_CurFaceIndex > 0 && m_Faces[m_CurFaceIndex - 1].Leg is StraightLeg)
                     isPrevStraight = true;
 
                 angleButton.Enabled = isPrevStraight;
@@ -394,18 +425,18 @@ namespace Backsight.Editor.Forms
             newFaceButton.Enabled = (leg.IsStaggered == false);
 
             // Indicate whether we're on the second face
-            secondFaceLabel.Visible = (leg as ExtraLeg) != null;
+            secondFaceLabel.Visible = (face == leg.AlternateFace);
 
             // List the observed distances for the leg.
             distancesListBox.Items.Clear();
-            if (leg.Count == 0)
+            if (face.Count == 0)
             {
                 distancesListBox.Items.Add("see central angle");
                 distancesListBox.SelectedIndex = 0;
             }
             else
             {
-                Distance[] dists = leg.GetObservedDistances();
+                Distance[] dists = face.GetObservedDistances();
                 distancesListBox.Items.AddRange(dists);
 
                 // Select the first (or last) item in the list.
@@ -439,7 +470,7 @@ namespace Backsight.Editor.Forms
 
         private void distancesListBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            if (m_CurLeg < 0 || m_CurLeg >= NumLeg)
+            if (m_CurFaceIndex < 0 || m_CurFaceIndex >= NumFace)
                 return;
 
             // Ensure stuff gets repainted in idle time
@@ -463,15 +494,15 @@ namespace Backsight.Editor.Forms
                 if (dist.ShowDialog(this) == DialogResult.OK)
                 {
                     // Change the distance stored in the leg
-                    Leg leg = this.CurrentLeg;
+                    LegFace face = this.CurrentFace;
                     int spanIndex = distancesListBox.SelectedIndex;
-                    SpanInfo spanInfo = leg.GetSpanData(spanIndex);
+                    SpanInfo spanInfo = face.GetSpanData(spanIndex);
                     spanInfo.ObservedDistance = dist.Distance;
 
                     // Change the displayed distance
                     distancesListBox.Items[spanIndex] = spanInfo.ObservedDistance;
 
-                    m_Edits.UpdateSpan(m_CurLeg, spanIndex, dist.Distance);
+                    m_Edits.UpdateSpan(m_CurFaceIndex, spanIndex, dist.Distance);
                     Rework();
                     Refresh(spanIndex);
                 }
@@ -480,13 +511,13 @@ namespace Backsight.Editor.Forms
 
         private void flipDistButton_Click(object sender, EventArgs e)
         {
-            Leg leg = CurrentLeg;
-            if (leg == null)
+            LegFace face = CurrentFace;
+            if (face == null)
                 return;
 
-            m_Edits.FlipLegAnnotations(m_CurLeg);
+            m_Edits.FlipLegAnnotations(m_CurFaceIndex);
 
-            foreach (SpanInfo span in leg.Spans)
+            foreach (SpanInfo span in face.Spans)
             {
                 if (span.HasLine)
                     span.ObservedDistance.ToggleIsFlipped();
@@ -496,46 +527,46 @@ namespace Backsight.Editor.Forms
         }
 
         /// <summary>
-        /// The current leg (null if <see cref="m_CurLeg"/> refers to an invalid leg)
+        /// The current leg face (null if <see cref="m_CurFaceIndex"/> refers to an invalid face)
         /// </summary>
-        Leg CurrentLeg
+        LegFace CurrentFace
         {
             get
             {
-                if (m_CurLeg < 0 || m_CurLeg >= m_Legs.Count)
+                if (m_CurFaceIndex < 0 || m_CurFaceIndex >= m_Faces.Count)
                     return null;
                 else
-                    return m_Legs[m_CurLeg];
+                    return m_Faces[m_CurFaceIndex];
             }
         }
 
-        void SetCurrentLeg(int legIndex)
+        void SetCurrentFace(int faceIndex)
         {
             // Do nothing if the leg is unchanged
-            if (legIndex == m_CurLeg)
+            if (faceIndex == m_CurFaceIndex)
                 return;
 
-            if (legIndex < 0 || legIndex >= m_Legs.Count)
+            if (faceIndex < 0 || faceIndex >= m_Faces.Count)
                 throw new IndexOutOfRangeException();
 
             // Remember the new leg
-            m_CurLeg = legIndex;
+            m_CurFaceIndex = faceIndex;
 
             // Calculate the rotation and scaling
-            PathInfo path = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, m_Legs.ToArray());
+            PathInfo path = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, GetLegs());
 
-            // Obtain the spans on the current leg
-            m_LegSections = path.GetSections(legIndex);
+            // Obtain the spans on the current face
+            m_FaceSections = path.GetSections(CurrentFace);
         }
 
         private void newFaceButton_Click(object sender, EventArgs e)
         {
-            Leg leg = CurrentLeg;
-            if (leg == null)
+            LegFace face = CurrentFace;
+            if (face == null)
                 return;
 
             // Get the observed length of the leg (in meters on the ground).
-            double len = leg.GetTotal();
+            double len = face.GetTotal();
 
             try
             {
@@ -561,21 +592,15 @@ namespace Backsight.Editor.Forms
                     foreach (Distance d in dists)
                         d.IsAnnotationFlipped = true;
 
-                    // Insert the new face
-                    ExtraLeg newLeg = new ExtraLeg(leg, dists);
+                    // Attach the new face to the leg
+                    var newFace = new LegFace(face.Leg, dists);
 
-                    // Create features for the extra leg.
-                    //newLeg.MakeFeatures(this);
-
-                    // Insert the new leg into our array of legs.
-                    int legIndex = m_Legs.IndexOf(leg);
-                    m_Legs.Insert(legIndex + 1, newLeg);
-
-                    leg.FaceNumber = 1;
-                    newLeg.FaceNumber = 2;
+                    // Insert the new face into our array of faces.
+                    int faceIndex = m_Faces.IndexOf(face);
+                    m_Faces.Insert(faceIndex + 1, newFace);
 
                     // Make the new face the current leg, and select the very first distance.
-                    SetCurrentLeg(m_CurLeg + 1);
+                    SetCurrentFace(m_CurFaceIndex + 1);
                     Refresh(0);
                 }
             }
