@@ -181,15 +181,5 @@ namespace Backsight.Editor
             set { SetFlag(LegItemFlag.Face2, value); }
         }
         */
-
-        /// <summary>
-        /// Is this span regarded as a miss-connect that should be replaced with a
-        /// new line upon rollforward?
-        /// </summary>
-        internal bool IsNewSpan
-        {
-            get { return ((m_Switches & LegItemFlag.NewLine)!=0); }
-            set { SetFlag(LegItemFlag.NewLine, value); }
-        }
     }
 }

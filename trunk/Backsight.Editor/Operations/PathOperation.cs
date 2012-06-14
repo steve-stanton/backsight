@@ -138,10 +138,19 @@ namespace Backsight.Editor.Operations
                 stubList.Add(CreateStub(++sequence, pointType));
 
                 // Reserve two items for each span along the leg
-                for (int i = 0; i < leg.Spans.Length; i++)
+                for (int i = 0; i < leg.PrimaryFace.Spans.Length; i++)
                 {
                     stubList.Add(CreateStub(++sequence, pointType));
                     stubList.Add(CreateStub(++sequence, lineType));
+                }
+
+                if (leg.AlternateFace != null)
+                {
+                    for (int i = 0; i < leg.AlternateFace.Spans.Length; i++)
+                    {
+                        stubList.Add(CreateStub(++sequence, pointType));
+                        stubList.Add(CreateStub(++sequence, lineType));
+                    }
                 }
             }
 
@@ -409,7 +418,7 @@ namespace Backsight.Editor.Operations
                 Leg leg = m_Legs[i];
                 PointFeature lastPoint = (i < (m_Legs.Count-1) ? null : m_To);
                 maxSequence = leg.CreateFeatures(ff, maxSequence, startPoint, lastPoint);
-                startPoint = leg.GetEndPoint(this);
+                startPoint = leg.PrimaryFace.GetEndPoint(this);
             }
         }
 
@@ -458,20 +467,16 @@ namespace Backsight.Editor.Operations
                 }
 
                 // Obtain geometry for each span and assign to attached features
-                ILineGeometry[] sections = leg.GetSections(gotend, bearing, sfac);
-                AttachGeometry(ctx, leg.Spans, sections);
+                SpanInfo[] spans = leg.PrimaryFace.Spans;
+                ILineGeometry[] sections = leg.GetSpanSections(gotend, bearing, sfac, spans);
+                AttachGeometry(ctx, spans, sections);
 
-                // If we're dealing with the first face of a staggered leg, render the second face
-                if (leg.FaceNumber == 1)
+                // If we're dealing with the first face of a staggered leg, process the second face
+                if (leg.AlternateFace != null)
                 {
-                    i++;
-                    Debug.Assert(i < m_Legs.Count);
-                    leg = m_Legs[i];
-                    Debug.Assert(leg is ExtraLeg);
-                    Debug.Assert(leg.FaceNumber == 2);
-
-                    sections = leg.GetSections(gotend, bearing, sfac);
-                    AttachGeometry(ctx, leg.Spans, sections);
+                    spans = leg.AlternateFace.Spans;
+                    sections = leg.GetSpanSections(gotend, bearing, sfac, spans);
+                    AttachGeometry(ctx, spans, sections);
                 }
 
                 // Get to the end of the leg
@@ -570,6 +575,7 @@ namespace Backsight.Editor.Operations
         }
         */
 
+        /*
         /// <summary>
         /// Returns the total number of observed spans for this connection path.
         /// </summary>
@@ -590,6 +596,8 @@ namespace Backsight.Editor.Operations
 
             return tot;
         }
+         */
+
         /*
 //	@mfunc	Draw observed angles recorded as part of this op.
 //
@@ -983,6 +991,7 @@ void CePath::CreateAngleText ( CPtrList& text
             return last;
         }
 
+        /*
         /// <summary>
         /// Have any new spans been inserted at the very start of this connection path?
         /// </summary>
@@ -991,7 +1000,9 @@ void CePath::CreateAngleText ( CPtrList& text
         {
             return m_Legs[0].IsNewSpan(0);
         }
+        */
 
+        /*
         /// <summary>
         /// Have any new spans been inserted at the very end of this connection path?
         /// </summary>
@@ -1003,6 +1014,7 @@ void CePath::CreateAngleText ( CPtrList& text
             int nSpan = leg.Count;
             return leg.IsNewSpan(nSpan-1);
         }
+        */
 
         /// <summary>
         /// Returns a string that represents the definition of
@@ -1042,117 +1054,6 @@ void CePath::CreateAngleText ( CPtrList& text
         {
             get { return m_DefaultEntryUnit; }
         }
-
-        /*
-        /// <summary>
-        /// Inserts a second face for a leg in this path.
-        /// </summary>
-        /// <param name="after">The leg that represents the existing face.</param>
-        /// <param name="dists">Distance observations for the 2nd face.</param>
-        /// <returns>The new leg.</returns>
-        Leg InsertFace(Leg after, Distance[] dists)
-        {
-            // Get the index of the existing face.
-            if (after==null)
-                return null;
-
-            int index = GetLegIndex(after);
-            if (index < 0)
-                return null;
-
-            // Make an extra leg with the specified distances.
-            ExtraLeg newLeg = new ExtraLeg(after, dists);
-
-            // Create features for the extra leg.
-            newLeg.MakeFeatures(this);
-
-            // Insert the new leg into our array of legs.
-            InsertLeg(after, newLeg);
-
-            after.FaceNumber = 1;
-            newLeg.FaceNumber = 2;
-
-            return newLeg;
-        }
-        */
-
-        /*
-        /// <summary>
-        /// Gets the positions that define the end points of each leg in
-        /// this path. The first position corresponds to the from-point,
-        /// while the last position corresponds to the to-point. There
-        /// will be one more position than the number of legs in the path
-        /// (any instances of <see cref="ExtraLeg"/>  produce 2 coincident
-        /// positions in succession).
-        /// </summary>
-        /// <returns>The positions for each leg in this path</returns>
-        IPosition[] GetLegEnds() // was LoadVertexList
-        {
-            IPosition[] result = new IPosition[m_Legs.Count + 1];
-
-            // Get the rotation & scale factor to apply.
-            double rotation;
-            double sfac;
-            GetAdjustment(out rotation, out sfac);
-
-            // Initialize position to the start of the path.
-	        IPosition start = m_From;
-            IPosition gotend = start; // Un-adjusted end point
-
-            // Remember the initial position.
-            result[0] = start;
-
-            // Initial bearing is whatever the desired rotation is.
-            double bearing = rotation;
-
-            // Project each leg, recording the position at each end.
-            for (int i=0; i<m_Legs.Count; i++)
-            {
-                Leg leg = m_Legs[i];
-                leg.Project(ref gotend, ref bearing, sfac);
-                result[i + 1] = gotend;
-            }
-
-            return result;
-        }
-        */
-
-        /*
-        /// <summary>
-        /// Returns the two end positions for a specific leg in this connection path.
-        /// </summary>
-        /// <param name="leg">The leg of interest.</param>
-        /// <param name="start">The start of the leg.</param>
-        /// <param name="end">The end of the leg.</param>
-        /// <returns>True if positions defined ok.</returns>
-        internal bool GetLegEnds(Leg leg, out IPosition start, out IPosition end)
-        {
-            start = end = null;
-
-            // Get the array index of the specified leg.
-            int index = GetLegIndex(leg);
-            if (index < 0)
-                return false;
-
-            // Get positions for all legs.
-            IPosition[] vlist = GetLegEnds();
-            Debug.Assert(vlist.Length == m_Legs.Count + 1);
-
-            // Grab the positions. If the specified leg is actually
-            // an extra leg, we actually want the positions for the
-            // leg that precedes it.
-            if (leg is ExtraLeg)
-            {
-                index--;
-                Debug.Assert(index >= 0);
-            }
-
-            start = vlist[index];
-            end = vlist[index + 1];
-
-            return true;
-        }
-        */
 
         /// <summary>
         /// Writes the content of this instance to a persistent storage area.

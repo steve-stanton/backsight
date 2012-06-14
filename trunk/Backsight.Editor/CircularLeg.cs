@@ -253,8 +253,7 @@ namespace Backsight.Editor
         /// <param name="bc">The position for the start of the leg.
         /// <param name="bcBearing">The bearing on entry into the leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        /// <param name="spans">Information for the spans coinciding with this leg (may be different from the
-        /// spans associated with this leg when dealing with an instance of <see cref="ExtraLeg"/>)</param>
+        /// <param name="spans">Information for the spans coinciding with this leg.</param>
         /// <returns>The sections along this leg</returns>
         internal override ILineGeometry[] GetSpanSections(IPosition bc, double bcBearing, double sfac, SpanInfo[] spans)
         {
@@ -916,52 +915,6 @@ LOGICAL CeCircularLeg::CreateAngleText ( const CePoint* const pFrom
             return sb.ToString();
         }
         */
-
-        /*
-        /// <summary>
-        /// Saves features for a second face that is based on this leg.
-        /// </summary>
-        /// <param name="op">The connection path that this leg belongs to.</param>
-        /// <param name="face">The extra face to create features for.</param>
-        /// <returns>True if created ok.</returns>
-        internal override bool SaveFace(PathOperation op, ExtraLeg face)
-        {
-            // Get the terminal positions for this leg.
-            IPosition spos, epos;
-            if (!op.GetLegEnds(this, out spos, out epos))
-                return false;
-
-            return face.MakeCurves(op, spos, epos, m_Circle, IsClockwise);
-        }
-        */
-
-        /// <summary>
-        /// Rollforward the second face of this leg.
-        /// </summary>
-        /// <param name="uc">The context in which editing revisions are being made (not null).
-        /// Used to hold a record of any positional changes.</param>
-        /// <param name="insert">The point of the end of any new insert that immediately precedes
-        /// this leg. This will be updated if this leg also ends with a new insert (if not, it
-        /// will be returned as a null value).</param>
-        /// <param name="op">The connection path that this leg belongs to.</param>
-        /// <param name="face">The second face.</param>
-        /// <param name="spos">The new position for the start of this leg.</param>
-        /// <param name="epos">The new position for the end of this leg.</param>
-        /// <returns>True if rolled forward ok.</returns>
-        /// <remarks>
-        /// The start and end positions passed in should correspond to where THIS leg currently ends.
-        /// They are passed in because this leg may contain miss-connects (and maybe even missing
-        /// end points). So it would be tricky trying trying to work it out now.
-        /// </remarks>
-        internal override bool RollforwardFace(ref IPointGeometry insert, PathOperation op,
-                                                ExtraLeg face, IPosition spos, IPosition epos)
-        {
-            throw new NotImplementedException();
-            /*
-            // Get the extra face to do it.
-            return face.UpdateCurves(uc, insert, op, spos, epos, m_Circle, IsClockwise);
-             */
-        }
 
         /*
         /// <summary>

@@ -159,20 +159,16 @@ namespace Backsight.Editor
                     exitBearing = cLeg.GetExitBearing(gotend, bearing, m_ScaleFactor);
 
                 // Obtain geometry for each span and draw
-                ILineGeometry[] sections = leg.GetSections(gotend, bearing, m_ScaleFactor);
-                DrawSpans(display, leg.Spans, sections);
+                SpanInfo[] spans = leg.PrimaryFace.Spans;
+                ILineGeometry[] sections = leg.GetSpanSections(gotend, bearing, m_ScaleFactor, spans);
+                DrawSpans(display, spans, sections);
 
-                // If we're dealing with the first face of a staggered leg, render the second face
-                if (leg.FaceNumber == 1)
+                // If we're dealing with the first face of a staggered leg, process the second face
+                if (leg.AlternateFace != null)
                 {
-                    i++;
-                    Debug.Assert(i < m_Legs.Length);
-                    leg = m_Legs[i];
-                    Debug.Assert(leg is ExtraLeg);
-                    Debug.Assert(leg.FaceNumber == 2);
-
-                    sections = leg.GetSections(gotend, bearing, m_ScaleFactor);
-                    DrawSpans(display, leg.Spans, sections);
+                    spans = leg.AlternateFace.Spans;
+                    sections = leg.GetSpanSections(gotend, bearing, m_ScaleFactor, spans);
+                    DrawSpans(display, spans, sections);
                 }
 
                 // Get to the end of the leg
@@ -355,11 +351,11 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Obtains line sections for a specific leg in this path.
+        /// Obtains line sections for a specific face in this path.
         /// </summary>
-        /// <param name="legIndex">The index of the required leg</param>
+        /// <param name="face">The face of interest</param>
         /// <returns>The corresponding sections</returns>
-        internal ILineGeometry[] GetSections(int legIndex)
+        internal ILineGeometry[] GetSections(LegFace face)
         {
             EnsureAdjusted();
 
@@ -369,26 +365,23 @@ namespace Backsight.Editor
             // Initial bearing is whatever the rotation is.
             double bearing = m_Rotation;
 
-            // Get the position at the start of the required leg. Don't go too far if the required leg is actually
-            // a second face.
-            int n = legIndex;
-            if (m_Legs[n] is ExtraLeg)
+            // Get the position at the start of the required leg.
+            foreach (Leg leg in m_Legs)
             {
-                Debug.Assert(n > 0);
-                n--;
-            }
+                if (leg == face.Leg)
+                    break;
 
-            for (int i = 0; i < n; i++)
-                m_Legs[i].Project(ref p, ref bearing, m_ScaleFactor);
+                leg.Project(ref p, ref bearing, m_ScaleFactor);
+            }
 
             // We've now got the position at the start of the required leg, and the bearing of the previous leg.
             // If the leg we actually want if a straight leg (or an extra leg layered on a straight), add on any
             // initial angle.
-            StraightLeg sLeg = (m_Legs[n] as StraightLeg);
+            StraightLeg sLeg = (face.Leg as StraightLeg);
             if (sLeg != null)
                 bearing = sLeg.AddStartAngle(bearing);
 
-            return m_Legs[legIndex].GetSections(p, bearing, m_ScaleFactor);
+            return face.Leg.GetSpanSections(p, bearing, m_ScaleFactor, face.Spans);
         }
     }
 }

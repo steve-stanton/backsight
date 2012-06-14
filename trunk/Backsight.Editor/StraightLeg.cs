@@ -56,12 +56,12 @@ namespace Backsight.Editor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StraightLeg"/> class that corresponds to
-        /// the end of another leg (for use when breaking a leg).
+        /// the end of a face on another leg (for use when breaking a leg).
         /// </summary>
-        /// <param name="copy">The original leg</param>
+        /// <param name="face">The face on the other leg</param>
         /// <param name="startIndex">The array index of the first span that should be copied.</param>
-        StraightLeg(StraightLeg copy, int startIndex)
-            : base(copy, startIndex)
+        StraightLeg(LegFace face, int startIndex)
+            : base(face, startIndex)
         {
             // Stick in a (clockwise) angle of 180 degrees.
             m_StartAngle = Math.PI;
@@ -127,8 +127,7 @@ namespace Backsight.Editor
         /// <param name="pos">The position for the start of the leg.
         /// <param name="bearing">The bearing of the leg.</param>
         /// <param name="sfac">Scale factor to apply to distances.</param>
-        /// <param name="spans">Information for the spans coinciding with this leg (may be different from the
-        /// spans associated with this leg when dealing with an instance of <see cref="ExtraLeg"/>)</param>
+        /// <param name="spans">Information for the spans coinciding with this leg.</param>
         /// <returns>The sections along this leg</returns>
         internal override ILineGeometry[] GetSpanSections(IPosition pos, double bearing, double sfac, SpanInfo[] spans)
         {
@@ -634,13 +633,16 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
         /// <returns>The extra leg (at the end of the original leg).</returns>
         internal StraightLeg Break(int index)
         {
+            if (this.AlternateFace != null)
+                throw new InvalidOperationException("Cannot break a staggered leg");
+
             // Can't break right at the start or end.
-            int nTotal = this.Count;
+            int nTotal = PrimaryFace.Count;
             if (index <= 0 || index >= nTotal)
                 return null;
 
             // Create a new straight leg with the right number of spans.
-            StraightLeg newLeg = new StraightLeg(this, index);
+            StraightLeg newLeg = new StraightLeg(PrimaryFace, index);
 
             // Retain the spans prior to that
             TruncateLeg(index);
@@ -673,50 +675,6 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
             return sb.ToString();
         }
         */
-
-        /*
-        /// <summary>
-        /// Saves features for a second face that is based on this leg.
-        /// </summary>
-        /// <param name="op">The connection path that this leg belongs to.</param>
-        /// <param name="face">The extra face to create features for.</param>
-        /// <returns>True if created ok.</returns>
-        internal override bool SaveFace(PathOperation op, ExtraLeg face)
-        {
-            // Get the terminal positions for this leg.
-            IPosition spos, epos;
-            if (!op.GetLegEnds(this, out spos, out epos))
-                return false;
-
-            // Get the extra leg to do the rest.
-            return face.MakeSegments(op, spos, epos);
-        }
-        */
-
-        /// <summary>
-        /// Rollforward the second face of this leg.
-        /// </summary>
-        /// <param name="insert">The point of the end of any new insert that immediately precedes
-        /// this leg. This will be updated if this leg also ends with a new insert (if not, it
-        /// will be returned as a null value).</param>
-        /// <param name="op">The connection path that this leg belongs to.</param>
-        /// <param name="face">The second face.</param>
-        /// <param name="spos">The new position for the start of this leg.</param>
-        /// <param name="epos">The new position for the end of this leg.</param>
-        /// <returns>True if rolled forward ok.</returns>
-        /// <remarks>
-        /// The start and end positions passed in should correspond to where THIS leg currently ends.
-        /// They are passed in because this leg may contain miss-connects (and maybe even missing
-        /// end points). So it would be tricky trying trying to work it out now.
-        /// </remarks>
-        internal override bool RollforwardFace(ref IPointGeometry insert, PathOperation op,
-                                                ExtraLeg face, IPosition spos, IPosition epos)
-        {
-            throw new NotImplementedException();
-
-            // Get the extra face to do it.
-            //return face.UpdateSegments(uc, insert, op, spos, epos);
-        }
 
         /// <summary>
         /// Is the angle at the start of this a deflection?

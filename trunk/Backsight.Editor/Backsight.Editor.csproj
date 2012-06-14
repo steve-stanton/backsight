@@ -119,6 +119,7 @@
     <Compile Include="IdAllocation.cs" />
     <Compile Include="IdMapping.cs" />
     <Compile Include="IFeatureRef.cs" />
+    <Compile Include="LegFace.cs" />
     <Compile Include="NewProjectEvent.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />
@@ -531,7 +532,6 @@
     <Compile Include="DistanceUnitType.cs" />
     <Compile Include="EditorResources.cs" />
     <Compile Include="EnvironmentItemFacade.cs" />
-    <Compile Include="ExtraLeg.cs" />
     <Compile Include="ExTranslation.cs" />
     <Compile Include="Feature.cs" />
     <Compile Include="FeatureFlag.cs" />
