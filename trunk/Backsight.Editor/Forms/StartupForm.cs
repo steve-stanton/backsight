@@ -76,11 +76,18 @@ namespace Backsight.Editor.Forms
         void ShowDatabaseName()
         {
             string cs = LastDatabase.ConnectionString;
-            DbConnectionStringBuilder sb = new DbConnectionStringBuilder();
-            sb.ConnectionString = cs;
-            object dataSource = sb["Data Source"];
-            object initialCatalog = sb["Initial Catalog"];
-            lastDatabaseLabel.Text = String.Format(@"{0}\{1}", dataSource, initialCatalog);
+            if (String.IsNullOrWhiteSpace(cs))
+            {
+                lastDatabaseLabel.Text = "No database";
+            }
+            else
+            {
+                DbConnectionStringBuilder sb = new DbConnectionStringBuilder();
+                sb.ConnectionString = cs;
+                object dataSource = sb["Data Source"];
+                object initialCatalog = sb["Initial Catalog"];
+                lastDatabaseLabel.Text = String.Format(@"{0}\{1}", dataSource, initialCatalog);
+            }
 
             //SqlConnectionStringBuilder sb = new SqlConnectionStringBuilder(cs);
             //lastDatabaseLabel.Text = String.Format(@"{0}\{1}", sb.DataSource, sb.InitialCatalog);
