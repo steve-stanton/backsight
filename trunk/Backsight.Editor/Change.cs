@@ -105,10 +105,10 @@ namespace Backsight.Editor
             m_Sequence = ed.ReadUInt32(DataField.Id);
 
             // Handle old files
-            if (ed.IsNextField(DataField.When))
-                m_When = ed.ReadDateTime(DataField.When);
-            else
-                m_When = DateTime.Now; // could perhaps grab the session start time
+            //if (ed.IsNextField(DataField.When))
+            //    m_When = ed.ReadDateTime(DataField.When);
+            //else
+            //    m_When = DateTime.Now; // could perhaps grab the session start time
         }
 
         #endregion

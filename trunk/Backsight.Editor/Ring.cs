@@ -26,8 +26,6 @@ namespace Backsight.Editor
     /// </summary>
     abstract class Ring : RingMetrics, ISpatialObject
     {
-        static int s_TotalRing = 0; // for testing
-
         #region Statics
 
         /// <summary>
@@ -58,11 +56,6 @@ namespace Backsight.Editor
         /// </summary>
         RingFlag m_Flag;
 
-        /// <summary>
-        /// A numeric ID for this ring, useful for debugging.
-        /// </summary>
-        int m_TestId;
-
         #endregion
 
         #region Constructors
@@ -74,9 +67,6 @@ namespace Backsight.Editor
         protected Ring(RingMetrics metrics, List<Face> edge)
             : base(metrics)
         {
-            s_TotalRing++;
-            m_TestId = s_TotalRing;
-
             m_Edge = new IDivider[edge.Count];
             m_Flag = 0;
 
@@ -100,16 +90,6 @@ namespace Backsight.Editor
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            return m_TestId.ToString();
-        }
-
-        public int TestId
-        {
-            get { return m_TestId; }
-        }
 
         /// <summary>
         /// The area of this ring, excluding any islands. This version is suitable only for
@@ -314,11 +294,6 @@ namespace Backsight.Editor
             index.Add(this);
             IsIndexed = true;
             return true;
-        }
-
-        static internal int RingCount
-        {
-            get { return s_TotalRing; }
         }
 
         /// <summary>
