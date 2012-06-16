@@ -67,40 +67,6 @@ namespace Backsight.Editor
             get { return m_IsLeft; }
         }
 
-        /*
-        // Protected functions used by CeSplitFace ...
-
-        inline CeArcFace::CeArcFace ( const LOGICAL isLeft )
-	        { m_pArc = 0; m_IsLeft = isLeft; }
-
-        inline CeArc* CeArcFace::GetParent ( void ) const
-	        { return m_pArc; }
-
-        inline void CeArcFace::SetParent ( const CeArc& parent )
-	        { m_pArc = (CeArc*)&parent; }
-
-        inline LOGICAL CeArcFace::IsLeft ( void ) const
-	        { return m_IsLeft; }
-         */
-
-        /*
-        //	@mfunc	Return the polygon (if any) that the arc points to.
-        //	@parm	The theme of interest.
-        //	@rdesc	The neighbouring polygon.
-
-        CePolygon* CeArcFace::GetPolygon ( const CeTheme& theme ) const {
-
-            if ( !m_pArc ) return 0;
-
-            if ( m_IsLeft )
-	            return m_pArc->FindLeft(theme);
-            else
-	            return m_pArc->FindRight(theme);
-
-        }
-         */
-
-
         #region IEquatable<Face> Members
 
         public bool Equals(Face that)
