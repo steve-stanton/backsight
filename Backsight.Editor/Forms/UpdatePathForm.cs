@@ -143,23 +143,34 @@ namespace Backsight.Editor.Forms
             PathInfo p = new PathInfo(m_pop.StartPoint, m_pop.EndPoint, GetLegs());
             ShowPrecision(p);
 
-            // A feature on the connection path should have been selected - determine which leg it's part of
-            Leg leg = null;
+            // A feature on the connection path should have been selected - determine which leg face it's part of
+            LegFace face = null;
             Feature f = m_UpdCmd.GetUpdate();
             if (f != null)
             {
-                leg = m_pop.GetLeg(f);
-                int legIndex = m_pop.GetLegIndex(leg);
-                SetCurrentFace(legIndex);
+                face = m_pop.GetLegFace(f);
+                int faceIndex = GetFaceIndex(face.Sequence);
+                SetCurrentFace(faceIndex);
             }
 
             if (m_CurFaceIndex < 0)
                 SetCurrentFace(0);
 
-            if (leg == null)
+            if (face == null)
                 Refresh(-1);
             else
-                Refresh(leg.GetIndex(f));
+                Refresh(face.GetIndex(f));
+        }
+
+        int GetFaceIndex(InternalIdValue sequence)
+        {
+            for (int i=0; i<m_Faces.Count; i++)
+            {
+                if (m_Faces[i].Sequence.Equals(sequence))
+                    return i;
+            }
+
+            return -1;
         }
 
         private void angleButton_Click(object sender, EventArgs e)

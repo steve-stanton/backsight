@@ -103,6 +103,7 @@ namespace Backsight.Editor
         protected Change(EditDeserializer ed)
         {
             m_Sequence = ed.ReadUInt32(DataField.Id);
+            m_When = ed.ReadDateTime(DataField.When);
 
             // Handle old files
             //if (ed.IsNextField(DataField.When))

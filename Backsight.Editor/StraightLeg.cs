@@ -94,7 +94,7 @@ namespace Backsight.Editor
         /// </summary>
         internal override ILength Length
         {
-            get { return new Length(GetTotal()); }
+            get { return new Length(PrimaryFace.GetTotal()); }
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Backsight.Editor
             bearing = AddStartAngle(bearing);
 
             // Get the total length of the leg.
-            double length = GetTotal() * sfac;
+            double length = PrimaryFace.GetTotal() * sfac;
 
             // Figure out shifts.
             double dE = length * Math.Sin(bearing);
@@ -645,7 +645,7 @@ LOGICAL CeStraightLeg::CreateAngleText ( const CePoint* const pFrom
             StraightLeg newLeg = new StraightLeg(PrimaryFace, index);
 
             // Retain the spans prior to that
-            TruncateLeg(index);
+            PrimaryFace.TruncateLeg(index);
 
             return newLeg;
         }

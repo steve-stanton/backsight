@@ -699,17 +699,22 @@ void CePath::DrawAngles	( const CePoint* const pFrom
          */
 
         /// <summary>
-        /// Returns the definition of the leg which created a specific feature.
+        /// Returns the definition of the leg face which created a specific feature.
         /// </summary>
         /// <param name="feature">The feature to find.</param>
-        /// <returns>The leg that created the feature (or null if the leg
+        /// <returns>The face that created the feature (or null if the face
         /// could not be found).</returns>
-        internal Leg GetLeg(Feature feature)
+        internal LegFace GetLegFace(Feature feature)
         {
             foreach (Leg leg in m_Legs)
             {
-                if (leg.IsCreatorOf(feature))
-                    return leg;
+                LegFace face = leg.PrimaryFace;
+                if (face.IsCreatorOf(feature))
+                    return face;
+
+                face = leg.AlternateFace;
+                if (face.IsCreatorOf(feature))
+                    return face;
             }
 
             return null;
@@ -883,16 +888,6 @@ void CePath::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Returns the array index of a specific leg.
-        /// </summary>
-        /// <param name="leg">The leg of interest.</param>
-        /// <returns>The array index of the leg (-1 if not found).</returns>
-        internal int GetLegIndex(Leg leg)
-        {
-            return m_Legs.IndexOf(leg);
-        }
-
-        /// <summary>
         /// The legs that make up the path
         /// </summary>
         /// <returns></returns>
@@ -960,61 +955,6 @@ void CePath::CreateAngleText ( CPtrList& text
         {
             get { return m_To; }
         }
-
-        /// <summary>
-        /// Returns the very first line that was created along this
-        /// connection path (if any).
-        /// </summary>
-        /// <returns>The first line (null if no lines were created).</returns>
-        LineFeature GetFirstLine()
-        {
-            LineFeature first = null;
-
-            for (int i = 0; i < m_Legs.Count && first == null; i++)
-                first = m_Legs[i].GetFirstLine();
-
-            return first;
-        }
-
-        /// <summary>
-        /// Returns the very last line that was created along this
-        /// connection path (if any).
-        /// </summary>
-        /// <returns>The last line (null if no lines were created).</returns>
-        LineFeature GetLastLine()
-        {
-            LineFeature last = null;
-
-            for (int i = (m_Legs.Count - 1); i >= 0 && last == null; i--)
-                last = m_Legs[i].GetLastLine();
-
-            return last;
-        }
-
-        /*
-        /// <summary>
-        /// Have any new spans been inserted at the very start of this connection path?
-        /// </summary>
-        /// <returns>True if insert(s) at the start.</returns>
-        bool IsInsertAtStart()
-        {
-            return m_Legs[0].IsNewSpan(0);
-        }
-        */
-
-        /*
-        /// <summary>
-        /// Have any new spans been inserted at the very end of this connection path?
-        /// </summary>
-        /// <returns>True if insert(s) at the end.</returns>
-        bool IsInsertAtEnd()
-        {
-            int endIndex = m_Legs.Count - 1;
-            Leg leg = m_Legs[endIndex];
-            int nSpan = leg.Count;
-            return leg.IsNewSpan(nSpan-1);
-        }
-        */
 
         /// <summary>
         /// Returns a string that represents the definition of
