@@ -75,6 +75,9 @@ namespace Backsight.Editor.Operations
 
             Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
             m_Legs = new List<Leg>(legs);
+
+            foreach (Leg leg in legs)
+                leg.PrimaryFace.Leg = leg;
         }
 
         /// <summary>
@@ -94,6 +97,9 @@ namespace Backsight.Editor.Operations
 
                 Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
                 m_Legs = new List<Leg>(legs);
+
+                foreach (Leg leg in legs)
+                    leg.PrimaryFace.Leg = leg;
 
                 Project p = editDeserializer.Project;
                 IEntity pointType = editDeserializer.ReadEntity(DataField.PointType);
