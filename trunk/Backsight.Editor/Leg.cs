@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
@@ -42,15 +41,6 @@ namespace Backsight.Editor
         /// </summary>
         LegFace m_OtherSide;
 
-        /// <summary>
-        /// The data that defines each span on this leg (should always contain at least
-        /// one element).
-        /// </summary>
-        /// <remarks>When dealing with cul-de-sacs that are defined only with a central angle (no distances),
-        /// this will be an array containing one element, with a null observed distance.
-        /// </remarks>
-        SpanInfo[] m_Spans;
-
         #endregion
 
         #region Constructors
@@ -59,11 +49,6 @@ namespace Backsight.Editor
         {
             m_FirstSide = new LegFace(nspan);
             m_OtherSide = null;
-
-            // Allocate an array of spans (always at least ONE).
-            m_Spans = new SpanInfo[Math.Max(1, nspan)];
-            for (int i = 0; i < m_Spans.Length; i++)
-                m_Spans[i] = new SpanInfo();
         }
 
         /// <summary>
@@ -181,77 +166,6 @@ namespace Backsight.Editor
         }
 
         /// <summary>
-        /// Sets the distance of a specific span in this leg.
-        /// </summary>
-        /// <param name="distance">The distance to assign.</param>
-        /// <param name="index">The index of the distance [0,NumSpan-1]</param>
-        /// <param name="qualifier"></param>
-        /// <returns>True if index was valid.</returns>
-        internal bool SetDistance(Distance distance, int index, LegItemFlag qualifier)
-        {
-            // Return if index is out of range.
-            if (index<0 || index>=NumSpan)
-                return false;
-
-            // Remember any qualifier.
-            if (qualifier != 0)
-                m_Spans[index].Flags |= qualifier;
-
-            // Assign the distance
-            m_Spans[index].ObservedDistance = distance;
-            return true;
-        }
-
-        /// <summary>
-        /// Gets the total observed length of this leg
-        /// </summary>
-        /// <returns>The sum of the observed lengths for this leg, in meters on the ground</returns>
-        internal double GetTotal()
-        {
-            double total = 0.0;
-
-            foreach (SpanInfo sd in m_Spans)
-            {
-                Distance d = sd.ObservedDistance;
-                if (d!=null)
-                    total += d.Meters;
-            }
-
-            return total;
-        }
-
-        /// <summary>
-        /// Gets the observed distance to the start and end of a specific
-        /// span, in meters on the ground.
-        /// </summary>
-        /// <param name="index">Index of the required span.</param>
-        /// <param name="sdist">Distance to the start of the span.</param>
-        /// <param name="edist">Distance to the end of the span.</param>
-        internal void GetDistances(int index, out double sdist, out double edist)
-        {
-            // Confirm required index is in range.
-            if (index >= NumSpan)
-                throw new IndexOutOfRangeException("Leg.GetDistances -- bad index");
-
-            sdist = edist = 0.0;
-
-            // Initialize distance so far.
-            double total = 0.0;
-
-            // Accumulate the distance to the required span.
-            for (int i = 0; i <= index; i++)
-            {
-                if (i == index)
-                    sdist = total;
-
-                total += m_Spans[i].ObservedDistance.Meters;
-
-                if (i == index)
-                    edist = total;
-            }
-        }
-
-        /// <summary>
         /// Loads a list of the features that were created by this leg.
         /// </summary>
         /// <param name="op">The operation that this leg relates to.</param>
@@ -316,80 +230,6 @@ namespace Backsight.Editor
             PointFeature point = circle.CenterPoint;
             if (Object.ReferenceEquals(point.Creator, op))
                 return point;
-
-            return null;
-        }
-
-        /// <summary>
-        /// Returns the index of a feature along this leg.
-        /// </summary>
-        /// <param name="feat">The feature to look for.</param>
-        /// <returns>The index of the feature (-1 if not found).</returns>
-        internal int GetIndex(Feature feat)
-        {
-            for (int i=0; i<m_Spans.Length; i++)
-            {
-                Feature f = m_Spans[i].CreatedFeature;
-                if (Object.ReferenceEquals(f, feat))
-                    return i;
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// The number of spans in this leg is the number of elements in the
-        /// <see cref="m_Spans"/> array.
-        /// </summary>
-        internal int NumSpan
-        {
-            get { return m_Spans.Length; }
-        }
-
-        /// <summary>
-        /// Truncates this leg by discarding one or more spans at the end (for use when breaking
-        /// straight legs).
-        /// </summary>
-        /// <param name="truncatedLength">The number of spans that should be retained.</param>
-        /// <exception cref="ArgumentException">If the truncated length would lead to an empty leg, or nothing
-        /// would be truncated.</exception>
-        protected void TruncateLeg(int truncatedLength)
-        {
-            if (truncatedLength <= 0 || truncatedLength >= m_Spans.Length)
-                throw new ArgumentException();
-
-            // Shrink the array (throwaway the spans at the end)
-            Array.Resize<SpanInfo>(ref m_Spans, truncatedLength);
-        }
-
-        /// <summary>
-        /// Returns the very first line that was created along this leg (if any).
-        /// </summary>
-        /// <returns>The first line (null if no lines were created).</returns>
-        internal LineFeature GetFirstLine()
-        {
-            foreach (SpanInfo sd in m_Spans)
-            {
-                LineFeature line = (sd.CreatedFeature as LineFeature);
-                if (line!=null)
-                    return line;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Returns the very last line that was created along this leg (if any).
-        /// </summary>
-        /// <returns>The last line (null if no lines were created).</returns>
-        internal LineFeature GetLastLine()
-        {
-            for (int i=(m_Spans.Length-1); i>=0; i--)
-            {
-                LineFeature line = (m_Spans[i].CreatedFeature as LineFeature);
-                if (line!=null)
-                    return line;
-            }
 
             return null;
         }

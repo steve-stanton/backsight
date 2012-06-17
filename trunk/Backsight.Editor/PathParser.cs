@@ -214,7 +214,7 @@ namespace Backsight.Editor
                             qual = LegItemFlag.OmitPoint;
                     }
 
-                    leg.SetDistance(dist, ndist, qual);
+                    leg.PrimaryFace.SetDistance(dist, ndist, qual);
                     ndist++;
                 }
             }
@@ -266,7 +266,7 @@ namespace Backsight.Editor
                             qual = LegItemFlag.OmitPoint;
                     }
 
-                    leg.SetDistance(d, ndist, qual);
+                    leg.PrimaryFace.SetDistance(d, ndist, qual);
                     ndist++;
                 }
 

@@ -87,7 +87,7 @@ namespace Backsight.Editor
                     return new Length((MathConstants.PIMUL2 - m_Metrics.CentralAngle) * radius);
                 }
                 else
-                    return new Length(base.GetTotal());
+                    return new Length(base.PrimaryFace.GetTotal());
             }
         }
 
@@ -197,7 +197,7 @@ namespace Backsight.Editor
             }
             else
             {
-                double length = GetTotal() * sfac;
+                double length = PrimaryFace.GetTotal() * sfac;
                 double circumf = radius * MathConstants.PIMUL2;
                 double ca = MathConstants.PIMUL2 * (length/circumf);
 
@@ -286,7 +286,7 @@ namespace Backsight.Editor
             double culFactor = 1.0;
             if (m_Metrics.IsCulDeSac)
             {
-                double obsv = GetTotal();
+                double obsv = PrimaryFace.GetTotal();
                 if (obsv > MathConstants.TINY)
                     culFactor = Length.Meters / obsv;
             }

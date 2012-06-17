@@ -14,9 +14,11 @@
 // </remarks>
 
 using System;
-using Backsight.Editor.Observations;
 using System.Collections.Generic;
 using System.Diagnostics;
+
+using Backsight.Editor.Observations;
+
 
 namespace Backsight.Editor
 {
@@ -125,24 +127,6 @@ namespace Backsight.Editor
                 else
                     return (uint)(this.Leg.AlternateFace == this ? 2 : 1);
             }
-        }
-
-        /// <summary>
-        /// Gets the total observed length of this leg
-        /// </summary>
-        /// <returns>The sum of the observed lengths for this leg, in meters on the ground</returns>
-        internal double GetTotal()
-        {
-            double total = 0.0;
-
-            foreach (SpanInfo sd in m_Spans)
-            {
-                Distance d = sd.ObservedDistance;
-                if (d != null)
-                    total += d.Meters;
-            }
-
-            return total;
         }
 
         /// <summary>
@@ -468,6 +452,79 @@ namespace Backsight.Editor
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns the index of a feature along this face.
+        /// </summary>
+        /// <param name="feat">The feature to look for.</param>
+        /// <returns>The index of the feature (-1 if not found).</returns>
+        internal int GetIndex(Feature feat)
+        {
+            for (int i = 0; i < m_Spans.Length; i++)
+            {
+                Feature f = m_Spans[i].CreatedFeature;
+                if (Object.ReferenceEquals(f, feat))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Gets the total observed length of this face
+        /// </summary>
+        /// <returns>The sum of the observed lengths for this face, in meters on the ground</returns>
+        internal double GetTotal()
+        {
+            double total = 0.0;
+
+            foreach (SpanInfo sd in m_Spans)
+            {
+                Distance d = sd.ObservedDistance;
+                if (d != null)
+                    total += d.Meters;
+            }
+
+            return total;
+        }
+
+        /// <summary>
+        /// Sets the distance of a specific span in this face.
+        /// </summary>
+        /// <param name="distance">The distance to assign.</param>
+        /// <param name="index">The index of the distance [0,NumSpan-1]</param>
+        /// <param name="qualifier"></param>
+        /// <returns>True if index was valid.</returns>
+        internal bool SetDistance(Distance distance, int index, LegItemFlag qualifier)
+        {
+            // Return if index is out of range.
+            if (index < 0 || index >= NumSpan)
+                return false;
+
+            // Remember any qualifier.
+            if (qualifier != 0)
+                m_Spans[index].Flags |= qualifier;
+
+            // Assign the distance
+            m_Spans[index].ObservedDistance = distance;
+            return true;
+        }
+
+        /// <summary>
+        /// Truncates this face by discarding one or more spans at the end (for use when breaking
+        /// straight legs).
+        /// </summary>
+        /// <param name="truncatedLength">The number of spans that should be retained.</param>
+        /// <exception cref="ArgumentException">If the truncated length would lead to an empty leg, or nothing
+        /// would be truncated.</exception>
+        internal void TruncateLeg(int truncatedLength)
+        {
+            if (truncatedLength <= 0 || truncatedLength >= m_Spans.Length)
+                throw new ArgumentException();
+
+            // Shrink the array (throwaway the spans at the end)
+            Array.Resize<SpanInfo>(ref m_Spans, truncatedLength);
         }
     }
 }
