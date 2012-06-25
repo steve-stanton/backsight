@@ -152,6 +152,12 @@ namespace Backsight.Editor.Operations
 
                 if (leg.AlternateFace != null)
                 {
+                    // When we create features for alternate faces, we don't actually create
+                    // a point at the end of the leg (instead, we use the end point that was
+                    // created via the primary face). So here we'll be creating a stub that
+                    // doesn't usually get used. One special case is that the end point
+                    // may have been explicitly omitted from the primary face.
+
                     for (int i = 0; i < leg.AlternateFace.Spans.Length; i++)
                     {
                         stubList.Add(CreateStub(++sequence, pointType));

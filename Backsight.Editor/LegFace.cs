@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Backsight.Editor.Observations;
+using System.Text;
 
 
 namespace Backsight.Editor
@@ -26,7 +27,7 @@ namespace Backsight.Editor
     /// One face of a <see cref="Leg"/> in a connection path.
     /// </summary>
     /// <seealso cref="PathOperation"/>
-    class LegFace
+    class LegFace : IPersistent
     {
         #region Class data
 
@@ -525,6 +526,113 @@ namespace Backsight.Editor
 
             // Shrink the array (throwaway the spans at the end)
             Array.Resize<SpanInfo>(ref m_Spans, truncatedLength);
+        }
+
+        /// <summary>
+        /// Obtains a string that corresponds to the observed distances for spans on this face.
+        /// </summary>
+        /// <param name="defaultEntryUnit">The distance units that should be treated as the default.
+        /// Formatted distances that were specified using these units will not contain the units
+        /// abbreviation</param>
+        /// <returns>A data entry string corresponding to the distances for this face</returns>
+        internal string GetEntryString(DistanceUnit defaultEntryUnit)
+        {
+            // Return if there are no observed spans.
+            if (NumSpan==0)
+                return String.Empty;
+
+            string[] dists = new string[m_Spans.Length];
+
+            // Format each distance.
+            for (int i=0; i<m_Spans.Length; i++)
+            {
+                SpanInfo sd = m_Spans[i];
+                Distance d = sd.ObservedDistance;
+                if (d == null) // is this possible?
+                    dists[i] = String.Empty;
+                else
+                {
+                    // Get the formatted distance
+                    string distString = FormatDistance(d, defaultEntryUnit);
+
+                    // Append any qualifiers
+                    if (sd.IsMissConnect)
+                        distString += "/-";
+
+                    if (sd.IsOmitPoint)
+                        distString += "/*";
+
+                    dists[i] = distString;
+                }
+            }
+
+            // Output the first distance
+            var str = new StringBuilder();
+            str.Append(dists[0]);
+
+            // Output subsequent distances (with possible repeat count for unqualified spans)
+            int numDist = (dists[0].Contains("/") ? 0 : 1);
+
+            for (int i=1; i<dists.Length; i++)
+            {
+                // If the current distance has a qualifier, flush out any repeat count and
+                // the current distance (rather than something like 10*4/-, we output 10*3 10/-).
+                // This is just to avoid potential confusion.
+
+                if (dists[i].Contains("/"))
+                {
+                    if (numDist>1)
+                        str.Append("*"+numDist);
+
+                    str.Append(" ");
+                    str.Append(dists[i]);
+                    numDist = 0;
+                }
+                else
+                {
+                    if (dists[i] == dists[i-1])
+                        numDist++;
+                    else
+                    {
+                        if (numDist>1)
+                            str.Append("*"+numDist);
+
+                        str.Append(" ");
+                        str.Append(dists[i]);
+                        numDist = 1;
+                    }
+                }
+            }
+
+            if (numDist>1)
+                str.Append("*"+numDist);
+
+            return str.ToString();
+        }
+
+        /// <summary>
+        /// Formats a distance so that it can be persisted as a string. Unlike the various
+        /// <see cref="Distance.Format"/> methods, this method will not truncate observed
+        /// distances to a specific number of significant digits.
+        /// </summary>
+        /// <param name="d">The distance to format</param>
+        /// <param name="defaultEntryUnit">The distance units that should be treated as the default.
+        /// Formatted distances that were specified using these units will not contain the units
+        /// abbreviation</param>
+        /// <returns>A string representing the supplied distance</returns>
+        string FormatDistance(Distance d, DistanceUnit defaultEntryUnit)
+        {
+            string str = d.ObservedValue.ToString();
+
+            if (d.EntryUnit.UnitType == defaultEntryUnit.UnitType)
+                return str;
+            else
+                return str + d.EntryUnit.Abbreviation;
+        }
+
+        public void WriteData(EditSerializer editSerializer)
+        {
+            throw new NotImplementedException();
         }
     }
 }
