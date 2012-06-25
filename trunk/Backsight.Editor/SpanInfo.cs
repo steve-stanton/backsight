@@ -123,7 +123,6 @@ namespace Backsight.Editor
             get { return !IsOmitPoint; }
         }
 
-        /*
         /// <summary>
         /// Is this span marked as a miss-connect (meaning that a line should not be
         /// added to the map).
@@ -133,13 +132,12 @@ namespace Backsight.Editor
             get { return (m_Switches & LegItemFlag.MissConnect)!=0; }
             set { SetFlag(LegItemFlag.MissConnect, value); }
         }
-        */
 
         /// <summary>
         /// Should the end point for this span be omitted (determined via
         /// the relevant flag bit in the <see cref="Flags"/> property).
         /// </summary>
-        bool IsOmitPoint
+        internal bool IsOmitPoint
         {
             get { return (m_Switches & LegItemFlag.OmitPoint)!=0; }
             set { SetFlag(LegItemFlag.OmitPoint, value); }

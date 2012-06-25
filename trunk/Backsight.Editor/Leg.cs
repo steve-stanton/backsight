@@ -111,7 +111,18 @@ namespace Backsight.Editor
 
             // Should the end of an alternate face share the end point of the primary face??
             if (m_OtherSide != null)
-                maxSequence = m_OtherSide.CreateFeatures(ff, maxSequence, startPoint, lastPoint);
+            {
+                // If the leg is right at the end of a connection path, the alternate face needs to
+                // end at the specified point. Otherwise use the point that was created at the end
+                // of the primary face (in unusual cases, it's possible that no point was created
+                // there - in that case, the alternate face will create the end point).
+
+                PointFeature endLegPoint = lastPoint;
+                if (endLegPoint == null)
+                    endLegPoint = m_FirstSide.GetEndPoint(ff.Creator);
+
+                maxSequence = m_OtherSide.CreateFeatures(ff, maxSequence, startPoint, endLegPoint);
+            }
 
             return maxSequence;
         }
@@ -315,6 +326,7 @@ namespace Backsight.Editor
         }
         */
 
+        /*
         /// <summary>
         /// Formats a distance so that it can be persisted as a string. Unlike the various
         /// <see cref="Distance.Format"/> methods, this method will not truncate observed
@@ -334,5 +346,6 @@ namespace Backsight.Editor
             else
                 return str + d.EntryUnit.Abbreviation;
         }
+         */
     }
 }
