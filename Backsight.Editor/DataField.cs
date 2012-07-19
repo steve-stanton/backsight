@@ -138,5 +138,6 @@ namespace Backsight.Editor
         PointType,
         LineType,
         LineString,
+        PrimaryFaceId,
     }
 }

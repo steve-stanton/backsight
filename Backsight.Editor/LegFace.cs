@@ -16,9 +16,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 
 using Backsight.Editor.Observations;
-using System.Text;
+using Backsight.Editor.Operations;
 
 
 namespace Backsight.Editor
@@ -111,6 +112,27 @@ namespace Backsight.Editor
             // Perform shallow copy
             m_Spans = new SpanInfo[nSpan];
             Array.Copy(copy.m_Spans, startIndex, m_Spans, 0, nSpan); 
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LegFace"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        /// <remarks>Instances of this class are serialized only to provide support
+        /// for alternate faces in connection paths.</remarks>
+        internal LegFace(EditDeserializer editDeserializer)
+        {
+            Sequence = editDeserializer.ReadInternalId(DataField.Id);
+            InternalIdValue primaryFaceId = editDeserializer.ReadInternalId(DataField.PrimaryFaceId);
+            string entryString = editDeserializer.ReadString(DataField.EntryString);
+
+            // Locate the leg that contains the primary face
+            PathOperation op = (editDeserializer.CurrentEdit as PathOperation);
+            if (op == null)
+                throw new ApplicationException("Unexpected editing operation for LegFace");
+
+            // TODO
         }
 
         #endregion
@@ -533,9 +555,9 @@ namespace Backsight.Editor
         /// </summary>
         /// <param name="defaultEntryUnit">The distance units that should be treated as the default.
         /// Formatted distances that were specified using these units will not contain the units
-        /// abbreviation</param>
+        /// abbreviation. Specify null if the units should always be appended.</param>
         /// <returns>A data entry string corresponding to the distances for this face</returns>
-        internal string GetEntryString(DistanceUnit defaultEntryUnit)
+        string GetEntryString(DistanceUnit defaultEntryUnit)
         {
             // Return if there are no observed spans.
             if (NumSpan==0)
@@ -618,21 +640,27 @@ namespace Backsight.Editor
         /// <param name="d">The distance to format</param>
         /// <param name="defaultEntryUnit">The distance units that should be treated as the default.
         /// Formatted distances that were specified using these units will not contain the units
-        /// abbreviation</param>
+        /// abbreviation. Specify null if the units should always be appended.</param>
         /// <returns>A string representing the supplied distance</returns>
         string FormatDistance(Distance d, DistanceUnit defaultEntryUnit)
         {
             string str = d.ObservedValue.ToString();
 
-            if (d.EntryUnit.UnitType == defaultEntryUnit.UnitType)
+            if (defaultEntryUnit != null && d.EntryUnit.UnitType == defaultEntryUnit.UnitType)
                 return str;
             else
                 return str + d.EntryUnit.Abbreviation;
         }
 
+        /// <summary>
+        /// Writes the content of this instance to a persistent storage area.
+        /// </summary>
+        /// <param name="editSerializer">The mechanism for storing content.</param>
         public void WriteData(EditSerializer editSerializer)
         {
-            throw new NotImplementedException();
+            editSerializer.WriteInternalId(DataField.Id, Sequence);
+            editSerializer.WriteInternalId(DataField.PrimaryFaceId, Leg.PrimaryFace.Sequence);
+            editSerializer.WriteString(DataField.EntryString, GetEntryString(null));
         }
     }
 }
