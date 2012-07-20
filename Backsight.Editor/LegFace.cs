@@ -119,20 +119,39 @@ namespace Backsight.Editor
         /// using the data read from persistent storage.
         /// </summary>
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <remarks>Instances of this class are serialized only to provide support
-        /// for alternate faces in connection paths.</remarks>
         internal LegFace(EditDeserializer editDeserializer)
         {
-            Sequence = editDeserializer.ReadInternalId(DataField.Id);
-            InternalIdValue primaryFaceId = editDeserializer.ReadInternalId(DataField.PrimaryFaceId);
-            string entryString = editDeserializer.ReadString(DataField.EntryString);
-
-            // Locate the leg that contains the primary face
+            // Only connection paths should generate LegFace instances
             PathOperation op = (editDeserializer.CurrentEdit as PathOperation);
             if (op == null)
-                throw new ApplicationException("Unexpected editing operation for LegFace");
+                throw new ApplicationException("Unexpected creating edit for a leg face");
 
-            // TODO
+            this.Sequence = editDeserializer.ReadInternalId(DataField.Id);
+
+            if (editDeserializer.IsNextField(DataField.PrimaryFaceId))
+            {
+                InternalIdValue parentLegId = editDeserializer.ReadInternalId(DataField.PrimaryFaceId);
+                Leg = op.FindLeg(parentLegId);
+            }
+            else
+            {
+                // This should never happen. Primary faces are not serialized using the LegFace
+                // class (we only use LegFace as part of a PathOperation to simplify import of
+                // extra legs from old CEdit files).
+
+                throw new ApplicationException();
+            }
+
+            // Convert the data entry string into observed spans
+            string entryString = editDeserializer.ReadString(DataField.EntryString);
+            DistanceUnit defaultEntryUnit = EditingController.Current.EntryUnit;
+            Distance[] dists = LineSubdivisionFace.GetDistances(entryString, defaultEntryUnit, false);
+            m_Spans = new SpanInfo[dists.Length];
+
+            for (int i=0; i<m_Spans.Length; i++)
+            {
+                m_Spans[i] = new SpanInfo() { ObservedDistance = dists[i] };
+            }
         }
 
         #endregion
@@ -553,7 +572,8 @@ namespace Backsight.Editor
         /// <summary>
         /// Obtains a string that corresponds to the observed distances for spans on this face.
         /// </summary>
-        /// <param name="defaultEntryUnit">The distance units that should be treated as the default.
+        /// <param name="defaultEntryUnit">The distance units that should be treated as the default
+        /// (null if there is no default).
         /// Formatted distances that were specified using these units will not contain the units
         /// abbreviation. Specify null if the units should always be appended.</param>
         /// <returns>A data entry string corresponding to the distances for this face</returns>
@@ -638,9 +658,11 @@ namespace Backsight.Editor
         /// distances to a specific number of significant digits.
         /// </summary>
         /// <param name="d">The distance to format</param>
-        /// <param name="defaultEntryUnit">The distance units that should be treated as the default.
+        /// <param name="defaultEntryUnit">The distance units that should be treated as the default
+        /// (null if there is no default).
         /// Formatted distances that were specified using these units will not contain the units
         /// abbreviation. Specify null if the units should always be appended.</param>
+        /// abbreviation.</param>
         /// <returns>A string representing the supplied distance</returns>
         string FormatDistance(Distance d, DistanceUnit defaultEntryUnit)
         {
@@ -658,8 +680,11 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public void WriteData(EditSerializer editSerializer)
         {
-            editSerializer.WriteInternalId(DataField.Id, Sequence);
-            editSerializer.WriteInternalId(DataField.PrimaryFaceId, Leg.PrimaryFace.Sequence);
+            editSerializer.WriteInternalId(DataField.Id, this.Sequence);
+
+            if (Leg.PrimaryFace != this)
+                editSerializer.WriteInternalId(DataField.PrimaryFaceId, Leg.PrimaryFace.Sequence);
+
             editSerializer.WriteString(DataField.EntryString, GetEntryString(null));
         }
     }

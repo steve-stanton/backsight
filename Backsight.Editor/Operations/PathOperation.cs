@@ -909,6 +909,25 @@ void CePath::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
+        /// Attempts to locate the leg that has a face with a specific ID.
+        /// </summary>
+        /// <param name="faceId">The ID of the face to look for.</param>
+        /// <returns>The corresponding leg (null if not found)</returns>
+        internal Leg FindLeg(InternalIdValue faceId)
+        {
+            foreach (Leg leg in m_Legs)
+            {
+                if (leg.PrimaryFace.Sequence.Equals(faceId))
+                    return leg;
+
+                if (leg.AlternateFace != null && leg.AlternateFace.Sequence.Equals(faceId))
+                    return leg;
+            }
+
+            return null;                         
+        }
+
+        /// <summary>
         /// Returns the leg at a specific place along the connection path.
         /// </summary>
         /// <param name="index">The array index of the desired leg.</param>
