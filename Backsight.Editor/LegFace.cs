@@ -20,6 +20,7 @@ using System.Text;
 
 using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
+using Backsight.Environment;
 
 
 namespace Backsight.Editor
@@ -132,6 +133,11 @@ namespace Backsight.Editor
             {
                 InternalIdValue parentLegId = editDeserializer.ReadInternalId(DataField.PrimaryFaceId);
                 Leg = op.FindLeg(parentLegId);
+
+                if (Leg == null)
+                    throw new ApplicationException("Cannot locate leg " + parentLegId);
+
+                Leg.AlternateFace = this;
             }
             else
             {
@@ -206,6 +212,15 @@ namespace Backsight.Editor
         internal int NumSpan
         {
             get { return m_Spans.Length; }
+        }
+
+        /// <summary>
+        /// The number of internal IDs that should be reserved for this face.
+        /// </summary>
+        /// <value>1 for the face itself +  2 for every span (even though they may be unused).</value>
+        internal uint NumIds
+        {
+            get { return (1 + 2 * (uint)NumSpan); }
         }
 
         /// <summary>
@@ -338,21 +353,57 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// Creates stubs for all items that might be created for this face.
+        /// </summary>
+        /// <param name="creator">The editing operation to mark as the creator of the features.</param>
+        /// <param name="pointType">The entity type for created points</param>
+        /// <param name="lineType">The entity type for created lines</param>
+        /// <returns>Two stubs for each span along this face (one point, one line per span).</returns>
+        internal FeatureStub[] CreateStubs(Operation creator, IEntity pointType, IEntity lineType)
+        {
+            List<FeatureStub> stubList = new List<FeatureStub>();
+            uint sequence = this.Sequence.ItemSequence;
+
+            // Reserve two items for each span along the leg (the very first stub will have an
+            // ID one greater than the face itself).
+            for (int i = 0; i < m_Spans.Length; i++)
+            {
+                stubList.Add(CreateStub(creator, ++sequence, pointType));
+                stubList.Add(CreateStub(creator, ++sequence, lineType));
+            }
+
+            return stubList.ToArray();
+        }
+
+        /// <summary>
+        /// Creates a stub for an item on this face.
+        /// </summary>
+        /// <param name="itemSequence">The sequence number to assign to the stub</param>
+        /// <param name="ent">The entity type for the stub</param>
+        /// <returns>The created stub</returns>
+        FeatureStub CreateStub(Operation creator, uint itemSequence, IEntity ent)
+        {
+            InternalIdValue iid = new InternalIdValue(itemSequence);
+            return new FeatureStub(creator, iid, ent, null);
+        }
+
+        /// <summary>
         /// Creates spatial features (points and lines) for this face. The created
         /// features don't have any geometry.
         /// </summary>
         /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="maxSequence">The highest sequence number assigned to features
-        /// preceding this leg</param>
         /// <param name="startPoint">The point (if any) at the start of this leg. May be
         /// null in a situation where the preceding leg ended with an "omit point" directive.</param>
         /// <param name="lastPoint">The point that should be used for the very end
         /// of the leg (specify null if a point should be created at the end of the leg).</param>
-        /// <returns>The sequence number assigned to the last feature that was created</returns>
-        internal uint CreateFeatures(FeatureFactory ff, uint maxSequence, PointFeature startPoint, PointFeature lastPoint)
+        internal void CreateFeatures(FeatureFactory ff, PointFeature startPoint, PointFeature lastPoint)
         {
             PointFeature from = startPoint;
             PointFeature to = null;
+
+            // The initial item sequence relates to the face itself. The first feature along the face will
+            // have a sequence number one higher.
+            uint maxSequence = this.Sequence.ItemSequence;
 
             int nSpan = m_Spans.Length;
             for (int i = 0; i < nSpan; i++, from = to)
@@ -401,8 +452,6 @@ namespace Backsight.Editor
                     span.CreatedFeature = to;
                 }
             }
-
-            return maxSequence;
         }
 
         /// <summary>

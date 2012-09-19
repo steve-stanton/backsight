@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-using Backsight.Editor.Observations;
 using Backsight.Environment;
 
 namespace Backsight.Editor.Operations
@@ -28,6 +27,44 @@ namespace Backsight.Editor.Operations
     /// </summary>
     class PathOperation : Operation, IRecallable, IRevisable
     {
+        #region Static
+
+        /// <summary>
+        /// Prepares the legs on this path by allocating a unique ID to each primary face (and
+        /// ensure that the primary face is cross-referenced to it's associated leg).
+        /// </summary>
+        /// <param name="opSequence">The sequence of the edit that created the legs.</param>
+        /// <param name="legs">The legs involved (with only primary faces attached).</param>
+        /// <returns>The last internal ID that was reserved.</returns>
+        static uint PrepareLegs(uint opSequence, Leg[] legs)
+        {
+            // Allocate sequence numbers for each leg
+            uint nextId = opSequence + 1;
+
+            foreach (Leg leg in legs)
+            {
+                // Reserve an ID for the leg itself (used for center point if the leg
+                // is a circular arc).
+                nextId++;
+
+                // We should only be dealing with the primary face (alternate face comes via update,
+                // or via deserialization of data that originated from the CEdit application).
+                Debug.Assert(leg.AlternateFace == null);
+
+                // Allocate a sequence number for the face
+                LegFace face = leg.PrimaryFace;
+                face.Sequence = new InternalIdValue(nextId);
+                nextId += face.NumIds;
+
+                // Ensure the face has been cross-referenced to the associated leg
+                face.Leg = leg;
+            }
+
+            return nextId - 1;
+        }
+
+        #endregion
+
         #region Class data
 
         /// <summary>
@@ -74,10 +111,10 @@ namespace Backsight.Editor.Operations
             m_DefaultEntryUnit = defaultEntryUnit;
 
             Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
-            m_Legs = new List<Leg>(legs);
+            uint lastId = PrepareLegs(this.EditSequence, legs);
+            EditingController.Current.Project.SetLastItem(lastId);
 
-            foreach (Leg leg in legs)
-                leg.PrimaryFace.Leg = leg;
+            m_Legs = new List<Leg>(legs);
         }
 
         /// <summary>
@@ -96,25 +133,25 @@ namespace Backsight.Editor.Operations
                 m_DefaultEntryUnit = editDeserializer.ReadDistanceUnit(DataField.DefaultEntryUnit);
 
                 Leg[] legs = PathParser.CreateLegs(m_EntryString, m_DefaultEntryUnit);
+                PrepareLegs(this.EditSequence, legs);
                 m_Legs = new List<Leg>(legs);
-
-                foreach (Leg leg in legs)
-                    leg.PrimaryFace.Leg = leg;
 
                 Project p = editDeserializer.Project;
                 IEntity pointType = editDeserializer.ReadEntity(DataField.PointType);
                 IEntity lineType = editDeserializer.ReadEntity(DataField.LineType);
-                FeatureStub[] stubs = CreateStubs(p, pointType, lineType);
 
                 // Pick up any alternate faces (these may be defined ONLY when dealing with
-                // data files that were derived from old CEdit files).
-                // TODO: should this be before CreateStubs - where will the entity types come from?
+                // data files that were derived from old CEdit files). The deserializaing
+                // constructor will connect the alternate faces to the legs we've just
+                // created.
                 if (editDeserializer.IsNextField(DataField.AlternateFaces))
-                {
-                    LegFace[] altFaces = editDeserializer.ReadPersistentArray<LegFace>(DataField.AlternateFaces);
-                }
+                    editDeserializer.ReadPersistentArray<LegFace>(DataField.AlternateFaces);
 
-                DeserializationFactory result = new DeserializationFactory(this, stubs);
+                // Create stubs for everything that we could conceivably create (including
+                // any alternate faces).
+                FeatureStub[] stubs = CreateStubs(p, pointType, lineType);
+
+                var result = new DeserializationFactory(this, stubs);
                 result.PointType = pointType;
                 result.LineType = lineType;
 
@@ -141,22 +178,23 @@ namespace Backsight.Editor.Operations
         /// <param name="pointType">The entity type for created points</param>
         /// <param name="lineType">The entity type for created lines</param>
         /// <returns></returns>
+        /// <remarks>The main reason for doing so is to express any miss-connects or omit-points
+        /// that may have been specified via the data entry string (the lack of a stub means the
+        /// feature won't be created). User-perceived IDs are not recorded as part of the stubs,
+        /// they need to be handled separately after the features have been created.</remarks>
         FeatureStub[] CreateStubs(Project p, IEntity pointType, IEntity lineType)
         {
             List<FeatureStub> stubList = new List<FeatureStub>();
-            uint sequence = this.InternalId.ItemSequence;
 
             foreach (Leg leg in m_Legs)
             {
                 // Reserve item for point at center of circular arc (if it is one)
-                stubList.Add(CreateStub(++sequence, pointType));
+                var iid = new InternalIdValue(leg.ItemSequence);
+                stubList.Add(new FeatureStub(this, iid, pointType, null));
 
                 // Reserve two items for each span along the leg
-                for (int i = 0; i < leg.PrimaryFace.Spans.Length; i++)
-                {
-                    stubList.Add(CreateStub(++sequence, pointType));
-                    stubList.Add(CreateStub(++sequence, lineType));
-                }
+                FeatureStub[] faceStubs = leg.PrimaryFace.CreateStubs(this, pointType, lineType);
+                stubList.AddRange(faceStubs);
 
                 if (leg.AlternateFace != null)
                 {
@@ -166,30 +204,12 @@ namespace Backsight.Editor.Operations
                     // doesn't usually get used. One special case is that the end point
                     // may have been explicitly omitted from the primary face.
 
-                    for (int i = 0; i < leg.AlternateFace.Spans.Length; i++)
-                    {
-                        stubList.Add(CreateStub(++sequence, pointType));
-                        stubList.Add(CreateStub(++sequence, lineType));
-                    }
+                    faceStubs = leg.AlternateFace.CreateStubs(this, pointType, lineType);
+                    stubList.AddRange(faceStubs);
                 }
             }
 
-            // Remember the last internal ID that has been allocated
-            p.SetLastItem(sequence);
-
             return stubList.ToArray();
-        }
-
-        /// <summary>
-        /// Creates a stub for an item in this path.
-        /// </summary>
-        /// <param name="itemSequence">The sequence number to assign to the stub</param>
-        /// <param name="ent">The entity type for the stub</param>
-        /// <returns>The created stub</returns>
-        FeatureStub CreateStub(uint itemSequence, IEntity ent)
-        {
-            InternalIdValue iid = new InternalIdValue(itemSequence);
-            return new FeatureStub(this, iid, ent, null);
         }
 
         /// <summary>
@@ -403,7 +423,11 @@ namespace Backsight.Editor.Operations
             Project p = EditingController.Current.Project;
             FeatureStub[] stubs = CreateStubs(p, p.DefaultPointType, p.DefaultLineType);
 
-            // And create features, geometry, and IDs
+            // And create features, geometry, and IDs. Using a DeserializationFactory here
+            // is kind of experimental. When things like CreatePointFeature get called, this
+            // implementation doesn't generate the next available user-perceived ID. Instead
+            // base.Execute handles IDs by calling the CreateIds override below. This is
+            // probably a bit more robust.
             DeserializationFactory ff = new DeserializationFactory(this, stubs);
             base.Execute(ff);
         }
@@ -430,14 +454,13 @@ namespace Backsight.Editor.Operations
         /// <param name="ff">The factory class for generating any spatial features</param>
         internal override void ProcessFeatures(FeatureFactory ff)
         {
-            uint maxSequence = this.EditSequence;
             PointFeature startPoint = m_From;
 
             for (int i=0; i<m_Legs.Count; i++)
             {
                 Leg leg = m_Legs[i];
                 PointFeature lastPoint = (i < (m_Legs.Count-1) ? null : m_To);
-                maxSequence = leg.CreateFeatures(ff, maxSequence, startPoint, lastPoint);
+                leg.CreateFeatures(ff, startPoint, lastPoint);
                 startPoint = leg.PrimaryFace.GetEndPoint(this);
             }
         }
