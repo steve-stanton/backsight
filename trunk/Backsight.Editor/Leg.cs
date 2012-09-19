@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 
-using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
@@ -85,14 +84,11 @@ namespace Backsight.Editor
         /// features don't have any geometry.
         /// </summary>
         /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="maxSequence">The highest sequence number assigned to features
-        /// preceding this leg</param>
         /// <param name="startPoint">The point (if any) at the start of this leg. May be
         /// null in a situation where the preceding leg ended with an "omit point" directive.</param>
         /// <param name="lastPoint">The point that should be used for the very end
         /// of the leg (specify null if a point should be created at the end of the leg).</param>
-        /// <returns>The sequence number assigned to the last feature that was created</returns>
-        internal uint CreateFeatures(FeatureFactory ff, uint maxSequence, PointFeature startPoint, PointFeature lastPoint)
+        internal void CreateFeatures(FeatureFactory ff, PointFeature startPoint, PointFeature lastPoint)
         {
             // If we're dealing with a circular arc, create the underlying circle (and a
             // center point). The radius of the circle is undefined at this stage, but the
@@ -102,12 +98,11 @@ namespace Backsight.Editor
             // another point in the map (it could even coincide with another circular leg in
             // the same connection path).
 
-            maxSequence++;
             CircularLeg cLeg = (this as CircularLeg);
             if (cLeg != null)
-                cLeg.CreateCircle(ff, maxSequence.ToString());
+                cLeg.CreateCircle(ff, this.ItemSequence.ToString());
 
-            maxSequence = m_FirstSide.CreateFeatures(ff, maxSequence, startPoint, lastPoint);
+            m_FirstSide.CreateFeatures(ff, startPoint, lastPoint);
 
             // Should the end of an alternate face share the end point of the primary face??
             if (m_OtherSide != null)
@@ -121,10 +116,8 @@ namespace Backsight.Editor
                 if (endLegPoint == null)
                     endLegPoint = m_FirstSide.GetEndPoint(ff.Creator);
 
-                maxSequence = m_OtherSide.CreateFeatures(ff, maxSequence, startPoint, endLegPoint);
+                m_OtherSide.CreateFeatures(ff, startPoint, endLegPoint);
             }
-
-            return maxSequence;
         }
 
         /// <summary>
@@ -160,6 +153,24 @@ namespace Backsight.Editor
         }
 
         /// <summary>
+        /// The item sequence of this leg
+        /// </summary>
+        /// <value>One less than the internal ID of the primary face (or 0 if the ID for
+        /// the primary face has not been defined).</value>
+        internal uint ItemSequence
+        {
+            get
+            {
+                uint iseq = m_FirstSide.Sequence.ItemSequence;
+
+                if (iseq == 0)
+                    return 0;
+                else
+                    return iseq - 1;
+            }
+        }
+
+        /// <summary>
         /// The initial definition for this leg (if <see cref="AlternateFace"/> is undefined, the
         /// spans relate to both sides of the leg).
         /// </summary>
@@ -174,6 +185,7 @@ namespace Backsight.Editor
         internal LegFace AlternateFace
         {
             get { return m_OtherSide; }
+            set { m_OtherSide = value; }
         }
 
         /// <summary>
