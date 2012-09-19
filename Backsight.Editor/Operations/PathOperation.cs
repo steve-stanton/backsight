@@ -106,6 +106,14 @@ namespace Backsight.Editor.Operations
                 IEntity lineType = editDeserializer.ReadEntity(DataField.LineType);
                 FeatureStub[] stubs = CreateStubs(p, pointType, lineType);
 
+                // Pick up any alternate faces (these may be defined ONLY when dealing with
+                // data files that were derived from old CEdit files).
+                // TODO: should this be before CreateStubs - where will the entity types come from?
+                if (editDeserializer.IsNextField(DataField.AlternateFaces))
+                {
+                    LegFace[] altFaces = editDeserializer.ReadPersistentArray<LegFace>(DataField.AlternateFaces);
+                }
+
                 DeserializationFactory result = new DeserializationFactory(this, stubs);
                 result.PointType = pointType;
                 result.LineType = lineType;

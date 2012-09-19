@@ -139,5 +139,6 @@ namespace Backsight.Editor
         LineType,
         LineString,
         PrimaryFaceId,
+        AlternateFaces,
     }
 }
