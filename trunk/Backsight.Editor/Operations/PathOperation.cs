@@ -38,8 +38,8 @@ namespace Backsight.Editor.Operations
         /// <returns>The last internal ID that was reserved.</returns>
         static uint PrepareLegs(uint opSequence, Leg[] legs)
         {
-            // Allocate sequence numbers for each leg
-            uint nextId = opSequence + 1;
+            // Allocate sequence numbers for each leg + primary face
+            uint nextId = opSequence;
 
             foreach (Leg leg in legs)
             {
@@ -53,14 +53,17 @@ namespace Backsight.Editor.Operations
 
                 // Allocate a sequence number for the face
                 LegFace face = leg.PrimaryFace;
+                nextId++;
                 face.Sequence = new InternalIdValue(nextId);
-                nextId += face.NumIds;
+
+                // Reserve two IDs for every span (regardless of whether any feature will be created for it).
+                nextId += ((uint)face.NumSpan * 2);
 
                 // Ensure the face has been cross-referenced to the associated leg
                 face.Leg = leg;
             }
 
-            return nextId - 1;
+            return nextId;
         }
 
         #endregion
@@ -940,19 +943,19 @@ void CePath::CreateAngleText ( CPtrList& text
         }
 
         /// <summary>
-        /// Attempts to locate the leg that has a face with a specific ID.
+        /// Attempts to locate the face with a specific ID.
         /// </summary>
         /// <param name="faceId">The ID of the face to look for.</param>
-        /// <returns>The corresponding leg (null if not found)</returns>
-        internal Leg FindLeg(InternalIdValue faceId)
+        /// <returns>The corresponding face (null if not found)</returns>
+        internal LegFace FindFace(InternalIdValue faceId)
         {
             foreach (Leg leg in m_Legs)
             {
                 if (leg.PrimaryFace.Sequence.Equals(faceId))
-                    return leg;
+                    return leg.PrimaryFace;
 
                 if (leg.AlternateFace != null && leg.AlternateFace.Sequence.Equals(faceId))
-                    return leg;
+                    return leg.AlternateFace;
             }
 
             return null;                         

@@ -58,12 +58,20 @@ namespace Backsight.Editor.Operations
         internal DeletionOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            ReadData(editDeserializer, out m_Deletions);
+            try
+            {
+                ReadData(editDeserializer, out m_Deletions);
 
-            // Deactivate features (means they will never make it into the spatial index, and
-            // any lines will be invisible as far as intersection tests are concerned).
-            DeserializationFactory dff = new DeserializationFactory(this);
-            ProcessFeatures(dff);
+                // Deactivate features (means they will never make it into the spatial index, and
+                // any lines will be invisible as far as intersection tests are concerned).
+                DeserializationFactory dff = new DeserializationFactory(this);
+                ProcessFeatures(dff);
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         #endregion

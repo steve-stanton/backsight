@@ -134,7 +134,9 @@ enum DataField
 	DataField_Source,
     DataField_PointType,
     DataField_LineType,
-	DataField_LineString
+	DataField_LineString,
+    DataField_PrimaryFaceId,
+    DataField_AlternateFaces
 };
 
 static const char* DataFields[] =
@@ -250,5 +252,7 @@ static const char* DataFields[] =
 	stringify(Source),
     stringify(PointType),
     stringify(LineType),
-	stringify(LineString)
+	stringify(LineString),
+    stringify(PrimaryFaceId),
+    stringify(AlternateFaces)
 };

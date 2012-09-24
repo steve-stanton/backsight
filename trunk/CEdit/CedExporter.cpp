@@ -113,6 +113,7 @@ void CedExporter::CreateExport(CeMap* cedFile)
 	// an end point, Backsight requires them)
 	ImportOperation_c* extra = new ImportOperation_c(idFactory, now);
 	GenerateExtraPoints(cedFile, idFactory, extra->Features);
+	//AfxMessageBox("done extra points");
 
 	// Represent the points as an import operation
 	if (extra->Features.GetSize() == 0)
@@ -361,6 +362,8 @@ void CedExporter::GenerateExtraPoints(CeMap* cedFile, IdFactory& idf, CPtrArray&
 	// the value is unused.
 	CMapPtrToPtr locIndex;
 
+	LogFile = fopen("C:\\Backsight\\Export.txt", "w");
+
 	while (spos != 0)
 	{
 		CeSession* session = (CeSession*)sessions.GetNext(spos);
@@ -371,7 +374,6 @@ void CedExporter::GenerateExtraPoints(CeMap* cedFile, IdFactory& idf, CPtrArray&
 		{
 			CeOperation* op = (CeOperation*)ops.GetNext(opos);
 			op->GetFeatures(features);
-
 			CeListIter* loop = new CeListIter(&features, TRUE);
 			CeFeature* f;
 
@@ -390,10 +392,15 @@ void CedExporter::GenerateExtraPoints(CeMap* cedFile, IdFactory& idf, CPtrArray&
 				}
 			}
 
+			//Log("start line loop");
+
 			// Process the lines created by the edit. For each terminal, check whether the
 			// location is already noted. If not, we need to fabricate a point.
 			for (f = (CeFeature*)loop->GetHead(); f; f = (CeFeature*)loop->GetNext())
 			{
+#ifdef _CEDIT
+				objectstore::touch(f, false);
+#endif
 				const CeArc* line = dynamic_cast<const CeArc*>(f);
 				if (line != 0)
 				{
@@ -402,10 +409,17 @@ void CedExporter::GenerateExtraPoints(CeMap* cedFile, IdFactory& idf, CPtrArray&
 				}
 			}
 
+			//Log("done line loop");
+
 			features.Remove();
 			delete loop;
+
+			//Log("next");
 		}
 	}
+
+	fclose(LogFile);
+	LogFile = 0;
 }
 
 void CedExporter::CheckForExtraPoint(const CeLocation* loc, CMapPtrToPtr& locIndex, IdFactory& idf, CPtrArray& extraPoints)
@@ -415,18 +429,41 @@ void CedExporter::CheckForExtraPoint(const CeLocation* loc, CMapPtrToPtr& locInd
 	if (locIndex.Lookup((void*)loc, x))
 		return;
 
+	CString msg;
+	msg.Format("Recording extra point for %x", (int)loc);
+	Log(msg);
+
 	// Generate an extra point
-	unsigned int entityId = 0; // TODO
+	unsigned int entityId = 0;
 	PointFeature_c* p = new PointFeature_c(idf, entityId, *loc);
+
+	//msg.Format("Added point %d", p->Stub->InternalId);
+	//Log(msg);
+
 	extraPoints.Add(p);
 	locIndex.SetAt((void*)loc, (void*)p->Stub->InternalId); // I don't think we really need the ID, but hold it just in case
 }
 
 void CedExporter::RecordLocations(const CePoint& p, CMapPtrToPtr& locIndex) 
 {
+	//CString s;
+	//s.Format("Process point %s", p.FormatKey());
+	//Log(s);
+
+	//FILE* log = 0;
+	//if (p.FormatKey() == "2632804")
+	//	log = LogFile;
+
 	CPtrArray locs;
 	const CeLocation* loc = p.GetpVertex();
-	GetAllCoincidentLocations(loc, locs);
+	GetAllCoincidentLocations(loc, locs, LogFile);
+
+	//if (locs.GetSize() != 1)
+	//{
+	//	CString s;
+	//	s.Format("%d locs", locs.GetSize());
+	//	Log(s);
+	//}
 
 	for (int i=0; i<locs.GetSize(); i++)
 	{
@@ -443,17 +480,30 @@ void CedExporter::RecordLocations(const CePoint& p, CMapPtrToPtr& locIndex)
 #endif
 
 // static
-void CedExporter::GetAllCoincidentLocations(const CeLocation* loc, CPtrArray& locs)
+void CedExporter::GetAllCoincidentLocations(const CeLocation* loc, CPtrArray& locs, FILE* log)
 {
+	//if (log != 0)
+	//{
+	//	fprintf(log, "before loop\n");
+	//	fflush(log);
+	//}
+
 	if (loc == 0)
 		return;
-
+	
 	const CeTileId& tileId = loc->GetTileID();
 	const CeTile* t = tileId.GetpTile();
-	
+
 	for (const CeTileData* td = t->GetpTileData()->GetpTail(); td; td = td->GetpPrev())
 	{
 		int nLoc = (int)td->GetNumLoc();
+
+		//if (log != 0)
+		//{
+		//	fprintf(log, "nLoc=%d\n", nLoc);
+		//	fflush(log);
+		//}
+
 		const CeLocation** tLocs = td->GetpLocations();
 
 		for (int i=0; i<nLoc; i++)
@@ -463,4 +513,24 @@ void CedExporter::GetAllCoincidentLocations(const CeLocation* loc, CPtrArray& lo
 				locs.Add((void*)tLoc);
 		}
 	}
+
+	//if (log != 0)
+	//{
+	//	fprintf(log, "done loop nDup=%d\n", locs.GetSize());
+	//	fflush(log);
+	//}
+}
+
+void CedExporter::Log(LPCTSTR msg)
+{
+	if (LogFile != 0)
+	{
+		fprintf(LogFile, "%s\n", msg);
+		fflush(LogFile);
+	}
+}
+
+void CedExporter::Log(const CString& msg)
+{
+	Log((LPCTSTR)msg);
 }

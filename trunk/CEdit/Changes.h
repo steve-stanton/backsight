@@ -20,6 +20,7 @@ class CeIntersectDirDist;
 class CeIntersectDirLine;
 class CeIntersectDist;
 class CeIntersectLine;
+class CeLeg;
 class CeMoveLabel;
 class CeNewArc;
 class CeNewCircle;
@@ -513,6 +514,7 @@ public:
 	int PointType;
 	int LineType;
 	CPtrArray Ids;
+	CPtrArray AlternateFaces;
 
 	PathOperation_c(IdFactory& idf, const CTime& when, const CePath& op);
 
@@ -523,6 +525,7 @@ public:
 private:
 	CeArc* GetFirstArc(CeObjectList& features);
 	CePoint* GetFirstPoint(CeObjectList& features);
+	void GetIdMappings(const CePath& op, const CeLeg& leg, CePoint* pIgnore, IdFactory& idf);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

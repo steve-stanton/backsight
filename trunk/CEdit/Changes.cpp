@@ -38,6 +38,7 @@
 #include "CeArc.h"
 #include "CePoint.h"
 #include "CeLeg.h"
+#include "CeExtraLeg.h"
 #include "CeOffsetPoint.h"
 #else
 #include "CEditStubs.h"
@@ -115,8 +116,16 @@ unsigned int IdFactory::GetNextId(void* p)
 	m_MaxId++;
 
 	if (p != 0)
+	{
+		// You should never need to ask for an ID more than once
+		unsigned int iid = FindId(p);
+		assert(iid == 0);
 		m_ObjectIds.SetAt(p, (void*)m_MaxId);
+	}
 
+#ifdef _CEDIT
+	objectstore::touch(p, false);
+#endif
 	CePoint* pt = dynamic_cast<CePoint*>((CeClass*)p);
 	if (pt != 0)
 	{
@@ -290,6 +299,9 @@ void Operation_c::LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtr
 			  f;
 			  f = (const CeFeature*)loop.GetNext() )
 		{
+#ifdef _CEDIT
+			objectstore::touch(f, false);
+#endif
 			const CePoint* p = dynamic_cast<const CePoint*>(f);
 			if (p != 0)
 			{
@@ -304,6 +316,9 @@ void Operation_c::LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtr
 			  f;
 			  f = (const CeFeature*)loop.GetNext() )
 		{
+#ifdef _CEDIT
+			objectstore::touch(f, false);
+#endif
 			const CePoint* p = dynamic_cast<const CePoint*>(f);
 			if (p == 0)
 			{
@@ -398,6 +413,7 @@ DeletionOperation_c::DeletionOperation_c(IdFactory& idf, const CTime& when, cons
 	{
 		unsigned int iid = idf.FindId(pThing);
 		assert(iid < this->Sequence);
+		assert(iid > 0);
 		Deletions.Add(iid);
 	}
 }
@@ -995,8 +1011,12 @@ NewCircleOperation_c::NewCircleOperation_c(IdFactory& idf, const CTime& when, co
 {
 	Center = op.GetCentre();
 	Radius = Observation_c::CreateExportLength(op.GetRadius());
+	CeObservation* o = op.GetRadius();
 
-	if (dynamic_cast<CeOffsetPoint*>(op.GetRadius()) == 0)
+#ifdef _CEDIT
+	objectstore::touch(o, false);
+#endif
+	if (dynamic_cast<CeOffsetPoint*>(o) == 0)
 	{
 		CeArc* arc = op.GetpArc();
 		CePoint* cp = arc->GetpStart()->GetpPoint(op, FALSE);
@@ -1062,6 +1082,9 @@ LPCTSTR NewLineOperation_c::GetTypeName() const
 
 	// Only arcs or complete circles can be created via this NewLineOperation (multisegments come
 	// in only via imports, sections come in via other edits).
+#ifdef _CEDIT
+	objectstore::touch(geom, false);
+#endif
 
 	ArcGeometry_c* arc = dynamic_cast<ArcGeometry_c*>(geom);
 	if (arc != 0)
@@ -1127,6 +1150,9 @@ NewTextOperation_c::~NewTextOperation_c()
 LPCTSTR NewTextOperation_c::GetTypeName() const
 {
 	TextGeometry_c* geom = Text->Geom;
+#ifdef _CEDIT
+	objectstore::touch(geom, false);
+#endif
 
 	KeyTextGeometry_c* keyText = dynamic_cast<KeyTextGeometry_c*>(geom);
 	if (keyText != 0)
@@ -1253,74 +1279,131 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 
 	// The data entry string will have units attached to every observed distance,
 	// so it shouldn't matter what value we use for the default entry units.
+	// Note that the entry string ignores distances on any alternate faces.
 	op.GetString(EntryString);
 	DefaultEntryUnit = 0;
 
 	// Allocate IDs for every leg plus 2 for every span (regardless of whether it
 	// has a line feature).
 
+	unsigned int primaryFaceId = 0;
+	CePoint* endPrimaryFacePoint = 0;
+
 	for (int i=0; i<op.GetNumLeg(); i++)
 	{
 		CeLeg* leg = op.GetpLeg(i);
 
-		// Assign ID for center point (if it's there). If the leg doesn't have a center
-		// point (e.g. it's a straight leg), this just reserves an ID
-		CePoint* center = leg->GetpCentrePoint(op);
-		idf.GetNextId(center);
-
-		// Cul-de-sacs may have no observed distances, but they still generate a line
-		unsigned short nSpan = leg->GetCount();
-		if (nSpan == 0)
-			nSpan = 1;
-
-		for (unsigned short iSpan=0; iSpan<nSpan; iSpan++)
+		// If we're dealing with an extra leg, remember it in the collection of alternate faces.
+#ifdef _CEDIT
+		objectstore::touch(leg, false);
+#endif
+		CeExtraLeg* extra = dynamic_cast<CeExtraLeg*>(leg);
+		if (extra == 0)
 		{
-			// Get the line and/or point for the span (if any)
+			// Assign ID for center point (if it's there). If the leg doesn't have a center
+			// point (e.g. it's a straight leg), this just reserves an ID
+			CePoint* center = leg->GetpCentrePoint(op);
+			unsigned int legId = idf.GetNextId(center);
 
-			CeFeature* f = leg->GetpFeature(iSpan);
-			CeArc* a = 0;
-			CePoint* p = 0;
+			// Now reserve an ID for the primary face itself
+			primaryFaceId = idf.GetNextId(0);
 
-			if (f != 0)
-			{
-				a = dynamic_cast<CeArc*>(f);
-				if (a == 0)
-				{
-					p = dynamic_cast<CePoint*>(f);
-					assert(p != 0);
-				}
-				else
-				{
-					p = a->GetpEnd()->GetpPoint(op, FALSE);
-				}
-			}
+			// Remember the point at the end of this face (we want to ignore it when
+			// recording ID mappings for any alternate face that could follow).
+			endPrimaryFacePoint = leg->GetpEndPoint(op);
 
-			// Don't assign ID to the end point if it's the end of the path
-			if (p == op.GetpTo())
-				p = 0;
-
-			// The point (if there is one) always gets the next ID number
-			unsigned int iid = idf.GetNextId(p);
-			if (p != 0)
-			{
-				// If the point has a user-perceived ID, remember the mapping
-				unsigned int rawId = Feature_c::GetRawId(*p);
-				if (rawId != 0)
-				{
-					IdMapping_c* m = new IdMapping_c(iid, rawId);
-					Ids.Add(m);
-				}
-			}
-
-			// Lines were never assigned IDs in CEdit.
-			idf.GetNextId(a);
+			// Collect ID mappings, ignoring the point at the very end of the path
+			GetIdMappings(op, *leg, op.GetpTo(), idf);
 		}
+		else
+		{
+			assert(primaryFaceId > 0);
+
+			LegFace_c* altFace = new LegFace_c();
+			altFace->Id = idf.GetNextId(0);
+			altFace->PrimaryFaceId = primaryFaceId;
+			leg->AddToString(altFace->EntryString);
+
+			AlternateFaces.Add((void*)altFace);
+
+			// Ensure we never re-use the sequence number of the primary face
+			primaryFaceId = 0;
+
+			// Collect ID mappings, ignoring the point at the end of the preceding leg (and if that's
+			// somehow undefined, use the very end of the path)
+			CePoint* ignorePoint = endPrimaryFacePoint;
+			if (ignorePoint == 0)
+				ignorePoint = op.GetpTo();
+
+			assert(ignorePoint != 0);
+			GetIdMappings(op, *leg, ignorePoint, idf);
+		}
+	}
+}
+
+void PathOperation_c::GetIdMappings(const CePath& op, const CeLeg& leg, CePoint* pIgnore, IdFactory& idf)
+{
+	// Cul-de-sacs may have no observed distances, but they still generate a line
+	unsigned short nSpan = leg.GetCount();
+	if (nSpan == 0)
+		nSpan = 1;
+
+	for (unsigned short iSpan=0; iSpan<nSpan; iSpan++)
+	{
+		// Get the line and/or point for the span (if any)
+
+		CeFeature* f = leg.GetpFeature(iSpan);
+		CeArc* a = 0;
+		CePoint* p = 0;
+#ifdef _CEDIT
+		objectstore::touch(f, false);
+#endif
+
+		if (f != 0)
+		{
+			a = dynamic_cast<CeArc*>(f);
+			if (a == 0)
+			{
+				p = dynamic_cast<CePoint*>(f);
+				assert(p != 0);
+			}
+			else
+			{
+				p = a->GetpEnd()->GetpPoint(op, FALSE);
+			}
+		}
+
+		// Ignore if it was created by another edit
+		if (p == pIgnore)
+			p = 0;
+
+		// The point (if there is one) always gets the next ID number
+		unsigned int iid = idf.GetNextId(p);
+		if (p != 0)
+		{
+			// If the point has a user-perceived ID, remember the mapping
+			unsigned int rawId = Feature_c::GetRawId(*p);
+			if (rawId != 0)
+			{
+				IdMapping_c* m = new IdMapping_c(iid, rawId);
+				Ids.Add(m);
+			}
+		}
+
+		// Lines were never assigned IDs in CEdit.
+		idf.GetNextId(a);
 	}
 }
 
 PathOperation_c::~PathOperation_c()
 {
 	Operation_c::ReleaseIdMappingArray(&Ids);
+
+	for (int i=0; i<AlternateFaces.GetSize(); i++)
+	{
+		LegFace_c* f = (LegFace_c*)AlternateFaces.GetAt(i);
+		delete f;
+	}
 }
 
 LPCTSTR PathOperation_c::GetTypeName() const
@@ -1339,6 +1422,9 @@ void PathOperation_c::WriteData(EditSerializer& s) const
     s.WriteInt32(DataField_DefaultEntryUnit, DefaultEntryUnit);
     s.WriteInt32(DataField_PointType, PointType);
     s.WriteInt32(DataField_LineType, LineType);
+
+	if (AlternateFaces.GetSize() > 0)
+		s.WritePersistentArray(DataField_AlternateFaces, AlternateFaces);
 
 	if (Ids.GetSize() > 0)
 		s.WritePersistentArray(DataField_Ids, Ids);

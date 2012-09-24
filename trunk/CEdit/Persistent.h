@@ -25,3 +25,17 @@ public:
 };
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+class LegFace_c : Persistent_c
+{
+public:
+	unsigned int Id;
+	unsigned int PrimaryFaceId;
+	CString EntryString;
+
+	virtual LPCTSTR GetTypeName() const;
+	virtual void WriteData(EditSerializer& s) const;
+};
+
+
