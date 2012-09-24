@@ -308,14 +308,15 @@ namespace Backsight.Editor
                 result = (T)ci.Invoke(new object[] { this });
             }
 
-            catch
+            catch (Exception ex)
             {
-                throw new ApplicationException("Failed to create instance of " + typeName);
+                throw new ApplicationException("Failed to create instance of " + typeName, ex);
             }
 
             finally
             {
-                m_Reader.ReadEndObject(); // Read the closing bracket
+                // Read to the end of the current object
+                ReadToEndObject();
 
                 // The current edit is defined by the Operation constructor that accepts this
                 // EditDeserializer instance. Edits should never be nested, so make sure we
@@ -330,6 +331,27 @@ namespace Backsight.Editor
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Reads to the next closing bracket (denoting the end of the object that is being
+        /// deserialized).
+        /// </summary>
+        void ReadToEndObject()
+        {
+            // Sanity check, don't try more than a million reads!
+            for (int i = 0; i < 1000000; i++)
+            {
+                try
+                {
+                    m_Reader.ReadEndObject(); // Read the closing bracket
+                    return;
+                }
+
+                catch (ArgumentException)
+                {
+                }
+            }
         }
 
         /// <summary>

@@ -15,10 +15,9 @@
 
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Windows.Forms;
 
-using Backsight.Data;
-using Backsight.Editor.Properties;
 using Backsight.Editor.UI;
 using Backsight.Environment;
 using Backsight.Forms;
@@ -154,7 +153,7 @@ namespace Backsight.Editor.Forms
             catch (Exception ex)
             {
                 SplashScreen.CloseForm();
-                MessageBox.Show(ex.Message);
+                ShowMessageBox(ex);
                 Trace.Write(ex.StackTrace);
             }
 
@@ -165,6 +164,28 @@ namespace Backsight.Editor.Forms
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Displays a message box with an exception message (including messages
+        /// from any inner exceptions).
+        /// </summary>
+        /// <param name="ex">The exception to display</param>
+        void ShowMessageBox(Exception ex)
+        {
+            var sb = new StringBuilder();
+            Exception lastException = ex;
+
+            while (ex != null)
+            {
+                sb.AppendLine(ex.Message);
+                lastException = ex;
+                ex = ex.InnerException;
+            }
+
+            sb.Append(lastException.StackTrace);
+
+            MessageBox.Show(sb.ToString());
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
