@@ -131,12 +131,13 @@ namespace Backsight.Editor
 
             if (editDeserializer.IsNextField(DataField.PrimaryFaceId))
             {
-                InternalIdValue parentLegId = editDeserializer.ReadInternalId(DataField.PrimaryFaceId);
-                Leg = op.FindLeg(parentLegId);
+                InternalIdValue primaryFaceId = editDeserializer.ReadInternalId(DataField.PrimaryFaceId);
+                LegFace face = op.FindFace(primaryFaceId);
 
-                if (Leg == null)
-                    throw new ApplicationException("Cannot locate leg " + parentLegId);
+                if (face == null)
+                    throw new ApplicationException("Cannot locate primary face " + primaryFaceId);
 
+                Leg = face.Leg;
                 Leg.AlternateFace = this;
             }
             else
@@ -212,15 +213,6 @@ namespace Backsight.Editor
         internal int NumSpan
         {
             get { return m_Spans.Length; }
-        }
-
-        /// <summary>
-        /// The number of internal IDs that should be reserved for this face.
-        /// </summary>
-        /// <value>1 for the face itself +  2 for every span (even though they may be unused).</value>
-        internal uint NumIds
-        {
-            get { return (1 + 2 * (uint)NumSpan); }
         }
 
         /// <summary>
@@ -487,7 +479,9 @@ namespace Backsight.Editor
         /// Returns the point feature that is at the end of this leg.
         /// </summary>
         /// <param name="op">The operation that is expected to have created the end point.</param>
-        /// <returns>The point object at the end (could conceivably be null).</returns>
+        /// <returns>The point object at the end. Null if the leg ends with an "OmitPoint", or
+        /// the leg ends at a point that was not created by the specified operation (in the latter
+        /// case, the leg might end at the very end of a connection path).</returns>
         internal PointFeature GetEndPoint(Operation op)
         {
             // If the very last feature for this leg is a point, that's the thing we want.
@@ -499,9 +493,12 @@ namespace Backsight.Editor
             // Otherwise the last feature should be a line object, so
             // we want IT'S end point (either active or inactive).
             LineFeature line = (feat as LineFeature);
-            point = line.EndPoint;
-            if (Object.ReferenceEquals(point.Creator, op))
-                return point;
+            if (line != null)
+            {
+                point = line.EndPoint;
+                if (Object.ReferenceEquals(point.Creator, op))
+                    return point;
+            }
 
             return null;
         }

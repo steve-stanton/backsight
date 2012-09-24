@@ -166,6 +166,9 @@ Direction_c::Direction_c(const CeDirection& d)
 	CeOffset* offset = d.GetpOffset();
 	if (offset != 0)
 	{
+#ifdef _CEDIT
+		objectstore::touch(offset, false);
+#endif
 		CeOffsetDistance* ofd = dynamic_cast<CeOffsetDistance*>(offset);
 		if (ofd != 0)
 			Offset = new OffsetDistance_c(*ofd);

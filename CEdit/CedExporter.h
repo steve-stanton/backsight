@@ -14,7 +14,7 @@ public:
 	virtual ~CedExporter(void);
 	void CreateExport(CeMap* cedFile);
 
-	static void GetAllCoincidentLocations(const CeLocation* loc, CPtrArray& locs);
+	static void GetAllCoincidentLocations(const CeLocation* loc, CPtrArray& locs, FILE* log=0);
 
 private:
 	void FillGuidString(CString& s) const;
@@ -23,5 +23,9 @@ private:
 	void GenerateExtraPoints(CeMap* cedFile, IdFactory& idf, CPtrArray& points);
 	void CheckForExtraPoint(const CeLocation* loc, CMapPtrToPtr& locIndex, IdFactory& idf, CPtrArray& extraPoints);
 	void RecordLocations(const CePoint& p, CMapPtrToPtr& locIndex);
+	void Log(LPCTSTR msg);
+	void Log(const CString& msg);
+
+	FILE* LogFile;
 };
 

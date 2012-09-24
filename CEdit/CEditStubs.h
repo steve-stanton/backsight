@@ -632,9 +632,17 @@ public:
 class CeLeg
 {
 public:
+	virtual ~CeLeg() = 0;
 	CePoint* GetpCentrePoint ( const CeOperation& op ) const { return 0; }
+	CePoint* GetpEndPoint ( const CeOperation& op ) const { return 0; }
 	unsigned short GetCount ( void ) const { return 0; }
 	CeFeature* GetpFeature ( const unsigned short index ) const { return 0; }
+	void AddToString ( CString& str ) const {}
+};
+
+class CeExtraLeg : CeLeg
+{
+public:
 };
 
 class CePath : public CeOperation

@@ -120,6 +120,9 @@ void FeatureStub_c::WriteData(EditSerializer& s) const
 // static
 Feature_c* Feature_c::CreateExportFeature(IdFactory& idf, const CeFeature& f)
 {
+#ifdef _CEDIT
+	objectstore::touch(&f, false);
+#endif
 	const CePoint* point = dynamic_cast<const CePoint*>(&f);
 	if (point != 0)
 		return new PointFeature_c(idf, *point);
@@ -172,6 +175,9 @@ CeArc* Feature_c::GetFirstArc(CeObjectList& features)
 		  f;
 		  f = (CeFeature*)loop.GetNext() )
 	{
+#ifdef _CEDIT
+		objectstore::touch(f, false);
+#endif
 		CeArc* a = dynamic_cast<CeArc*>(f);
 		if (a != 0)
 			return a;
@@ -190,6 +196,9 @@ CePoint* Feature_c::GetFirstPoint(CeObjectList& features)
 		  f;
 		  f = (CeFeature*)loop.GetNext() )
 	{
+#ifdef _CEDIT
+		objectstore::touch(f, false);
+#endif
 		CePoint* p = dynamic_cast<CePoint*>(f);
 		if (p != 0)
 			return p;
@@ -530,6 +539,9 @@ LineFeature_c::LineFeature_c(IdFactory& idf, const CeArc& line)
 	Geom = 0;
 
 	const CeLine* const geom = line.GetpLine();
+#ifdef _CEDIT
+	objectstore::touch(geom, false);
+#endif
 	const CeMultiSegment* mseg = dynamic_cast<const CeMultiSegment*>(geom);
 	if (mseg != 0)
 		Geom = new MultiSegmentGeometry_c(*mseg);
@@ -558,6 +570,9 @@ LineFeature_c::LineFeature_c(IdFactory& idf, const CeArc& line)
 
 		const CeArc* baseLine = 0;
 		CeOperation* pop = line.GetpCreator();
+#ifdef _CEDIT
+		objectstore::touch(pop, false);
+#endif
 		const CeArcSubdivision* lineSub = dynamic_cast<const CeArcSubdivision*>(pop);
 		if (lineSub != 0)
 			baseLine = lineSub->GetpParent();
@@ -586,6 +601,9 @@ CeArc* LineFeature_c::GetFirstArc(const CeCircle& circle) const
 
 	for ( pThing=(CeClass*)loop.GetHead(); pThing; pThing=(CeClass*)loop.GetNext() )
 	{
+#ifdef _CEDIT
+		objectstore::touch(pThing, false);
+#endif
 		CeArc* pArc = dynamic_cast<CeArc*>(pThing);
 		if (pArc != 0)
 			return pArc;
@@ -723,6 +741,9 @@ TextFeature_c::TextFeature_c(IdFactory& idf, const CeLabel& label)
 	: Feature_c(idf, label)
 {
 	CeText* text = label.GetpText();
+#ifdef _CEDIT
+	objectstore::touch(text, false);
+#endif
 
 	CeKeyText* keyText = dynamic_cast<CeKeyText*>(text);
 	if (keyText != 0)
