@@ -95,7 +95,10 @@ namespace Backsight.Editor
         /// </summary>
         public override IWindow Extent
         {
-            get { return null; }
+            // Return something (cover situation where RowTextContent could not be completely
+            // deserialized because the database is no longer accessible).
+            //get { return null; }
+            get { return base.Extent; }
         }
 
         /// <summary>
