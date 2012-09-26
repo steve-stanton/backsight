@@ -326,13 +326,7 @@ namespace Backsight.Editor
             Feature[] feats = GetRequiredFeatures();
 
             foreach (Feature f in feats)
-            {
-                if (f == null)
-                {
-                    int junk = 0;
-                }
                 f.AddReference(this);
-            }
         }
 
         /// <summary>
