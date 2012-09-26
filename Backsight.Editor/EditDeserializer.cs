@@ -495,11 +495,6 @@ namespace Backsight.Editor
             {
                 InternalIdValue id = new InternalIdValue(ids[i]);
                 result[i] = MapModel.Find<T>(id);
-                if (result[i] == null)
-                {
-                    int junk = 0;
-                }
-                //Debug.Assert(result[i] != null);                 
             }
 
             return result;
