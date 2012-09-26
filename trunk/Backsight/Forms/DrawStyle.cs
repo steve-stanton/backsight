@@ -340,6 +340,12 @@ namespace Backsight.Forms
                     double groundWidth = BasicGeom.Distance(outline[0], outline[1]);
                     float xScale = display.LengthToDisplay(groundWidth) / (float)size.Width;
                     float yScale = f.Size / (float)size.Height;
+
+                    // ScaleTransform doesn't like values of 0 (single character names lead to outline with no width,
+                    // should really see if proper character width can be determined in that case).
+                    if (xScale < Single.Epsilon)
+                        xScale = yScale;
+
                     display.Graphics.ScaleTransform(xScale, yScale);
 
                     // I tried StringFormat.GenericDefault, but that seems to leave too much
