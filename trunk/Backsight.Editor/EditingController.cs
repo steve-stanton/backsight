@@ -141,9 +141,11 @@ namespace Backsight.Editor
             m_DataServer = null;
 
             // If we know of a database, create the access class
+            /*
             string cs = LastDatabase.ConnectionString;
             if (!String.IsNullOrWhiteSpace(cs))
                 m_DataServer = new DataServer(cs);
+             */
         }
 
         #endregion
