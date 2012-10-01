@@ -28,5 +28,10 @@ namespace Backsight.Data
         /// The database connection
         /// </summary>
         SqlConnection Value { get; }
+
+        /// <summary>
+        /// The data server that created the connection (not null).
+        /// </summary>
+        IDataServer DataServer { get; }
     }
 }

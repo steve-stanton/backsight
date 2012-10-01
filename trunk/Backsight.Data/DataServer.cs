@@ -242,7 +242,7 @@ namespace Backsight.Data
             {
                 SqlConnection conn = GetSqlConnection();
                 conn.Open();
-                return new ConnectionWrapper(conn, true);
+                return new ConnectionWrapper(this, conn, true);
             }
             else
             {
@@ -304,7 +304,7 @@ namespace Backsight.Data
                         if (m_Transaction == null)
                         {
                             SqlConnection conn = GetSqlConnection();
-                            m_Transaction = new ConnectionWrapper(conn, false);
+                            m_Transaction = new ConnectionWrapper(this, conn, false);
                             connectionCreated = true;
                         }
                     }
