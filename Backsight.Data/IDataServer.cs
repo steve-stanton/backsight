@@ -86,5 +86,29 @@ namespace Backsight.Data
         /// <typeparam name="T">The name of the derived data adapter class</typeparam>
         /// <returns>An instance of type T</returns>
         T CreateAdapter<T>() where T : new();
+
+        /// <summary>
+        /// Creates a new row for a database table
+        /// </summary>
+        /// <param name="tableName">The name of the table the new row will be added to.</param>
+        /// <returns>A new row in the table (not yet inserted, with default data for all columns)</returns>
+        DataRow CreateNewRow(string tableName);
+
+        /// <summary>
+        /// Saves a row in the database (adds if the <see cref="DataRow.RowState"/> has
+        /// a value of <c>DataRowState.Detached</c>, otherwise attempts to update). This
+        /// logic may well be defective in a situation where the row has already been added
+        /// to a <c>DataTable</c>.
+        /// </summary>
+        /// <param name="row">The row to add. Usually a row that was created via a
+        /// prior call to <see cref="CreateNewRow"/> (the important thing is that
+        /// the table name must be defined as part of the rows associated <c>DataTable</c>)</param>
+        /// <remarks>This makes use of the <see cref="SqlCommandBuilder"/> class to
+        /// generate the relevant insert statement, which requires that the table involved
+        /// must have a primary key (if not, you will get an exception)
+        /// </remarks>
+        /// <exception cref="ArgumentException">If the <see cref="DataTable"/> associated
+        /// with the supplied row does not contain a defined table name.</exception>
+        void SaveRow(DataRow row);
     }
 }

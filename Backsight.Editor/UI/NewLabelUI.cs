@@ -24,6 +24,7 @@ using Backsight.Editor.Operations;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Forms;
+using Backsight.Data;
 
 namespace Backsight.Editor.UI
 {
@@ -612,7 +613,11 @@ namespace Backsight.Editor.UI
                 if (m_Template!=null && m_LastRow!=null)
                 {
                     // Save the attributes in the database
-                    DbUtil.SaveRow(m_LastRow);
+                    IDataServer ds = EditingController.Current.DataServer;
+                    if (ds == null)
+                        throw new InvalidOperationException("No database available");
+
+                    ds.SaveRow(m_LastRow);
 
                     NewRowTextOperation op = new NewRowTextOperation();
                     txop = op;

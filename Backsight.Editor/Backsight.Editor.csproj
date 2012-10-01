@@ -101,7 +101,6 @@
     <Compile Include="AutoCad\AcLayerEntitySet.cs" />
     <Compile Include="BasicList.cs" />
     <Compile Include="CircularLegMetrics.cs" />
-    <Compile Include="DbUtil.cs" />
     <Compile Include="EndSessionEvent.cs" />
     <Compile Include="Forms\NewProjectForm.cs">
       <SubType>Form</SubType>
