@@ -117,7 +117,11 @@ namespace Backsight.Editor.Forms
 
                 if (m_Data == null)
                 {
-                    DataRow data = DbUtil.CreateNewRow(m_Table);
+                    IDataServer ds = EditingController.Current.DataServer;
+                    if (ds == null)
+                        throw new InvalidOperationException("No database available");
+
+                    DataRow data = ds.CreateNewRow(m_Table.TableName);
 
                     // Initialize items so they match the values of the last row we processed (if any).
                     // Otherwise assign default values that are indicative of the data type.

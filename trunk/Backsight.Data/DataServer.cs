@@ -16,6 +16,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Reflection;
 using System.Transactions;
 
@@ -321,6 +322,61 @@ namespace Backsight.Data
                     m_Transaction.Value.Dispose();
                     m_Transaction = null;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Creates a new row for a database table
+        /// </summary>
+        /// <param name="tableName">The name of the table the new row will be added to.</param>
+        /// <returns>A new row in the table (not yet inserted, with default data for all columns)</returns>
+        public DataRow CreateNewRow(string tableName)
+        {
+            using (IConnection ic = GetConnection())
+            {
+                string sql = String.Format("SELECT * FROM {0} WHERE 1=0", tableName);
+                SqlDataAdapter adapter = new SqlDataAdapter(sql, ic.Value);
+                DataTable dt = new DataTable(tableName);
+
+                // Ensure the length is defined for char columns
+                adapter.MissingSchemaAction = MissingSchemaAction.AddWithKey;
+
+                adapter.Fill(dt);
+                return dt.NewRow();
+            }
+        }
+
+        /// <summary>
+        /// Saves a row in the database (adds if the <see cref="DataRow.RowState"/> has
+        /// a value of <c>DataRowState.Detached</c>, otherwise attempts to update). This
+        /// logic may well be defective in a situation where the row has already been added
+        /// to a <c>DataTable</c>.
+        /// </summary>
+        /// <param name="row">The row to add. Usually a row that was created via a
+        /// prior call to <see cref="CreateNewRow"/> (the important thing is that
+        /// the table name must be defined as part of the rows associated <c>DataTable</c>)</param>
+        /// <remarks>This makes use of the <see cref="SqlCommandBuilder"/> class to
+        /// generate the relevant insert statement, which requires that the table involved
+        /// must have a primary key (if not, you will get an exception)
+        /// </remarks>
+        /// <exception cref="ArgumentException">If the <see cref="DataTable"/> associated
+        /// with the supplied row does not contain a defined table name.</exception>
+        public void SaveRow(DataRow row)
+        {
+            DataTable dt = row.Table;
+            string tableName = dt.TableName;
+            if (String.IsNullOrEmpty(tableName))
+                throw new ArgumentException("Table name for row is not defined");
+
+            using (IConnection ic = GetConnection())
+            {
+                SqlDataAdapter a = new SqlDataAdapter("SELECT * FROM " + tableName, ic.Value);
+                SqlCommandBuilder cb = new SqlCommandBuilder(a);
+                if (row.RowState == DataRowState.Detached)
+                    dt.Rows.Add(row);
+
+                int nRows = a.Update(dt);
+                Debug.Assert(nRows == 1);
             }
         }
     }

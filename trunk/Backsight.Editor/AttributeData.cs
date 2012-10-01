@@ -132,8 +132,9 @@ namespace Backsight.Editor
 
             int nFound = 0;
 
-            using (IConnection ic = ds.GetConnection())
+            ds.RunTransaction(delegate
             {
+                IConnection ic = ds.GetConnection();
                 SqlConnection c = ic.Value;
                 const string KEYS_TABLE_NAME = "#Ids";
                 CopyKeysToTable(c, keyIds, KEYS_TABLE_NAME);
@@ -142,7 +143,7 @@ namespace Backsight.Editor
                 {
                     string sql = String.Format("SELECT * FROM {0} WHERE [{1}] IN (SELECT [FeatureId] FROM [{2}])",
                                     t.TableName, t.IdColumnName, KEYS_TABLE_NAME);
-                    DataTable tab = DbUtil.ExecuteSelect(c, sql);
+                    DataTable tab = ds.ExecuteSelect(sql);
                     tab.TableName = t.TableName;
 
                     int featureIdIndex = tab.Columns[t.IdColumnName].Ordinal;
@@ -171,7 +172,7 @@ namespace Backsight.Editor
                         }
                     }
                 }
-            }
+            });
 
             return nFound;
         }
@@ -291,7 +292,13 @@ namespace Backsight.Editor
                 dial.Dispose();
 
                 if (isChanged)
-                    DbUtil.SaveRow(r.Data);
+                {
+                    IDataServer ds = EditingController.Current.DataServer;
+                    if (ds == null)
+                        throw new InvalidOperationException("No database available");
+
+                    ds.SaveRow(r.Data);
+                }
             }
 
             finally
