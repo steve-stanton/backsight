@@ -135,9 +135,8 @@ namespace Backsight.Editor
             ds.RunTransaction(delegate
             {
                 IConnection ic = ds.GetConnection();
-                SqlConnection c = ic.Value;
                 const string KEYS_TABLE_NAME = "#Ids";
-                CopyKeysToTable(c, keyIds, KEYS_TABLE_NAME);
+                CopyKeysToTable(ic, keyIds, KEYS_TABLE_NAME);
 
                 foreach (ITable t in tables)
                 {
@@ -237,7 +236,7 @@ namespace Backsight.Editor
         /// <param name="tableName">The name of the table to create and load. This will
         /// typically be a temporary table (a name starting with the "#" character
         /// in SqlServer systems).</param>
-        static void CopyKeysToTable(SqlConnection con, Dictionary<string, FeatureId> keys, string tableName)
+        static void CopyKeysToTable(IConnection con, Dictionary<string, FeatureId> keys, string tableName)
         {
             // Stick session IDs into an array of row objects
             DataTable dt = new DataTable(tableName);
@@ -256,11 +255,11 @@ namespace Backsight.Editor
 
             // Create the temp table
             string sql = String.Format("CREATE TABLE [{0}] ([FeatureId] VARCHAR(16) NOT NULL)", tableName);
-            SqlCommand cmd = new SqlCommand(sql, con);
+            SqlCommand cmd = new SqlCommand(sql, con.Value);
             cmd.ExecuteNonQuery();
 
             // Bulk copy the rows into the temp table
-            SqlBulkCopy bcp = new SqlBulkCopy(con);
+            SqlBulkCopy bcp = new SqlBulkCopy(con.Value);
             bcp.BatchSize = rows.Length;
             bcp.DestinationTableName = tableName;
             bcp.WriteToServer(rows);

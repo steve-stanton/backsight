@@ -45,6 +45,11 @@ namespace Backsight.Data
         #region Class data
 
         /// <summary>
+        /// The data server that created the connection (not null).
+        /// </summary>
+        readonly IDataServer m_DataServer;
+
+        /// <summary>
         /// The database connection
         /// </summary>
         readonly SqlConnection m_Connection;
@@ -61,16 +66,18 @@ namespace Backsight.Data
         /// <summary>
         /// Creates a new <c>ConnectionWrapper</c> that wraps the supplied connection.
         /// </summary>
+        /// <param name="ds">The data server creating this wrapper (not null).</param>
         /// <param name="c">The connection to wrap (not null).</param>
         /// <param name="isDisposable">Should the connection be disposed of by the
         /// <see cref="Dispose"/> method? Specify <c>false</c> if the connection is being
         /// used by an enclosing transaction.</param>
-        /// <exception cref="ArgumentNullException">If a null connection was supplied</exception>
-        internal ConnectionWrapper(SqlConnection c, bool isDisposable)
+        /// <exception cref="ArgumentNullException">If a null data server or null connection was supplied</exception>
+        internal ConnectionWrapper(IDataServer ds, SqlConnection c, bool isDisposable)
         {
-            if (c==null)
+            if (ds==null || c==null)
                 throw new ArgumentNullException();
 
+            m_DataServer = ds;
             m_Connection = c;
             m_IsDisposable = isDisposable;
         }
@@ -83,6 +90,14 @@ namespace Backsight.Data
         public SqlConnection Value
         {
             get { return m_Connection; }
+        }
+
+        /// <summary>
+        /// The data server that created the connection (not null).
+        /// </summary>
+        public IDataServer DataServer
+        {
+            get { return m_DataServer; }
         }
 
         /// <summary>
