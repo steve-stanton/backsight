@@ -70,19 +70,18 @@ namespace Backsight.SqlServer
         /// <param name="ed">The environment data to copy into this database</param>
         public void Replace(EnvironmentData ed)
         {
-            //ConnectionFactory.ConnectionString = m_ConnectionString;
             TableFactory tf = new TableFactory();
+            DataServer ds = new DataServer(m_ConnectionString);
 
             try
             {
                 // Disable all foreign key constraints
-                tf.EnableForeignKeys(false);
+                tf.EnableForeignKeys(ds, false);
 
-                DataServer ds = new DataServer(m_ConnectionString);
                 ds.RunTransaction(delegate
                 {
                     // Get rid of everything in this database.
-                    tf.RemoveAll();
+                    tf.RemoveAll(ds);
 
                     // Add the entire content of the specified container
                     tf.Import(ds, ed.Data);
@@ -95,7 +94,7 @@ namespace Backsight.SqlServer
             finally
             {
                 // Restore all foreign key constraints
-                tf.EnableForeignKeys(true);
+                tf.EnableForeignKeys(ds, true);
             }
         }
     }
