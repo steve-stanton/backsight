@@ -697,7 +697,20 @@ public:
 
 	CPSEPtrList& GetSessions ( void ) { return m_Sessions; }
 	LPCTSTR GetFileName ( void ) const { return 0; }
+	unsigned int GetIds	( CPtrList& ids ) const { return 0; }
 
 private:
 	CPSEPtrList m_Sessions;
+};
+
+class CeTableEx
+{
+public:
+	static unsigned int CollectRows ( CPtrList& rows, const CPtrList& ids ) { return 0; }
+	static unsigned int BinRows ( CPtrList& tables, const CPtrList& rows ) { return 0; }
+	const CeSchema&	GetSchema ( void ) const { return m_Schema; }
+	int Export ( LPCTSTR outName ) const { return 0; }
+
+private:
+	CeSchema m_Schema;
 };

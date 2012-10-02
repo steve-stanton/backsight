@@ -194,6 +194,41 @@ void CedExporter::CreateExport(CeMap* cedFile)
 		Persistent_c* p = (Persistent_c*)items.GetAt(ip);
 		delete p;
 	}
+
+	// Dump out attributes...
+
+	// Collect the IDs
+	CPtrList ids;
+	cedFile->GetIds(ids);
+
+	// Collect the rows attached to the IDs
+	CPtrList rows;
+	CeTableEx::CollectRows(rows, ids);
+
+	// Group by table. Then dispense with the list of pointers to rows.
+	CPtrList tables;
+	CeTableEx::BinRows(tables, rows);
+	rows.RemoveAll();
+
+	// Go through each bin, exporting the info to an output text file.	
+	POSITION pos = tables.GetHeadPosition();
+	CString tableFileName;
+
+	while ( pos )
+	{
+		CeTableEx* pTable = (CeTableEx*)tables.GetNext(pos);
+
+		// Determine the name of the output file (based on the name of the schema)
+		const CeSchema& schema = pTable->GetSchema();
+		tableFileName.Format("%s\\%s.dat", (LPCTSTR)projectFolder, schema.GetName());
+
+		// Write out the attributes
+		pTable->Export((LPCTSTR)tableFileName);
+		delete pTable;
+	}
+
+	// Remove pointers to the tables (now deleted).
+	tables.RemoveAll();
 }
 
 #ifdef _CEDIT
