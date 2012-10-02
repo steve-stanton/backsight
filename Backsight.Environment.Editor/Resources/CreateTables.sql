@@ -562,8 +562,8 @@ INSERT INTO [ced].[Fonts] ([FontId], [TypeFace], [PointSize], [IsBold], [IsItali
 VALUES (0, '', 0.0, 'n', 'n', 'n', '')
 GO
 
-INSERT INTO [ced].[IdGroups] ([GroupId], [Name], [LowestId], [HighestId], [PacketSize], [CheckDigit], [KeyFormat])
-VALUES (0, '', 0, 0, 0, 'n', '{0}')
+INSERT INTO [ced].[IdGroups] ([GroupId], [Name], [LowestId], [HighestId], [PacketSize], [CheckDigit], [KeyFormat], [MaxUsedId])
+VALUES (0, '', 0, 0, 0, 'n', '{0}', 0)
 GO
 
 --
