@@ -14,18 +14,15 @@
 // </remarks>
 
 using System;
-using System.Data.SqlClient;
-using System.Windows.Forms;
-using System.Data;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Data;
+using System.Data.SqlClient;
 
 using Microsoft.SqlServer.Management.Common;
-using Smo=Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Smo;
+using Smo = Microsoft.SqlServer.Management.Smo;
 
 using Backsight.Data;
-using Backsight.Environment;
 
 namespace Backsight.SqlServer
 {
@@ -491,9 +488,10 @@ namespace Backsight.SqlServer
         /// <summary>
         /// Enable or disable foreign key constraints for Backsight system tables.
         /// </summary>
+        /// <param name="ds">The database containing the tables.</param>
         /// <param name="enable">Specify <c>false</c> to enable constraints, <c>true</c>
         /// to re-enable.</param>
-        public void EnableForeignKeys(bool enable)
+        public void EnableForeignKeys(IDataServer ds, bool enable)
         {
             // Do it the heavy-handed way, since I'm still getting foreign key errors
             // after setting ForeignKey.IsEnabled to false.
@@ -522,7 +520,6 @@ namespace Backsight.SqlServer
             string[] tables = GetCedTableNames();
             string checkClause = (enable ? "CHECK" : "NOCHECK");
 
-            IDataServer ds = GetDataServer();
             foreach (string tableName in tables)
             {
                 string sql = String.Format("ALTER TABLE [ced].[{0}] {1} CONSTRAINT ALL", tableName, checkClause);
@@ -566,10 +563,10 @@ namespace Backsight.SqlServer
         /// to <see cref="EnableForeignKeys"/> (disable foreign key constraints, then
         /// remove, then import, then re-enable constraints).
         /// </summary>
-        public void RemoveAll()
+        /// <param name="db">The data server containing the tables</param>
+        public void RemoveAll(IDataServer db)
         {
             BacksightDataSet ds = new BacksightDataSet();
-            IDataServer db = GetDataServer();
 
             foreach (DataTable dt in ds.Tables)
             {
@@ -719,15 +716,6 @@ namespace Backsight.SqlServer
         public Smo.Table FindTableByName(string tableName)
         {
             return m_Database.Tables[tableName];
-        }
-
-        /// <summary>
-        /// Obtains the database server.
-        /// </summary>
-        /// <returns>Database access methods</returns>
-        IDataServer GetDataServer()
-        {
-            return new DataServer(ConnectionString);
         }
     }
 }
