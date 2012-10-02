@@ -311,8 +311,12 @@ void CedExporter::AppendExportItems(const CTime& when, const CeOperation& op, Id
 		return;
 
 	case CEOP_DELETION:
-		exportItems.Add(new DeletionOperation_c(idf, when, (const CeDeletion&)op));
+	{
+		DeletionOperation_c* dop = new DeletionOperation_c(idf, when, (const CeDeletion&)op);
+		if (dop->Deletions.GetCount() > 0)
+			exportItems.Add(dop);
 		return;
+	}
 
 	case CEOP_NEW_ARC:
 		exportItems.Add(new NewLineOperation_c(idf, when, (const CeNewArc&)op));
