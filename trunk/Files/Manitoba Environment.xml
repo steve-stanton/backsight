@@ -1381,6 +1381,7 @@
     <PacketSize>1</PacketSize>
     <CheckDigit>n</CheckDigit>
     <KeyFormat xml:space="preserve">        </KeyFormat>
+  	<MaxUsedId>0</MaxUsedId>
   </IdGroup>
   <IdGroup>
     <GroupId>18</GroupId>
@@ -1390,6 +1391,7 @@
     <PacketSize>100</PacketSize>
     <CheckDigit>y</CheckDigit>
     <KeyFormat>{0}</KeyFormat>
+    <MaxUsedId>0</MaxUsedId>
   </IdGroup>
   <IdGroup>
     <GroupId>19</GroupId>
@@ -1399,6 +1401,7 @@
     <PacketSize>10</PacketSize>
     <CheckDigit>n</CheckDigit>
     <KeyFormat>{0}</KeyFormat>
+  	<MaxUsedId>0</MaxUsedId>
   </IdGroup>
   <IdGroup>
     <GroupId>20</GroupId>
@@ -1408,6 +1411,7 @@
     <PacketSize>100</PacketSize>
     <CheckDigit>y</CheckDigit>
     <KeyFormat>{0}</KeyFormat>
+  	<MaxUsedId>0</MaxUsedId>
   </IdGroup>
   <IdGroup>
     <GroupId>21</GroupId>
@@ -1417,6 +1421,7 @@
     <PacketSize>100</PacketSize>
     <CheckDigit>y</CheckDigit>
     <KeyFormat>{0}</KeyFormat>
+  	<MaxUsedId>0</MaxUsedId>
   </IdGroup>
   <IdGroup>
     <GroupId>22</GroupId>
@@ -1426,6 +1431,7 @@
     <PacketSize>500</PacketSize>
     <CheckDigit>n</CheckDigit>
     <KeyFormat>{0}</KeyFormat>
+  	<MaxUsedId>0</MaxUsedId>
   </IdGroup>
   <IdGroup>
     <GroupId>23</GroupId>
@@ -1435,6 +1441,7 @@
     <PacketSize>100</PacketSize>
     <CheckDigit>y</CheckDigit>
     <KeyFormat>{0}</KeyFormat>
+  	<MaxUsedId>0</MaxUsedId>
   </IdGroup>
   <Layer>
     <LayerId>0</LayerId>
