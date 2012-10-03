@@ -714,3 +714,11 @@ public:
 private:
 	CeSchema m_Schema;
 };
+
+class CeExportTypeUtil
+{
+public:
+	int Load ( void ) { return 0; }
+	const char*	GetFileType	( const CeSchema& schema ) const { return 0; }
+	void GetLoadMessage ( CString& msg, int loadCode ) const {}
+};

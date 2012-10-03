@@ -197,6 +197,18 @@ void CedExporter::CreateExport(CeMap* cedFile)
 
 	// Dump out attributes...
 
+	// Obtain the mapping from schema to output file extension (for consistency with
+	// current data distributions done by GeoManitoba).
+	CeExportTypeUtil xt;
+	int rcode = xt.Load();
+	if ( rcode < 0 )
+	{
+		CString msg;
+		xt.GetLoadMessage(msg,rcode);
+		AfxMessageBox(msg);
+		return;
+	}
+
 	// Collect the IDs
 	CPtrList ids;
 	cedFile->GetIds(ids);
@@ -220,7 +232,7 @@ void CedExporter::CreateExport(CeMap* cedFile)
 
 		// Determine the name of the output file (based on the name of the schema)
 		const CeSchema& schema = pTable->GetSchema();
-		tableFileName.Format("%s\\%s.dat", (LPCTSTR)projectFolder, schema.GetName());
+		tableFileName.Format("%s\\%s-%s.txt", (LPCTSTR)projectFolder, mapName, xt.GetFileType(schema));
 
 		// Write out the attributes
 		pTable->Export((LPCTSTR)tableFileName);
