@@ -14,7 +14,7 @@
 // </remarks>
 
 using System;
-using System.Data.Common;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -82,15 +82,16 @@ namespace Backsight.Editor.Forms
             }
             else
             {
-                DbConnectionStringBuilder sb = new DbConnectionStringBuilder();
-                sb.ConnectionString = cs;
-                object dataSource = sb["Data Source"];
-                object initialCatalog = sb["Initial Catalog"];
-                lastDatabaseLabel.Text = String.Format(@"{0}\{1}", dataSource, initialCatalog);
+                //DbConnectionStringBuilder sb = new DbConnectionStringBuilder();
+                //sb.ConnectionString = cs;
+                //object dataSource = sb["Data Source"];
+                //object initialCatalog = sb["Initial Catalog"];
+                //lastDatabaseLabel.Text = String.Format(@"{0}\{1}", dataSource, initialCatalog);
+
+                SqlConnectionStringBuilder sb = new SqlConnectionStringBuilder(cs);
+                lastDatabaseLabel.Text = String.Format(@"{0}\{1}", sb.DataSource, sb.InitialCatalog);
             }
 
-            //SqlConnectionStringBuilder sb = new SqlConnectionStringBuilder(cs);
-            //lastDatabaseLabel.Text = String.Format(@"{0}\{1}", sb.DataSource, sb.InitialCatalog);
         }
 
         private void exitButton_Click(object sender, EventArgs e)
