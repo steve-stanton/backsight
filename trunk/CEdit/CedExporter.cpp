@@ -56,6 +56,11 @@ void CedExporter::FillComputerName(CString& name) const
 	name = cname;
 }
 
+#ifdef _CEDIT
+#include "CeExportTypeUtil.h"
+#include "CeTableEx.h"
+#endif
+
 void CedExporter::CreateExport(CeMap* cedFile)
 {
 	// Ensure root folders exist (methods will quietly fail if folders are already there)
@@ -325,7 +330,7 @@ void CedExporter::AppendExportItems(const CTime& when, const CeOperation& op, Id
 	case CEOP_DELETION:
 	{
 		DeletionOperation_c* dop = new DeletionOperation_c(idf, when, (const CeDeletion&)op);
-		if (dop->Deletions.GetCount() > 0)
+		if (dop->Deletions.GetSize() > 0)
 			exportItems.Add(dop);
 		return;
 	}
@@ -401,6 +406,7 @@ void CedExporter::AppendExportItems(const CTime& when, const CeOperation& op, Id
 #include "CeListIter.h"
 #include "CePoint.h"
 #include "CeArc.h"
+#include "CeOffsetPoint.h"
 #endif
 
 void CedExporter::GenerateExtraPoints(CeMap* cedFile, IdFactory& idf, CPtrArray& extraPoints)
