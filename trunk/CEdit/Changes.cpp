@@ -1018,10 +1018,12 @@ NewCircleOperation_c::NewCircleOperation_c(IdFactory& idf, const CTime& when, co
 #endif
 	if (dynamic_cast<CeOffsetPoint*>(o) == 0)
 	{
-		CeArc* arc = op.GetpArc();
-		CePoint* cp = arc->GetpStart()->GetpPoint(op, FALSE);
-		assert(cp->GetpCreator() == (CeOperation*)&op);
-		ClosingPoint = new FeatureStub_c(idf, *cp);
+		// CEdit created a circle without any closing point, so don't attempt to find one!
+		// Meanwhile, Backsight always creates a new closing point, even if a point existed there before.
+		//CeArc* arc = op.GetpArc();
+		//CePoint* cp = arc->GetpStart()->GetpPoint(op, FALSE);
+		//assert(cp->GetpCreator() == (CeOperation*)&op);
+		ClosingPoint = new FeatureStub_c(idf, 0, 0);
 	}
 	else
 	{
