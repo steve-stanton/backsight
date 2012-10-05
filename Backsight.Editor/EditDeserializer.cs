@@ -427,12 +427,27 @@ namespace Backsight.Editor
         /// <typeparam name="T">The type of spatial feature expected by the caller</typeparam>
         /// <param name="field">A tag associated with the value</param>
         /// <returns>
-        /// The feature that was read (null if not found, or the reference was undefined). May
+        /// The feature that was read (null if the feature reference is an internal ID of 0). May
         /// actually have a type that is derived from the supplied type.
         /// </returns>
         /// <remarks>This does not create a brand new feature. Rather, it uses a reference
         /// to try to obtain a feature that should have already been created.
+        /// <para/>
+        /// This version assumes that the referenced feature must have been already deserialized, which
+        /// should always be the case when dealing with edits that were created using Backsight. This
+        /// may NOT be the case when dealing with data files that originated in the old CEdit system.
+        /// The problem is that CEdit handled updates by modifying the objects holding the original
+        /// edits and, since it is valid to make use of features created after the initial edit (so
+        /// long as there is no dependency), it is possible that the features may be initially unknown
+        /// during deserialization.
+        /// <para/>
+        /// So if there is any possibility that the referenced feature may come later in the editing
+        /// sequence, use the version that also accepts an instance of <see cref="IFeatureRef"/>.
+        /// Note that for updates to be possible, the edit needs to implement <see cref="IRevisable"/>
+        /// (if updates are not possible, forward references should not be possible either).
         /// </remarks>
+        /// <exception cref="ApplicationException">If the internal ID is defined, but the referenced feature
+        /// could not be found.</exception>
         internal T ReadFeatureRef<T>(DataField field) where T : Feature
         {
             InternalIdValue id = m_Reader.ReadInternalId(field.ToString());
@@ -446,6 +461,22 @@ namespace Backsight.Editor
             return result;
         }
 
+        /// <summary>
+        /// Reads a reference to a spatial feature, using that reference to obtain the
+        /// corresponding feature. If the feature cannot be found, the reference will be cached as
+        /// a forward reference (on completion of deserialization, you then call <see cref="ApplyForwardRefs"/>
+        /// to process the cache).
+        /// </summary>
+        /// <typeparam name="T">The type of spatial feature expected by the caller</typeparam>
+        /// <param name="referenceFrom">The object that is making the reference</param>
+        /// <param name="field">A tag associated with the value</param>
+        /// <returns>
+        /// The feature that was read (null if not found, or the reference was undefined). May
+        /// actually have a type that is derived from the supplied type.
+        /// </returns>
+        /// <remarks>This does not create a brand new feature. Rather, it uses a reference
+        /// to try to obtain a feature that should have already been created.
+        /// </remarks>
         internal T ReadFeatureRef<T>(IFeatureRef referenceFrom, DataField field) where T : Feature
         {
             InternalIdValue id = m_Reader.ReadInternalId(field.ToString());

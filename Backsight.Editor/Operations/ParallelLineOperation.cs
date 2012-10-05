@@ -28,7 +28,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to create a parallel line.
     /// </summary>
-    class ParallelLineOperation : Operation, IRecallable, IRevisable
+    class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
     {
         #region Class data
 
@@ -93,6 +93,34 @@ namespace Backsight.Editor.Operations
             m_Term1 = term1;
             m_Term2 = term2;
             m_Flags = (uint)(isArcReversed ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParallelLineOperation"/> class
+        /// using the data read from persistent storage.
+        /// </summary>
+        /// <param name="editDeserializer">The mechanism for reading back content.</param>
+        internal ParallelLineOperation(EditDeserializer editDeserializer)
+            : base(editDeserializer)
+        {
+            m_RefLine = editDeserializer.ReadFeatureRef<LineFeature>(this, DataField.RefLine);
+
+            if (editDeserializer.IsNextField(DataField.Term1))
+                m_Term1 = editDeserializer.ReadFeatureRef<LineFeature>(this, DataField.Term1);
+
+            if (editDeserializer.IsNextField(DataField.Term2))
+                m_Term2 = editDeserializer.ReadFeatureRef<LineFeature>(this, DataField.Term2);
+
+            if (editDeserializer.IsNextField(DataField.ReverseArc) && editDeserializer.ReadBool(DataField.ReverseArc) == true)
+                m_Flags = 1;
+
+            m_Offset = editDeserializer.ReadPersistent<Observation>(DataField.Offset);
+
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub(DataField.From, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.From));
+            dff.AddFeatureStub(DataField.To, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.To));
+            dff.AddFeatureStub(DataField.NewLine, editDeserializer.ReadPersistent<FeatureStub>(DataField.NewLine));
+            ProcessFeatures(dff);
         }
 
         #endregion
@@ -740,31 +768,32 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParallelLineOperation"/> class
-        /// using the data read from persistent storage.
+        /// Ensures that a persistent field has been associated with a spatial feature.
         /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal ParallelLineOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
+        /// <param name="field">A tag associated with the item</param>
+        /// <param name="feature">The feature to assign to the field (not null).</param>
+        /// <returns>
+        /// True if a matching field was processed. False if the field is not known to this
+        /// class (may be known to another class in the type hierarchy).
+        /// </returns>
+        public bool ApplyFeatureRef(DataField field, Feature feature)
         {
-            m_RefLine = editDeserializer.ReadFeatureRef<LineFeature>(DataField.RefLine);
+            switch (field)
+            {
+                case DataField.RefLine:
+                    m_RefLine = (LineFeature)feature;
+                    return true;
 
-            if (editDeserializer.IsNextField(DataField.Term1))
-                m_Term1 = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Term1);
+                case DataField.Term1:
+                    m_Term1 = (LineFeature)feature;
+                    return true;
 
-            if (editDeserializer.IsNextField(DataField.Term2))
-                m_Term2 = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Term2);
+                case DataField.Term2:
+                    m_Term2 = (LineFeature)feature;
+                    return true;
+            }
 
-            if (editDeserializer.IsNextField(DataField.ReverseArc) && editDeserializer.ReadBool(DataField.ReverseArc) == true)
-                m_Flags = 1;
-
-            m_Offset = editDeserializer.ReadPersistent<Observation>(DataField.Offset);
-
-            DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub(DataField.From, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.From));
-            dff.AddFeatureStub(DataField.To, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.To));
-            dff.AddFeatureStub(DataField.NewLine, editDeserializer.ReadPersistent<FeatureStub>(DataField.NewLine));
-            ProcessFeatures(dff);
+            return false;
         }
     }
 }

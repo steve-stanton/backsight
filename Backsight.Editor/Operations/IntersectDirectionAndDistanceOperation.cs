@@ -26,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Create point (and optional lines) based on a direction and a distance observation.
     /// </summary>
-    class IntersectDirectionAndDistanceOperation : IntersectOperation, IRecallable, IRevisable
+    class IntersectDirectionAndDistanceOperation : IntersectOperation, IRecallable, IRevisable, IFeatureRef
     {
         #region Class data
 
@@ -98,9 +98,13 @@ namespace Backsight.Editor.Operations
         internal IntersectDirectionAndDistanceOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            FeatureStub to, dirLine, distLine;
-            ReadData(editDeserializer, out m_Direction, out m_Distance, out m_From, out m_Default,
-                            out to, out dirLine, out distLine);
+            m_Direction = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
+            m_Distance = editDeserializer.ReadPersistent<Observation>(DataField.Distance);
+            m_From = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.From);
+            m_Default = editDeserializer.ReadBool(DataField.Default);
+            FeatureStub to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
+            FeatureStub dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.DirLine);
+            FeatureStub distLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.DistLine);
 
             DeserializationFactory dff = new DeserializationFactory(this);
             dff.AddFeatureStub(DataField.To, to);
@@ -564,26 +568,23 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// Ensures that a persistent field has been associated with a spatial feature.
         /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="dir">The observed direction.</param>
-        /// <param name="dist">The observed distance (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).</param>
-        /// <param name="from">The point the distance was measured from.</param>
-        /// <param name="isDefault">True if it was the default intersection (the one closest to the origin of the direction).</param>
-        /// <param name="to">The created intersection point.</param>
-        /// <param name="dirLine">The first line created (if any).</param>
-        /// <param name="distLine">The second line created (if any).</param>
-        static void ReadData(EditDeserializer editDeserializer, out Direction dir, out Observation dist, out PointFeature from,
-                                out bool isDefault, out FeatureStub to, out FeatureStub dirLine, out FeatureStub distLine)
+        /// <param name="field">A tag associated with the item</param>
+        /// <param name="feature">The feature to assign to the field (not null).</param>
+        /// <returns>
+        /// True if a matching field was processed. False if the field is not known to this
+        /// class (may be known to another class in the type hierarchy).
+        /// </returns>
+        public bool ApplyFeatureRef(DataField field, Feature feature)
         {
-            dir = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
-            dist = editDeserializer.ReadPersistent<Observation>(DataField.Distance);
-            from = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From);
-            isDefault = editDeserializer.ReadBool(DataField.Default);
-            to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
-            dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.DirLine);
-            distLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.DistLine);
+            if (field == DataField.From)
+            {
+                m_From = (PointFeature)feature;
+                return true;
+            }
+
+            return false;
         }
     }
 }

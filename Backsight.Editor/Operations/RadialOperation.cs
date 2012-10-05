@@ -82,13 +82,21 @@ namespace Backsight.Editor.Operations
         internal RadialOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Direction = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
-            m_Length = editDeserializer.ReadPersistent<Observation>(DataField.Length);
+            try
+            {
+                m_Direction = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
+                m_Length = editDeserializer.ReadPersistent<Observation>(DataField.Length);
 
-            DeserializationFactory dff = new DeserializationFactory(this);
-            dff.AddFeatureStub(DataField.To, editDeserializer.ReadPersistent<FeatureStub>(DataField.To));
-            dff.AddFeatureStub(DataField.Line, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line));
-            ProcessFeatures(dff);
+                DeserializationFactory dff = new DeserializationFactory(this);
+                dff.AddFeatureStub(DataField.To, editDeserializer.ReadPersistent<FeatureStub>(DataField.To));
+                dff.AddFeatureStub(DataField.Line, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line));
+                ProcessFeatures(dff);
+            }
+
+            catch (Exception ex)
+            {
+                int junk = 0;
+            }
         }
 
         #endregion

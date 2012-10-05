@@ -26,7 +26,7 @@ namespace Backsight.Editor.Observations
     /// editing operation (that should be done when(if) the operation is saved, via a call
     /// to <c>AddReferences</c>).
     /// </summary>
-    class OffsetPoint : Offset
+    class OffsetPoint : Offset, IFeatureRef
     {
         #region Class data
 
@@ -54,7 +54,7 @@ namespace Backsight.Editor.Observations
         /// <param name="editDeserializer">The mechanism for reading back content.</param>
         internal OffsetPoint(EditDeserializer editDeserializer)
         {
-            ReadData(editDeserializer, out m_Point);
+            m_Point = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.Point);
         }
 
         /// <summary>
@@ -185,13 +185,23 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// Ensures that a persistent field has been associated with a spatial feature.
         /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="point">The point that defines the offset position</param>
-        static void ReadData(EditDeserializer editDeserializer, out PointFeature point)
+        /// <param name="field">A tag associated with the item</param>
+        /// <param name="feature">The feature to assign to the field (not null).</param>
+        /// <returns>
+        /// True if a matching field was processed. False if the field is not known to this
+        /// class (may be known to another class in the type hierarchy).
+        /// </returns>
+        public bool ApplyFeatureRef(DataField field, Feature feature)
         {
-            point = editDeserializer.ReadFeatureRef<PointFeature>(DataField.Point);
+            if (field == DataField.Point)
+            {
+                m_Point = (PointFeature)feature;
+                return true;
+            }
+
+            return false;
         }
     }
 }
