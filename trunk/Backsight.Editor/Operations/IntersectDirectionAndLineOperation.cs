@@ -26,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to intersect a direction with a line.
     /// </summary>
-    class IntersectDirectionAndLineOperation : IntersectOperation, IRecallable, IRevisable
+    class IntersectDirectionAndLineOperation : IntersectOperation, IRecallable, IRevisable, IFeatureRef
     {
         #region Class data
 
@@ -109,12 +109,20 @@ namespace Backsight.Editor.Operations
         internal IntersectDirectionAndLineOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            FeatureStub to, dirLine;
-            string idLineA, idLineB;
-            ReadData(editDeserializer, out m_Direction, out m_Line, out m_CloseTo,
-                            out to, out dirLine, out idLineA, out idLineB);
+            m_Direction = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
+            m_Line = editDeserializer.ReadFeatureRef<LineFeature>(this, DataField.Line);
+            m_CloseTo = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.CloseTo);
+            FeatureStub to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
+            FeatureStub dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.DirLine);
+            string idLineA = (editDeserializer.IsNextField(DataField.SplitBefore) ? editDeserializer.ReadString(DataField.SplitBefore) : null);
+            string idLineB = (editDeserializer.IsNextField(DataField.SplitAfter) ? editDeserializer.ReadString(DataField.SplitAfter) : null);
 
             m_IsSplit = (idLineA != null && idLineB != null);
+
+            // TODO (perhaps): If the line is a forward-reference (from CEdit export), we'd have to handle
+            // AddLineSplit a bit differently, and do some more in ApplyFeatureRef.
+            if (m_Line == null)
+                throw new NotImplementedException("Unhandled forward reference");
 
             DeserializationFactory dff = new DeserializationFactory(this);
             dff.AddFeatureStub(DataField.To, to);
@@ -546,26 +554,28 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// Ensures that a persistent field has been associated with a spatial feature.
         /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="dir">The direction observation.</param>
-        /// <param name="line">The line the direction needs to intersect.</param>
-        /// <param name="closeTo">The point closest to the intersection.</param>
-        /// <param name="to">The created intersection point. May have existed previously.</param>
-        /// <param name="dirLine">Line (if any) that was added along the direction line.</param>
-        /// <param name="idLineA">The ID of the portion of the intersected line prior to the intersection (null if no split).</param>
-        /// <param name="idLineB">The ID of the portion of the intersected line after the intersection (null if no split).</param>
-        static void ReadData(EditDeserializer editDeserializer, out Direction dir, out LineFeature line, out PointFeature closeTo,
-                                out FeatureStub to, out FeatureStub dirLine, out string idLineA, out string idLineB)
+        /// <param name="field">A tag associated with the item</param>
+        /// <param name="feature">The feature to assign to the field (not null).</param>
+        /// <returns>
+        /// True if a matching field was processed. False if the field is not known to this
+        /// class (may be known to another class in the type hierarchy).
+        /// </returns>
+        public bool ApplyFeatureRef(DataField field, Feature feature)
         {
-            dir = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
-            line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
-            closeTo = editDeserializer.ReadFeatureRef<PointFeature>(DataField.CloseTo);
-            to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
-            dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.DirLine);
-            idLineA = (editDeserializer.IsNextField(DataField.SplitBefore) ? editDeserializer.ReadString(DataField.SplitBefore) : null);
-            idLineB = (editDeserializer.IsNextField(DataField.SplitAfter) ? editDeserializer.ReadString(DataField.SplitAfter) : null);
+            switch (field)
+            {
+                case DataField.Line:
+                    m_Line = (LineFeature)feature;
+                    return true;
+
+                case DataField.CloseTo:
+                    m_CloseTo = (PointFeature)feature;
+                    return true;
+            }
+
+            return false;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Create point (and optional lines) based on 2 distance observations.
     /// </summary>
-    class IntersectTwoDistancesOperation : IntersectOperation, IRecallable, IRevisable
+    class IntersectTwoDistancesOperation : IntersectOperation, IRecallable, IRevisable, IFeatureRef
     {
         #region Class data
 
@@ -107,10 +107,14 @@ namespace Backsight.Editor.Operations
         internal IntersectTwoDistancesOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            FeatureStub to, line1, line2;
-            ReadData(editDeserializer, out m_Distance1, out m_From1, out m_Distance2, out m_From2, out m_Default,
-                            out to, out line1, out line2);
-
+            m_Distance1 = editDeserializer.ReadPersistent<Observation>(DataField.Distance1);
+            m_From1 = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.From1);
+            m_Distance2 = editDeserializer.ReadPersistent<Observation>(DataField.Distance2);
+            m_From2 = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.From2);
+            m_Default = editDeserializer.ReadBool(DataField.Default);
+            FeatureStub to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
+            FeatureStub line1 = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line1);
+            FeatureStub line2 = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line2);
 
             DeserializationFactory dff = new DeserializationFactory(this);
             dff.AddFeatureStub(DataField.To, to);
@@ -600,29 +604,28 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// Ensures that a persistent field has been associated with a spatial feature.
         /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="dist1">First observed distance  (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).</param>
-        /// <param name="from1">The point the 1st distance was measured from.</param>
-        /// <param name="dist2">Second observed distance  (either a <see cref="Distance"/>, or an <see cref="OffsetPoint"/>).</param>
-        /// <param name="from2">The point the 2nd distance was measured from.</param>
-        /// <param name="isDefault">True if it was the default intersection.</param>
-        /// <param name="to">The created intersection point.</param>
-        /// <param name="line1">The first line created (if any).</param>
-        /// <param name="line2">The second line created (if any).</param>
-        static void ReadData(EditDeserializer editDeserializer, out Observation dist1, out PointFeature from1,
-                                out Observation dist2, out PointFeature from2, out bool isDefault,
-                                out FeatureStub to, out FeatureStub line1, out FeatureStub line2)
+        /// <param name="field">A tag associated with the item</param>
+        /// <param name="feature">The feature to assign to the field (not null).</param>
+        /// <returns>
+        /// True if a matching field was processed. False if the field is not known to this
+        /// class (may be known to another class in the type hierarchy).
+        /// </returns>
+        public bool ApplyFeatureRef(DataField field, Feature feature)
         {
-            dist1 = editDeserializer.ReadPersistent<Observation>(DataField.Distance1);
-            from1 = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From1);
-            dist2 = editDeserializer.ReadPersistent<Observation>(DataField.Distance2);
-            from2 = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From2);
-            isDefault = editDeserializer.ReadBool(DataField.Default);
-            to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
-            line1 = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line1);
-            line2 = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line2);
+            switch (field)
+            {
+                case DataField.From1:
+                    m_From1 = (PointFeature)feature;
+                    return true;
+
+                case DataField.From2:
+                    m_From2 = (PointFeature)feature;
+                    return true;
+            }
+
+            return false;
         }
     }
 }

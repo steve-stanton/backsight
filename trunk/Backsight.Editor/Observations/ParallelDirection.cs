@@ -25,7 +25,7 @@ namespace Backsight.Editor.Observations
     /// a pair of points that the direction is parallel to. Parallel directions are
     /// always regarded as FIXED directions.
     /// </summary>
-    class ParallelDirection : Direction
+    class ParallelDirection : Direction, IFeatureRef
     {
         #region Class data
 
@@ -63,7 +63,9 @@ namespace Backsight.Editor.Observations
         internal ParallelDirection(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            ReadData(editDeserializer, out m_From, out m_Par1, out m_Par2);
+            m_From = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.From);
+            m_Par1 = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.Start);
+            m_Par2 = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.End);
         }
 
         /// <summary>
@@ -218,17 +220,32 @@ namespace Backsight.Editor.Observations
         }
 
         /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
+        /// Ensures that a persistent field has been associated with a spatial feature.
         /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="from">The origin of the direction.</param>
-        /// <param name="start">Point defining start of parallel.</param>
-        /// <param name="end">Point defining end of parallel.</param>
-        static void ReadData(EditDeserializer editDeserializer, out PointFeature from, out PointFeature start, out PointFeature end)
+        /// <param name="field">A tag associated with the item</param>
+        /// <param name="feature">The feature to assign to the field (not null).</param>
+        /// <returns>
+        /// True if a matching field was processed. False if the field is not known to this
+        /// class (may be known to another class in the type hierarchy).
+        /// </returns>
+        public bool ApplyFeatureRef(DataField field, Feature feature)
         {
-            from = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From);
-            start = editDeserializer.ReadFeatureRef<PointFeature>(DataField.Start);
-            end = editDeserializer.ReadFeatureRef<PointFeature>(DataField.End);
+            switch (field)
+            {
+                case DataField.From:
+                    m_From = (PointFeature)feature;
+                    return true;
+
+                case DataField.Start:
+                    m_Par1 = (PointFeature)feature;
+                    return true;
+
+                case DataField.End:
+                    m_Par2 = (PointFeature)feature;
+                    return true;
+            }
+
+            return false;
         }
     }
 }

@@ -86,8 +86,11 @@ namespace Backsight.Editor.Operations
         internal LineExtensionOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            FeatureStub newPoint, newLine;
-            ReadData(editDeserializer, out m_ExtendLine, out m_IsExtendFromEnd, out m_Length, out newPoint, out newLine);
+            m_ExtendLine = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
+            m_IsExtendFromEnd = editDeserializer.ReadBool(DataField.ExtendFromEnd);
+            m_Length = editDeserializer.ReadPersistent<Distance>(DataField.Distance);
+            FeatureStub newPoint = editDeserializer.ReadPersistent<FeatureStub>(DataField.NewPoint);
+            FeatureStub newLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.NewLine);
 
             DeserializationFactory dff = new DeserializationFactory(this);
             dff.AddFeatureStub(DataField.NewPoint, newPoint);
@@ -455,25 +458,6 @@ namespace Backsight.Editor.Operations
 
             if (m_NewLine != null)
                 editSerializer.WritePersistent<FeatureStub>(DataField.NewLine, new FeatureStub(m_NewLine));
-        }
-
-        /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="extendLine">The line being extended.</param>
-        /// <param name="isExtendFromEnd">True if extending from the end of the extension line. False if extending from the start.</param>
-        /// <param name="length">The observed length of the extension.</param>
-        /// <param name="newPoint">The point at the end of the extension.</param>
-        /// <param name="newLine">The actual extension line (if any).</param>
-        static void ReadData(EditDeserializer editDeserializer, out LineFeature extendLine, out bool isExtendFromEnd,
-                                out Distance length, out FeatureStub newPoint, out FeatureStub newLine)
-        {
-            extendLine = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
-            isExtendFromEnd = editDeserializer.ReadBool(DataField.ExtendFromEnd);
-            length = editDeserializer.ReadPersistent<Distance>(DataField.Distance);
-            newPoint = editDeserializer.ReadPersistent<FeatureStub>(DataField.NewPoint);
-            newLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.NewLine);
         }
     }
 }
