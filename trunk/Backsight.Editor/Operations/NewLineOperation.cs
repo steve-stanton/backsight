@@ -55,7 +55,9 @@ namespace Backsight.Editor.Operations
         protected NewLineOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_NewLine = editDeserializer.ReadPersistent<LineFeature>(DataField.Line);
+            // Bit of a hack - does NewCircleOperation actually need to extend NewLineOperation?
+            if (!(this is NewCircleOperation))
+                m_NewLine = editDeserializer.ReadPersistent<LineFeature>(DataField.Line);
         }
 
         #endregion
@@ -234,8 +236,11 @@ namespace Backsight.Editor.Operations
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            base.WriteData(editSerializer);            
-            editSerializer.WritePersistent<LineFeature>(DataField.Line, m_NewLine);
+            base.WriteData(editSerializer);
+
+            // Bit of a hack - does NewCircleOperation actually need to extend NewLineOperation?
+            if (!(this is NewCircleOperation))
+                editSerializer.WritePersistent<LineFeature>(DataField.Line, m_NewLine);
         }
     }
 }

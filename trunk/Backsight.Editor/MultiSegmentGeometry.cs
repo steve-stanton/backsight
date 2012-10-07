@@ -513,9 +513,35 @@ namespace Backsight.Editor
             IPointGeometry[] d = Data;
 
             if (fromStart)
-                return d[1];
+                return GetStartOrient(d);
             else
-                return d[d.Length-2];
+                return GetEndOrient(d);
+        }
+
+        static IPointGeometry GetStartOrient(IPointGeometry[] points)
+        {
+            IPointGeometry start = points[0];
+
+            for (int i = 1; i < points.Length; i++)
+            {
+                if (!points[i].IsCoincident(start))
+                    return points[i];
+            }
+
+            throw new ApplicationException("Cannot determine orientation point");
+        }
+
+        static IPointGeometry GetEndOrient(IPointGeometry[] points)
+        {
+            IPointGeometry end = points[points.Length - 1];
+
+            for (int i = points.Length - 2; i >= 0; i--)
+            {
+                if (!points[i].IsCoincident(end))
+                    return points[i];
+            }
+
+            throw new ApplicationException("Cannot determine orientation point");
         }
 
         /// <summary>

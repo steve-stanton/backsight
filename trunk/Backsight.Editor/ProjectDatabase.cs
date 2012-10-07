@@ -252,8 +252,9 @@ namespace Backsight.Editor
             result.DeleteUndoFolder();
 
             // Bit jumbled up here (historical reasons), should tidy up...
-            result.LoadEdits(dataFolder);
             EditingController.Current.SetProject(result);
+            result.LoadEdits(dataFolder);
+            //EditingController.Current.SetProject(result);
             EditingController.Current.SetMapModel(result.Model, null);
             result.Model.Load();
 

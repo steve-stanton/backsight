@@ -56,7 +56,7 @@ namespace Backsight.Editor.Operations
         {
             // Disallow an attempt to add a null line.
             if (start.Geometry.IsCoincident(end.Geometry))
-                throw new Exception("NewLineOperation.Execute - Attempt to add null line.");
+                throw new Exception("NewArcOperation.Execute - Attempt to add null line.");
 
             // Figure out whether the arc should go clockwise or not.
             IPointGeometry centre = circle.Center;
