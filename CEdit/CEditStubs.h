@@ -180,7 +180,14 @@ public:
 	const CeLocation* GetpVertex ( void ) const { return 0; }
 };
 
-class CeLine
+class CePrimitive
+{
+public:
+	virtual ~CePrimitive() = 0;
+	CeClass* GetpObjects ( void ) const { return 0; }
+};
+
+class CeLine : public CePrimitive
 {
 public:
 	virtual ~CeLine() = 0;
@@ -243,6 +250,7 @@ public:
 	virtual ~CeOperation() = 0;
 	unsigned int GetFeatures ( CeObjectList& flist ) const { return 0; }
 	CEOP GetType ( void ) const { return CEOP_NULL; }
+	unsigned int GetSequence ( void ) const { return 0; }
 };
 
 class CeArcSubdivision : public CeOperation
@@ -258,7 +266,7 @@ public:
 class CeListIter
 {
 public:
-	CeListIter (const CeClass* const pThing) {}
+	CeListIter (const CeClass* const pThing, bool wantDels = FALSE) {}
 	CeListIter (const CeObjectList* const pList, bool wantDels = FALSE) {}
 	void* GetHead ( void ) { return 0; }
 	void* GetNext ( void ) { return 0; }

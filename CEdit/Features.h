@@ -199,6 +199,7 @@ public:
 
 private:
 	CeArc* GetFirstArc(const CeCircle& circle) const;
+	CeArc* GetFirstArc(const CeCurve& curve) const;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
