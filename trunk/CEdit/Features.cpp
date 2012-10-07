@@ -552,6 +552,7 @@ LineFeature_c::LineFeature_c(IdFactory& idf, const CeArc& line)
 		// Locate the first line attached to the circle
 		const CeCircle* const circle = arc->GetpCircle();
 		CeArc* pFirst = GetFirstArc(*circle);
+		assert(pFirst != 0);
 
 		ArcGeometry_c* arcGeom = new ArcGeometry_c(arc->IsClockwise());
 		if (pFirst == &line)
@@ -596,8 +597,33 @@ LineFeature_c::LineFeature_c(IdFactory& idf, const CeArc& line)
 CeArc* LineFeature_c::GetFirstArc(const CeCircle& circle) const
 {
 	const CeClass* const pObjects = circle.GetpObjects();
-	CeListIter loop(pObjects);
+	CeListIter loop(pObjects, TRUE);
 	CeClass* pThing;
+	CeArc* result = 0;
+
+	for ( pThing=(CeClass*)loop.GetHead(); pThing; pThing=(CeClass*)loop.GetNext() )
+	{
+#ifdef _CEDIT
+		objectstore::touch(pThing, false);
+#endif
+		CeCurve* pCurve = dynamic_cast<CeCurve*>(pThing);
+		if (pCurve != 0)
+		{
+			CeArc* pArc = GetFirstArc(*pCurve);
+			if (result == 0 || result->GetpCreator()->GetSequence() < result->GetpCreator()->GetSequence())
+				result = pArc;
+		}
+	}
+
+	return result;
+}
+
+CeArc* LineFeature_c::GetFirstArc(const CeCurve& curve) const
+{
+	const CeClass* const pObjects = curve.GetpObjects();
+	CeListIter loop(pObjects, TRUE);
+	CeClass* pThing;
+	CeArc* result = 0;
 
 	for ( pThing=(CeClass*)loop.GetHead(); pThing; pThing=(CeClass*)loop.GetNext() )
 	{
@@ -606,10 +632,13 @@ CeArc* LineFeature_c::GetFirstArc(const CeCircle& circle) const
 #endif
 		CeArc* pArc = dynamic_cast<CeArc*>(pThing);
 		if (pArc != 0)
-			return pArc;
+		{
+			if (result == 0 || pArc->GetpCreator()->GetSequence() < result->GetpCreator()->GetSequence())
+				result = pArc;
+		}
 	}
 
-	return 0;
+	return result;
 }
 
 LineFeature_c::~LineFeature_c()
