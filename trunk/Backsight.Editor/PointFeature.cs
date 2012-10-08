@@ -278,19 +278,30 @@ namespace Backsight.Editor
 
                     if (t!=null)
                     {
-                        if (line.StartPoint.IsCoincident(this))
+                        // Could have a situation where BOTH start and end of the line end
+                        // at the same point (e.g. a multisegment that loops back on itself).
+
+                        bool sMatch = line.StartPoint.IsCoincident(this);
+                        bool eMatch = line.EndPoint.IsCoincident(this);
+
+                        if (sMatch)
                         {
                             IDivider d = t.FirstDivider;
                             if (!d.IsOverlap)
                                 result.Add(d);
                         }
-                        else if (line.EndPoint.IsCoincident(this))
+
+                        if (eMatch)
                         {
+                            // Not sure about circular arcs where sMatch && eMatch - can
+                            // FirstDivider == LastDivider?
+
                             IDivider d = t.LastDivider;
                             if (!d.IsOverlap)
                                 result.Add(d);
                         }
-                        else
+
+                        if (!(sMatch || eMatch))
                         {
                             // Cover a situation where this point is referenced to a line that
                             // passes through (intersection).
