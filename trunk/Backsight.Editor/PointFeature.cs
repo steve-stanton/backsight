@@ -293,11 +293,10 @@ namespace Backsight.Editor
 
                         if (eMatch)
                         {
-                            // Not sure about circular arcs where sMatch && eMatch - can
-                            // FirstDivider == LastDivider?
-
+                            // The result could conceivably contain the divider already (case where a multi-segment
+                            // closes on itself)
                             IDivider d = t.LastDivider;
-                            if (!d.IsOverlap)
+                            if (!d.IsOverlap && !result.Contains(d))
                                 result.Add(d);
                         }
 
