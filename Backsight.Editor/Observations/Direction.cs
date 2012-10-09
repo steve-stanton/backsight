@@ -567,6 +567,7 @@ namespace Backsight.Editor.Observations
 	        // effect of defining the best of the default points). In
 	        // this case, we allow an intersection that coincides with
 	        // the line being intersected.
+            // -- actually, we don't, since GetClosest uses a > 0 test
 
             if (closeTo != null)
                 xres.GetClosest(closeTo, out xsect, 0.0);
