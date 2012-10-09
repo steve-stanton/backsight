@@ -568,7 +568,7 @@ namespace Backsight.Editor.Observations
 	        // this case, we allow an intersection that coincides with
 	        // the line being intersected.
 
-        	if (closeTo!=null)
+            if (closeTo != null)
                 xres.GetClosest(closeTo, out xsect, 0.0);
 
             return (xsect!=null);
