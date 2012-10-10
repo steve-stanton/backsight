@@ -29,7 +29,11 @@ namespace Backsight.Editor.Operations
     {
         #region Class data
 
-        // No data
+        /// <summary>
+        /// A check position (used to assist in debugging imports from CEdit). Null if this
+        /// edit was created using Backsight.
+        /// </summary>
+        protected PointGeometry CheckPosition { get; private set; }
 
         #endregion
 
@@ -51,6 +55,9 @@ namespace Backsight.Editor.Operations
         protected IntersectOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
+            // If the data was produced via export from an old CEdit file, we'll have the absolute position
+            if (editDeserializer.IsNextField(DataField.X))
+                CheckPosition = editDeserializer.ReadPointGeometry(DataField.X, DataField.Y);
         }
 
         #endregion
