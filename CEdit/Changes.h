@@ -2,6 +2,7 @@
 
 #include "Persistent.h"
 #include "Observations.h"
+#include "Features.h"
 
 #ifdef _CEDIT
 class CeOperation;
@@ -15,6 +16,7 @@ class CeAttachPoint;
 class CeDeletion;
 class CeGetControl;
 class CeImport;
+class CeIntersect;
 class CeIntersectDir;
 class CeIntersectDirDist;
 class CeIntersectDirLine;
@@ -38,12 +40,6 @@ class CeObjectList;
 #else
 #include "CEditStubs.h"
 #endif
-
-class FeatureStub_c;
-class LineFeature_c;
-class PointGeometry_c;
-class PointFeature_c;
-class TextFeature_c;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -230,8 +226,6 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-class Feature_c;
-
 class ImportOperation_c : public Operation_c
 {
 public:
@@ -250,7 +244,19 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-class IntersectDirectionAndDistanceOperation_c : public Operation_c
+class IntersectOperation_c : public Operation_c
+{
+public:
+	PointGeometry_c CheckPosition;
+
+	IntersectOperation_c(IdFactory& idf, const CTime& when, const CeIntersect& op);
+
+	virtual void WriteData(EditSerializer& s) const;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+class IntersectDirectionAndDistanceOperation_c : public IntersectOperation_c
 {
 public:
     Direction_c* Direction;
@@ -270,7 +276,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-class IntersectDirectionAndLineOperation_c : public Operation_c
+class IntersectDirectionAndLineOperation_c : public IntersectOperation_c
 {
 public:
 	Direction_c* Direction;
@@ -291,7 +297,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-class IntersectTwoDirectionsOperation_c : public Operation_c
+class IntersectTwoDirectionsOperation_c : public IntersectOperation_c
 {
 public:
     Direction_c* Direction1;
@@ -309,7 +315,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-class IntersectTwoDistancesOperation_c : public Operation_c
+class IntersectTwoDistancesOperation_c : public IntersectOperation_c
 {
 public:
     Observation_c* Distance1;
@@ -330,7 +336,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-class IntersectTwoLinesOperation_c : public Operation_c
+class IntersectTwoLinesOperation_c : public IntersectOperation_c
 {
 public:
     void* Line1;

@@ -100,8 +100,6 @@ public:
 	PointGeometry_c(const CePosition& p);
 	PointGeometry_c(double x, double y);
 
-private:
-
 	void Init(double x, double y);
 };
 
