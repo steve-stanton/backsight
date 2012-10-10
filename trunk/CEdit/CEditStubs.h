@@ -461,6 +461,7 @@ private:
 class CeIntersect : public CeOperation
 {
 public:
+	CePoint* GetpIntersect ( void ) const { return 0; }
 };
 
 class CeIntersectDirLine : public CeIntersect
@@ -471,7 +472,6 @@ public:
 	CeArc* GetpArc ( void ) const { return 0; }
 	bool IsSplit ( void ) const { return FALSE; }
 	CePoint* GetpCloseTo ( void ) const { return 0; }
-	CePoint* GetpIntersect ( void ) const { return 0; }
 	CeArc* GetpArcBeforeSplit ( void ) const { return 0; } // to add
 	CeArc* GetpArcAfterSplit ( void ) const { return 0; } // to add
 };
@@ -481,7 +481,6 @@ class CeIntersectDir : public CeIntersect
 public:
 	CeDirection* GetpDir1 ( void ) const { return 0; }
 	CeDirection* GetpDir2 ( void ) const { return 0; }
-	CePoint* GetpIntersect ( void ) const { return 0; }
 	CeArc* GetpArc1 ( void ) const { return 0; }
 	CeArc* GetpArc2 ( void ) const { return 0; }
 };
@@ -494,7 +493,6 @@ public:
 	CePoint* GetpFrom1 ( void ) const { return 0; }
 	CePoint* GetpFrom2 ( void ) const { return 0; }
 	bool IsDefault ( void ) const { return FALSE; }
-	CePoint* GetpIntersect ( void ) const { return 0; }
 	CeArc* GetpArc1 ( void ) const { return 0; }
 	CeArc* GetpArc2 ( void ) const { return 0; }
 };
@@ -506,7 +504,6 @@ public:
 	CeObservation* GetpDist ( void ) const { return 0; }
 	CePoint* GetpDistFrom ( void ) const { return 0; }
 	bool IsDefault ( void ) const { return FALSE; }
-	CePoint* GetpIntersect ( void ) const { return 0; }
 	CeArc* GetpDirArc ( void ) const { return 0; }
 	CeArc* GetpDistArc ( void ) const { return 0; }
 };
@@ -519,7 +516,6 @@ public:
 	bool IsSplit1 ( void ) const { return FALSE; }
 	bool IsSplit2 ( void ) const { return FALSE; }
 	CePoint* GetpCloseTo ( void ) const { return 0; }
-	CePoint* GetpIntersect ( void ) const { return 0; }
 	CeArc* GetpArc1a ( void ) const { return 0; } // to add
 	CeArc* GetpArc1b ( void ) const { return 0; } // to add
 	CeArc* GetpArc2a ( void ) const { return 0; } // to add

@@ -502,9 +502,25 @@ void ImportOperation_c::Add(Feature_c* f)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+IntersectOperation_c::IntersectOperation_c(IdFactory& idf, const CTime& when, const CeIntersect& op)
+	: Operation_c(idf, when)
+{
+	const CeLocation* loc = op.GetpIntersect()->GetpVertex();
+	CheckPosition.Init(loc->GetEasting(), loc->GetNorthing());
+}
+
+void IntersectOperation_c::WriteData(EditSerializer& s) const
+{
+	Operation_c::WriteData(s);
+
+	s.WritePointGeometry(DataField_X, DataField_Y, CheckPosition);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 IntersectDirectionAndDistanceOperation_c::IntersectDirectionAndDistanceOperation_c(
 	IdFactory& idf, const CTime& when, const CeIntersectDirDist& op)
-	: Operation_c(idf, when)
+	: IntersectOperation_c(idf, when, op)
 {
 	Direction = Direction_c::CreateExportDirection(op.GetpDir());
 	Distance = Observation_c::CreateExportLength(op.GetpDist());
@@ -542,7 +558,7 @@ LPCTSTR IntersectDirectionAndDistanceOperation_c::GetTypeName() const
 
 void IntersectDirectionAndDistanceOperation_c::WriteData(EditSerializer& s) const
 {
-	Operation_c::WriteData(s);
+	IntersectOperation_c::WriteData(s);
 
     s.WritePersistent(DataField_Direction, *Direction);
     s.WritePersistent(DataField_Distance, *Distance);
@@ -560,7 +576,7 @@ void IntersectDirectionAndDistanceOperation_c::WriteData(EditSerializer& s) cons
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntersectDirectionAndLineOperation_c::IntersectDirectionAndLineOperation_c(IdFactory& idf, const CTime& when, const CeIntersectDirLine& op)
-	: Operation_c(idf, when)
+	: IntersectOperation_c(idf, when, op)
 {
 	Direction = Direction_c::CreateExportDirection(op.GetpDir());
 	Line = op.GetpArc();
@@ -603,7 +619,7 @@ LPCTSTR IntersectDirectionAndLineOperation_c::GetTypeName() const
 
 void IntersectDirectionAndLineOperation_c::WriteData(EditSerializer& s) const
 {
-	Operation_c::WriteData(s);
+	IntersectOperation_c::WriteData(s);
 
 	s.WritePersistent(DataField_Direction, *Direction);
     s.WriteFeatureRef(DataField_Line, Line);
@@ -623,7 +639,7 @@ void IntersectDirectionAndLineOperation_c::WriteData(EditSerializer& s) const
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntersectTwoDirectionsOperation_c::IntersectTwoDirectionsOperation_c(IdFactory& idf, const CTime& when, const CeIntersectDir& op)
-	: Operation_c(idf, when)
+	: IntersectOperation_c(idf, when, op)
 {
 	Direction1 = Direction_c::CreateExportDirection(op.GetpDir1());
 	Direction2 = Direction_c::CreateExportDirection(op.GetpDir2());
@@ -659,7 +675,7 @@ LPCTSTR IntersectTwoDirectionsOperation_c::GetTypeName() const
 
 void IntersectTwoDirectionsOperation_c::WriteData(EditSerializer& s) const
 {
-	Operation_c::WriteData(s);
+	IntersectOperation_c::WriteData(s);
 
     s.WritePersistent(DataField_Direction1, *Direction1);
     s.WritePersistent(DataField_Direction2, *Direction2);
@@ -675,7 +691,7 @@ void IntersectTwoDirectionsOperation_c::WriteData(EditSerializer& s) const
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntersectTwoDistancesOperation_c::IntersectTwoDistancesOperation_c(IdFactory& idf, const CTime& when, const CeIntersectDist& op)
-	: Operation_c(idf, when)
+	: IntersectOperation_c(idf, when, op)
 {
 	Distance1 = Observation_c::CreateExportLength(op.GetpDist1());
 	From1 = op.GetpFrom1();
@@ -714,7 +730,7 @@ LPCTSTR IntersectTwoDistancesOperation_c::GetTypeName() const
 
 void IntersectTwoDistancesOperation_c::WriteData(EditSerializer& s) const
 {
-	Operation_c::WriteData(s);
+	IntersectOperation_c::WriteData(s);
 
     s.WritePersistent(DataField_Distance1, *Distance1);
     s.WriteFeatureRef(DataField_From1, From1);
@@ -734,7 +750,7 @@ void IntersectTwoDistancesOperation_c::WriteData(EditSerializer& s) const
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntersectTwoLinesOperation_c::IntersectTwoLinesOperation_c(IdFactory& idf, const CTime& when, const CeIntersectLine& op)
-	: Operation_c(idf, when)
+	: IntersectOperation_c(idf, when, op)
 {
 	Line1 = op.GetpArc1();
 	IsSplit1 = op.IsSplit1();
@@ -781,7 +797,7 @@ LPCTSTR IntersectTwoLinesOperation_c::GetTypeName() const
 
 void IntersectTwoLinesOperation_c::WriteData(EditSerializer& s) const
 {
-	Operation_c::WriteData(s);
+	IntersectOperation_c::WriteData(s);
 
     s.WriteFeatureRef(DataField_Line1, Line1);
     s.WriteFeatureRef(DataField_Line2, Line2);
