@@ -570,7 +570,16 @@ namespace Backsight.Editor.Observations
             // -- actually, we don't, since GetClosest uses a > 0 test
 
             if (closeTo != null)
+            {
                 xres.GetClosest(closeTo, out xsect, 0.0);
+                /*
+                IPosition xCloseTo;
+                xres.GetClosest(closeTo, out xCloseTo, 0.0);
+
+                if (xCloseTo != null)
+                    xsect = xCloseTo;
+                 */
+            }
 
             return (xsect!=null);
         }

@@ -428,7 +428,7 @@ namespace Backsight.Editor.Operations
                 int junk = 0;
             }
 
-            IPosition p = Calculate();
+            IPosition p = (base.CheckPosition == null ? Calculate() : base.CheckPosition);
 
             if (p == null)
             {

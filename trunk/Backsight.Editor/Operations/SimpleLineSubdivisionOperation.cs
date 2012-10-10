@@ -270,6 +270,12 @@ namespace Backsight.Editor.Operations
         internal override void CalculateGeometry(EditingContext ctx)
         {
             IPosition p = Calculate();
+
+            if (p == null)
+            {
+                int junk = 0;
+            }
+
             PointGeometry pg = PointGeometry.Create(p);
             m_NewPoint.ApplyPointGeometry(ctx, pg);
         }
