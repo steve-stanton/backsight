@@ -62,7 +62,7 @@ namespace Backsight.Editor
         /// <summary>
         /// The coordinate system.
         /// </summary>
-        readonly CSLib.CoordinateSystem m_CS;
+        readonly ISpatialSystem m_CS;
 
         /// <summary>
         /// Window of all data in the map.
@@ -133,7 +133,8 @@ namespace Backsight.Editor
             m_ForeignIds = new Dictionary<string, ForeignId>(1000);
 
             // For now, just hard-code the coordinate system usually used in Manitoba
-            m_CS = new CSLib.CoordinateSystem("UTM83-14");
+            m_CS = new OldCoordinateSystem();
+            //m_CS = new CSLib.CoordinateSystem("UTM83-14");
             m_CS.MeanElevation = new Length(Settings.Default.MeanElevation);
             m_CS.GeoidSeparation = new Length(Settings.Default.GeoidSeparation);
         }
