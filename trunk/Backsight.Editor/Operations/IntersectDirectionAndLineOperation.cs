@@ -417,6 +417,14 @@ namespace Backsight.Editor.Operations
                 m_DirLine = ff.CreateSegmentLineFeature(DataField.DirLine, from, m_Intersection);
         }
 
+        void Log(string s)
+        {
+            using (System.IO.StreamWriter sw = System.IO.File.AppendText(@"C:\Temp\Debug.txt"))
+            {
+                sw.WriteLine(s);
+            }
+        }
+
         /// <summary>
         /// Performs the data processing associated with this editing operation.
         /// </summary>
@@ -428,11 +436,22 @@ namespace Backsight.Editor.Operations
                 int junk = 0;
             }
 
-            IPosition p = (base.CheckPosition == null ? Calculate() : base.CheckPosition);
+            //IPosition p = (base.CheckPosition == null ? Calculate() : base.CheckPosition);
+            IPosition p = Calculate();
 
             if (p == null)
             {
                 int junk = 0;
+                p = CheckPosition;
+                Log(String.Format("Id={0} (CEdit={1:0.0}E {2:0.0}N", this.EditSequence, p.X, p.Y));
+            }
+            else if (CheckPosition != null)
+            {
+                double d = Geom.Distance(p, CheckPosition);
+                if (d > 1.0)
+                    Log(String.Format("Id={0} (CEdit={1:0.0}E {2:0.0}N)  (Backsight={3:0.0}E {4:0.0}N)  Delta={5:0.000}",
+                    this.EditSequence, CheckPosition.Easting.Meters, CheckPosition.Northing.Meters, p.X, p.Y, d));
+                p = CheckPosition;
             }
 
             PointGeometry pg = PointGeometry.Create(p);

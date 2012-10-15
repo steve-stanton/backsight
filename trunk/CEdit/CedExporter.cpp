@@ -192,6 +192,11 @@ void CedExporter::CreateExport(CeMap* cedFile)
 	fp = fopen((LPCTSTR)indexFileName, "w");
 	fprintf(fp, "%s", (LPCTSTR)guid);
 	fclose(fp);
+	
+	// Write point positions file
+	CString ptsFileName;
+	ptsFileName.Format("%s\\%s.pts", (LPCTSTR)projectFolder, mapName);
+	idFactory.WritePointsFile((LPCTSTR)ptsFileName);
 
 	// Remove the export objects
 	for (int ip=0; ip<items.GetSize(); ip++)

@@ -58,6 +58,7 @@ public:
 	unsigned int GetNextId(void* p);
 	unsigned int FindId(void* p) const;
 	void AddIndexEntry(void* p, unsigned int id);
+	void WritePointsFile(LPCTSTR fileName);
 
 	int GetEntityId(LPCTSTR entName);
 	int GetFontId(LPCTSTR fontTitle);
