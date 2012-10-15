@@ -20,6 +20,7 @@ using System.IO;
 using Backsight.Data;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
+using System.Diagnostics;
 
 
 namespace Backsight.Editor
@@ -261,6 +262,10 @@ namespace Backsight.Editor
             // Get rid of any empty sessions
             result.Model.RemoveEmptySessions();
 
+            // Debug CedExporter
+            string ptsFileName = Path.Combine(dataFolder, projectName + ".pts");
+            CheckPts(ptsFileName, result.Model);
+
             // Need to set it again (need to find out why)... if you don't you get a null
             // ref on opening last project at startup
             EditingController.Current.SetMapModel(result.Model, null);
@@ -283,6 +288,43 @@ namespace Backsight.Editor
             result.SetLastItem(session.Id);
 
             return result;
+        }
+
+        void CheckPts(string ptsFileName, CadastralMapModel mm)
+        {
+            if (!File.Exists(ptsFileName))
+                return;
+
+            string[] lines = File.ReadAllLines(ptsFileName);
+            Array.Sort(lines, delegate(string a, string b)
+            {
+                string[] itemsA = a.Split(',');
+                string[] itemsB = b.Split(',');
+                uint ida = UInt32.Parse(itemsA[0]);
+                uint idb = UInt32.Parse(itemsB[0]);
+                return ida.CompareTo(idb);
+            });
+
+            using (StreamWriter sw = File.CreateText(ptsFileName + ".check"))
+            {
+                foreach (string s in lines)
+                {
+                    string[] items = s.Split(',');
+                    uint id = UInt32.Parse(items[0]);
+                    double x = Double.Parse(items[1]);
+                    double y = Double.Parse(items[2]);
+                    Position a = new Position(x,y);
+
+                    PointFeature p = mm.Find<PointFeature>(new InternalIdValue(id));
+                    //Debug.Assert(p != null);
+
+                    if (p != null)
+                    {
+                        double delta = Geom.Distance(a, p);
+                        sw.WriteLine(String.Format("Id={0}  Delta={1:0.000}", id, delta));
+                    }
+                }
+            }
         }
 
         /// <summary>

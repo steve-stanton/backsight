@@ -177,6 +177,32 @@ int IdFactory::GetGroupId(LPCTSTR groupName)
 	return LookupId(m_IdGroupMap, groupName);
 }
 
+void IdFactory::WritePointsFile(LPCTSTR fileName)
+{
+	FILE* fp = fopen(fileName,"w");
+
+	POSITION pos = m_ObjectIds.GetStartPosition();
+	void* key;
+	void* value;
+
+	while (pos)
+	{
+		m_ObjectIds.GetNextAssoc(pos, key, value);
+		CeClass* k = (CeClass*)key;
+		CePoint* p = dynamic_cast<CePoint*>(k);
+
+		if (p != 0)
+		{
+			const CeLocation* loc = p->GetpVertex();
+			double e = loc->GetEasting();
+			double n = loc->GetNorthing();
+			fprintf(fp, "%d,%lf,%lf\n", (int)value, e, n);
+		}
+	}
+
+	fclose(fp);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 LPCTSTR Change_c::GetTypeName() const

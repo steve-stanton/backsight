@@ -439,6 +439,7 @@ namespace Backsight.Editor.Operations
             if (p == null)
             {
                 int junk = 0;
+                p = CheckPosition;
             }
             PointGeometry pg = PointGeometry.Create(p);
             m_Intersection.ApplyPointGeometry(ctx, pg);

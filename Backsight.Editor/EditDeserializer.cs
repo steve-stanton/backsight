@@ -257,7 +257,7 @@ namespace Backsight.Editor
         /// <remarks>
         /// In addition to implementing <see cref="IPersistent"/>, the Backsight implementation
         /// assumes that the created type will also provide a constructor that accepts an
-        /// instance of the <see cref="IEditReader"/>.
+        /// instance of <see cref="EditDeserializer"/>.
         /// </remarks>
         /// <exception cref="ApplicationException">If the type name read from storage does
         /// not correspond to a suitable type within this assembly.</exception>
@@ -278,7 +278,7 @@ namespace Backsight.Editor
         /// <remarks>
         /// In addition to implementing <see cref="IPersistent"/>, the Backsight implementation
         /// assumes that the created type will also provide a constructor that accepts an
-        /// instance of the <see cref="IEditReader"/>.
+        /// instance of <see cref="EditDeserializer"/>.
         /// </remarks>
         /// <exception cref="ApplicationException">If the type name read from storage does
         /// not correspond to a suitable type within this assembly.</exception>
