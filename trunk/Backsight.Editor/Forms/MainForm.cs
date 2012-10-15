@@ -644,6 +644,11 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
             return noSelectionContextMenu;
         }
 
+        internal void ShowPropertyWindow()
+        {
+            ShowProperties(null);
+        }
+
         private void ShowProperties(IUserAction action)
         {
             if (vSplitContainer.Panel2Collapsed)
@@ -896,14 +901,6 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                 {
                     e.Handled = true;
                     EditRepeat(null);
-                }
-            }
-
-            if (e.KeyValue == (int)Keys.F && e.Control)
-            {
-                using (var dial = new FindByInternalIdForm())
-                {
-                    dial.ShowDialog();
                 }
             }
         }

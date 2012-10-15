@@ -423,8 +423,26 @@ namespace Backsight.Editor
             if (k.KeyCode == Keys.Escape && m_Command!=null && m_Command.ActiveDisplay==sender)
                 m_Command.Escape();
 
-            if (k.KeyCode == Keys.ControlKey && m_Sel == null && !IsCommandRunning)
-                GetAreaSelectionTool();
+            //if (k.KeyCode == Keys.ControlKey && !IsCommandRunning)
+            if ((k.KeyCode & Keys.ControlKey)!=0 && !IsCommandRunning)
+            {
+                // Present debugging dialog on a CTRL+F
+                //if (k.KeyValue == (int)Keys.F)
+                if ((k.KeyCode & Keys.F)!=0)
+                {
+                    // Ensure property window gets displayed
+                    m_Main.ShowPropertyWindow();
+
+                    using (var dial = new FindByInternalIdForm())
+                    {
+                        dial.ShowDialog();
+                    }
+                }
+                else if (m_Sel == null)
+                {
+                    GetAreaSelectionTool();
+                }
+            }
         }
 
         /// <summary>

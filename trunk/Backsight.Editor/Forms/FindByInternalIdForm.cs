@@ -29,14 +29,7 @@ namespace Backsight.Editor.Forms
             InitializeComponent();
         }
 
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
+        private void findButton_Click(object sender, EventArgs e)
         {
             try
             {
@@ -50,8 +43,7 @@ namespace Backsight.Editor.Forms
                     return;
                 }
 
-                ISpatialSelection ss = new SpatialSelection((ISpatialObject)f);
-                EditingController.Current.SetSelection(ss);
+                EditingController.Current.Select(f);
                 Position p = null;
 
                 if (f is PointFeature)
@@ -67,8 +59,12 @@ namespace Backsight.Editor.Forms
                     return;
                 }
 
-                EditingController.Current.ActiveDisplay.MapScale = 2000.0;
-                EditingController.Current.ActiveDisplay.Center = p;
+                ISpatialDisplay d = EditingController.Current.ActiveDisplay;
+
+                if (d.MapScale > 2000.0)
+                    d.MapScale = 2000.0;
+
+                d.Center = p;
 
                 this.DialogResult = DialogResult.Cancel;
                 Close();
