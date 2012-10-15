@@ -102,6 +102,12 @@
     <Compile Include="BasicList.cs" />
     <Compile Include="CircularLegMetrics.cs" />
     <Compile Include="EndSessionEvent.cs" />
+    <Compile Include="Forms\FindByInternalIdForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FindByInternalIdForm.Designer.cs">
+      <DependentUpon>FindByInternalIdForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\NewProjectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -861,6 +867,9 @@
     <EmbeddedResource Include="Forms\GetIdForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>GetIdForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FindByInternalIdForm.resx">
+      <DependentUpon>FindByInternalIdForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GetKeyForm.resx">
       <SubType>Designer</SubType>

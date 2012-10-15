@@ -898,6 +898,14 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                     EditRepeat(null);
                 }
             }
+
+            if (e.KeyValue == (int)Keys.F && e.Control)
+            {
+                using (var dial = new FindByInternalIdForm())
+                {
+                    dial.ShowDialog();
+                }
+            }
         }
 
         /// <summary>
