@@ -39,9 +39,11 @@ namespace Backsight.Editor.Operations
         internal NewArcOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            // Let the base class do it
-            // ArcFeature arc = editDeserializer.ReadPersistent<ArcFeature>("Line");
-            // SetNewLine(arc);
+            // I originally let the base class do it, but it needs to be an instance
+            // of ArcFeature. This is a bit rough - does NewArcOperation really need
+            // to extend NewLineOperation?
+            ArcFeature arc = editDeserializer.ReadPersistent<ArcFeature>(DataField.Line);
+            SetNewLine(arc);
         }
 
         /// <summary>

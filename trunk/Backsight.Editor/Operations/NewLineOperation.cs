@@ -56,7 +56,7 @@ namespace Backsight.Editor.Operations
             : base(editDeserializer)
         {
             // Bit of a hack - does NewCircleOperation actually need to extend NewLineOperation?
-            if (!(this is NewCircleOperation))
+            if (!(this is NewCircleOperation) && !(this is NewArcOperation))
                 m_NewLine = editDeserializer.ReadPersistent<LineFeature>(DataField.Line);
         }
 

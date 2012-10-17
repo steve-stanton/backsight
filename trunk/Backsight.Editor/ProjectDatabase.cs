@@ -307,6 +307,8 @@ namespace Backsight.Editor
 
             using (StreamWriter sw = File.CreateText(ptsFileName + ".check"))
             {
+                int nBad = 0;
+
                 foreach (string s in lines)
                 {
                     string[] items = s.Split(',');
@@ -321,9 +323,15 @@ namespace Backsight.Editor
                     if (p != null)
                     {
                         double delta = Geom.Distance(a, p);
-                        sw.WriteLine(String.Format("Id={0}  Delta={1:0.000}", id, delta));
+                        if (delta > 0.001)
+                        {
+                            sw.WriteLine(String.Format("Id={0}  Delta={1:0.000}", id, delta));
+                            nBad++;
+                        }
                     }
                 }
+
+                sw.WriteLine("Number of points>0.001 = " + nBad);
             }
         }
 

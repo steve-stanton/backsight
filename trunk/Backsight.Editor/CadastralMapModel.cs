@@ -1171,7 +1171,7 @@ namespace Backsight.Editor
             // Create spatial index
             Trace.Write("Indexing...");
             CreateIndex(edits);
-            /*
+
             // Intersect topological lines that aren't marked for deletion
             Trace.Write("Intersecting lines");
 
@@ -1189,7 +1189,7 @@ namespace Backsight.Editor
 
             // Now build the topology for the map
             BuildPolygons();
-            */
+
             // Initialize ID handling. This associates ID allocations with their corresponding ID packet.
             int nDone = 0;
             foreach (NativeId nid in m_NativeIds.Values)
