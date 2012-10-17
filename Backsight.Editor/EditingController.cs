@@ -423,13 +423,14 @@ namespace Backsight.Editor
             if (k.KeyCode == Keys.Escape && m_Command!=null && m_Command.ActiveDisplay==sender)
                 m_Command.Escape();
 
-            //if (k.KeyCode == Keys.ControlKey && !IsCommandRunning)
-            if ((k.KeyCode & Keys.ControlKey)!=0 && !IsCommandRunning)
+            if (!IsCommandRunning && k.Control)
             {
-                // Present debugging dialog on a CTRL+F
-                //if (k.KeyValue == (int)Keys.F)
-                if ((k.KeyCode & Keys.F)!=0)
+                if (k.KeyValue == (int)Keys.F)
                 {
+                    // If area selection tool was enabled via interception of initial CTRL key
+                    // press, cancel it now.
+                    FreeAreaSelectionTool();
+
                     // Ensure property window gets displayed
                     m_Main.ShowPropertyWindow();
 

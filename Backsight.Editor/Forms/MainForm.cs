@@ -903,6 +903,11 @@ void CeView::OnRButtonUp(UINT nFlags, CPoint point)
                     EditRepeat(null);
                 }
             }
+
+            // Ensure KeyDown handler gets called if user hasn't clicked on the map (not
+            // really sure why this is needed here)
+            if (e.Control && e.KeyValue == (int)Keys.F)
+                m_Controller.KeyDown(m_Controller.ActiveDisplay, e);
         }
 
         /// <summary>
