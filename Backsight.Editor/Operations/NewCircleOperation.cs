@@ -269,8 +269,18 @@ namespace Backsight.Editor.Operations
             if (p == null)
                 p = ff.CreatePointFeature(DataField.ClosingPoint);
 
-            // Form the construction line (there is no associated circle at this stage)
+            // Form the construction line (there is no associated circle at this stage, because
+            // geometry does not get created until CalculateGeometry)
             ArcFeature arc = ff.CreateArcFeature(DataField.Arc, p, p);
+
+            // Attach a new circle with undefined radius (at this stage, we do NOT cross-reference
+            // it to the center point or add it to the map model, since that should be left unti;
+            // CalculateGeometry).
+
+            // Note: Setting the arc geometry also updates the circle to refer back to the feature.
+
+            var circle = new Circle(m_Center, 0.0);
+            arc.Geometry = new ArcGeometry(circle, arc.StartPoint, arc.StartPoint, true);
 
             base.SetNewLine(arc);
         }
@@ -295,12 +305,13 @@ namespace Backsight.Editor.Operations
                 p.ApplyPointGeometry(ctx, pg);
             }
 
-            // Try to find an existing circle. If we don't find one, create one (attaching it to
-            // the center point);
-            Circle circle = MapModel.AddCircle(m_Center, rad);
+            // Define the radius of the circle and include in the map model
+            Circle circle = arc.Circle;
+            Debug.Assert(circle != null);
+            circle.Radius = rad;
 
-            // Define the geometry for the feature (and attach the arc to the circle)
-            arc.Geometry = new ArcGeometry(circle, arc.StartPoint, arc.StartPoint, true);
+            // Refer the center point to the circle.
+            circle.AddReferences();
         }
 
         /// <summary>

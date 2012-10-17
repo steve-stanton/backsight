@@ -648,6 +648,12 @@ LineFeature_c::~LineFeature_c()
 
 LPCTSTR LineFeature_c::GetTypeName() const
 {
+	if (dynamic_cast<ArcGeometry_c*>(Geom) != 0)
+	{
+		static LPCTSTR arcTypeName = "ArcFeature";
+		return arcTypeName;
+	}
+
 	static LPCTSTR typeName = "LineFeature";
 	return typeName;
 }

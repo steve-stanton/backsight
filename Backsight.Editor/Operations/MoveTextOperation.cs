@@ -73,7 +73,14 @@ namespace Backsight.Editor.Operations
         internal MoveTextOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            ReadData(editDeserializer, out m_Text, out m_OldPosition, out m_NewPosition, out m_OldPolPosition);
+            m_Text = editDeserializer.ReadFeatureRef<TextFeature>(DataField.Text);
+            m_OldPosition = editDeserializer.ReadPointGeometry(DataField.OldX, DataField.OldY);
+            m_NewPosition = editDeserializer.ReadPointGeometry(DataField.NewX, DataField.NewY);
+
+            if (editDeserializer.IsNextField(DataField.OldPolygonX))
+                m_OldPolPosition = editDeserializer.ReadPointGeometry(DataField.OldPolygonX, DataField.OldPolygonY);
+            else
+                m_OldPolPosition = null;
         }
 
         #endregion
@@ -237,27 +244,6 @@ namespace Backsight.Editor.Operations
 
             if (m_OldPolPosition != null)
                 editSerializer.WritePointGeometry(DataField.OldPolygonX, DataField.OldPolygonY, m_OldPolPosition);
-        }
-
-        /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="text">The feature that was moved</param>
-        /// <param name="oldPosition">The original position of the text.</param>
-        /// <param name="newPosition">Where the text was moved to. This doubles as the new polygon reference position.</param>
-        /// <param name="oldPolPosition">The old reference position (null if its identical to the old position)</param>
-        static void ReadData(EditDeserializer editDeserializer, out TextFeature text, out PointGeometry oldPosition,
-                                out PointGeometry newPosition, out PointGeometry oldPolPosition)
-        {
-            text = editDeserializer.ReadFeatureRef<TextFeature>(DataField.Text);
-            oldPosition = editDeserializer.ReadPointGeometry(DataField.OldX, DataField.OldY);
-            newPosition = editDeserializer.ReadPointGeometry(DataField.NewX, DataField.NewY);
-
-            if (editDeserializer.IsNextField(DataField.OldPolygonX))
-                oldPolPosition = editDeserializer.ReadPointGeometry(DataField.OldPolygonX, DataField.OldPolygonY);
-            else
-                oldPolPosition = null;
         }
     }
 }

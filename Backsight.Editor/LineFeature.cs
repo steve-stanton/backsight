@@ -217,13 +217,26 @@ namespace Backsight.Editor
         internal LineFeature(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            bool isTopological;
-            ReadData(editDeserializer, out m_From, out m_To, out isTopological, out m_Geom);
+            if (this.InternalId.ItemSequence == 10570)
+            {
+                int junk = 0;
+            }
 
-            AddReferences();
+            try
+            {
+                bool isTopological;
+                ReadData(editDeserializer, out m_From, out m_To, out isTopological, out m_Geom);
 
-            if (isTopological)
-                SetTopology(true);
+                AddReferences();
+
+                if (isTopological)
+                    SetTopology(true);
+            }
+
+            catch (Exception ex)
+            {
+                int junk = 0;
+            }
         }
 
         #endregion
