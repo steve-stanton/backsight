@@ -1327,11 +1327,11 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 	op.GetString(EntryString);
 	DefaultEntryUnit = 0;
 
-	// Allocate IDs for every leg plus 2 for every span (regardless of whether it
+	// Allocate IDs for every primary leg & face, plus 2 for every span (regardless of whether it
 	// has a line feature).
 
 	unsigned int primaryFaceId = 0;
-	CePoint* endPrimaryFacePoint = 0;
+	CUIntArray faceIds;
 
 	for (int i=0; i<op.GetNumLeg(); i++)
 	{
@@ -1351,13 +1351,35 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 
 			// Now reserve an ID for the primary face itself
 			primaryFaceId = idf.GetNextId(0);
-
-			// Remember the point at the end of this face (we want to ignore it when
-			// recording ID mappings for any alternate face that could follow).
-			endPrimaryFacePoint = leg->GetpEndPoint(op);
+			faceIds.Add(primaryFaceId);
 
 			// Collect ID mappings, ignoring the point at the very end of the path
 			GetIdMappings(op, *leg, op.GetpTo(), idf);
+		}
+	}
+
+	// Go through the legs once again, but this time collect info only for the extra legs
+
+	CePoint* endPrimaryFacePoint = 0;
+	int legNum = 0;
+
+	for (int i=0; i<op.GetNumLeg(); i++)
+	{
+		CeLeg* leg = op.GetpLeg(i);
+
+		// If we're dealing with an extra leg, remember it in the collection of alternate faces.
+#ifdef _CEDIT
+		objectstore::touch(leg, false);
+#endif
+		CeExtraLeg* extra = dynamic_cast<CeExtraLeg*>(leg);
+		if (extra == 0)
+		{
+			primaryFaceId = faceIds.GetAt(legNum);
+			legNum++;
+
+			// Remember the point at the end of this face (we want to ignore it when
+			// recording ID mappings for any alternate face that follows).
+			endPrimaryFacePoint = leg->GetpEndPoint(op);
 		}
 		else
 		{
