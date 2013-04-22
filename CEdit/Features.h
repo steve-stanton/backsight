@@ -30,6 +30,21 @@ class CeObjectList;
 #include "CEditStubs.h"
 #endif
 
+class EditFeatures
+{
+public:
+	CPtrArray Points;
+	CPtrArray Lines;
+	CPtrArray Labels;
+
+	EditFeatures() {}
+	void Add(const CeFeature* pFeat);
+	unsigned int PutFeatures(CeObjectList& result) const;
+
+private:
+	unsigned int AppendFeatures(CeObjectList& result, const CPtrArray& features) const;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 class FeatureId_c : public Persistent_c

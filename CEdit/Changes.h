@@ -23,6 +23,7 @@ class CeIntersectDirLine;
 class CeIntersectDist;
 class CeIntersectLine;
 class CeLeg;
+class CeMap;
 class CeMoveLabel;
 class CeNewArc;
 class CeNewCircle;
@@ -59,6 +60,10 @@ public:
 	unsigned int FindId(void* p) const;
 	void AddIndexEntry(void* p, unsigned int id);
 	void WritePointsFile(LPCTSTR fileName);
+	void GenerateOperationFeatureLists(CeMap* cedFile);
+	void ClearOperationFeatureLists();
+	EditFeatures* FindFeatures(const CeOperation* pop) const;
+	unsigned int FindFeatures(const CeOperation* pop, CeObjectList& result) const;
 
 	int GetEntityId(LPCTSTR entName);
 	int GetFontId(LPCTSTR fontTitle);
@@ -76,6 +81,10 @@ private:
 	// The key is a void pointer to some sort of persistent object in a ced file, the
 	// value is the Backsight internal ID
 	CMapPtrToPtr m_ObjectIds;
+
+	// The key is a void pointer to an instance of CeOperation, the value
+	// is a pointer to an instance of EditFeatures.
+	CMapPtrToPtr m_OpFeatures;
 
 	CMapStringToPtr m_EntityMap;
 	CMapStringToPtr m_TemplateMap;

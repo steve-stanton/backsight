@@ -119,6 +119,10 @@ unsigned int IdFactory::GetNextId(void* p)
 	{
 		// You should never need to ask for an ID more than once
 		unsigned int iid = FindId(p);
+		if (iid!=0)
+		{
+			int junk = 0;
+		}
 		assert(iid == 0);
 		m_ObjectIds.SetAt(p, (void*)m_MaxId);
 	}
@@ -201,6 +205,101 @@ void IdFactory::WritePointsFile(LPCTSTR fileName)
 	}
 
 	fclose(fp);
+}
+
+void IdFactory::ClearOperationFeatureLists()
+{
+	POSITION pos = m_OpFeatures.GetStartPosition();
+	void* key;
+	void* value;
+
+	while(pos)
+	{
+		m_OpFeatures.GetNextAssoc(pos, key, value);
+		EditFeatures* edf = (EditFeatures*)value;
+		delete edf;
+	}
+
+	m_OpFeatures.RemoveAll();
+}
+
+#ifdef _CEDIT
+#include "CeMap.h"
+#endif
+
+void IdFactory::GenerateOperationFeatureLists(CeMap* cedFile)
+{
+#ifdef _CEDIT
+	ClearOperationFeatureLists();
+
+	// Use an object cursor to go through everything.
+	void* ptr=0;
+	os_typespec* curts=0;
+	os_int32 count=0;
+	os_object_cursor c(os_database::of(cedFile));
+
+	for ( c.first(); c.more(); c.next() )
+	{
+		if ( c.current(ptr,curts,count) )
+		{
+			try
+			{
+				CeClass* pc = (CeClass*)ptr;
+				objectstore::touch(pc, false);
+
+				const CeFeature* pFeat = dynamic_cast<const CeFeature*>(pc);
+				if (pFeat)
+				{
+					CeOperation* pop = pFeat->GetpCreator();
+					if (pop == 0)
+					{
+						int junk = 0;
+					}
+					else if (pop->GetType() != CEOP_SPLIT)
+					{
+						void* p;
+						EditFeatures* pEditFeatures;
+
+						if (m_OpFeatures.Lookup((void*)pop, p))
+						{
+							pEditFeatures = (EditFeatures*)p;
+						}
+						else
+						{
+							pEditFeatures = new EditFeatures();
+							m_OpFeatures.SetAt((void*)pop, (void*)pEditFeatures);
+						}
+
+						pEditFeatures->Add(pFeat);
+					}
+				}
+			}
+
+			catch (...)
+			{
+			}
+		}
+	}
+#endif
+}
+
+EditFeatures* IdFactory::FindFeatures(const CeOperation* pop) const
+{
+	void* value;
+
+	if (m_OpFeatures.Lookup((void*)pop, value))
+		return (EditFeatures*)value;
+	else
+		return 0;
+}
+
+unsigned int IdFactory::FindFeatures(const CeOperation* pop, CeObjectList& result) const
+{
+	EditFeatures* edf = FindFeatures(pop);
+	if (edf == 0)
+		return 0;
+
+	return edf->PutFeatures(result);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -314,7 +413,8 @@ void IdAllocation_c::WriteData(EditSerializer& s) const
 void Operation_c::LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtrArray& exportFeatures, bool doPointsFirst)
 {
 	CeObjectList obList;
-	op.GetFeatures(obList);
+	//op.GetFeatures(obList);
+	idf.FindFeatures(&op, obList);
 
 	CeListIter loop(&obList, TRUE);
 	const CeFeature* f;
@@ -328,6 +428,11 @@ void Operation_c::LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtr
 #ifdef _CEDIT
 			objectstore::touch(f, false);
 #endif
+			if ((int)f == 0x301f9420)
+			{
+				int junk = 0;
+			}
+
 			const CePoint* p = dynamic_cast<const CePoint*>(f);
 			if (p != 0)
 			{
@@ -345,6 +450,7 @@ void Operation_c::LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtr
 #ifdef _CEDIT
 			objectstore::touch(f, false);
 #endif
+
 			const CePoint* p = dynamic_cast<const CePoint*>(f);
 			if (p == 0)
 			{
@@ -439,7 +545,7 @@ DeletionOperation_c::DeletionOperation_c(IdFactory& idf, const CTime& when, cons
 	{
 		unsigned int iid = idf.FindId(pThing);
 		assert(iid < this->Sequence);
-		assert(iid > 0);
+		//assert(iid > 0);
 		Deletions.Add(iid);
 	}
 }
@@ -775,6 +881,10 @@ void IntersectTwoDistancesOperation_c::WriteData(EditSerializer& s) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef _CEDIT
+#include "CeEntity.h"
+#endif
+
 IntersectTwoLinesOperation_c::IntersectTwoLinesOperation_c(IdFactory& idf, const CTime& when, const CeIntersectLine& op)
 	: IntersectOperation_c(idf, when, op)
 {
@@ -783,7 +893,26 @@ IntersectTwoLinesOperation_c::IntersectTwoLinesOperation_c(IdFactory& idf, const
 	Line2 = op.GetpArc2();
 	IsSplit2 = op.IsSplit2();
 	CloseTo = op.GetpCloseTo();
-	Intersection = new FeatureStub_c(idf, *(op.GetpIntersect()));
+
+	// If the intersection was created by another edit, manufacture a new point.
+	// In one example case, the user intersected a pair of lines, but failed to
+	// split one of the lines as intended. In the subsequent edit, they intersected
+	// one split section resulting from the first edit, and the same 2nd line (but
+	// this time, said they wanted to split it too). The result is that the split
+	// would be in exactly the same place. Whereas CEdit would use the original
+	// CePoint, Backsight expects a 2nd point feature.
+
+	// If other edits make reference to the intersection, it's sufficient
+	// to make use of the first point.
+
+	CePoint* p = op.GetpIntersect();
+	if (p->GetpCreator()->GetSequence() == op.GetSequence())
+		Intersection = new FeatureStub_c(idf, *p);
+	else
+	{
+		int entId = idf.GetEntityId(p->GetpEntity()->GetName());
+		Intersection = new FeatureStub_c(idf, (unsigned int)entId, 0);
+	}
 
 	CeArc* line1a = op.GetpArc1a();
 	if (line1a == 0)
@@ -1012,6 +1141,11 @@ MoveTextOperation_c::MoveTextOperation_c(IdFactory& idf, const CTime& when, cons
 {
 	CeLabel* label = op.GetpLabel();
 	Text = label;
+
+	if (this->Sequence == 12839)
+	{
+		int junk = 0;
+	}
 
 	// What if it was previously moved? (will presumably lose intervening positions)
 	OldPosition = new PointGeometry_c(op.GetOldPosition());
@@ -1327,11 +1461,11 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 	op.GetString(EntryString);
 	DefaultEntryUnit = 0;
 
-	// Allocate IDs for every primary leg & face, plus 2 for every span (regardless of whether it
+	// Allocate IDs for every leg plus 2 for every span (regardless of whether it
 	// has a line feature).
 
 	unsigned int primaryFaceId = 0;
-	CUIntArray faceIds;
+	CePoint* endPrimaryFacePoint = 0;
 
 	for (int i=0; i<op.GetNumLeg(); i++)
 	{
@@ -1351,35 +1485,13 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 
 			// Now reserve an ID for the primary face itself
 			primaryFaceId = idf.GetNextId(0);
-			faceIds.Add(primaryFaceId);
+
+			// Remember the point at the end of this face (we want to ignore it when
+			// recording ID mappings for any alternate face that could follow).
+			endPrimaryFacePoint = leg->GetpEndPoint(op);
 
 			// Collect ID mappings, ignoring the point at the very end of the path
 			GetIdMappings(op, *leg, op.GetpTo(), idf);
-		}
-	}
-
-	// Go through the legs once again, but this time collect info only for the extra legs
-
-	CePoint* endPrimaryFacePoint = 0;
-	int legNum = 0;
-
-	for (int i=0; i<op.GetNumLeg(); i++)
-	{
-		CeLeg* leg = op.GetpLeg(i);
-
-		// If we're dealing with an extra leg, remember it in the collection of alternate faces.
-#ifdef _CEDIT
-		objectstore::touch(leg, false);
-#endif
-		CeExtraLeg* extra = dynamic_cast<CeExtraLeg*>(leg);
-		if (extra == 0)
-		{
-			primaryFaceId = faceIds.GetAt(legNum);
-			legNum++;
-
-			// Remember the point at the end of this face (we want to ignore it when
-			// recording ID mappings for any alternate face that follows).
-			endPrimaryFacePoint = leg->GetpEndPoint(op);
 		}
 		else
 		{

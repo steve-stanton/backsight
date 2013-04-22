@@ -242,6 +242,11 @@ void EditSerializer::WriteInternalId(DataField field, unsigned int id)
 void EditSerializer::WriteFeatureRef(DataField field, void* feature)
 {
 	unsigned int iid = m_IdFactory.FindId(feature);
+	if (iid == 0)
+	{
+		CeFeature* f = (CeFeature*)feature;
+		int junk = 0;
+	}
 	m_Writer.WriteInternalId(DataFields[field], iid);
 }
 
