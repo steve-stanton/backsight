@@ -34,6 +34,59 @@
 #include "CeSchema.h"
 #endif
 
+void EditFeatures::Add(const CeFeature* pFeat)
+{
+#ifdef _CEDIT
+	objectstore::touch(pFeat, false);
+#endif
+	const CePoint* pPoint = dynamic_cast<const CePoint*>(pFeat);
+	if (pPoint)
+	{
+		Points.Add((void*)pPoint);
+		return;
+	}
+
+	const CeArc* pArc = dynamic_cast<const CeArc*>(pFeat);
+	if (pArc)
+	{
+		Lines.Add((void*)pArc);
+		return;
+	}
+
+	const CeLabel* pLabel = dynamic_cast<const CeLabel*>(pFeat);
+	if (pLabel)
+	{
+		Labels.Add((void*)pLabel);
+		return;
+	}
+
+	assert(1==0);
+}
+
+#ifdef _CEDIT
+#include "CeObjectList.h"
+#endif
+
+unsigned int EditFeatures::PutFeatures(CeObjectList& result) const
+{
+	unsigned int numFeat = 0;
+
+	numFeat += AppendFeatures(result, Points);
+	numFeat += AppendFeatures(result, Lines);
+	numFeat += AppendFeatures(result, Labels);
+
+	return numFeat;
+}
+
+unsigned int EditFeatures::AppendFeatures(CeObjectList& result, const CPtrArray& features) const
+{
+	for (int i=0; i<features.GetSize(); i++)
+		result.Append((CeClass*)features.GetAt(i));
+//		result.Append((CeFeature*)features.GetAt(i));
+
+	return (unsigned int)features.GetSize();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 FeatureId_c::FeatureId_c(unsigned int nativeRawId)
@@ -648,12 +701,6 @@ LineFeature_c::~LineFeature_c()
 
 LPCTSTR LineFeature_c::GetTypeName() const
 {
-	if (dynamic_cast<ArcGeometry_c*>(Geom) != 0)
-	{
-		static LPCTSTR arcTypeName = "ArcFeature";
-		return arcTypeName;
-	}
-
 	static LPCTSTR typeName = "LineFeature";
 	return typeName;
 }

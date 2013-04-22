@@ -55,6 +55,7 @@ public:
 class CeEntity
 {
 public:
+	const char* GetName ( void ) const { return 0; }
 };
 
 class CeIdGroup
@@ -111,7 +112,7 @@ private:
 
 class CeOperation;
 
-class CeFeature
+class CeFeature //: CeClass
 {
 public:
 	virtual ~CeFeature() = 0;
@@ -242,6 +243,7 @@ class CeObjectList //: public CeClass
 public:
 	CeClass* const GetpFirst ( void ) const { return 0; }
 	void Remove ( void ) {}
+	CeObjectList* Append ( const CeClass* const pObject ) { return 0; }
 };
 
 class CeOperation

@@ -113,6 +113,11 @@ void CedExporter::CreateExport(CeMap* cedFile)
 			items.Add(new IdAllocation_c(idFactory, now, groupId, range->GetMin(), range->GetMax()));
 		}
 	}
+
+	// Produce a definitive (correct) list of the features created
+	// be each edit. This aims to overcome a defect in the lists associated
+	// with CeImport edits (and perhaps other edits).
+	idFactory.GenerateOperationFeatureLists(cedFile);
 	
 	// Generate any points that will be needed for line ends (whereas CEdit would let you have lines without
 	// an end point, Backsight requires them)
@@ -131,12 +136,14 @@ void CedExporter::CreateExport(CeMap* cedFile)
 	// Now loop through each session (but ignore empty sessions).
 	CPSEPtrList& sessions = cedFile->GetSessions();
 	POSITION spos = sessions.GetHeadPosition();
+	int totop = 0;
 
 	while (spos != 0)
 	{
 		CeSession* session = (CeSession*)sessions.GetNext(spos);
 		const CPSEPtrList& ops = session->GetOperations();
 		int nop = ops.GetCount();
+		totop += nop;
 
 		if (nop > 0)
 		{
@@ -153,6 +160,12 @@ void CedExporter::CreateExport(CeMap* cedFile)
 			for (int i=0; i<nop; i++)
 			{
 				CeOperation* op = (CeOperation*)ops.GetNext(opos);
+
+				if (op->GetSequence() == 1743)
+				{
+					int junk=0;
+				}
+
 				LONG secs = (i+1) * secsPerEdit;
 				CTimeSpan delta(0,0,0, secs);
 				CTime when = startTime + delta;
@@ -163,6 +176,15 @@ void CedExporter::CreateExport(CeMap* cedFile)
 			items.Add(new EndSessionEvent_c(idFactory, endTime));
 		}
 	}
+
+	// Clear the lists of features associated with each edit
+	idFactory.ClearOperationFeatureLists();
+
+	// test
+	CString t;
+	t.Format("Number of edits=%d", totop);
+	AfxMessageBox(t);
+	//return;
 
 	// Create the project folder
 	CString projectFolder;
@@ -253,9 +275,11 @@ void CedExporter::CreateExport(CeMap* cedFile)
 	tables.RemoveAll();
 }
 
+
 #ifdef _CEDIT
 
 // Need to include h-files for all the edits?
+#include "CeFeature.h"
 #include "CeImport.h"
 #include "CeArcSubdivision.h"
 #include "CeIntersectDir.h"
@@ -286,6 +310,11 @@ void CedExporter::CreateExport(CeMap* cedFile)
 
 void CedExporter::AppendExportItems(const CTime& when, const CeOperation& op, IdFactory& idf, CPtrArray& exportItems)
 {
+	if (op.GetSequence() == 1743)
+	{
+		int junk = 0;
+	}
+
 	switch (op.GetType())
 	{
 	case CEOP_DATA_IMPORT:
@@ -435,7 +464,8 @@ void CedExporter::GenerateExtraPoints(CeMap* cedFile, IdFactory& idf, CPtrArray&
 		while (opos != 0)
 		{
 			CeOperation* op = (CeOperation*)ops.GetNext(opos);
-			op->GetFeatures(features);
+			//op->GetFeatures(features);
+			idf.FindFeatures(op, features);
 			CeListIter* loop = new CeListIter(&features, TRUE);
 			CeFeature* f;
 
