@@ -325,7 +325,7 @@ namespace Backsight.Editor
                         double delta = Geom.Distance(a, p);
                         if (delta > 0.001)
                         {
-                            sw.WriteLine(String.Format("Id={0}  Delta={1:0.000}", id, delta));
+                            sw.WriteLine(String.Format("Id={0}  Delta={1:0.000}  Del={2}", id, delta, p.IsInactive));
                             nBad++;
                         }
                     }
