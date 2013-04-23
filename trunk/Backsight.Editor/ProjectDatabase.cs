@@ -382,8 +382,8 @@ namespace Backsight.Editor
             using (StreamWriter sw = File.CreateText(ptsFileName + ".check"))
             {
                 // Dump out the calc order
-                foreach (Operation op in calcs)
-                    sw.WriteLine(String.Format("Edit={0} Order={1} Type={2}", op.EditSequence, editOrder[op.EditSequence], op.EditId));
+                //foreach (Operation op in calcs)
+                //    sw.WriteLine(String.Format("Edit={0} Order={1} Type={2}", op.EditSequence, editOrder[op.EditSequence], op.EditId));
 
                 sw.WriteLine("Number of points>0.001 = " + badList.Count);
                 foreach (CheckData cd in badList)
