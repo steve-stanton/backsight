@@ -289,7 +289,7 @@ namespace Backsight.Editor
 
             return result;
         }
-
+/*
         void CheckPts(string ptsFileName, CadastralMapModel mm)
         {
             if (!File.Exists(ptsFileName))
@@ -325,7 +325,7 @@ namespace Backsight.Editor
                         double delta = Geom.Distance(a, p);
                         if (delta > 0.001)
                         {
-                            sw.WriteLine(String.Format("Id={0}  Delta={1:0.000}  Del={2}", id, delta, p.IsInactive));
+                            sw.WriteLine(String.Format("Id={0}  Delta={1:0.000}  Del={2} Edit={3}", id, delta, p.IsInactive, p.Creator.EditId));
                             nBad++;
                         }
                     }
@@ -334,6 +334,64 @@ namespace Backsight.Editor
                 sw.WriteLine("Number of points>0.001 = " + nBad);
             }
         }
+        */
+
+        class CheckData
+        {
+            internal PointFeature Point { get; set; }
+            internal double Delta { get; set; }
+            internal uint CalculationOrder { get; set; }
+        }
+
+        void CheckPts(string ptsFileName, CadastralMapModel mm)
+        {
+            if (!File.Exists(ptsFileName))
+                return;
+
+            var badList = new List<CheckData>();
+
+            foreach (string s in File.ReadAllLines(ptsFileName))
+            {
+                string[] items = s.Split(',');
+                uint id = UInt32.Parse(items[0]);
+                double x = Double.Parse(items[1]);
+                double y = Double.Parse(items[2]);
+                Position a = new Position(x, y);
+
+                PointFeature p = mm.Find<PointFeature>(new InternalIdValue(id));
+
+                if (p != null)
+                {
+                    double delta = Geom.Distance(a, p);
+                    if (delta > 0.001)
+                        badList.Add(new CheckData() { Point = p, Delta = delta });
+                }
+            }
+
+            // Obtain the calculation sequence
+            Operation[] calcs = mm.GetCalculationSequence();
+            var editOrder = new Dictionary<uint, uint>();
+            for (int i = 0; i < calcs.Length; i++)
+                editOrder.Add(calcs[i].EditSequence, (uint)i);
+
+            foreach (CheckData cd in badList)
+                cd.CalculationOrder = editOrder[cd.Point.Creator.EditSequence];
+
+            badList.Sort((A, B) => A.CalculationOrder.CompareTo(B.CalculationOrder));
+
+            using (StreamWriter sw = File.CreateText(ptsFileName + ".check"))
+            {
+                // Dump out the calc order
+                foreach (Operation op in calcs)
+                    sw.WriteLine(String.Format("Edit={0} Order={1} Type={2}", op.EditSequence, editOrder[op.EditSequence], op.EditId));
+
+                sw.WriteLine("Number of points>0.001 = " + badList.Count);
+                foreach (CheckData cd in badList)
+                    sw.WriteLine(String.Format("Order={0} Id={1}  Delta={2:0.000}",
+                        cd.CalculationOrder, cd.Point.InternalId.ItemSequence, cd.Delta));
+            }
+        }
+
 
         /// <summary>
         /// Checks whether a user-perceived project name is valid.
