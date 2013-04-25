@@ -86,13 +86,14 @@ void EditSerializer::RadiansAsShortString(char* res, double value)
 
     // Get the degrees, minutes, and seconds, all unsigned.
 	double deg, mins, secs, rem;
-    rem = modf(abs(sdeg), &deg);
+	double adeg = fabs(sdeg);
+    rem = modf(adeg, &deg);
     rem = modf(rem*60.0, &mins);
     secs = rem*60.0;
 
     // Make sure we don't have max-values (i.e. 60's)
-	unsigned int ideg  = (unsigned int)deg;
-	unsigned int imins = (unsigned int)mins;
+	unsigned int ideg  = (unsigned int)(deg + 0.1);
+	unsigned int imins = (unsigned int)(mins + 0.1);
 
 	if (abs(secs-60.0) < 0.001) // 3 decimals formatted below
     {
@@ -121,7 +122,7 @@ void EditSerializer::RadiansAsShortString(char* res, double value)
     if (secs>=0.001)
 	{
 		char extra[10];
-		sprintf(extra, "%-.3f", secs);
+		sprintf(extra, "-%-.3f", secs);
 		strcat(res, extra);
 	}
 }
