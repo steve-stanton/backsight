@@ -130,8 +130,10 @@ namespace Backsight.Editor
 
             if (f == null)
                 return null;
-            else
-                return new ArcFeature(f, from, to, null, f.EntityType.IsPolygonBoundaryValid);
+
+            // Circle construction lines may not have an entity type
+            bool isPolBoundary = (f.EntityType == null ? false : f.EntityType.IsPolygonBoundaryValid);
+            return new ArcFeature(f, from, to, null, isPolBoundary);
         }
 
         /// <summary>
