@@ -441,7 +441,6 @@ namespace Backsight.Editor.Operations
 
             if (p == null)
             {
-                int junk = 0;
                 p = CheckPosition;
                 Log(String.Format("Id={0} (CEdit={1:0.0}E {2:0.0}N", this.EditSequence, p.X, p.Y));
             }
