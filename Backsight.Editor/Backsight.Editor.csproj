@@ -125,6 +125,7 @@
     <Compile Include="IdMapping.cs" />
     <Compile Include="IFeatureRef.cs" />
     <Compile Include="LegFace.cs" />
+    <Compile Include="LoadingContext.cs" />
     <Compile Include="NewProjectEvent.cs" />
     <Compile Include="CircularLeg.cs" />
     <Compile Include="CircularLegFlag.cs" />

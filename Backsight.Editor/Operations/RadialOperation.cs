@@ -93,9 +93,10 @@ namespace Backsight.Editor.Operations
                 ProcessFeatures(dff);
             }
 
-            catch (Exception ex)
+            catch
             {
                 int junk = 0;
+                throw;
             }
         }
 

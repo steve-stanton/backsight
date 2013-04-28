@@ -233,9 +233,10 @@ namespace Backsight.Editor
                     SetTopology(true);
             }
 
-            catch (Exception ex)
+            catch
             {
                 int junk = 0;
+                throw;
             }
         }
 
@@ -848,7 +849,9 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// Toggles the topological status of this line. This should be called only
         /// by <see cref="SetTopologyOperation.Execute"/>
         /// </summary>
-        internal void SwitchTopology()
+        /// <param name="isLoading">Is the map model being loaded (meaning that polygon topology has
+        /// not yet been built)?</param>
+        internal void SwitchTopology(bool isLoading)
         {
             if (IsTopological)
             {
@@ -863,8 +866,11 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 // Create new m_Topology & set the flag bit
                 SetTopology(true);
 
-                // Mark polygons that are incident on the end points
-                MarkPolygons();
+                // Mark polygons that are incident on the end points. Don't even try to mark
+                // polygons at this stage if the model is being loaded, as it could require access
+                // to geometry that has not been calculated yet.
+                if (!isLoading)
+                    MarkPolygons();
 
                 // Treat the line as "moved" to force re-intersection
                 IsMoved = true;

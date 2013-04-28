@@ -74,7 +74,19 @@ namespace Backsight.Editor.Operations
             DeserializationFactory dff = new DeserializationFactory(this);
             dff.AddFeatureStub(DataField.ClosingPoint, closingPoint);
             dff.AddFeatureStub(DataField.Arc, arc);
+
             ProcessFeatures(dff);
+            /*
+            try
+            {
+                ProcessFeatures(dff);
+            }
+
+            catch
+            {
+                ProcessFeatures(dff);
+            }
+             */
         }
 
         #endregion

@@ -1,5 +1,5 @@
 ﻿// <remarks>
-// Copyright 2010 - Steve Stanton. This file is part of Backsight
+// Copyright 2013 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
 // of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -16,15 +16,17 @@
 namespace Backsight.Editor
 {
     /// <summary>
-    /// Something that keeps track of changes arising from edits.
-    /// Base class for <see cref="UpdateEditingContext"/> and <see cref="LoadingContext"/>
+    /// Context indicating that the map model is being loaded.
     /// </summary>
-    abstract class EditingContext
+    class LoadingContext : EditingContext
     {
         /// <summary>
         /// Remembers a modification to the position of a point.
         /// </summary>
-        /// <param name="point">The point that is about to be modified</param>
-        abstract internal void RegisterChange(PointFeature p);
+        /// <param name="p"></param>
+        internal override void RegisterChange(PointFeature p)
+        {
+            // Do nothing
+        }
     }
 }

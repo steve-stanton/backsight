@@ -92,7 +92,7 @@ namespace Backsight.Editor.Operations
         internal override void Undo()
         {
             base.OnRollback();
-            m_Line.SwitchTopology();
+            m_Line.SwitchTopology(false);
         }
 
         /// <summary>
@@ -109,7 +109,23 @@ namespace Backsight.Editor.Operations
         /// <param name="ctx">The context in which the geometry is being calculated.</param>
         internal override void CalculateGeometry(EditingContext ctx)
         {
-            m_Line.SwitchTopology();
+            if (this.EditSequence == 70)
+            {
+                int junk = 0;
+            }
+
+            bool isLoading = (ctx is LoadingContext);
+            m_Line.SwitchTopology(isLoading);
+            /*
+            try
+            {
+                m_Line.SwitchTopology();
+            }
+
+            catch
+            {
+            }
+             */
         }
 
         /// <summary>

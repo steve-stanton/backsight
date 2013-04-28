@@ -1160,13 +1160,15 @@ namespace Backsight.Editor
         /// </summary>
         internal void Load()
         {
+            var ctx = new LoadingContext();
+
             Trace.Write("Attaching attributes...");
             AttributeData.Load(GetFeatureIds());
 
             Trace.Write("Calculating geometry...");
             Operation[] edits = GetCalculationSequence();
             foreach (Operation op in edits)
-                op.CalculateGeometry(null);
+                op.CalculateGeometry(ctx);
 
             // Create spatial index
             Trace.Write("Indexing...");

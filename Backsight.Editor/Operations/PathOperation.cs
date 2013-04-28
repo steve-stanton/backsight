@@ -529,6 +529,16 @@ namespace Backsight.Editor.Operations
                 gotend = sections[sections.Length - 1].End;
                 bearing = exitBearing;
             }
+
+            // DEBUG
+            foreach (Feature f in Features)
+            {
+                PointFeature pf = (f as PointFeature);
+                if (pf != null && pf.Geometry == null)
+                {
+                    int junk = 0;
+                }
+            }
         }
 
         /// <summary>
