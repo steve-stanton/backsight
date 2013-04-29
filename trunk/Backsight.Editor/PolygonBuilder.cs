@@ -66,6 +66,8 @@ namespace Backsight.Editor
         /// </summary>
         internal void Build()
         {
+            //return; // debug
+
             Trace.Write("Building network");
             m_Model.Index.QueryWindow(null, SpatialType.Line, ProcessLine);
 
@@ -114,6 +116,11 @@ namespace Backsight.Editor
         {
             Debug.Assert(o is LineFeature);
             LineFeature line = (LineFeature)o;
+
+            if (line.InternalId.ItemSequence == 149)
+            {
+                int junk = 0;
+            }
 
             try
             {
