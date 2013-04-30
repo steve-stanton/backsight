@@ -582,6 +582,7 @@ class SetTopologyOperation_c : public Operation_c
 {
 public:
 	void* Line;
+	bool Topological;
 
 	SetTopologyOperation_c(IdFactory& idf, const CTime& when, const CeSetTopology& op);
 

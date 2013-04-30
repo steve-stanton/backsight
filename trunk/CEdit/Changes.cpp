@@ -1686,6 +1686,10 @@ SetTopologyOperation_c::SetTopologyOperation_c(IdFactory& idf, const CTime& when
 	: Operation_c(idf, when)
 {
 	Line = op.GetpArc();
+
+	// Write the eventual topological status, since the status has already been set (if topological
+	// status has changed more than once, we only really care about the final status)
+	Topological = op.GetpArc()->IsPolygonBoundary();
 }
 
 LPCTSTR SetTopologyOperation_c::GetTypeName() const
@@ -1698,6 +1702,7 @@ void SetTopologyOperation_c::WriteData(EditSerializer& s) const
 {
 	Operation_c::WriteData(s);
     s.WriteFeatureRef(DataField_Line, Line);
+	s.WriteBool(DataField_Topological, Topological);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
