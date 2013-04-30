@@ -236,6 +236,8 @@ public:
 	CeLine*	const GetpLine ( void ) const { return 0; }
 	CeLocation* const GetpStart ( void ) const { return 0; }
 	CeLocation* const GetpEnd ( void ) const { return 0; }
+	bool IsPolygonBoundary ( void ) const { return false; }
+
 };
 
 class CeObjectList //: public CeClass

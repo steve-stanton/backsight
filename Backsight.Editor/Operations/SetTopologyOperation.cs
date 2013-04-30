@@ -32,6 +32,15 @@ namespace Backsight.Editor.Operations
         /// </summary>
         readonly LineFeature m_Line;
 
+        /// <summary>
+        /// True if the line should be marked as topological.
+        /// </summary>
+        /// <remarks>During normal editing work, this should just be the reverse of the initial
+        /// topological status. The value is noted explicitly mainly to cover confusion that
+        /// could arise when importing old data from CEdit.
+        /// </remarks>
+        readonly bool m_Topological;
+
         #endregion
 
         #region Constructors
@@ -47,6 +56,7 @@ namespace Backsight.Editor.Operations
                 throw new ArgumentNullException();
 
             m_Line = line;
+            m_Topological = !line.IsTopological;
         }
 
         /// <summary>
@@ -58,6 +68,7 @@ namespace Backsight.Editor.Operations
             : base(editDeserializer)
         {
             m_Line = editDeserializer.ReadFeatureRef<LineFeature>(DataField.Line);
+            m_Topological = editDeserializer.ReadBool(DataField.Topological);
         }
 
         #endregion
@@ -92,7 +103,9 @@ namespace Backsight.Editor.Operations
         internal override void Undo()
         {
             base.OnRollback();
-            m_Line.SwitchTopology(false);
+
+            if (m_Line.IsTopological != m_Topological)
+                m_Line.SwitchTopology(false);
         }
 
         /// <summary>
@@ -114,18 +127,11 @@ namespace Backsight.Editor.Operations
                 int junk = 0;
             }
 
-            bool isLoading = (ctx is LoadingContext);
-            m_Line.SwitchTopology(isLoading);
-            /*
-            try
+            if (m_Line.IsTopological != m_Topological)
             {
-                m_Line.SwitchTopology();
+                bool isLoading = (ctx is LoadingContext);
+                m_Line.SwitchTopology(isLoading);
             }
-
-            catch
-            {
-            }
-             */
         }
 
         /// <summary>
@@ -167,6 +173,7 @@ namespace Backsight.Editor.Operations
         {
             base.WriteData(editSerializer);
             editSerializer.WriteFeatureRef<LineFeature>(DataField.Line, m_Line);
+            editSerializer.WriteBool(DataField.Topological, m_Topological);
         }
     }
 }
