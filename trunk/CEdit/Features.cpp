@@ -586,7 +586,7 @@ LineFeature_c::LineFeature_c(IdFactory& idf, const CeArc& line)
 	assert(From > 0);
 	assert(To > 0);
 
-	IsTopological = line.IsTopological();
+	IsTopological = line.IsPolygonBoundary();
 
 	// Start by assuming that we've got a CeSegment (which doesn't need any geometry object for serialization)
 	Geom = 0;
