@@ -1461,17 +1461,15 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 	op.GetString(EntryString);
 	DefaultEntryUnit = 0;
 
-	// Allocate IDs for every leg plus 2 for every span (regardless of whether it
-	// has a line feature).
+	// Process the primary faces (allocating 1 ID for each leg, 1 for the primary face,
+	// and 2 for every span (regardless of whether it has a line feature).
 
-	unsigned int primaryFaceId = 0;
-	CePoint* endPrimaryFacePoint = 0;
+	int* faceIds = new int[op.GetNumLeg()];
+	bool hasAlt = false;
 
 	for (int i=0; i<op.GetNumLeg(); i++)
 	{
 		CeLeg* leg = op.GetpLeg(i);
-
-		// If we're dealing with an extra leg, remember it in the collection of alternate faces.
 #ifdef _CEDIT
 		objectstore::touch(leg, false);
 #endif
@@ -1484,39 +1482,55 @@ PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath
 			unsigned int legId = idf.GetNextId(center);
 
 			// Now reserve an ID for the primary face itself
-			primaryFaceId = idf.GetNextId(0);
+			faceIds[i] = idf.GetNextId(0);
 
 			// Remember the point at the end of this face (we want to ignore it when
 			// recording ID mappings for any alternate face that could follow).
-			endPrimaryFacePoint = leg->GetpEndPoint(op);
+			//endPrimaryFacePoint = leg->GetpEndPoint(op);
 
 			// Collect ID mappings, ignoring the point at the very end of the path
 			GetIdMappings(op, *leg, op.GetpTo(), idf);
 		}
 		else
 		{
-			assert(primaryFaceId > 0);
-
-			LegFace_c* altFace = new LegFace_c();
-			altFace->Id = idf.GetNextId(0);
-			altFace->PrimaryFaceId = primaryFaceId;
-			leg->AddToString(altFace->EntryString);
-
-			AlternateFaces.Add((void*)altFace);
-
-			// Ensure we never re-use the sequence number of the primary face
-			primaryFaceId = 0;
-
-			// Collect ID mappings, ignoring the point at the end of the preceding leg (and if that's
-			// somehow undefined, use the very end of the path)
-			CePoint* ignorePoint = endPrimaryFacePoint;
-			if (ignorePoint == 0)
-				ignorePoint = op.GetpTo();
-
-			assert(ignorePoint != 0);
-			GetIdMappings(op, *leg, ignorePoint, idf);
+			faceIds[i] = 0;
+			hasAlt = true;
 		}
 	}
+
+	// Now process any alternate faces
+
+	if (hasAlt)
+	{
+		for (int i=0; i<op.GetNumLeg(); i++)
+		{
+			if (faceIds[i] == 0)
+			{
+				assert(i>0);
+				CeLeg* leg = op.GetpLeg(i);
+				CeExtraLeg* extra = dynamic_cast<CeExtraLeg*>(leg);
+				assert(extra != 0);
+
+				LegFace_c* altFace = new LegFace_c();
+				altFace->Id = idf.GetNextId(0);
+				altFace->PrimaryFaceId = faceIds[i-1];
+				leg->AddToString(altFace->EntryString);
+				AlternateFaces.Add((void*)altFace);
+
+				// Collect ID mappings, ignoring the point at the end of the preceding leg (and if that's
+				// somehow undefined, use the very end of the path)
+				CeLeg* prevLeg = op.GetpLeg(i-1);					
+				CePoint* ignorePoint = prevLeg->GetpEndPoint(op);
+				if (ignorePoint == 0)
+					ignorePoint = op.GetpTo();
+
+				assert(ignorePoint != 0);
+				GetIdMappings(op, *leg, ignorePoint, idf);
+			}
+		}
+	}
+
+	delete[] faceIds;
 }
 
 void PathOperation_c::GetIdMappings(const CePath& op, const CeLeg& leg, CePoint* pIgnore, IdFactory& idf)
