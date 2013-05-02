@@ -108,10 +108,6 @@ namespace Backsight.Editor
 
         public bool IsCoincident(PointFeature p)
         {
-            if (m_Geom == null || p == null)
-            {
-                int junk = 0;
-            }
             return m_Geom.IsCoincident(p.Geometry);
         }
 
@@ -217,11 +213,6 @@ namespace Backsight.Editor
         /// <param name="value">The position to assign</param>
         internal void SetNode(Node value)
         {
-            if (value == null)
-            {
-                int junk = 0;
-            }
-
             m_Geom = value;
         }
 

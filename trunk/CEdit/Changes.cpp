@@ -428,11 +428,6 @@ void Operation_c::LoadExportFeatures(IdFactory& idf, const CeOperation& op, CPtr
 #ifdef _CEDIT
 			objectstore::touch(f, false);
 #endif
-			if ((int)f == 0x301f9420)
-			{
-				int junk = 0;
-			}
-
 			const CePoint* p = dynamic_cast<const CePoint*>(f);
 			if (p != 0)
 			{
@@ -1141,11 +1136,6 @@ MoveTextOperation_c::MoveTextOperation_c(IdFactory& idf, const CTime& when, cons
 {
 	CeLabel* label = op.GetpLabel();
 	Text = label;
-
-	if (this->Sequence == 12839)
-	{
-		int junk = 0;
-	}
 
 	// What if it was previously moved? (will presumably lose intervening positions)
 	OldPosition = new PointGeometry_c(op.GetOldPosition());

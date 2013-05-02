@@ -160,12 +160,6 @@ void CedExporter::CreateExport(CeMap* cedFile)
 			for (int i=0; i<nop; i++)
 			{
 				CeOperation* op = (CeOperation*)ops.GetNext(opos);
-
-				if (op->GetSequence() == 1743)
-				{
-					int junk=0;
-				}
-
 				LONG secs = (i+1) * secsPerEdit;
 				CTimeSpan delta(0,0,0, secs);
 				CTime when = startTime + delta;
@@ -310,11 +304,6 @@ void CedExporter::CreateExport(CeMap* cedFile)
 
 void CedExporter::AppendExportItems(const CTime& when, const CeOperation& op, IdFactory& idf, CPtrArray& exportItems)
 {
-	if (op.GetSequence() == 1743)
-	{
-		int junk = 0;
-	}
-
 	switch (op.GetType())
 	{
 	case CEOP_DATA_IMPORT:

@@ -431,11 +431,6 @@ namespace Backsight.Editor.Operations
         /// <param name="ctx">The context in which the geometry is being calculated.</param>
         internal override void CalculateGeometry(EditingContext ctx)
         {
-            if (this.EditSequence == 21319)
-            {
-                int junk = 0;
-            }
-
             //IPosition p = (base.CheckPosition == null ? Calculate() : base.CheckPosition);
             IPosition p = Calculate();
 

@@ -269,18 +269,7 @@ namespace Backsight.Editor.Operations
         /// <param name="ctx">The context in which the geometry is being calculated.</param>
         internal override void CalculateGeometry(EditingContext ctx)
         {
-            if (EditSequence == 477)
-            {
-                int junk = 0;
-            }
-
             IPosition p = Calculate();
-
-            if (p == null)
-            {
-                int junk = 0;
-            }
-
             PointGeometry pg = PointGeometry.Create(p);
             m_NewPoint.ApplyPointGeometry(ctx, pg);
         }
