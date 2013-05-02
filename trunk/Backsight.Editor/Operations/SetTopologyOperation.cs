@@ -122,15 +122,24 @@ namespace Backsight.Editor.Operations
         /// <param name="ctx">The context in which the geometry is being calculated.</param>
         internal override void CalculateGeometry(EditingContext ctx)
         {
-            if (this.EditSequence == 70)
-            {
-                int junk = 0;
-            }
-
             if (m_Line.IsTopological != m_Topological)
             {
                 bool isLoading = (ctx is LoadingContext);
-                m_Line.SwitchTopology(isLoading);
+
+                // Do nothing if the line is already inactive! During normal editing work, this should
+                // never be the case. However, during project loading, the line may have been marked as
+                // inactive when a DeletionOperation was deserialized (I believe the only good reason
+                // for doing it at that stage is so that any subsequent processing can be skipped).
+                // Since CalculateGeometry gets called for all edits after ALL edits have been deserialized,
+                // a SetTopologyOperation that came prior to the deletion would end up adding a topological
+                // construct (something that should never apply to inactive features).
+
+                // The later call to DeletionOperation.CalculateGeometry does nothing (since DeletionOperation
+                // doesn't actually implement it), so we end up with topology for an inactive line. We could
+                // implement it (making it remove any topology during loading), but doing it here seems equally ok.
+
+                if (!m_Line.IsInactive)
+                    m_Line.SwitchTopology(isLoading);
             }
         }
 
