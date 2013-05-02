@@ -380,11 +380,6 @@ namespace Backsight.Editor
         /// <returns>True if connection found.</returns>
         internal bool Create(IDivider from, bool isFromStart)
         {
-            if (from.Line.InternalId.ItemSequence==622 && isFromStart)
-            {
-                int junk = 0;
-            }
-
             // Initialize with default values
             m_Next = null;
             m_IsStart = false;

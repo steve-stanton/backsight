@@ -217,27 +217,13 @@ namespace Backsight.Editor
         internal LineFeature(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            if (this.InternalId.ItemSequence == 10570)
-            {
-                int junk = 0;
-            }
+            bool isTopological;
+            ReadData(editDeserializer, out m_From, out m_To, out isTopological, out m_Geom);
 
-            try
-            {
-                bool isTopological;
-                ReadData(editDeserializer, out m_From, out m_To, out isTopological, out m_Geom);
+            AddReferences();
 
-                AddReferences();
-
-                if (isTopological)
-                    SetTopology(true);
-            }
-
-            catch
-            {
-                int junk = 0;
-                throw;
-            }
+            if (isTopological)
+                SetTopology(true);
         }
 
         #endregion
@@ -310,7 +296,16 @@ namespace Backsight.Editor
             }
             else
             {
-                RenderLine(display, style);
+                //RenderLine(display, style);
+                if (IsTopological)
+                    RenderLine(display, style);
+                else
+                {
+                    Color oldCol = style.LineColor;
+                    style.LineColor = Color.Turquoise;
+                    m_Geom.Render(display, style);
+                    style.LineColor = oldCol;
+                }
             }
 
             // Return if we're not showing actual or observed lengths

@@ -82,22 +82,13 @@ namespace Backsight.Editor.Operations
         internal RadialOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            try
-            {
-                m_Direction = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
-                m_Length = editDeserializer.ReadPersistent<Observation>(DataField.Length);
+            m_Direction = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
+            m_Length = editDeserializer.ReadPersistent<Observation>(DataField.Length);
 
-                DeserializationFactory dff = new DeserializationFactory(this);
-                dff.AddFeatureStub(DataField.To, editDeserializer.ReadPersistent<FeatureStub>(DataField.To));
-                dff.AddFeatureStub(DataField.Line, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line));
-                ProcessFeatures(dff);
-            }
-
-            catch
-            {
-                int junk = 0;
-                throw;
-            }
+            DeserializationFactory dff = new DeserializationFactory(this);
+            dff.AddFeatureStub(DataField.To, editDeserializer.ReadPersistent<FeatureStub>(DataField.To));
+            dff.AddFeatureStub(DataField.Line, editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.Line));
+            ProcessFeatures(dff);
         }
 
         #endregion
@@ -211,11 +202,6 @@ namespace Backsight.Editor.Operations
         /// <param name="ctx">The context in which the geometry is being calculated.</param>
         internal override void CalculateGeometry(EditingContext ctx)
         {
-            if (this.EditSequence == 367)
-            {
-                int junk = 0;
-            }
-
             IPosition p = Calculate(m_Direction, m_Length);
             PointGeometry pg = PointGeometry.Create(p);
             m_To.ApplyPointGeometry(ctx, pg);

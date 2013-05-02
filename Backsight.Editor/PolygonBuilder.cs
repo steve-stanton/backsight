@@ -117,11 +117,6 @@ namespace Backsight.Editor
             Debug.Assert(o is LineFeature);
             LineFeature line = (LineFeature)o;
 
-            if (line.InternalId.ItemSequence == 149)
-            {
-                int junk = 0;
-            }
-
             try
             {
                 line.BuildPolygons(m_NewPolygonExtent, m_Index);

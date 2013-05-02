@@ -58,11 +58,6 @@ namespace Backsight.Editor.Operations
         internal DeletionOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            if (EditSequence == 7213)
-            {
-                int junk = 0;
-            }
-
             try
             {
                 ReadData(editDeserializer, out m_Deletions);
