@@ -3,8 +3,11 @@ ECHO OFF
 IF {%1}=={} GOTO Usage
 IF {%2}=={} GOTO Usage
 
-SET job=%1
+SET jobName=%1
 SET db=%2
+SET indexPath=C:\Backsight\index\%jobName%.txt
+SET /P jobId=<%indexPath%
+SET job=C:\Backsight\%jobId%\%jobName%
 
 IF EXIST %job%-A01.txt bcp %db%.CertificateofTitleParcelData in %job%-A01.txt -c -S localhost\sqlexpress -T
 IF EXIST %job%-A03.txt bcp %db%.DLSParcelData                in %job%-A03.txt -c -S localhost\sqlexpress -T
