@@ -14,11 +14,9 @@
 // </remarks>
 
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Backsight.Editor.Forms;
-using System.IO;
 //using netDxf.Tables;
 
 namespace Backsight.Editor
@@ -31,30 +29,6 @@ namespace Backsight.Editor
         [STAThread]
         static void Main(string[] args)
         {
-            /*
-            try
-            {
-                uint value = 0x1234;
-                byte[] dat = (byte[])(value as IConvertible).ToType(typeof(byte));
-                MessageBox.Show("ok");
-                return;
-
-                List<byte> res = new List<byte>();
-                uint[] test = new uint[] { 0x10, 0x100, 0x1000, 0x10000, 0x100000 };
-                foreach (uint i in test)
-                {
-                    byte[] dat = (byte[])Convert.ChangeType(i, typeof(byte[]));
-                    res.AddRange(dat);
-                }
-                MessageBox.Show("n=" + res.Count);
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            return;
-            */
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -72,49 +46,6 @@ namespace Backsight.Editor
             {
                 MessageBox.Show(ex.StackTrace, ex.Message);
             }
-            /*
-            EditSerializer es = new EditSerializer();
-
-            DistanceUnit du = new DistanceUnit(DistanceUnitType.Feet);
-            Backsight.Editor.Observations.Distance dist = new Backsight.Editor.Observations.Distance("123", du);
-            Backsight.Editor.AnnotatedDistance d = new Backsight.Editor.AnnotatedDistance(dist, true);
-            Backsight.Editor.Observations.OffsetDistance od = new Backsight.Editor.Observations.OffsetDistance(d, true);
-
-            Backsight.Editor.Xml.ObservationData t = Backsight.Editor.Xml.DataFactory.Instance.ToData<Backsight.Editor.Xml.ObservationData>(od);
-
-            try
-            {
-                //string[] a = new string[] { "Animal", "Dog", "Cat" };
-                float[] a = new float[] { 1.2f, 3.4f, 5.6f };
-                es.WriteSimpleArray<float>("Test", a);
-
-                //Observation[] a = new Observation[] { dist, d, od };
-                //es.WritePersistentArray<Backsight.Editor.Observation>("Test", a);
-                string testString = es.Writer.ToString();
-                MessageBox.Show(testString);
-
-                File.WriteAllText(@"C:\Temp\Test.txt", testString);
-
-                EditDeserializer eds = new EditDeserializer();
-
-                using (StringReader sr = new StringReader(testString))
-                {
-                    eds.Reader = new TextEditReader(sr);
-                    float[] res = eds.ReadSimpleArray<float>("Test");
-                    //Backsight.Editor.Observation[] res = eds.ReadPersistentArray<Backsight.Editor.Observation>("Test");
-
-                    es.Writer = new TextEditWriter();
-                    //es.WritePersistentArray<Backsight.Editor.Observation>("Result", res);
-                    es.WriteSimpleArray<float>("Result", res);
-                    MessageBox.Show(es.Writer.ToString());
-                }
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-*/
         }
     }
 }

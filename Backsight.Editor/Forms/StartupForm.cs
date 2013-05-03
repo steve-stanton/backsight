@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using Backsight.Data;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
+using Backsight.SqlServer;
 
 namespace Backsight.Editor.Forms
 {
@@ -45,8 +46,10 @@ namespace Backsight.Editor.Forms
         private void StartupForm_Load(object sender, EventArgs e)
         {
             // Pick up a canned environment from embedded resource file
-            IEnvironmentContainer ec = new EnvironmentResource();
-            EnvironmentContainer.Current = ec;
+            if (String.IsNullOrEmpty(LastDatabase.ConnectionString))
+                EnvironmentContainer.Current = new EnvironmentResource();
+            else
+                EnvironmentContainer.Current = new EnvironmentDatabase(LastDatabase.ConnectionString);
 
             ShowDatabaseName();
 
@@ -151,8 +154,8 @@ namespace Backsight.Editor.Forms
         {
             // The connection dialog is currently disabled while I figure out how to
             // remove an explicit dependency on SQLServer
-            throw new NotImplementedException();
-            /*
+            //throw new NotImplementedException();
+
             ConnectionForm dial = new ConnectionForm();
             if (dial.ShowDialog() == DialogResult.OK)
             {
@@ -161,7 +164,6 @@ namespace Backsight.Editor.Forms
             }
 
             dial.Dispose();
-             */
         }
 
         private void openLastButton_Click(object sender, EventArgs e)

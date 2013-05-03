@@ -1241,6 +1241,10 @@
       <Project>{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}</Project>
       <Name>Backsight.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj">
+      <Project>{97BC1364-B469-4AF2-BD4F-B13AB981A4B1}</Project>
+      <Name>Backsight.SqlServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Backsight\Backsight.csproj">
       <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
       <Name>Backsight</Name>

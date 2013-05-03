@@ -1,10 +1,10 @@
 ECHO OFF
 
 IF {%1}=={} GOTO Usage
-IF {%2}=={} GOTO Usage
 
 SET jobName=%1
 SET db=%2
+IF (%db%)==() SET db=Backsight.dbo
 SET indexPath=C:\Backsight\index\%jobName%.txt
 SET /P jobId=<%indexPath%
 SET job=C:\Backsight\%jobId%\%jobName%
