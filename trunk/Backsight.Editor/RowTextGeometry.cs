@@ -98,6 +98,9 @@ namespace Backsight.Editor
 
             m_Row = row;
             m_Template = EnvironmentContainer.FindTemplateById(content.TemplateId);
+
+            //if (m_Template == null)
+            //    throw new ArgumentException("Text template not found");
         }
 
         /// <summary>
@@ -140,6 +143,9 @@ namespace Backsight.Editor
         {
             get
             {
+                if (m_Template == null)
+                    return "NoTemplate";
+
                 Debug.Assert(m_Row.Table.Id == m_Template.Schema.Id);
                 return GetText(m_Row.Data, m_Template);
             }
