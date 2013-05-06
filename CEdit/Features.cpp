@@ -701,8 +701,17 @@ LineFeature_c::~LineFeature_c()
 
 LPCTSTR LineFeature_c::GetTypeName() const
 {
-	static LPCTSTR typeName = "LineFeature";
-	return typeName;
+	ArcGeometry_c* arc = dynamic_cast<ArcGeometry_c*>(Geom);
+	if (arc != 0)
+	{
+		static LPCTSTR typeName = "ArcFeature";
+		return typeName;
+	}
+	else
+	{
+		static LPCTSTR typeName = "LineFeature";
+		return typeName;
+	}
 }
 
 void LineFeature_c::WriteData(EditSerializer& s) const
@@ -782,6 +791,13 @@ RowTextGeometry_c::RowTextGeometry_c(IdFactory& idf, const CeRowText& text)
 {
 	TableId = idf.GetTableId(text.GetRow()->GetpSchema()->GetName());
 	TemplateId = idf.GetTemplateId(text.GetTemplate()->GetName());
+
+	if (TemplateId == 0)
+	{
+		int junk = 0;
+	}
+
+	assert(TemplateId > 0);
 }
 
 LPCTSTR RowTextGeometry_c::GetTypeName() const
