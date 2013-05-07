@@ -788,38 +788,10 @@ namespace Backsight.Editor
                                   | FeatureFlag.Void );
             newFeature.m_Flag = (newmask & m_Flag);
 
-            /*
-	        // Hold on. If we're copying an arc that has system-defined
-	        // topological sections, clear that bit and set topological
-	        // bit instead.
-	        if ( (m_Flag & FFL_SYSTOPOL) ) {
-		        newfeat.m_Flag &= (~FFL_SYSTOPOL);
-		        newfeat.m_Flag |= FFL_TOPOL;
-	        }
-             */
-
             // Non-topological stuff is always "built"
             if (!newFeature.IsTopological)
                 newFeature.SetBuilt(true);
         }
-
-        /*
-        /// <summary>
-        /// The layer that was active when this feature was created
-        /// </summary>
-        internal ILayer BaseLayer
-        {
-            get
-            {
-                // SS20090401 - The entity type can no longer be used, since entity types
-                // associated with layer 0 are now considered to apply to all layers.
-                // return (m_What==null ? null : m_What.Layer);
-
-                int layerId = BaseLayerId;
-                return EnvironmentContainer.FindLayerById(layerId);
-            }
-        }
-        */
 
         /// <summary>
         /// Is this feature considered to be "void". This status is used to mark

@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 
 using Backsight.Geometry;
 
@@ -33,14 +34,9 @@ namespace Backsight.Editor
         #region Data
 
         /// <summary>
-        /// The data for the line. The first byte holds the number of high-order bytes
-        /// that are identical for all X-positions along the line, followed by the
-        /// corresponding values of the high-order bytes. The following bytes serve
-        /// the same purpose for Y (i.e. count, followed by high-order byte values).
-        /// The data after that consists of the low-order bytes for the X,Y positions
-        /// defining the line.
+        /// The positions defining the line.
         /// </summary>
-        byte[] m_Data; // readonly
+        readonly IPointGeometry[] m_Data;
 
         #endregion
 
@@ -68,7 +64,7 @@ namespace Backsight.Editor
             if (!end.IsCoincident(positions[positions.Length-1]))
                 throw new ArgumentException("End point doesn't coincide with last position");
 
-            SetPackedData(positions);
+            m_Data = positions;
         }
 
         /// <summary>
@@ -79,282 +75,28 @@ namespace Backsight.Editor
         internal MultiSegmentGeometry(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            if (editDeserializer.IsNextField(DataField.Data))
+            // LineString assumes 2D, with X preceding Y. Each coordinate pair is separated
+            // with a comma, with a space between each X and Y (e.g. "123 345,124 349,129 341")
+
+            string s = editDeserializer.ReadString(DataField.LineString);
+            string[] xys = s.Split(',');
+            m_Data = new IPointGeometry[xys.Length];
+
+            for (int i = 0; i < xys.Length; i++)
             {
-                m_Data = editDeserializer.ReadSimpleArray<byte>(DataField.Data);
-            }
-            else
-            {
-                // LineString is supported to simplify export from CEdit, might be a good idea to take
-                // this approach always. Assumes 2D, with X preceding Y. Each coordinate pair is separated
-                // with a comma, with a space between each X and Y (e.g. "123 345,124 349,129 341")
+                string xy = xys[i].Trim();
 
-                string s = editDeserializer.ReadString(DataField.LineString);
-                string[] xys = s.Split(',');
-                IPointGeometry[] positions = new IPointGeometry[xys.Length];
+                int blankPos = xy.IndexOf(' ');
+                if (blankPos <= 0)
+                    throw new FormatException();
 
-                for (int i = 0; i < xys.Length; i++)
-                {
-                    string xy = xys[i].Trim();
-
-                    int blankPos = xy.IndexOf(' ');
-                    if (blankPos <= 0)
-                        throw new FormatException();
-
-                    double x = Double.Parse(xy.Substring(0, blankPos));
-                    double y = Double.Parse(xy.Substring(blankPos+1));
-                    positions[i] = new PointGeometry(x, y);
-                }
-
-                SetPackedData(positions);
+                double x = Double.Parse(xy.Substring(0, blankPos));
+                double y = Double.Parse(xy.Substring(blankPos+1));
+                m_Data[i] = new PointGeometry(x, y);
             }
         }
 
         #endregion
-
-        /// <summary>
-        /// Defines the packed data that defines this geometry
-        /// </summary>
-        /// <param name="positions">The expanded positions to pack</param>
-        void SetPackedData(IPointGeometry[] positions)
-        {
-            // Express ground positions as arrays of micron values
-            long[] x = new long[positions.Length];
-            long[] y = new long[positions.Length];
-
-            for (int i=0; i<positions.Length; i++)
-            {
-                x[i] = positions[i].Easting.Microns;
-                y[i] = positions[i].Northing.Microns;
-            }
-
-            // Get the number of common high-order bytes for X and Y
-            byte[] commonX = GetCommonHighOrderBytes(x);
-            byte[] commonY = GetCommonHighOrderBytes(y);
-
-            int sizeHeader = 2 + commonX.Length + commonY.Length;
-            int sizeDataX = positions.Length * (8-commonX.Length);
-            int sizeDataY = positions.Length * (8-commonY.Length);
-            m_Data = new byte[sizeHeader + sizeDataX + sizeDataY];
-
-            // Define the header
-
-            m_Data[0] = (byte)commonX.Length;
-            m_Data[1] = (byte)commonY.Length;
-
-            int to=2;
-            for (int from=0; from<commonX.Length; from++, to++)
-                m_Data[to] = commonX[from];
-
-            //to = 2+commonX.Length;
-            for (int from=0; from<commonY.Length; from++, to++)
-                m_Data[to] = commonY[from];
-
-            // Copy over the low-order bytes for each (X,Y)
-
-            byte[] data = new byte[8];
-            //to = sizeHeader;
-            for (int i=0; i<x.Length; i++)
-            {
-                ToByteArray(x[i], ref data);
-                for (int j=commonX.Length; j<8; j++)
-                {
-                    m_Data[to] = data[j];
-                    to++;
-                }
-
-                ToByteArray(y[i], ref data);
-                for (int j=commonY.Length; j<8; j++)
-                {
-                    m_Data[to] = data[j];
-                    to++;
-                }
-            }
-
-            Debug.Assert(m_Data.Length==to);
-        }
-
-        /// <summary>
-        /// Convert this data into a series of ground positions.
-        /// </summary>
-        /// <returns>The unpacked version of this data.</returns>
-        internal PointGeometry[] GetUnpackedData()
-        {
-            return GetDataInMicrons();
-        }
-
-        PointGeometry[] GetDataInMicrons()
-        {
-            int numCommonX = (int)m_Data[0];
-            int numCommonY = (int)m_Data[1];
-
-            // Grab the common high-order bytes
-            long commonX = HighData(2, numCommonX);
-            long commonY = HighData(2+numCommonX, numCommonY);
-
-            int sizeHeader = (2 + numCommonX + numCommonY);
-            int startIndex =  sizeHeader;
-            int numDataByte = m_Data.Length - sizeHeader;
-            int numBytePerPosition = (8-numCommonX + 8-numCommonY);
-            Debug.Assert((numDataByte % numBytePerPosition)==0);
-            int numPoint = numDataByte / numBytePerPosition;
-            PointGeometry[] result = new PointGeometry[numPoint];
-
-            // Now grab the actual positions in microns
-
-            for (int i=0; i<result.Length; i++)
-            {
-                long xmic = LowData(startIndex, (8-numCommonX));
-                startIndex += (8-numCommonX);
-
-                long ymic = LowData(startIndex, (8-numCommonY));
-                startIndex += (8-numCommonY);
-
-                result[i] = new PointGeometry(commonX | xmic, commonY | ymic);
-            }
-
-            Debug.Assert(startIndex==m_Data.Length);
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the long value that corresponds to a series of high-order bytes.
-        /// </summary>
-        /// <param name="startIndex">The array index of the initial byte in <c>m_Data</c> that
-        /// should be copied (the byte at this position will be the high-order byte
-        /// in the result)</param>
-        /// <param name="numByte">The number of bytes to copy (in range [0,8])</param>
-        /// <returns>The corresponding value, in microns on the ground</returns>
-        private long HighData(int startIndex, int numByte)
-        {
-            Debug.Assert(startIndex >= 2);
-            Debug.Assert(startIndex < m_Data.Length);
-            Debug.Assert(numByte >= 0 && numByte <= 8);
-            Debug.Assert(startIndex+numByte <= m_Data.Length);
-
-            long result = 0;
-
-            #if _ALLOW_POINTERS
-
-            unsafe
-            {
-                byte* b = (byte*)&result;
-                for (int i=startIndex, ib=7, ic=0; ic<numByte; i++, ic++, ib--)
-                    b[ib] = m_Data[i];
-            }
-
-            #else
-
-            for (int i=startIndex, shift=56; i<startIndex+numByte; i++, shift-=8)
-            {
-                long val = (long)m_Data[i];
-                result |= (val << shift);
-            }
-
-            #endif
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the long value that corresponds to a series of low-order bytes.
-        /// </summary>
-        /// <param name="startIndex">The array index of the initial byte in <c>m_Data</c> that
-        /// should be copied (the byte at this position is the most significant byte
-        /// in the result)</param>
-        /// <param name="numByte">The number of bytes to copy (in range [0,8])</param>
-        /// <returns>The corresponding value, in microns on the ground</returns>
-        private long LowData(int startIndex, int numByte)
-        {
-            Debug.Assert(startIndex >= 2);
-            Debug.Assert(startIndex < m_Data.Length);
-            Debug.Assert(numByte >= 0 && numByte <= 8);
-            Debug.Assert(startIndex+numByte <= m_Data.Length);
-
-            long result = 0;
-
-            #if _ALLOW_POINTERS
-
-            unsafe
-            {
-                byte* b = (byte*)&result;
-                for (int i=startIndex, ib=numByte-1; ib>=0; i++, ib--)
-                    b[ib] = m_Data[i];
-            }
-
-            #else
-
-            for (int i=startIndex, shift=(numByte-1)*8; i<startIndex+numByte; i++, shift-=8)
-            {
-                long val = (long)m_Data[i];
-                result |= (val << shift);
-            }
-
-            #endif
-
-            return result;
-        }
-
-        /// <summary>
-        /// Converts the supplied long value into a byte array.
-        /// </summary>
-        /// <param name="data">The data to convert</param>
-        /// <param name="result">The corresponding bytes, starting with the
-        /// high-order bytes</param>
-        private static void ToByteArray(long data, ref byte[] result)
-        {
-            Debug.Assert(result.Length>=8);
-
-            #if _ALLOW_POINTERS
-
-            unsafe
-            {
-                byte* b = (byte*)&data;
-                for (int i=7; i>=0; i--, b++)
-                    result[i] = (*b);
-            }
-
-            #else
-
-            long mask = 0xFF;
-            for (int i=7; i>=0; i--, data>>=8)
-                result[i] = (byte)(data & mask);
-
-            #endif
-        }
-
-        /// <summary>
-        /// Determines the high-order bytes that are common to a series of values.
-        /// </summary>
-        /// <param name="data">The values to analyze.</param>
-        /// <returns>The common high-order bytes, starting with the most significant
-        /// one. Will contain 8 or fewer elements (may be an empty array).</returns>
-        private static byte[] GetCommonHighOrderBytes(long[] data)
-        {
-            byte[] common = new byte[8];
-            ToByteArray(data[0], ref common);
-            int nCommon = 8;
-
-            byte[] current = new byte[8];
-            for (int i=1; i<data.Length && nCommon>0; i++)
-            {
-                ToByteArray(data[i], ref current);
-                for (int j=0; j<nCommon; j++)
-                {
-                    if (common[j] != current[j])
-                    {
-                        nCommon = j;
-                        break;
-                    }
-                }
-            }
-
-            byte[] result = new byte[nCommon];
-            for (int i=0; i<nCommon; i++)
-                result[i] = common[i];
-
-            return result;
-        }
 
         public override ILength Distance(IPosition point)
         {
@@ -410,7 +152,7 @@ namespace Backsight.Editor
         /// found corresponds to the corresponding terminal point).</returns>
         internal override bool GetPosition(ILength distance, out IPosition result)
         {
-            IPosition[] data = GetUnpackedData();
+            IPosition[] data = m_Data;
 
             if (data.Length==2)
                 return LineSegmentGeometry.GetPosition(data[0], data[1], distance.Meters, out result);
@@ -485,7 +227,7 @@ namespace Backsight.Editor
 
         public IPointGeometry[] Data // implements IMultiSegmentGeometry
         {
-            get { return GetUnpackedData(); }
+            get { return m_Data; }
         }
 
         internal override uint IntersectSegment(IntersectionResult results, ILineSegmentGeometry that)
@@ -551,14 +293,12 @@ namespace Backsight.Editor
         /// <returns>The corresponding geometry for the section</returns>
         internal override UnsectionedLineGeometry Section(ISection s)
         {
-            IPointGeometry[] data = this.Data;
-
             // Locate the segments where the section starts and ends
-            int sIndex = FindSegment(data, true, 0, s.From);
+            int sIndex = FindSegment(m_Data, true, 0, s.From);
             if (sIndex<0)
                 throw new Exception("Bad line section (start)");
 
-            int eIndex = FindSegment(data, true, sIndex, s.To);
+            int eIndex = FindSegment(m_Data, true, sIndex, s.To);
             if (eIndex<0)
                 throw new Exception("Bad line section (end)");
 
@@ -573,7 +313,7 @@ namespace Backsight.Editor
             if (len > 2)
             {
                 IPointGeometry[] result = new IPointGeometry[len];
-                Array.Copy(data, sIndex, result, 0, len-1);
+                Array.Copy(m_Data, sIndex, result, 0, len-1);
 
                 // And ensure the result terminates at the section terminals.
                 result[0] = s.From;
@@ -1188,8 +928,19 @@ namespace Backsight.Editor
         /// <param name="editSerializer">The mechanism for storing content.</param>
         public override void WriteData(EditSerializer editSerializer)
         {
-            // Just write the packed array
-            editSerializer.WriteSimpleArray<byte>(DataField.Data, m_Data);
+            // Express the data as one long string (about 30 chars per position)
+            var sb = new StringBuilder(30 * m_Data.Length);
+            foreach (IPointGeometry p in m_Data)
+            {
+                if (sb.Length > 0)
+                    sb.Append(",");
+
+                sb.Append(p.Easting.Meters);
+                sb.Append(" ");
+                sb.Append(p.Northing.Meters);
+            }
+
+            editSerializer.WriteString(DataField.LineString, sb.ToString());
         }
     }
 }

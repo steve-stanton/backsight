@@ -606,7 +606,7 @@ namespace Backsight.Editor
                     continue;
 
                 nMove++;
-                line.Split(trims);
+                line.Split(true, trims);
 
                 // If the line needs to be trimmed, add it to our list.
                 // We'll do it at the end.
@@ -1174,6 +1174,24 @@ namespace Backsight.Editor
             Trace.Write("Indexing...");
             CreateIndex(edits);
 
+            // Ensure all sections have been extracted from the underlying line (aim to improve
+            // performance on repetitive stuff, especially sections based on sections based on sections...).
+            // It's safe to play around with the geometry objects, since the spatial index only
+            // references the feature objects.
+            m_Index.QueryWindow(null, SpatialType.Line, delegate(ISpatialObject item)
+            {
+                LineFeature line = (LineFeature)item;
+                SectionGeometry section = (line.LineGeometry as SectionGeometry);
+                if (section != null)
+                {
+                    UnsectionedLineGeometry baseLine = section.SectionBase;
+                    line.LineGeometry = baseLine.Section(section);
+                }
+
+                return true;
+            });
+
+
             // Intersect topological lines that aren't marked for deletion
             Trace.Write("Intersecting lines");
 
@@ -1185,7 +1203,7 @@ namespace Backsight.Editor
             {
                 LineFeature line = (LineFeature)item;
                 line.IsMoved = false;
-                line.Split(null);
+                line.Split(false, null);
                 return true;
             });
 
