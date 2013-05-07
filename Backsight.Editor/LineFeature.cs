@@ -115,7 +115,7 @@ namespace Backsight.Editor
         /// coincide precisely with the supplied <paramref name="start"/>, and the last position
         /// must coincide precisely with <paramref name="end"/>. Expected to be more than two positions.</param>
         internal LineFeature(Operation creator, InternalIdValue id, IEntity e,
-                                            PointFeature start, PointFeature end, IPointGeometry[] data)
+                                            PointFeature start, PointFeature end, PointGeometry[] data)
             : this(creator, id, e, start, end, new MultiSegmentGeometry(start, end, data))
         {
             Debug.Assert(data.Length>2);
@@ -219,11 +219,8 @@ namespace Backsight.Editor
         {
             bool isTopological;
             ReadData(editDeserializer, out m_From, out m_To, out isTopological, out m_Geom);
-
             AddReferences();
-
-            if (isTopological)
-                SetTopology(true);
+            SetTopology(isTopological);
         }
 
         #endregion
@@ -718,8 +715,10 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             //LineFeature result = new LineFeature(this.EntityType, op, start, end, section);
             DefineFeature(result);
 
-            if (result.IsTopological)
-                result.m_Topology = Topology.CreateTopology(result);
+            // The resultant sub-section should always have the same topological status
+            //if (result.IsTopological)
+            //    result.m_Topology = Topology.CreateTopology(result);
+            result.SetTopology(this.IsTopological);
 
             return result;
         }
@@ -875,6 +874,8 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// <summary>
         /// Do any splits needed upon addition of a new line.
         /// </summary>
+        /// <param name="arePolygonsBuilt">Has polygon topology been built (false if the split
+        /// is being done as part of the initial load).</param>
         /// <param name="retrims">Intersecting lines that were split on the invisible
         /// portion of a trimmed line. The lines in this list will need to be re-trimmed.
         /// </param>
@@ -884,7 +885,7 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
         /// a line needs to be intersected, set the <see cref="IsMoved"/> property to
         /// true.
         /// </remarks>
-        internal void Split(List<LineFeature> retrims)
+        internal void Split(bool arePolygonsBuilt, List<LineFeature> retrims)
         {
             // No need to split lines that aren't topological.
             if (!IsTopological)
@@ -914,19 +915,22 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             // Cut up the things that were intersected, making grazing portions non-topological.
             // Each result object should be associated with an IDivider.
             foreach (IntersectionResult r in intersectedDividers)
-                Cut(r, retrims);
+                Cut(arePolygonsBuilt, r, retrims);
 
             // Combine the results and get the splitter to cut itself up.
             IntersectionResult xres = new IntersectionResult(xf);
 
-            // If there is a graze at the start of this line, ensure
-            // that all polygons incident on the start location have
-            // been marked for deletion. Same for the end.
-            if (xres.IsStartGrazing)
-                Topology.MarkPolygons(StartPoint);
+            if (arePolygonsBuilt)
+            {
+                // If there is a graze at the start of this line, ensure
+                // that all polygons incident on the start location have
+                // been marked for deletion. Same for the end.
+                if (xres.IsStartGrazing)
+                    Topology.MarkPolygons(StartPoint);
 
-            if (xres.IsEndGrazing)
-                Topology.MarkPolygons(EndPoint);
+                if (xres.IsEndGrazing)
+                    Topology.MarkPolygons(EndPoint);
+            }
 
             // Modify the intersection results so that the exit point
             // of each graze will be treated as a simple intersection.
@@ -936,18 +940,20 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                 return;
 
             // Create divider sections. We should make at least ONE split.
-            Cut(xres, retrims);
+            Cut(arePolygonsBuilt, xres, retrims);
         }
 
         /// <summary>
         /// Splits up a series of intersections
         /// </summary>
+        /// <param name="arePolygonsBuilt">Has polygon topology been built (false if the split
+        /// is being done as part of the initial load).</param>
         /// <param name="xres">The places where intersections have been detected on
         /// some polygon ring divider</param>
         /// <param name="retrims">Lines that need to be re-trimmed (the line associated
         /// with the divider will be appended if an intersection is made on an invisible
         /// portion of the divider). Not currently used.</param>
-        static void Cut(IntersectionResult xres, List<LineFeature> retrims)
+        static void Cut(bool arePolygonsBuilt, IntersectionResult xres, List<LineFeature> retrims)
         {
             // Grab the thing that's been intersected. It'll be a LineFeature if the
             // intersected object is a new line that's being processed via the Split
@@ -958,26 +964,28 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             {
                 LineFeature line = (ir as LineFeature);
                 Debug.Assert(line.Topology is LineTopology);
-                line.Cut((IDivider)line.Topology, xres, retrims);
+                line.Cut(arePolygonsBuilt, (IDivider)line.Topology, xres, retrims);
             }
             else
             {
                 Debug.Assert(ir is IDivider);
                 IDivider div = (IDivider)ir;
-                div.Line.Cut(div, xres, retrims);
+                div.Line.Cut(arePolygonsBuilt, div, xres, retrims);
             }
         }
 
         /// <summary>
         /// Cuts up a divider that covers this line (or a portion of this line)
         /// </summary>
+        /// <param name="arePolygonsBuilt">Has polygon topology been built (false if the split
+        /// is being done as part of the initial load).</param>
         /// <param name="div">The divider covering the line (or a portion of this line)</param>
         /// <param name="xres">The places where intersections have been detected on
         /// the divider</param>
         /// <param name="retrims">Lines that need to be re-trimmed (the line associated
         /// with the divider will be appended if an intersection is made on an invisible
         /// portion of the divider). Not currently used.</param>
-        void Cut(IDivider div, IntersectionResult xres, List<LineFeature> retrims)
+        void Cut(bool arePolygonsBuilt, IDivider div, IntersectionResult xres, List<LineFeature> retrims)
         {
             Debug.Assert(div.Line == this);
 
@@ -994,7 +1002,8 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
             // marked for deletion (need to do this in case the intersects
             // we have are only at the line end points, in which case we
             // wouldn't actually change anything).
-            Topology.MarkPolygons(div);
+            if (arePolygonsBuilt)
+                Topology.MarkPolygons(div);
 
             // We'll need the map for creating intersection points
             CadastralMapModel map = CadastralMapModel.Current;
@@ -1042,7 +1051,8 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                         Debug.Assert(from == div.From);
 
                         // Mark all polygons incident at the start terminal
-                        Topology.MarkPolygons(div.From);
+                        if (arePolygonsBuilt)
+                            Topology.MarkPolygons(div.From);
 
                         // Create an overlap at the start of this divider
                         to = map.GetTerminal(x.P2);
@@ -1066,7 +1076,8 @@ CeFeature* CeArc::SetInactive ( CeOperation* pop
                     else if (x.IsEndGraze)
                     {
                         // Mark all polygons incident on the end terminal
-                        Topology.MarkPolygons(div.To);
+                        if (arePolygonsBuilt)
+                            Topology.MarkPolygons(div.To);
 
                         // Add a topological section up to the start of the graze
                         to = map.GetTerminal(x.P1);

@@ -224,8 +224,9 @@ namespace Backsight.Editor
             InternalIdValue id = CadastralMapModel.Current.WorkingSession.AllocateNextId();
             ArcFeature arc = new ArcFeature(creator, id, what, c, ps, pe, iscw);
 
-            if (line.IsTopologicalArc)
-                arc.SetTopology(true);
+            // The toological status of the incoming arc may override the status that the
+            // constructor derived from the entity type
+            arc.SetTopology(line.IsTopologicalArc);
 
             #if DEBUG
             // Confirm the NTX data was valid (ensure it's consistent with what we've imported)...
@@ -332,8 +333,9 @@ namespace Backsight.Editor
             else
                 result = new LineFeature(creator, id, what, ps, pe, pts);
 
-            if (line.IsTopologicalArc)
-                result.SetTopology(true);
+            // The toological status of the incoming arc may override the status that the
+            // constructor derived from the entity type
+            result.SetTopology(line.IsTopologicalArc);
 
             return result;
         }

@@ -160,6 +160,8 @@ namespace Backsight.Editor
             if (t == null)
                 return true;
 
+            Debug.Assert(f.IsTopological);
+
             // Ignore lines that are marked as "moved"
             if (f.IsMoved)
                 return true;
