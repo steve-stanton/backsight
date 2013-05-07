@@ -104,6 +104,7 @@ namespace Backsight.Editor.Forms
             m_Table = t;
             m_Id = row[t.IdColumnName].ToString();
             m_Data = row;
+            m_DataServer = EditingController.Current.DataServer;
         }
 
         #endregion
