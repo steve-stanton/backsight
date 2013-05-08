@@ -48,6 +48,12 @@ namespace Backsight.Environment
         bool IsLineValid { get; }
 
         /// <summary>
+        /// Should lines with this entity type be automatically trimmed if they dangle (applies
+        /// only to lines where <see cref="IsPolygonBoundaryValid"/> is true).
+        /// </summary>
+        bool IsLineAutoTrimmed { get; }
+
+        /// <summary>
         /// Can this entity type be associated with a polygon label?
         /// </summary>
         bool IsPolygonValid { get; }

@@ -26,6 +26,7 @@ namespace Backsight.Environment
         new string Name { get; set; }
         new bool IsPointValid { get; set; }
         new bool IsLineValid { get; set; }
+        new bool IsLineAutoTrimmed { get; set; }
         new bool IsPolygonValid { get; set; }
         new bool IsPolygonBoundaryValid { get; set; }
         new bool IsTextValid { get; set; }
