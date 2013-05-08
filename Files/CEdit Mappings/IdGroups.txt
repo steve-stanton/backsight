@@ -1,0 +1,6 @@
+﻿18	=Assessment Layer Polygon ID
+19	=Control Point ID
+20	=Hydro Easement Polygon ID
+21	=Ownership Polygon ID
+22	=Point ID
+23	=Registered Plan Polygon ID

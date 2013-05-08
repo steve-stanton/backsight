@@ -1,0 +1,14 @@
+475	=Survey, Director of Survey & Condominum Plan Parcel Data
+477	=Certificate of Title Parcel Data
+478	=DLS Parcel Data
+479	=Judge's Order Parcel Data
+480	=Legal Instrument Parcel Data
+481	=Parish Lot Parcel Data
+482	=Parcel of Certificate of Title Parcel Data
+483	=Public Lane Data
+484	=Public Walk Data
+485	=Street Data
+486 =Water Body Data
+601 =Mapping Area Polygon
+606 =Contour Elevation
+
