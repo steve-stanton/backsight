@@ -52,6 +52,7 @@ namespace Backsight.Data
                 IsPoint = NO;
                 IsLine = NO;
                 IsLineTopological = NO;
+                IsLineTrimmed = NO;
                 IsPolygon = NO;
                 IsText = NO;
                 FontId = 0;
@@ -80,6 +81,12 @@ namespace Backsight.Data
             {
                 get { return (IsPolygon==YES); }
                 set { IsPolygon = AsString(value); }
+            }
+
+            public bool IsLineAutoTrimmed
+            {
+                get { return (IsLineTrimmed == YES); }
+                set { IsLineTrimmed = AsString(value); }
             }
 
             public bool IsPolygonBoundaryValid
