@@ -483,7 +483,7 @@
   </EntityType>
   <EntityType>
     <EntityId>62</EntityId>
-    <Name>Street Name Annotation</Name>
+    <Name>Street Name Annotation Entity</Name>
     <IsPoint>n</IsPoint>
     <IsLine>n</IsLine>
     <IsLineTopological>n</IsLineTopological>
@@ -509,7 +509,7 @@
   </EntityType>
   <EntityType>
     <EntityId>64</EntityId>
-    <Name>Public Walk Annotation</Name>
+    <Name>Public Walk Annotation Entity</Name>
     <IsPoint>n</IsPoint>
     <IsLine>n</IsLine>
     <IsLineTopological>n</IsLineTopological>
@@ -522,7 +522,7 @@
   </EntityType>
   <EntityType>
     <EntityId>65</EntityId>
-    <Name>Public Lane Annotation</Name>
+    <Name>Public Lane Annotation Entity</Name>
     <IsPoint>n</IsPoint>
     <IsLine>n</IsLine>
     <IsLineTopological>n</IsLineTopological>
@@ -1209,6 +1209,143 @@
     <GroupId>0</GroupId>
     <IsLineTrimmed>n</IsLineTrimmed>
   </EntityType>
+  <EntityType>
+    <EntityId>587</EntityId>
+    <Name>Contour Line</Name>
+    <IsPoint>n</IsPoint>
+    <IsLine>y</IsLine>
+    <IsLineTopological>n</IsLineTopological>
+    <IsPolygon>n</IsPolygon>
+    <IsText>n</IsText>
+    <FontId>0</FontId>
+    <LayerId>0</LayerId>
+    <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
+  </EntityType>
+  <EntityType>
+    <EntityId>588</EntityId>
+    <Name>Mining Claim Line-NonTopological</Name>
+    <IsPoint>n</IsPoint>
+    <IsLine>y</IsLine>
+    <IsLineTopological>n</IsLineTopological>
+    <IsPolygon>n</IsPolygon>
+    <IsText>n</IsText>
+    <FontId>0</FontId>
+    <LayerId>0</LayerId>
+    <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
+  </EntityType>
+  <EntityType>
+    <EntityId>589</EntityId>
+    <Name>Future Property Map Polygon</Name>
+    <IsPoint>n</IsPoint>
+    <IsLine>n</IsLine>
+    <IsLineTopological>n</IsLineTopological>
+    <IsPolygon>y</IsPolygon>
+    <IsText>n</IsText>
+    <FontId>590</FontId>
+    <LayerId>0</LayerId>
+    <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
+  </EntityType>
+  <EntityType>
+    <EntityId>591</EntityId>
+    <Name>InProgress Property Map Polygon</Name>
+    <IsPoint>n</IsPoint>
+    <IsLine>n</IsLine>
+    <IsLineTopological>n</IsLineTopological>
+    <IsPolygon>y</IsPolygon>
+    <IsText>n</IsText>
+    <FontId>590</FontId>
+    <LayerId>0</LayerId>
+    <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
+  </EntityType>
+  <EntityType>
+    <EntityId>592</EntityId>
+    <Name>Property Map Polygon</Name>
+    <IsPoint>n</IsPoint>
+    <IsLine>n</IsLine>
+    <IsLineTopological>n</IsLineTopological>
+    <IsPolygon>y</IsPolygon>
+    <IsText>n</IsText>
+    <FontId>590</FontId>
+    <LayerId>0</LayerId>
+    <GroupId>0</GroupId>
+    <IsLineTrimmed>n</IsLineTrimmed>
+  </EntityType>
+  <EntityTypeSchema>
+    <EntityId>31</EntityId>
+    <SchemaId>475</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>33</EntityId>
+    <SchemaId>477</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>49</EntityId>
+    <SchemaId>478</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>50</EntityId>
+    <SchemaId>481</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>51</EntityId>
+    <SchemaId>475</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>52</EntityId>
+    <SchemaId>485</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>53</EntityId>
+    <SchemaId>479</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>54</EntityId>
+    <SchemaId>485</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>55</EntityId>
+    <SchemaId>480</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>56</EntityId>
+    <SchemaId>484</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>57</EntityId>
+    <SchemaId>485</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>58</EntityId>
+    <SchemaId>483</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>59</EntityId>
+    <SchemaId>486</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>517</EntityId>
+    <SchemaId>475</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>587</EntityId>
+    <SchemaId>606</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>589</EntityId>
+    <SchemaId>601</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>591</EntityId>
+    <SchemaId>601</SchemaId>
+  </EntityTypeSchema>
+  <EntityTypeSchema>
+    <EntityId>592</EntityId>
+    <SchemaId>601</SchemaId>
+  </EntityTypeSchema>
   <Font>
     <FontId>0</FontId>
     <TypeFace />
@@ -1314,6 +1451,15 @@
     <PointSize>8</PointSize>
     <IsBold>n</IsBold>
     <IsItalic>n</IsItalic>
+    <IsUnderline>n</IsUnderline>
+    <FontFile />
+  </Font>
+  <Font>
+    <FontId>590</FontId>
+    <TypeFace>Arial</TypeFace>
+    <PointSize>10</PointSize>
+    <IsBold>y</IsBold>
+    <IsItalic>y</IsItalic>
     <IsUnderline>n</IsUnderline>
     <FontFile />
   </Font>
@@ -1439,16 +1585,205 @@
   </Layer>
   <Property>
     <Name>EntityFile</Name>
-    <Value />
+    <Value>C:\Users\sstanton\Code\Files\EntityFile.txt</Value>
     <Description />
   </Property>
   <Property>
     <Name>StyleFile</Name>
-    <Value />
+    <Value>C:\Users\sstanton\Code\Files\Style.txt</Value>
     <Description />
   </Property>
+  <Schema>
+    <SchemaId>475</SchemaId>
+    <TableName>PlanParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>477</SchemaId>
+    <TableName>CertificateofTitleParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>478</SchemaId>
+    <TableName>DLSParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>479</SchemaId>
+    <TableName>JudgesOrderParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>480</SchemaId>
+    <TableName>LegalInstrumentParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>481</SchemaId>
+    <TableName>ParishLotParcelData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>482</SchemaId>
+    <TableName>PropertyMapPolygonData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>483</SchemaId>
+    <TableName>PublicLaneData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>484</SchemaId>
+    <TableName>PublicWalkData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>485</SchemaId>
+    <TableName>StreetData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>486</SchemaId>
+    <TableName>WaterBodyData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>601</SchemaId>
+    <TableName>MappingAreaPolygonData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <Schema>
+    <SchemaId>606</SchemaId>
+    <TableName>ContourElevationData</TableName>
+    <IdColumnName>PIN</IdColumnName>
+  </Schema>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>499</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>500</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>501</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>502</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>503</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>504</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>603</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>604</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>475</SchemaId>
+    <TemplateId>605</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>477</SchemaId>
+    <TemplateId>487</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>488</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>489</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>593</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>594</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>595</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>596</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>597</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>598</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>478</SchemaId>
+    <TemplateId>599</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>479</SchemaId>
+    <TemplateId>490</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>480</SchemaId>
+    <TemplateId>491</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>481</SchemaId>
+    <TemplateId>492</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>481</SchemaId>
+    <TemplateId>493</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>481</SchemaId>
+    <TemplateId>494</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>481</SchemaId>
+    <TemplateId>495</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>483</SchemaId>
+    <TemplateId>496</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>484</SchemaId>
+    <TemplateId>497</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>485</SchemaId>
+    <TemplateId>498</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>486</SchemaId>
+    <TemplateId>505</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>486</SchemaId>
+    <TemplateId>506</TemplateId>
+  </SchemaTemplate>
+  <SchemaTemplate>
+    <SchemaId>601</SchemaId>
+    <TemplateId>602</TemplateId>
+  </SchemaTemplate>
   <SysId>
-    <LastId>587</LastId>
+    <LastId>606</LastId>
   </SysId>
   <Template>
     <TemplateId>487</TemplateId>
@@ -1549,6 +1884,61 @@
     <TemplateId>506</TemplateId>
     <Name>Other Lake Annotation (word Lake followed by Name)</Name>
     <TemplateFormat>Lake [WB_Name]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>593</TemplateId>
+    <Name>PART Sec,Twp,Rge - DLS Parcel Data - EPM or WPM</Name>
+    <TemplateFormat>[PART] Sec. [SECTION_num]\nTwp. [TOWNSHIP_num], Rge [RANGE_VALUE] [MERIDIAN].P.M.</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>594</TemplateId>
+    <Name>Sec,Twp,Rge - DLS Parcel Data - EPM or WPM</Name>
+    <TemplateFormat>Sec. [SECTION_num]\nTwp. [TOWNSHIP_num], Rge [RANGE_VALUE] [MERIDIAN].P.M.</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>595</TemplateId>
+    <Name>PART Lot,Sec,Twp,Rge - DLS Parcel Data - EPM or WPM</Name>
+    <TemplateFormat>[PART] Lot [DLS_LOT_num] Sec. [SECTION_num]\nTwp. [TOWNSHIP_num], Rge [RANGE_VALUE] [MERIDIAN].P.M.</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>596</TemplateId>
+    <Name>Lot,Sec,Twp,Rge - DLS Parcel Data - EPM or WPM</Name>
+    <TemplateFormat>Lot  .[DLS_LOT_num] Sec. [SECTION_num]\nTwp. [TOWNSHIP_num], Rge [RANGE_VALUE] [MERIDIAN].P.M</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>597</TemplateId>
+    <Name>Part Lot,Twp,Rge - DLS Parcel Data - EPM or WPM</Name>
+    <TemplateFormat>[PART] Lot [DLS_LOT_num] Twp. [TOWNSHIP_num], Rge [RANGE_VALUE] [MERIDIAN].P.M.</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>598</TemplateId>
+    <Name>Lot,Twp,Rge - DLS Parcel Data - EPM or WPM</Name>
+    <TemplateFormat>Lot [DLS_LOT_num] Twp. [TOWNSHIP_num], Rge [RANGE_VALUE] [MERIDIAN].P.M.</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>599</TemplateId>
+    <Name>L.S.,Sec,Twp,Rge - DLS Parcel Data - EPM or WPM</Name>
+    <TemplateFormat>L.S. [DLS_LEGAL_SUB_DIVISION_num] Sec. [SECTION_num] Twp. [TOWNSHIP_num]. Rge [RANGE_VALUE] [MERIDIAN].P.M.</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>602</TemplateId>
+    <Name>Property Mapping Area Label</Name>
+    <TemplateFormat>[PropertyMappingName]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>603</TemplateId>
+    <Name>PART BLOCK - Survey Plan Annotation</Name>
+    <TemplateFormat>[PART] Block [Block_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>604</TemplateId>
+    <Name>PART PLAN - Survey Plan Annotation</Name>
+    <TemplateFormat>[PART] Plan [Plan_ID]</TemplateFormat>
+  </Template>
+  <Template>
+    <TemplateId>605</TemplateId>
+    <Name>PART PLAN - Survey Plan Annotation with LTO Office</Name>
+    <TemplateFormat>[PART] Plan [Plan_ID] [Original_Issuing_LTO+] LTO</TemplateFormat>
   </Template>
   <Theme>
     <ThemeId>0</ThemeId>
@@ -2690,4 +3080,74 @@
     <DomainId>586</DomainId>
     <TableName>DOMAIN_WaterBodyTypes</TableName>
   </DomainTable>
+  <ColumnDomain>
+    <TableId>475</TableId>
+    <ColumnName>Original_Issuing_LTO</ColumnName>
+    <DomainId>576</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>475</TableId>
+    <ColumnName>Parcel_Type</ColumnName>
+    <DomainId>578</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>475</TableId>
+    <ColumnName>PART</ColumnName>
+    <DomainId>582</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>475</TableId>
+    <ColumnName>Plan_Type</ColumnName>
+    <DomainId>583</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>DLS_PARCEL_TYPE</ColumnName>
+    <DomainId>574</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>HALF</ColumnName>
+    <DomainId>575</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>MERIDIAN</ColumnName>
+    <DomainId>577</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>PART</ColumnName>
+    <DomainId>582</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>QS_VALUE</ColumnName>
+    <DomainId>584</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>478</TableId>
+    <ColumnName>RANGE_VALUE</ColumnName>
+    <DomainId>585</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>481</TableId>
+    <ColumnName>Par_Lot_Type</ColumnName>
+    <DomainId>579</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>481</TableId>
+    <ColumnName>Parish</ColumnName>
+    <DomainId>580</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>481</TableId>
+    <ColumnName>PART</ColumnName>
+    <DomainId>582</DomainId>
+  </ColumnDomain>
+  <ColumnDomain>
+    <TableId>486</TableId>
+    <ColumnName>WB_Type</ColumnName>
+    <DomainId>586</DomainId>
+  </ColumnDomain>
 </DefaultEnvironment.xml>
