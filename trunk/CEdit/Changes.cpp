@@ -106,35 +106,33 @@ int IdFactory::LookupId(CMapStringToPtr& index, LPCTSTR name)
 
 unsigned int IdFactory::GetNextId(void* p)
 {
-	//if (p != 0)
-	//{
-	//	unsigned int res = FindId(p);
-	//	if (res != 0)
-	//		return res;
-	//}
-
 	m_MaxId++;
 
 	if (p != 0)
 	{
-		// You should never need to ask for an ID more than once
+		// In most cases, you shouldn't ask for an ID more than once. However, while CEdit would
+		// re-use points if they coincided with a previously created point, Backsight expects
+		// a 2nd point. So if we find an ID for the supplied pointer, it could be that we're
+		// processing an edit that re-used a point from an earlier edit. In that situation, 
+		// we should reserve an ID for use in Backsight. But it's ok to leave m_ObjectIds as
+		// it was (means that Backsight references will always refer to the very first instance
+		// of a point).
+
 		unsigned int iid = FindId(p);
-		if (iid!=0)
+		if (iid == 0)
 		{
-			int junk = 0;
-		}
-		assert(iid == 0);
-		m_ObjectIds.SetAt(p, (void*)m_MaxId);
-	}
+			m_ObjectIds.SetAt(p, (void*)m_MaxId);
 
 #ifdef _CEDIT
-	objectstore::touch(p, false);
+			objectstore::touch(p, false);
 #endif
-	CePoint* pt = dynamic_cast<CePoint*>((CeClass*)p);
-	if (pt != 0)
-	{
-		const CeLocation* loc = pt->GetpVertex();
-		PointFeature_c::IndexAllLocations(*this, loc, m_MaxId);
+			CePoint* pt = dynamic_cast<CePoint*>((CeClass*)p);
+			if (pt != 0)
+			{
+				const CeLocation* loc = pt->GetpVertex();
+				PointFeature_c::IndexAllLocations(*this, loc, m_MaxId);
+			}
+		}
 	}
 
 	return m_MaxId;
