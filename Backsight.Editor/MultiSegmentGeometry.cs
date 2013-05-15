@@ -25,9 +25,7 @@ namespace Backsight.Editor
     /// <written by="Steve Stanton" on="03-OCT-1997" was="CeMultiSegment" />
     /// <summary>
     /// A line that consists of a series of connected line segments (referred to in other
-    /// worlds as a "LineString"). The implementation aims to hold the data in packed form,
-    /// by holding common high-order bytes just once (if there are no common bytes, the
-    /// space required will actually be 2 bytes more than the unpacked data).
+    /// worlds as a "LineString").
     /// </summary>
     class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeometry
     {
@@ -37,6 +35,11 @@ namespace Backsight.Editor
         /// The positions defining the line.
         /// </summary>
         readonly IPointGeometry[] m_Data;
+
+        /// <summary>
+        /// The rectangular coverage of the data.
+        /// </summary>
+        readonly IWindow m_Extent;
 
         #endregion
 
@@ -65,6 +68,7 @@ namespace Backsight.Editor
                 throw new ArgumentException("End point doesn't coincide with last position");
 
             m_Data = positions;
+            m_Extent = LineStringGeometry.GetExtent(this);
         }
 
         /// <summary>
@@ -94,6 +98,8 @@ namespace Backsight.Editor
                 double y = Double.Parse(xy.Substring(blankPos+1));
                 m_Data[i] = new PointGeometry(x, y);
             }
+
+            m_Extent = LineStringGeometry.GetExtent(this);
         }
 
         #endregion
@@ -105,7 +111,8 @@ namespace Backsight.Editor
 
         public override IWindow Extent
         {
-            get { return LineStringGeometry.GetExtent(this); }
+            //get { return LineStringGeometry.GetExtent(this); }
+            get { return m_Extent; }
         }
 
         internal override void Render(ISpatialDisplay display, IDrawStyle style)

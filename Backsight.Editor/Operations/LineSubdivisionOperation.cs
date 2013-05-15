@@ -185,7 +185,7 @@ namespace Backsight.Editor.Operations
         {
             foreach (Feature f in features)
             {
-                if (f is PointFeature)
+                if (f is PointFeature && f.FeatureId == null)
                     f.SetNextId();
             }
         }
