@@ -48,8 +48,8 @@ namespace Backsight.Geometry
         }
 
         /// <summary>
-        /// Creates a new <c>PointGeometry</c> at the specified position.
-        /// (rounded to the nearest micron on the ground).
+        /// Creates a new <c>PositionGeometry</c> at the specified position.
+        /// (not rounded in any way).
         /// </summary>
         /// <param name="x">The easting of the point, in meters on the ground.</param>
         /// <param name="y">The northing of the point, in meters on the ground.</param>
