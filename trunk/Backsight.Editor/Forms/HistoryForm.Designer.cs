@@ -35,6 +35,7 @@ namespace Backsight.Editor.Forms
             this.rollbackButton = new System.Windows.Forms.Button();
             this.StartTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EndTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.userColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EditCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -59,8 +60,8 @@ namespace Backsight.Editor.Forms
             this.splitContainer1.Panel2.Controls.Add(this.detailsButton);
             this.splitContainer1.Panel2.Controls.Add(this.closeButton);
             this.splitContainer1.Panel2.Controls.Add(this.rollbackButton);
-            this.splitContainer1.Size = new System.Drawing.Size(486, 275);
-            this.splitContainer1.SplitterDistance = 375;
+            this.splitContainer1.Size = new System.Drawing.Size(666, 275);
+            this.splitContainer1.SplitterDistance = 555;
             this.splitContainer1.TabIndex = 0;
             // 
             // grid
@@ -71,6 +72,7 @@ namespace Backsight.Editor.Forms
             this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.StartTime,
             this.EndTime,
+            this.userColumn,
             this.EditCount});
             this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grid.Location = new System.Drawing.Point(0, 0);
@@ -79,7 +81,7 @@ namespace Backsight.Editor.Forms
             this.grid.ReadOnly = true;
             this.grid.RowHeadersVisible = false;
             this.grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.grid.Size = new System.Drawing.Size(375, 275);
+            this.grid.Size = new System.Drawing.Size(555, 275);
             this.grid.TabIndex = 0;
             this.grid.DoubleClick += new System.EventHandler(this.grid_DoubleClick);
             // 
@@ -133,6 +135,13 @@ namespace Backsight.Editor.Forms
             this.EndTime.Name = "EndTime";
             this.EndTime.ReadOnly = true;
             // 
+            // userColumn
+            // 
+            this.userColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.userColumn.HeaderText = "User";
+            this.userColumn.Name = "userColumn";
+            this.userColumn.ReadOnly = true;
+            // 
             // EditCount
             // 
             this.EditCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
@@ -145,7 +154,7 @@ namespace Backsight.Editor.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(486, 275);
+            this.ClientSize = new System.Drawing.Size(666, 275);
             this.Controls.Add(this.splitContainer1);
             this.Name = "HistoryForm";
             this.Text = "Operation History";
@@ -168,6 +177,7 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.DataGridView grid;
         private System.Windows.Forms.DataGridViewTextBoxColumn StartTime;
         private System.Windows.Forms.DataGridViewTextBoxColumn EndTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn userColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn EditCount;
     }
 }
