@@ -226,7 +226,7 @@ namespace Backsight.Editor.Operations
                 List<Feature> result = new List<Feature>();
 
                 if (m_Face != null)
-                    result.AddRange(m_Face.GetNewFeatures(m_Line));
+                    result.AddRange(m_Face.GetFeaturesCreatedBy(this));
 
                 return result.ToArray();
             }
@@ -269,7 +269,7 @@ namespace Backsight.Editor.Operations
             // section, so long as it was created by this operation (should
             // do nothing for the 1st section).
 
-            Feature[] fa = m_Face.GetNewFeatures(m_Line);
+            Feature[] fa = m_Face.GetFeaturesCreatedBy(this);
             foreach (Feature f in fa)
                 f.Undo();
 
