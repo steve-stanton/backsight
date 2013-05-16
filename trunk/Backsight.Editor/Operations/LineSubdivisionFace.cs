@@ -328,27 +328,28 @@ namespace Backsight.Editor.Operations
         }
 
         /// <summary>
-        /// The new features created along this face.
+        /// Obtains the features along this face that were created by a specific edit.
         /// </summary>
+        /// <param name="edit">The edit of interest</param>
         /// <param name="parentLine">The line that was subdivided</param>
         /// <returns>The new features created to represent the sections of this face.</returns>
-        internal Feature[] GetNewFeatures(LineFeature parentLine)
+        internal Feature[] GetFeaturesCreatedBy(Operation edit)
         {
             if (m_Sections == null)
                 return new Feature[0];
 
-            Operation parentEdit = parentLine.Creator;
             List<Feature> result = new List<Feature>();
 
             foreach (LineFeature line in m_Sections)
             {
-                // Append point feature at the end of the section (so long as it's not
-                // the end of the subdivided line).
+                // Append point feature at the end of the section (so long as it was created
+                // by the specified edit).
                 PointFeature pf = line.EndPoint;
-                if (pf.Creator != parentEdit)
+                if (pf.Creator == edit )
                     result.Add(pf);
 
-                result.Add(line);
+                if (line.Creator == edit)
+                    result.Add(line);
             }
 
             return result.ToArray();
