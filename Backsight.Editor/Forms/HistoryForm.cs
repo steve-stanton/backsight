@@ -57,7 +57,12 @@ namespace Backsight.Editor.Forms
                 rowIndex--;
                 DataGridViewRow row = grid.Rows[rowIndex];
                 row.Cells["StartTime"].Value = sa[i].StartTime;
-                row.Cells["EndTime"].Value = sa[i].EndTime;
+                if (sa[i].EndTime == DateTime.MinValue)
+                    row.Cells["EndTime"].Value = String.Empty;
+                else
+                    row.Cells["EndTime"].Value = sa[i].EndTime;
+
+                row.Cells["userColumn"].Value = sa[i].User;
                 row.Cells["EditCount"].Value = sa[i].OperationCount;
                 row.Tag = sa[i];
             }
