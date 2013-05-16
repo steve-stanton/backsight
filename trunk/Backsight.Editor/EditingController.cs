@@ -54,11 +54,6 @@ namespace Backsight.Editor
         #region Class data
 
         /// <summary>
-        /// The current user
-        /// </summary>
-        readonly User m_User;
-
-        /// <summary>
         /// Information about the current project
         /// </summary>
         Project m_Project;
@@ -129,7 +124,6 @@ namespace Backsight.Editor
             if (main==null)
                 throw new ArgumentNullException();
 
-            m_User = new User(System.Environment.UserName);
             m_Project = null;
             m_ActiveLayer = null;
             m_Main = main;
@@ -1219,14 +1213,6 @@ namespace Backsight.Editor
 
                 return s.IsSaved;
             }
-        }
-
-        /// <summary>
-        /// The current user
-        /// </summary>
-        internal User User
-        {
-            get { return m_User; }
         }
 
         /// <summary>

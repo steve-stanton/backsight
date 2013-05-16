@@ -1126,7 +1126,6 @@
     <Compile Include="UpdateEditingContext.cs" />
     <Compile Include="UpdateItem.cs" />
     <Compile Include="UpdateItemCollection.cs" />
-    <Compile Include="User.cs" />
     <Compile Include="Wildcard.cs" />
   </ItemGroup>
   <ItemGroup>
