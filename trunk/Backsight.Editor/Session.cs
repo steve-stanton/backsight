@@ -281,7 +281,8 @@ namespace Backsight.Editor
             {
                 string name = Path.GetFileNameWithoutExtension(s);
                 uint n;
-                if (name.Length == 8 && UInt32.TryParse(name, NumberStyles.HexNumber, null, out n) && n >= startFileNumber)
+                //if (name.Length == 8 && UInt32.TryParse(name, NumberStyles.HexNumber, null, out n) && n >= startFileNumber)
+                if (UInt32.TryParse(name, out n) && n >= startFileNumber)
                     result.Add(n);
             }
 
