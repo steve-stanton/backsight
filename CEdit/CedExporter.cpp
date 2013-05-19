@@ -188,7 +188,8 @@ void CedExporter::CreateExport(CeMap* cedFile)
 	// Produce the output file
 	unsigned int maxId = idFactory.GetNextId();
 	CString fileName;
-	fileName.Format("%s\\%08X.txt", (LPCTSTR)projectFolder, maxId);
+	//fileName.Format("%s\\%08X.txt", (LPCTSTR)projectFolder, maxId);
+	fileName.Format("%s\\%u.txt", (LPCTSTR)projectFolder, maxId);
 
 	FILE* fp = fopen((LPCTSTR)fileName, "w");
 	TextEditWriter* tw = new TextEditWriter(fp);

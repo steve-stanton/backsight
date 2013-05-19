@@ -191,7 +191,8 @@ namespace Backsight.Editor
         /// <returns>The corresponding file name (without any directory specification).</returns>
         internal static string GetDataFileName(uint fileNumber)
         {
-            return String.Format("{0:X8}.txt", fileNumber);
+            //return String.Format("{0:X8}.txt", fileNumber);
+            return String.Format("{0}.txt", fileNumber);
         }
 
         /// <summary>
