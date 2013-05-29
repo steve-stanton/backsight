@@ -122,7 +122,7 @@ namespace Backsight.Editor.Operations
             // TODO (perhaps): If the line is a forward-reference (from CEdit export), we'd have to handle
             // AddLineSplit a bit differently, and do some more in ApplyFeatureRef.
             if (m_Line == null)
-                throw new NotImplementedException("Unhandled forward reference");
+                throw new NotImplementedException("Unhandled forward reference for edit "+this.InternalId.ItemSequence);
 
             DeserializationFactory dff = new DeserializationFactory(this);
             dff.AddFeatureStub(DataField.To, to);
