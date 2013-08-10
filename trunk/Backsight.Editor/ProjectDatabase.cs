@@ -261,7 +261,7 @@ namespace Backsight.Editor
             result.Model.Load();
 
             // Get rid of any empty sessions
-            result.Model.RemoveEmptySessions();
+            //result.Model.RemoveEmptySessions();
 
             // Debug CedExporter
             string ptsFileName = Path.Combine(dataFolder, projectName + ".pts");
