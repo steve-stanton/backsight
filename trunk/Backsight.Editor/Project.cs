@@ -286,6 +286,9 @@ namespace Backsight.Editor
             if (m_ProjectInfo == null)
                 throw new ApplicationException("Could not locate the project creation event");
 
+            // Apply any forward references
+            ed.ApplyForwardRefs();
+
             // Remember the highest internal ID used by the project
             SetLastItem(fileNums[fileNums.Length - 1]);
         }
