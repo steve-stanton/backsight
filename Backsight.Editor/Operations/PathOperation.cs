@@ -128,8 +128,8 @@ namespace Backsight.Editor.Operations
         internal PathOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            try
-            {
+            //try
+            //{
                 m_From = editDeserializer.ReadFeatureRef<PointFeature>(DataField.From);
                 m_To = editDeserializer.ReadFeatureRef<PointFeature>(DataField.To);
                 m_EntryString = editDeserializer.ReadString(DataField.EntryString);
@@ -164,12 +164,12 @@ namespace Backsight.Editor.Operations
                 // Apply any IDs
                 if (editDeserializer.IsNextField(DataField.Ids))
                     editDeserializer.ReadIdMappings(DataField.Ids);
-            }
+            //}
 
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            //catch (Exception ex)
+            //{
+            //    throw ex;
+            //}
         }
 
         #endregion
