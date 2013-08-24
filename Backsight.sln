@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.Editor", "Backsig
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "netDxf", "ThirdParty\netDxf\netDxf\netDxf.csproj", "{785380E0-CEB9-4C34-82E5-60D0E33E848E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CEdit", "CEdit\CEdit.vcxproj", "{E8E38E4D-269D-40FD-B422-6EE98B64F89D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,19 +116,6 @@ Global
 		{785380E0-CEB9-4C34-82E5-60D0E33E848E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{785380E0-CEB9-4C34-82E5-60D0E33E848E}.Release|Win32.ActiveCfg = Release|Any CPU
 		{785380E0-CEB9-4C34-82E5-60D0E33E848E}.Release|x86.ActiveCfg = Release|Any CPU
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Debug|Win32.Build.0 = Debug|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Debug|x86.ActiveCfg = Debug|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Debug|x86.Build.0 = Debug|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Release|Any CPU.ActiveCfg = Release|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Release|Win32.ActiveCfg = Release|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Release|Win32.Build.0 = Release|Win32
-		{E8E38E4D-269D-40FD-B422-6EE98B64F89D}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
