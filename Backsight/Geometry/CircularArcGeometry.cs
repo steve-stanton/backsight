@@ -528,6 +528,9 @@ namespace Backsight.Geometry
         /// found corresponds to the corresponding terminal point).</returns>
         public static bool GetPosition(ICircularArcGeometry g, ILength distance, out IPosition result)
         {
+            // Allow 1 micron tolerance
+            const double TOL = 0.000001;
+
             // Check for invalid distances.
             double d = distance.Meters;
             if (d<0.0)
@@ -537,7 +540,7 @@ namespace Backsight.Geometry
             }
 
             double clen = g.Length.Meters; // Arc length
-            if (d>clen)
+            if (d>(clen+TOL))
             {
                 result = g.EC;
                 return false;
@@ -549,13 +552,13 @@ namespace Backsight.Geometry
             // instead, since we can't represent position any better
             // than that).
 
-            if (d<0.000001)
+            if (d<TOL)
             {
                 result = g.BC;
                 return true;
             }
 
-            if (Math.Abs(d-clen)<0.000001)
+            if (Math.Abs(d-clen)<TOL)
             {
                 result = g.EC;
                 return true;
