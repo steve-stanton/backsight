@@ -592,6 +592,10 @@ namespace Backsight.Editor
                     nid = MapModel.AddNativeId(m.RawId);
 
                 Feature f = MapModel.Find<Feature>(m.InternalId);
+                if (f == null)
+                {
+                    int junk = 0;
+                }
                 f.SetId(nid);
             }
         }
