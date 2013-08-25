@@ -583,6 +583,13 @@ LineFeature_c::LineFeature_c(IdFactory& idf, const CeArc& line)
 	From = idf.FindId(line.GetpStart());
 	To = idf.FindId(line.GetpEnd());
 
+	if (From == 0 || To == 0)
+	{
+		CeLocation* ps = line.GetpStart();
+		CeLocation* pe = line.GetpEnd();
+		int junk = 0;
+	}
+
 	assert(From > 0);
 	assert(To > 0);
 
@@ -794,6 +801,7 @@ RowTextGeometry_c::RowTextGeometry_c(IdFactory& idf, const CeRowText& text)
 
 	if (TemplateId == 0)
 	{
+		CString name = text.GetTemplate()->GetName();
 		int junk = 0;
 	}
 

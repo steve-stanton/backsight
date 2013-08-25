@@ -63,6 +63,9 @@ void CedExporter::FillComputerName(CString& name) const
 
 void CedExporter::CreateExport(CeMap* cedFile)
 {
+	//CleanObjectLists(cedFile);
+	//return;
+
 	// Ensure root folders exist (methods will quietly fail if folders are already there)
 	CreateDirectory("C:\\Backsight", 0);
 	CreateDirectory("C:\\Backsight\\index", 0);
@@ -188,7 +191,6 @@ void CedExporter::CreateExport(CeMap* cedFile)
 	// Produce the output file
 	unsigned int maxId = idFactory.GetNextId();
 	CString fileName;
-	//fileName.Format("%s\\%08X.txt", (LPCTSTR)projectFolder, maxId);
 	fileName.Format("%s\\%u.txt", (LPCTSTR)projectFolder, maxId);
 
 	FILE* fp = fopen((LPCTSTR)fileName, "w");
@@ -270,6 +272,99 @@ void CedExporter::CreateExport(CeMap* cedFile)
 	tables.RemoveAll();
 }
 
+
+#ifdef _CEDIT
+#include "CeObjectList.h"
+#endif
+
+void CedExporter::LoadValidData(CMapPtrToPtr& validData, CeMap* cedFile)
+{
+#ifdef _CEDIT
+	// Generate an index of valid objects
+	void* ptr=0;
+	os_typespec* curts=0;
+	os_int32 count=0;
+	os_object_cursor c(os_database::of(cedFile));
+
+	for ( c.first(); c.more(); c.next() )
+	{
+		if ( c.current(ptr,curts,count) )
+		{
+			validData.SetAt(ptr, 0);
+		}
+	}
+
+	CString a;
+	a.Format("Number of objects=%d", validData.GetCount());
+	AfxMessageBox(a);
+#endif
+}
+
+void CedExporter::CleanObjectLists(CeMap* cedFile)
+{
+#ifdef _CEDIT
+	// Generate an index of valid objects
+	CMapPtrToPtr validData;
+	LoadValidData(validData, cedFile);
+
+	// Scan again for lists. For each list, count how many refer to
+	// invalid objects
+
+	void* ptr=0;
+	os_typespec* curts=0;
+	os_int32 count=0;
+	os_object_cursor c(os_database::of(cedFile));
+	int nBad = 0;
+	int nCheck = 0;
+	int nSkip = 0;
+
+	for ( c.first(); c.more(); c.next() )
+	{
+		if ( c.current(ptr,curts,count) )
+		{
+			if (count > 1)
+			{
+				int junk = 0;
+				continue;
+			}
+
+			nCheck++;
+			CeClass* pc = (CeClass*)ptr;
+			objectstore::touch(pc, false);
+
+			if (ptr == (void*)0x3039a900 ||
+				ptr == (void*)0x30399b88 ||
+				ptr == (void*)0x30399660 ||
+				ptr == (void*)0x303988c0 ||
+				ptr == (void*)0x30398df8)
+			{
+				nSkip++;
+				continue;
+			}
+
+			CeObjectList* pList = dynamic_cast<CeObjectList*>(pc);
+			if (pList)
+			{
+				CeFixedArray<CeClass*> stuff(*pList);
+				UINT4 numobj = stuff.GetCount();
+
+				for ( UINT4 i=0; i<numobj; i++ )
+				{
+					void* pThing = (void*)stuff[i];
+					void* pRes;
+					if (!validData.Lookup(pThing, pRes))
+						nBad++;
+				}
+			}
+		}
+	}
+
+	CString t;
+	t.Format("Number of bad refs=%d (nCheck=%d) (nSkip=%d)", nBad, nCheck, nSkip);
+	AfxMessageBox(t);
+
+#endif
+}
 
 #ifdef _CEDIT
 

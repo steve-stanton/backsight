@@ -25,6 +25,8 @@ private:
 	void RecordLocations(const CePoint& p, CMapPtrToPtr& locIndex);
 	void Log(LPCTSTR msg);
 	void Log(const CString& msg);
+	void CleanObjectLists(CeMap* cedFile);
+	void LoadValidData(CMapPtrToPtr& validData, CeMap* cedFile);
 
 	FILE* LogFile;
 };
