@@ -1283,6 +1283,12 @@ NewPointOperation_c::NewPointOperation_c(IdFactory& idf, const CTime& when, cons
 	NewPoint = new PointFeature_c(idf, *(op.GetpPoint()));
 }
 
+NewPointOperation_c::NewPointOperation_c(IdFactory& idf, const CTime& when, const CePoint& p)
+	: Operation_c(idf, when)
+{
+	NewPoint = new PointFeature_c(idf, p);
+}
+
 NewPointOperation_c::~NewPointOperation_c()
 {
 	delete NewPoint;
@@ -1421,6 +1427,8 @@ void ParallelLineOperation_c::WriteData(EditSerializer& s) const
 PathOperation_c::PathOperation_c(IdFactory& idf, const CTime& when, const CePath& op)
 	: Operation_c(idf, when)
 {
+	FalseEndPoint = 0;
+
 	From = op.GetpFrom();
 	To = op.GetpTo();
 
@@ -1556,6 +1564,15 @@ void PathOperation_c::GetIdMappings(const CePath& op, const CeLeg& leg, CePoint*
 		// Ignore if it was created by another edit
 		if (p == pIgnore)
 			p = 0;
+
+		// CEdit sometimes generated a spurious extra point right at the end of the path, but Backsight doesn't.
+		// So if we export an extra ID mapping, Backsight ends up complaining. To cover this, just remember
+		// the spurious point. It needs to be exported as a separate item.
+		if (p != 0 && pIgnore != 0 && op.GetpTo() == pIgnore && p->GetpVertex() == pIgnore->GetpVertex())
+		{
+			FalseEndPoint = p;
+			p = 0;
+		}
 
 		// The point (if there is one) always gets the next ID number
 		unsigned int iid = idf.GetNextId(p);

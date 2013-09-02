@@ -459,8 +459,17 @@ void CedExporter::AppendExportItems(const CTime& when, const CeOperation& op, Id
 		return;
 
 	case CEOP_PATH:
-		exportItems.Add(new PathOperation_c(idf, when, (const CePath&)op));
+	{
+		PathOperation_c* pop = new PathOperation_c(idf, when, (const CePath&)op);
+		exportItems.Add(pop);
+
+		// If CEdit produced a spurious point right at the end of the path, treat it
+		// as an additional NewPointOperation.
+		if (pop->FalseEndPoint)
+			exportItems.Add(new NewPointOperation_c(idf, when, *(pop->FalseEndPoint)));
+
 		return;
+	}
 
 	case CEOP_AREA_SUBDIVISION:
 		exportItems.Add(new PolygonSubdivisionOperation_c(idf, when, (const CeAreaSubdivision&)op));

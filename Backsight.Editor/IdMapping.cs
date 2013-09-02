@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System;
 namespace Backsight.Editor
 {
     /// <summary>
@@ -84,6 +85,17 @@ namespace Backsight.Editor
         internal uint RawId
         {
             get { return m_RawId; }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that contains the internal ID and the corresponding raw ID.
+        /// </returns>
+        public override string ToString()
+        {
+            return String.Format("InternalId={0}  RawId={1}", m_InternalId, m_RawId);
         }
     }
 }
