@@ -477,6 +477,7 @@ public:
 	PointFeature_c* NewPoint;
 
 	NewPointOperation_c(IdFactory& idf, const CTime& when, const CeNewPoint& op);
+	NewPointOperation_c(IdFactory& idf, const CTime& when, const CePoint& p);
 
 	virtual ~NewPointOperation_c();
 	virtual LPCTSTR GetTypeName() const;
@@ -531,6 +532,7 @@ public:
 	int LineType;
 	CPtrArray Ids;
 	CPtrArray AlternateFaces;
+	CePoint* FalseEndPoint;
 
 	PathOperation_c(IdFactory& idf, const CTime& when, const CePath& op);
 

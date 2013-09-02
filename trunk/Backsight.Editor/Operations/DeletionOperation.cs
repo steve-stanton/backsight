@@ -28,7 +28,7 @@ namespace Backsight.Editor.Operations
     /// and it doesn't get garbage collected. It just gets marked as deleted, and will
     /// be retained as part of the map history.
     /// </summary>
-    class DeletionOperation : Operation
+    class DeletionOperation : Operation, IFeatureRefArray
     {
         #region Class data
 
@@ -60,7 +60,8 @@ namespace Backsight.Editor.Operations
         {
             try
             {
-                ReadData(editDeserializer, out m_Deletions);
+                Feature[] dels = editDeserializer.ReadFeatureRefArray<Feature>(this, DataField.Delete);
+                m_Deletions = new List<Feature>(dels);
 
                 // Deactivate features (means they will never make it into the spatial index, and
                 // any lines will be invisible as far as intersection tests are concerned).
@@ -70,7 +71,7 @@ namespace Backsight.Editor.Operations
 
             catch (Exception ex)
             {
-                throw ex;
+                throw new ApplicationException("Error loading edit " + this.EditSequence, ex);
             }
         }
 
@@ -206,7 +207,9 @@ namespace Backsight.Editor.Operations
             foreach (Feature f in m_Deletions)
             {
                 // TESTING - allow nulls for now
-                ff.Deactivate(f);
+                // Array elements could be null if the deletion had a forward ref originating from CEdit
+                if (f != null)
+                    ff.Deactivate(f);
 
                 //if (f != null)
                 //    ff.Deactivate(f);
@@ -267,17 +270,24 @@ namespace Backsight.Editor.Operations
             editSerializer.WriteFeatureRefArray<Feature>(DataField.Delete, m_Deletions.ToArray());
         }
 
-        /// <summary>
-        /// Reads data that was previously written using <see cref="WriteData"/>
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        /// <param name="line">The line the point should appear on </param>
-        /// <param name="positionRatio">The position ratio of the attached point.</param>
-        /// <param name="point">The point that was created.</param>
-        static void ReadData(EditDeserializer editDeserializer, out List<Feature> deletions)
+        public void ApplyFeatureRefArray(DataField field, ForwardRefArrayItem[] featureRefs)
         {
-            Feature[] dels = editDeserializer.ReadFeatureRefArray<Feature>(DataField.Delete);
-            deletions = new List<Feature>(dels);
+            Debug.Assert(field == DataField.Delete);
+
+            foreach (var item in featureRefs)
+            {
+                if (item.ArrayIndex < 0 || item.ArrayIndex >= m_Deletions.Count)
+                    throw new IndexOutOfRangeException();
+
+                m_Deletions[item.ArrayIndex] = item.Feature;
+
+                // As DeserializationFactory.Deactivate...
+                LineFeature line = (item.Feature as LineFeature);
+                if (line != null)
+                    line.RemoveTopology();
+
+                item.Feature.IsInactive = true;
+            }
         }
     }
 }

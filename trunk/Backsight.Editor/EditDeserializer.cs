@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Reflection;
 
 using Backsight.Environment;
+using Backsight.Editor.Operations;
 
 namespace Backsight.Editor
 {
@@ -95,6 +96,12 @@ namespace Backsight.Editor
         /// </summary>
         readonly List<ForwardRef> m_ForwardRefs;
 
+        /// <summary>
+        /// Any forward references that involve line splits. Should be used only
+        /// when deserializing from a file exported from the old CEdit system.
+        /// </summary>
+        readonly List<ForwardSplit> m_ForwardSplits;
+
         #endregion
 
         #region Constructors
@@ -118,6 +125,7 @@ namespace Backsight.Editor
             m_CurrentEdit = null;
             m_Constructors = LoadConstructors();
             m_ForwardRefs = new List<ForwardRef>();
+            m_ForwardSplits = new List<ForwardSplit>();
 
             if (m_Constructors.Count == 0)
                 throw new ApplicationException("Cannot find any deserialization constructors");
@@ -486,11 +494,48 @@ namespace Backsight.Editor
             T result = MapModel.Find<T>(id);
             if (result == null)
             {
-                var fwRef = new ForwardRef(referenceFrom, field, id);
+                var fwRef = new ForwardFeatureRef(referenceFrom, field, id);
                 m_ForwardRefs.Add(fwRef);
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Attempts to read a feature reference, returning any forward reference that got created
+        /// in a situation where the feature could not be found.
+        /// </summary>
+        /// <typeparam name="T">The type of spatial feature expected by the caller</typeparam>
+        /// <param name="referenceFrom">The object that is making the reference</param>
+        /// <param name="field">A tag associated with the value</param>
+        /// <returns>
+        /// The feature that was read (null if not found, or the reference was undefined). May
+        /// actually have a type that is derived from the supplied type.
+        /// </returns>
+        /// <remarks>This should only be used in unusual situations involving imports from
+        /// the old CEdit system.</remarks>
+        internal T ReadFeatureRef<T>(IFeatureRef referenceFrom, DataField field, out ForwardFeatureRef fwRef) where T : Feature
+        {
+            fwRef = null;
+            InternalIdValue id = m_Reader.ReadInternalId(field.ToString());
+            if (id.IsEmpty)
+                return default(T);
+
+            T result = MapModel.Find<T>(id);
+            if (result == null)
+            {
+                fwRef = new ForwardFeatureRef(referenceFrom, field, id);
+                m_ForwardRefs.Add(fwRef);
+            }
+
+            return result;
+        }
+
+
+        internal void AddForwardSplit(ForwardFeatureRef lineRef, string idBefore, string idAfter)
+        {
+            var fwSplit = new ForwardSplit(lineRef, idBefore, idAfter);
+            m_ForwardSplits.Add(fwSplit);
         }
 
         /// <summary>
@@ -501,32 +546,43 @@ namespace Backsight.Editor
         {
             CadastralMapModel model = MapModel;
 
-            foreach (ForwardRef fwRef in m_ForwardRefs)
-            {
-                Feature f = model.Find<Feature>(fwRef.InternalId);
-                if (f == null)
-                    throw new ApplicationException("Cannot locate forward reference " + fwRef.InternalId);
+            // Apply any forward splits (may create lines that are references in turn)
+            foreach (ForwardSplit fwSplit in m_ForwardSplits)
+                fwSplit.Resolve(model);
 
-                fwRef.ReferenceFrom.ApplyFeatureRef(fwRef.Field, f);
-            }
+            foreach (ForwardRef fwRef in m_ForwardRefs)
+                fwRef.Resolve(model);
         }
 
         /// <summary>
         /// Reads an array of spatial features (using their unique IDs the read them from the map model).
         /// </summary>
         /// <typeparam name="T">The type of spatial feature expected by the caller</typeparam>
+        /// <param name="referenceFrom">The object that is making the reference</param>
         /// <param name="field">A tag associated with the array</param>
         /// <returns>The features that were read (should all be not null).</returns>
-        internal T[] ReadFeatureRefArray<T>(DataField field) where T : Feature
+        internal T[] ReadFeatureRefArray<T>(IFeatureRefArray referenceFrom, DataField field) where T : Feature
         {
             string[] ids = ReadSimpleArray<string>(field);
             T[] result = new T[ids.Length];
+            List<ForwardRefArrayItem> fwRefs = null;
 
             for (int i=0; i<result.Length; i++)
             {
                 InternalIdValue id = new InternalIdValue(ids[i]);
                 result[i] = MapModel.Find<T>(id);
+
+                if (result[i] == null)
+                {
+                    if (fwRefs == null)
+                        fwRefs = new List<ForwardRefArrayItem>();
+
+                    fwRefs.Add(new ForwardRefArrayItem(id, i));
+                }
             }
+
+            if (fwRefs != null)
+                m_ForwardRefs.Add(new ForwardFeatureRefArray(referenceFrom, field, fwRefs.ToArray()));
 
             return result;
         }
@@ -585,17 +641,25 @@ namespace Backsight.Editor
 
             IdMapping[] mapping = ReadPersistentArray<IdMapping>(field);
 
-            foreach (var m in mapping)
+            for (int i=0; i<mapping.Length; i++)
             {
+                IdMapping m = mapping[i];
                 NativeId nid = MapModel.FindNativeId(m.RawId);
                 if (nid == null)
                     nid = MapModel.AddNativeId(m.RawId);
 
                 Feature f = MapModel.Find<Feature>(m.InternalId);
+
+                // Ignore null ref if we are dealing with the very last mapping of a connection path
+                // (covers CEdit bug that produced spurious point at the end of the path).
                 if (f == null)
                 {
-                    int junk = 0;
+                    //if (m_CurrentEdit is PathOperation && i == (mapping.Length - 1))
+                    //    break;
+
+                    throw new ApplicationException("Cannot locate feature for ID mapping: " + m);
                 }
+
                 f.SetId(nid);
             }
         }

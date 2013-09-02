@@ -25,7 +25,7 @@ namespace Backsight.Editor.Operations
     /// <summary>
     /// Operation to assign "trim" status to dangling lines.
     /// </summary>
-    class TrimLineOperation : Operation
+    class TrimLineOperation : Operation, IFeatureRefArray
     {
         #region Static
 
@@ -129,8 +129,8 @@ namespace Backsight.Editor.Operations
         internal TrimLineOperation(EditDeserializer editDeserializer)
             : base(editDeserializer)
         {
-            m_Lines = editDeserializer.ReadFeatureRefArray<LineFeature>(DataField.Lines);
-            m_Points = editDeserializer.ReadFeatureRefArray<PointFeature>(DataField.Points);
+            m_Lines = editDeserializer.ReadFeatureRefArray<LineFeature>(this, DataField.Lines);
+            m_Points = editDeserializer.ReadFeatureRefArray<PointFeature>(this, DataField.Points);
 
             ProcessFeatures(null);
         }
@@ -306,6 +306,11 @@ namespace Backsight.Editor.Operations
             base.WriteData(editSerializer);
             editSerializer.WriteFeatureRefArray<LineFeature>(DataField.Lines, m_Lines);
             editSerializer.WriteFeatureRefArray<PointFeature>(DataField.Points, m_Points);
+        }
+
+        public void ApplyFeatureRefArray(DataField field, ForwardRefArrayItem[] featureRefs)
+        {
+            throw new NotImplementedException();
         }
     }
 }

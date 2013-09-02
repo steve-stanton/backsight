@@ -120,10 +120,15 @@
     <Compile Include="Forms\OpenProjectForm.designer.cs">
       <DependentUpon>OpenProjectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ForwardFeatureRef.cs" />
+    <Compile Include="ForwardFeatureRefArray.cs" />
     <Compile Include="ForwardRef.cs" />
+    <Compile Include="ForwardRefArrayItem.cs" />
+    <Compile Include="ForwardSplit.cs" />
     <Compile Include="IdAllocation.cs" />
     <Compile Include="IdMapping.cs" />
     <Compile Include="IFeatureRef.cs" />
+    <Compile Include="IFeatureRefArray.cs" />
     <Compile Include="LegFace.cs" />
     <Compile Include="LoadingContext.cs" />
     <Compile Include="NewProjectEvent.cs" />

@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Backsight.Editor.Observations;
 using Backsight.Environment;
@@ -110,7 +111,8 @@ namespace Backsight.Editor.Operations
             : base(editDeserializer)
         {
             m_Direction = editDeserializer.ReadPersistent<Direction>(DataField.Direction);
-            m_Line = editDeserializer.ReadFeatureRef<LineFeature>(this, DataField.Line);
+            ForwardFeatureRef fwRef;
+            m_Line = editDeserializer.ReadFeatureRef<LineFeature>(this, DataField.Line, out fwRef);
             m_CloseTo = editDeserializer.ReadFeatureRef<PointFeature>(this, DataField.CloseTo);
             FeatureStub to = editDeserializer.ReadPersistent<FeatureStub>(DataField.To);
             FeatureStub dirLine = editDeserializer.ReadPersistentOrNull<FeatureStub>(DataField.DirLine);
@@ -121,14 +123,25 @@ namespace Backsight.Editor.Operations
 
             // TODO (perhaps): If the line is a forward-reference (from CEdit export), we'd have to handle
             // AddLineSplit a bit differently, and do some more in ApplyFeatureRef.
-            if (m_Line == null)
-                throw new NotImplementedException("Unhandled forward reference for edit "+this.InternalId.ItemSequence);
+            if (m_Line == null && m_IsSplit)
+            {
+                if (fwRef == null)
+                {
+                    int junk = 0;
+                }
+                Debug.Assert(fwRef != null);
+                editDeserializer.AddForwardSplit(fwRef, idLineA, idLineB);
+            }
 
             DeserializationFactory dff = new DeserializationFactory(this);
             dff.AddFeatureStub(DataField.To, to);
             dff.AddFeatureStub(DataField.DirLine, dirLine);
-            dff.AddLineSplit(m_Line, DataField.SplitBefore, idLineA);
-            dff.AddLineSplit(m_Line, DataField.SplitAfter, idLineB);
+
+            if (m_Line != null)
+            {
+                dff.AddLineSplit(m_Line, DataField.SplitBefore, idLineA);
+                dff.AddLineSplit(m_Line, DataField.SplitAfter, idLineB);
+            }
             ProcessFeatures(dff);
         }
 
@@ -244,8 +257,12 @@ namespace Backsight.Editor.Operations
         {
             List<Feature> result = new List<Feature>();
 
-            result.Add(m_Line);
-            result.Add(m_CloseTo);
+            if (m_Line != null)
+                result.Add(m_Line);
+
+            if (m_CloseTo != null)
+                result.Add(m_CloseTo);
+
             result.AddRange(m_Direction.GetReferences());
 
             return result.ToArray();
@@ -401,7 +418,9 @@ namespace Backsight.Editor.Operations
         {
             m_Intersection = ff.CreatePointFeature(DataField.To);
 
-            if (m_IsSplit)
+            // The line could be null when dealing with forward splits originating from CEdit (in
+            // that case, the split needs to be deferred)
+            if (m_IsSplit && m_Line != null)
             {
                 LineFeature lineBefore, lineAfter;
                 ff.MakeSections(m_Line, DataField.SplitBefore, m_Intersection, DataField.SplitAfter,
@@ -591,12 +610,18 @@ namespace Backsight.Editor.Operations
             switch (field)
             {
                 case DataField.Line:
+                {
                     m_Line = (LineFeature)feature;
+                    m_Line.RemoveTopology();
+                    m_Line.IsInactive = true;
                     return true;
+                }
 
                 case DataField.CloseTo:
+                {
                     m_CloseTo = (PointFeature)feature;
                     return true;
+                }
             }
 
             return false;
