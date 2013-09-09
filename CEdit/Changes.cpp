@@ -1538,6 +1538,11 @@ void PathOperation_c::GetIdMappings(const CePath& op, const CeLeg& leg, CePoint*
 
 	for (unsigned short iSpan=0; iSpan<nSpan; iSpan++)
 	{
+		if (iSpan == 6 && this->Sequence== 15899)
+		{
+			int junk = 0;
+		}
+
 		// Get the line and/or point for the span (if any)
 
 		CeFeature* f = leg.GetpFeature(iSpan);
@@ -1568,7 +1573,7 @@ void PathOperation_c::GetIdMappings(const CePath& op, const CeLeg& leg, CePoint*
 		// CEdit sometimes generated a spurious extra point right at the end of the path, but Backsight doesn't.
 		// So if we export an extra ID mapping, Backsight ends up complaining. To cover this, just remember
 		// the spurious point. It needs to be exported as a separate item.
-		if (p != 0 && pIgnore != 0 && op.GetpTo() == pIgnore && p->GetpVertex() == pIgnore->GetpVertex())
+		if (p != 0 && pIgnore != 0 && op.GetpTo() == pIgnore && *(p->GetpVertex()) == *(pIgnore->GetpVertex()))
 		{
 			FalseEndPoint = p;
 			p = 0;
