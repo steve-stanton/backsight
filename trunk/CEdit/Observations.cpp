@@ -220,7 +220,7 @@ void AngleDirection_c::WriteData(EditSerializer& s) const
 
     s.WriteFeatureRef(DataField_Backsight, Backsight);
     s.WriteFeatureRef(DataField_From, From);
-    s.WriteRadians(DataField_Value, Observation);
+    s.WriteRadians(DataField_Value, Observation, IsDeflection());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

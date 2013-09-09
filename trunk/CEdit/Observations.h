@@ -110,6 +110,7 @@ public:
 
 	virtual LPCTSTR GetTypeName() const;
 	virtual void WriteData(EditSerializer& s) const;
+	virtual bool IsDeflection() const { return FALSE; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,6 +121,7 @@ public:
 	DeflectionDirection_c(const CeDeflection& d);
 
 	virtual LPCTSTR GetTypeName() const;
+	virtual bool IsDeflection() const { return TRUE; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

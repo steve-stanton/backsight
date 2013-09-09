@@ -69,16 +69,16 @@ void EditSerializer::WriteByteArray(DataField field, __int8* data, unsigned int 
 /// </summary>
 /// <param name="field">The tag that identifies the item.</param>
 /// <param name="value">The radian value to write</param>
-void EditSerializer::WriteRadians(DataField field, double value)
+void EditSerializer::WriteRadians(DataField field, double value, bool isDeflection)
 {
 	char buf[16];
-	RadiansAsShortString(buf, value);
+	RadiansAsShortString(buf, value, isDeflection);
     m_Writer.WriteString(DataFields[field], buf);
 }
 
 #include <math.h>
 
-void EditSerializer::RadiansAsShortString(char* res, double value)
+void EditSerializer::RadiansAsShortString(char* res, double value, bool isDeflection)
 {
     // Convert to decimal degrees (possibly signed).
     const double RADTODEG = 360.0 / (2.0 * 3.14159265358979323846);
@@ -125,6 +125,9 @@ void EditSerializer::RadiansAsShortString(char* res, double value)
 		sprintf(extra, "-%-.3f", secs);
 		strcat(res, extra);
 	}
+
+	if (isDeflection)
+		strcat(res, "d");
 }
 
 /// <summary>

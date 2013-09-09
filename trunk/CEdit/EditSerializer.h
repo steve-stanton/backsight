@@ -24,7 +24,7 @@ public:
 	void WriteDateTime(DataField field, const CTime& when);
 	void WriteInternalId(DataField field, unsigned int id);
 	void WriteFeatureRef(DataField field, void* feature);
-	void WriteRadians(DataField field, double value);
+	void WriteRadians(DataField field, double value, bool isDeflection = FALSE);
 	void WritePointGeometry(DataField xField, DataField yField, const PointGeometry_c& value);
 	void WritePersistent(DataField field, const Persistent_c& p);
 	void WritePersistentArray(DataField field, const CPtrArray& a);
@@ -34,7 +34,7 @@ public:
 private:
 	void WriteBegin(DataField field, LPCTSTR exportedTypeName);
 	void WriteEnd();
-	void RadiansAsShortString(char* buf, double value);
+	void RadiansAsShortString(char* buf, double value, bool isDeflection);
 	void WritePersistent(LPCTSTR field, const Persistent_c& p);
 
 
