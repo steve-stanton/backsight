@@ -308,9 +308,9 @@ namespace Backsight.Editor.UI
             IDrawStyle dottedStyle = new DottedStyle();
 
             // If the reference line is a curve, get the curve info.
-            if (m_Line is ArcFeature)
+            ArcFeature arc = m_Line.GetArcBase();
+            if (arc != null)
             {
-                ArcFeature arc = (m_Line as ArcFeature);
                 bool iscw = arc.IsClockwise;
 
                 // Reverse the direction if necessary.
@@ -636,9 +636,9 @@ namespace Backsight.Editor.UI
             ISpatialSystem sys = CadastralMapModel.Current.SpatialSystem;
 
             // If the reference line is a circular arc, get the curve info.
-            if (line is ArcFeature)
+            ArcFeature arc = line.GetArcBase();
+            if (arc != null)
             {
-                ArcFeature arc = (line as ArcFeature);
                 Circle circle = arc.Circle;
                 double radius = circle.Radius;
                 IPosition centre = circle.Center;
@@ -707,10 +707,10 @@ namespace Backsight.Editor.UI
             IPosition epos = refline.EndPoint;
 
             // If the reference line is a circular arc
-            if (refline is ArcFeature)
+            ArcFeature arc = refline.GetArcBase();
+            if (arc != null)
             {
                 // Get the curve info
-                ArcFeature arc = (refline as ArcFeature);
                 Circle circle = arc.Circle;
                 double radius = circle.Radius;
                 IPosition centre = circle.Center;
@@ -790,10 +790,10 @@ namespace Backsight.Editor.UI
                 return 0.0;
 
             // If the reference line is a curve, get the curve info.
-            if (m_Line is ArcFeature)
+            ArcFeature arc = m_Line.GetArcBase();
+            if (arc != null)
             {
 		        // Get the (planar) radial offset from the circle to one of the parallel positions.
-                ArcFeature arc = (m_Line as ArcFeature);
                 double radius = arc.Circle.Radius;
                 IPosition center = arc.Circle.Center;
                 return Math.Abs(Geom.Distance(center, m_Par1) - radius);
@@ -829,9 +829,9 @@ namespace Backsight.Editor.UI
                 return null;
 
             // If the reference line is a circular arc, get the curve info.
-            if (m_Line is ArcFeature)
+            ArcFeature arc = m_Line.GetArcBase();
+            if (arc != null)
             {
-                ArcFeature arc = (m_Line as ArcFeature);
                 Circle circle = arc.Circle;
                 double radius = circle.Radius;
                 IPointGeometry centre = circle.Center;
@@ -914,10 +914,10 @@ namespace Backsight.Editor.UI
 	        if (parpos==null)
                 return null;
 
-        	// If the reference line is a circular arc, get the curve info.
-            if (refline is ArcFeature)
+        	// If the reference line is a circular arc (or a section based on an arc), get the curve info.
+            ArcFeature arc = refline.GetArcBase();
+            if (arc != null)
             {
-                ArcFeature arc = (refline as ArcFeature);
                 Circle circle = arc.Circle;
                 double radius = circle.Radius;
                 IPointGeometry centre = circle.Center;
