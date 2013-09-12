@@ -333,10 +333,10 @@ namespace Backsight.Editor.Forms
             IDrawStyle solidStyle = EditingController.Current.Style(Color.Magenta);
             IDrawStyle dottedStyle = new DottedStyle();
 
-            if (m_Line is ArcFeature)
+            ArcFeature arc = m_Line.GetArcBase();
+            if (arc != null)
             {
                 // The parallel portion is solid, while the remaining portion of the circle is dotted.
-                ArcFeature arc = (m_Line as ArcFeature);
                 CircularArcGeometry cg = new CircularArcGeometry(arc.Circle.Center, m_South, m_North, arc.IsClockwise);
                 solidStyle.Render(draw, cg);
                 cg.IsClockwise = !cg.IsClockwise;

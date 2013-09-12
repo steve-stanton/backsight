@@ -719,9 +719,14 @@ namespace Backsight.Editor.Operations
 
 	        if (term2!=null)
             {
-                epar = ParallelLineUI.GetIntersect(refLine, epar, term2);
-                if (epar == null)
+                IPosition tpar = ParallelLineUI.GetIntersect(refLine, epar, term2);
+                if (tpar == null)
+                //epar = ParallelLineUI.GetIntersect(refLine, epar, term2);
+                //if (epar == null)
+                {
+                    epar = ParallelLineUI.GetIntersect(refLine, epar, term2);
                     throw new Exception("Parallel does not intersect terminal line.");
+                }
     		}
 
             return true;
