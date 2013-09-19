@@ -95,7 +95,7 @@ void EditSerializer::RadiansAsShortString(char* res, double value, bool isDeflec
 	unsigned int ideg  = (unsigned int)(deg + 0.1);
 	unsigned int imins = (unsigned int)(mins + 0.1);
 
-	if (abs(secs-60.0) < 0.001) // 3 decimals formatted below
+	if (fabs(secs-60.0) < 0.001) // 3 decimals formatted below
     {
 		secs -= 60.0;
 		secs = 0.0;
