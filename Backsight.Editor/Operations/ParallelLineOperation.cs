@@ -717,11 +717,6 @@ namespace Backsight.Editor.Operations
 
         	// And similarly for the end of the parallel.
 
-            if (this.EditSequence == 2513)
-            {
-                int junk = 0;
-            }
-
 	        if (term2!=null)
             {
                 IPosition tpar = ParallelLineUI.GetIntersect(refLine, epar, term2);
