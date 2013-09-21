@@ -392,7 +392,7 @@ namespace Backsight.Editor.Operations
         /// <returns>The position of the intersection (null if it cannot be calculated).</returns>
         IPosition Calculate(Observation dist1, PointFeature from1, Observation dist2, PointFeature from2, bool usedefault)
         {
-        	// Call the static function that is also used by the dialog.
+            // Call the static function that is also used by the dialog.
             IPosition xsect, x1, x2;
             if (Calculate(dist1, from1, dist2, from2, usedefault, out xsect, out x1, out x2))
                 return xsect;
@@ -462,7 +462,7 @@ namespace Backsight.Editor.Operations
             if (offset1==null)
                 d1 = d1 * sys.GetLineScaleFactor(from1, xsect);
 
-            if (offset2!=null)
+            if (offset2==null)
                 d2 = d2 * sys.GetLineScaleFactor(from2, xsect);
 
             // And calculate the exact intersection (like above)...
