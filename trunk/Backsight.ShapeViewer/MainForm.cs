@@ -86,7 +86,7 @@ namespace Backsight.ShapeViewer
             {
                 ISpatialData data = new ShapeFile(fileName);
                 m_Controller.ShapeFileName = fileName;
-                m_Controller.MapModel = new SimpleMapModel(data);
+                m_Controller.SetMapModel(new SimpleMapModel(data), null);
             }
 
             // All properties are readonly, and by default they will show up in
@@ -136,7 +136,7 @@ namespace Backsight.ShapeViewer
 
             ISpatialData data = new ShapeFile(fileName);
             m_Controller.ShapeFileName = fileName;
-            m_Controller.MapModel = new SimpleMapModel(data);
+            m_Controller.SetMapModel(new SimpleMapModel(data), null);
             Settings.Default.LastMap = fileName;
             Settings.Default.Save();
         }
