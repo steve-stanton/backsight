@@ -1,0 +1,15 @@
+Backsight is used to build a cadastral database, using input that comes primarily from hardcopy survey plans. It was originally developed in 1997-98 for the provincial government of Manitoba, Canada. That led to a cadastral data entry program called _CEdit_, which the province continues to use to this day. Unfortunately, there is no money to improve the software, which is why the project is now being re-developed as an open-source project.
+
+_CEdit_ was developed using C++ on Windows NT. Object data was persisted in binary files using a product called PSE Pro (a more recent version is described [here](http://www.progress.com/objectstore/pse_pro/index.ssp)). While this technology worked well 10 years ago, some of the components are now becoming dated, making it more difficult to continue development on modern computers. In addition, PSE now involves a run-time licence, making it problematic as part of an open-source project.
+
+Backsight is being developed using C# and targets Windows XP/Vista. Data is now stored in XML as part of a SQLServer database. The design builds on the experience that was gained during the development of _CEdit_. It also takes on board an inspired [technical paper](http://cfis.savagexi.com/pages/technical_paper_4) produced by Smallworld in the early 1990s.
+
+The design philosophy and implementation can be summarized as follows:
+
+> •	  Backsight **deals with data entry**. It is not meant to act as a datasource for ad-hoc queries (if you want to do that, you will need to extract a snapshot of the database in a more suitable format).
+
+> •	The Backsight project should provide an alternative that can be adopted by the Province of Manitoba in the longer term (perhaps in 5 years time). **Data standards and interoperability are not significant in the immediate future**. This means that Backsight developments are largely unconstrained, meaning that experimental ideas can be entertained more easily.
+
+> •	The Backsight database is meant to be lightweight. The guiding principle is **if it can be calculated, don’t store it** (instead, calculate it when it is required). Observing this principle leads to some results that are unusual for a geographic database – the database does not store a spatial index because a spatial index is calculated. The database does not store topology (polygons) because topology is calculated. Taking this approach to a logical conclusion, the database seldom stores the geometry for spatial features, because that geometry is usually calculated.
+
+> •	The database **stores the edits** that were used to construct the database. For example, the edit used to generate a parallel line involves a reference to the source line together with an offset. When you start the _Cadastral Editor_, software constructs the geometry and polygon topology before displaying a map. As you perform edits, the software saves the edits to the database and updates the transient map.

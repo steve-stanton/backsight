@@ -1,0 +1,51 @@
+Backsight is coded in C# and NET 2.0. It consists of 2 main applications:
+
+  1. The Cadastral Editor is used to enter data from survey plans.
+  1. The Environment Editor is used to define things like the names of valid map layers.
+
+Before you can use the Cadastral Editor, you need to use the Environment Editor to define the sort of information you want to store. The Environment Editor uses a SQLServer 2005 database to store this definition. If you don't already have access to SQLServer, you can download SQLServer Express from [here](http://msdn.microsoft.com/vstudio/express/sql) (the SQLServer Management Studio is also a handy utility that you can download from the same place). Once you have SQLServer 2005 installed, create a new database called Backsight.
+
+When you start the Environment Editor for the very first time, it will look for a database called Backsight on your computer. If it cannot find one, you get the following message:
+```
+
+  // The Environment Editor doesn't have a record of the database
+  // where information should be stored. Please pick an existing
+  // database, or click Cancel to exit.
+
+```
+Browse to the database you want to use and click the Connect button. Once you're connected, the Environment Editor checks that Backsight system tables have been created. If not (it's a brand new database), a dialog appears that contains the following message:
+```
+
+  // The selected database does not appear to contain Backsight system tables.
+  // Click the Create button to create them now, or Cancel if you wish to use some other database.
+
+```
+Click the Create button to create the database tables where the Environment Editor will store stuff. To load the database with a sample definition, you can use the File-Import command. When you do that, you get the message:
+```
+
+  // Importing will replace the content of current database.
+  // Are you sure that's what you want to do?
+
+```
+Click OK and you will be asked to locate a Backsight environment file. A sample called "Manitoba Environment.xml" is provided in the trunk/Files folder. Once you have located the file, click OK, and it will be loaded into your database. The Environment Editor will then display a list of all valid "entity types". Use the View menu to look at the various things the environment contains.
+
+Once you have got a defined environment, you can start the Cadastral Editor (it always works with the environment database you last opened). Each time you perform an edit, a description of that edit gets saved in the database. A small preferences file (with a file extension of _.cedx_) is also written to the file system. Associating the _.cedx_ file extension with the Cadastral Editor makes it easy to relaunch the Editor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
