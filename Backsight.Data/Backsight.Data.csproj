@@ -88,80 +88,36 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="ColumnDomainDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ColumnDomainRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ColumnDomainDataTable.cs" />
+    <Compile Include="ColumnDomainRow.cs" />
     <Compile Include="ConnectionWrapper.cs" />
     <Compile Include="DataServer.cs" />
-    <Compile Include="DomainTableRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="EntityTypeRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="EntityTypeSchemaDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="EntityTypeSchemaRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="DomainTableRow.cs" />
+    <Compile Include="EntityTypeRow.cs" />
+    <Compile Include="EntityTypeSchemaDataTable.cs" />
+    <Compile Include="EntityTypeSchemaRow.cs" />
     <Compile Include="EnvironmentData.cs" />
     <Compile Include="EnvironmentFile.cs" />
-    <Compile Include="FontDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="FontRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="BacksightDataSet.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="FontDataTable.cs" />
+    <Compile Include="FontRow.cs" />
+    <Compile Include="BacksightDataSet.cs" />
     <Compile Include="IConnection.cs" />
     <Compile Include="IDataServer.cs" />
-    <Compile Include="IdGroupDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="IdGroupRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="IdGroupDataTable.cs" />
+    <Compile Include="IdGroupRow.cs" />
     <Compile Include="LastDatabase.cs" />
-    <Compile Include="LayerRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ZoneRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="LayerRow.cs" />
+    <Compile Include="ZoneRow.cs" />
     <Compile Include="PropertyNaming.cs" />
-    <Compile Include="PropertyRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SchemaDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SchemaRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SchemaTemplateDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SysIdRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SysIdTableAdapter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TemplateDataTable.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TemplateRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ThemeRow.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="PropertyRow.cs" />
+    <Compile Include="SchemaDataTable.cs" />
+    <Compile Include="SchemaRow.cs" />
+    <Compile Include="SchemaTemplateDataTable.cs" />
+    <Compile Include="SysIdRow.cs" />
+    <Compile Include="SysIdTableAdapter.cs" />
+    <Compile Include="TemplateDataTable.cs" />
+    <Compile Include="TemplateRow.cs" />
+    <Compile Include="ThemeRow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
