@@ -517,27 +517,25 @@ namespace Backsight.Editor.Operations
                 ILineGeometry[] sections = leg.GetSpanSections(gotend, bearing, sfac, spans);
                 AttachGeometry(ctx, spans, sections);
 
+                // Note the position at the end of the leg
+                IPointGeometry legEnd = sections[sections.Length - 1].End;
+
                 // If we're dealing with the first face of a staggered leg, process the second face
                 if (leg.AlternateFace != null)
                 {
+                    // If this is the very last leg, make sure we use the path end point (there could
+                    // conceivably be some roundoff).
+                    if (i == m_Legs.Count - 1)
+                        legEnd = m_To.PointGeometry;
+
                     spans = leg.AlternateFace.Spans;
-                    sections = leg.GetSpanSections(gotend, bearing, sfac, spans);
+                    sections = leg.GetSpanSections(gotend, legEnd, spans);
                     AttachGeometry(ctx, spans, sections);
                 }
 
                 // Get to the end of the leg
-                gotend = sections[sections.Length - 1].End;
+                gotend = legEnd;
                 bearing = exitBearing;
-            }
-
-            // DEBUG
-            foreach (Feature f in Features)
-            {
-                PointFeature pf = (f as PointFeature);
-                if (pf != null && pf.Geometry == null)
-                {
-                    int junk = 0;
-                }
             }
         }
 

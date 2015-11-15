@@ -14,6 +14,7 @@
 // </remarks>
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 
 using Backsight.Editor.Operations;
@@ -160,6 +161,32 @@ namespace Backsight.Editor
             return result;
         }
 
+        /// <summary>
+        /// Obtains the geometry for spans along an alternate face attached to this leg.
+        /// </summary>
+        /// <param name="start">The position for the start of the leg.
+        /// <param name="end">The position for the end of the leg.</param>
+        /// <param name="spans">Information for the spans coinciding with this leg.</param>
+        /// <returns>The sections along this leg</returns>
+        internal override ILineGeometry[] GetSpanSections(IPosition start, IPosition end, SpanInfo[] spans)
+        {
+            Debug.Assert(AlternateFace != null);
+
+            // Get the desired length (in meters on the ground)
+            double len = Geom.Distance(start, end);
+
+            // Get the observed length (in meters on the ground)
+            double obs = AlternateFace.GetTotal();
+
+            // Get the adjustment factor for stretching-compressing the observed distances.
+            double factor = len / obs;
+
+            // Get the bearing of the line.
+            double bearing = Geom.BearingInRadians(start, end);
+
+            return GetSpanSections(start, bearing, factor, spans);
+        }
+
         /*
         /// <summary>
         /// Draws a previously saved leg.
@@ -189,45 +216,45 @@ namespace Backsight.Editor
         }
         */
 
-        //internal override void Save(FeatureFactory ff, List<PointFeature> createdPoints,
-        //                            ref IPosition terminal, ref double bearing, double sfac)
-        //{
-        //    // Add on any initial angle (it may be a deflection).
-        //    if (Math.Abs(m_StartAngle) > MathConstants.TINY)
-        //    {
-        //        if (m_IsDeflection)
-        //            bearing += m_StartAngle;
-        //        else
-        //            bearing += (m_StartAngle-Math.PI);
-        //    }
+            //internal override void Save(FeatureFactory ff, List<PointFeature> createdPoints,
+            //                            ref IPosition terminal, ref double bearing, double sfac)
+            //{
+            //    // Add on any initial angle (it may be a deflection).
+            //    if (Math.Abs(m_StartAngle) > MathConstants.TINY)
+            //    {
+            //        if (m_IsDeflection)
+            //            bearing += m_StartAngle;
+            //        else
+            //            bearing += (m_StartAngle-Math.PI);
+            //    }
 
-        //    // Create a straight span
-        //    StraightSpan span = new StraightSpan(this, terminal, bearing, sfac);
+            //    // Create a straight span
+            //    StraightSpan span = new StraightSpan(this, terminal, bearing, sfac);
 
-        //    int nspan = this.Count;
-        //    for (int i = 0; i < nspan; i++)
-        //    {
-        //        // Get info for the current span (this defines the
-        //        // adjusted start and end positions, among other things).
-        //        span.Get(i);
+            //    int nspan = this.Count;
+            //    for (int i = 0; i < nspan; i++)
+            //    {
+            //        // Get info for the current span (this defines the
+            //        // adjusted start and end positions, among other things).
+            //        span.Get(i);
 
-        //        // Save the span
-        //        Feature feat = SaveSpan(span, ff, createdPoints, null, null, null, null);
-        //        SetFeature(i, feat);
-        //    }
+            //        // Save the span
+            //        Feature feat = SaveSpan(span, ff, createdPoints, null, null, null, null);
+            //        SetFeature(i, feat);
+            //    }
 
-        //    // Return the end position of the last span.
-        //    terminal = span.End;
-        //}
+            //    // Return the end position of the last span.
+            //    terminal = span.End;
+            //}
 
-        /// <summary>
-        /// Creates a line feature that corresponds to one of the spans on this leg.
-        /// </summary>
-        /// <param name="ff">The factory for creating new spatial features</param>
-        /// <param name="itemName">The name for the item involved</param>
-        /// <param name="from">The point at the start of the line (not null).</param>
-        /// <param name="to">The point at the end of the line (not null).</param>
-        /// <returns>The created line (never null)</returns>
+            /// <summary>
+            /// Creates a line feature that corresponds to one of the spans on this leg.
+            /// </summary>
+            /// <param name="ff">The factory for creating new spatial features</param>
+            /// <param name="itemName">The name for the item involved</param>
+            /// <param name="from">The point at the start of the line (not null).</param>
+            /// <param name="to">The point at the end of the line (not null).</param>
+            /// <returns>The created line (never null)</returns>
         internal override LineFeature CreateLine(FeatureFactory ff, string itemName, PointFeature from, PointFeature to)
         {
             return ff.CreateSegmentLineFeature(itemName, from, to);

@@ -80,6 +80,15 @@ namespace Backsight.Editor
         abstract internal ILineGeometry[] GetSpanSections(IPosition start, double bearing, double sfac, SpanInfo[] spans);
 
         /// <summary>
+        /// Obtains the geometry for spans along an alternate face attached to this leg.
+        /// </summary>
+        /// <param name="start">The position for the start of the leg.
+        /// <param name="end">The position for the end of the leg.</param>
+        /// <param name="spans">Information for the spans coinciding with this leg.</param>
+        /// <returns>The sections along this leg</returns>
+        abstract internal ILineGeometry[] GetSpanSections(IPosition start, IPosition end, SpanInfo[] spans);
+
+        /// <summary>
         /// Creates spatial features (points and lines) for this leg. The created
         /// features don't have any geometry.
         /// </summary>

@@ -15,7 +15,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
 using Backsight.Geometry;
@@ -327,6 +327,72 @@ namespace Backsight.Editor
                 ePos = Geom.Polar(center, bearing, radius * sfac);
 
                 result[i] = new CircularArcGeometry(circle, sPos, ePos, isClockwise);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Obtains the geometry for spans along an alternate face attached to this leg.
+        /// </summary>
+        /// <param name="legStart">The position for the start of the leg.
+        /// <param name="legEnd">The position for the end of the leg.</param>
+        /// <param name="spans">Information for the spans coinciding with this leg.</param>
+        /// <returns>The sections along this leg</returns>
+        internal override ILineGeometry[] GetSpanSections(IPosition legStart, IPosition legEnd, SpanInfo[] spans)
+        {
+            var result = new ILineGeometry[spans.Length];
+
+            Debug.Assert(AlternateFace != null);
+
+            // Define the arc that corresponds to the complete leg (the circle should have been
+            // already defined when we processed the primary face_.
+            Debug.Assert(Circle != null);
+            var arc = new CircularArcGeometry(Circle, legStart, legEnd, m_Metrics.IsClockwise);
+
+            // Handle case where the leg is a cul-de-sac with no observed spans on the alternate face
+            if (spans.Length == 1 && spans[0].ObservedDistance == null)
+            {
+                result[0] = arc;
+                return result;
+            }
+
+            // Get the required arc length (in meters on the ground)
+            double len = arc.Length.Meters;
+
+            // Get the observed arc length (in meters on the ground)
+            double obs = AlternateFace.GetTotal();
+
+            // Get the adjustment factor for stretching-compressing the observed distances.
+            double factor = len / obs;
+
+            // Define start of first arc.
+            IPosition sPos = legStart;
+            IPosition ePos = null;
+
+            // Haven't got anywhere yet.
+            double totobs = 0.0;
+
+            // Figure out the location of each span
+            for (int i = 0; i < result.Length; i++, sPos = ePos)
+            {
+                if (i == result.Length - 1)
+                {
+                    ePos = legEnd;
+                }
+                else
+                {
+                    // Add on the unscaled distance
+                    totobs += spans[i].ObservedDistance.Meters;
+
+                    // Scale to the required length for the overall leg
+                    double elen = totobs * factor;
+
+                    // Define the end position.
+                    arc.GetPosition(new Length(elen), out ePos);
+                }
+
+                result[i] = new CircularArcGeometry(Circle, sPos, ePos, m_Metrics.IsClockwise);
             }
 
             return result;
