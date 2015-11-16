@@ -397,7 +397,7 @@ namespace Backsight.Editor.Operations
             ICircleGeometry circlep = new CircleGeometry(from, dist);
 
             // See if there is actually an intersection between the direction & the circle.
-            nx = dir.Intersect(circle, out x1, out x2);
+            nx = dir.Intersect(circlep, out x1, out x2);
             if (nx==0)
                 return false;
 
