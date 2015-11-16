@@ -71,8 +71,10 @@ namespace Backsight.Editor
         /// Initializes a new instance of the <see cref="LegFace"/> class that has undefined spans, and
         /// no sequence number.
         /// </summary>
-        internal LegFace(int nspan)
+        internal LegFace(Leg leg, int nspan)
         {
+            this.Leg = leg;
+
             // Allocate an array of spans (always at least ONE).
             m_Spans = new SpanInfo[Math.Max(1, nspan)];
             for (int i = 0; i < m_Spans.Length; i++)

@@ -46,7 +46,7 @@ namespace Backsight.Editor
 
         protected Leg(int nspan)
         {
-            m_FirstSide = new LegFace(nspan);
+            m_FirstSide = new LegFace(this, nspan);
             m_OtherSide = null;
         }
 
