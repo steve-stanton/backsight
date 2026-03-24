@@ -1,7 +1,7 @@
 # Overview
 
 Backsight is a data entry mechanism for producing cadastral map data from hardcopy survey plans, and was originally developed in the
-late 1990s for the Canadian province of Manitoba. Some of these plans date back to the 19th century, and show thedistances and angles
+late 1990s for the Canadian province of Manitoba. Some of these plans date back to the 19th century, and show the distances and angles
 that were used to subdivide the land.
 
 <img src="docs/images/plan-detail.jpg" width="500" />
@@ -51,11 +51,11 @@ to the tax assessment layer. Changes going the other way must not be permitted.
 
 ## Background
 
-Backsight was originally implemented in C++ as a WinForms application, and worked with data files that were persisted using a package called [PSE](https://www.yumpu.com/en/document/read/36607053/pse-pro-for-c-tutorial/9) (a lightweight rendition of an object database). Completed maps were
+Backsight was originally implemented in C++ as a WinForms application, and stored points, lines, and polygons in data files that were persisted using a package called [PSE](https://www.yumpu.com/en/document/read/36607053/pse-pro-for-c-tutorial/9) (a lightweight rendition of an object database). Completed maps were
 then converted into more traditional data formats (Shapefile and DXF) before being uploaded to [this](https://mli.gov.mb.ca/cadastral/index.html)
 public-facing web site.
 
-This code repository is a C# rewrite of the original C++ codebase. While the software still retains the WinForms look-and-feel, the dependence on PSE has been eliminated. Instead of working with data files that hold points, lines, and polygons, the software now works with JSON-like files that only hold the data entry commands used to construct the map. When the application starts up, each data entry command gets replayed, which regenerates the geometry of the spatial objects. The geometry remains transient, existing in memory only while the application is running.
+This code repository is a C# rewrite that was conceived about 10 years later. While the software still retains the WinForms look-and-feel, the dependence on PSE has been eliminated. Instead of working with data files that hold points, lines, and polygons, the software now works with JSON-like files that only hold the data entry commands used to construct the map. When the application starts up, each data entry command gets replayed, which regenerates the geometry of the spatial objects. The geometry remains transient, existing in memory only while the application is running.
 
 ## Roadmap
 
