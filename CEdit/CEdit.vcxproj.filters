@@ -22,6 +22,7 @@
     <None Include="res\CEdit.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="upgrade-assessment.md" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CEdit.cpp">

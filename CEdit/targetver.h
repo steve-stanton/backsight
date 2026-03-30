@@ -7,7 +7,7 @@
 
 //#include <winsdkver.h>
 // SS: Try targetting Windows 2000
-#define WINVER 0x0500
-#define _WIN32_WINNT 0x0500
+#define WINVER 0x0601
+#define _WIN32_WINNT 0x0601
 
 #include <SDKDDKVer.h>
