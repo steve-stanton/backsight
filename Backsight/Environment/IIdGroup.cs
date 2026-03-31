@@ -13,19 +13,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+public interface IIdGroup : IEnvironmentItem
 {
-    public interface IIdGroup : IEnvironmentItem
-    {
-        string Name { get; }
-        int LowestId { get; }
-        int HighestId { get; }
-        int PacketSize { get; }
-        string KeyFormat { get; }
-        bool HasCheckDigit { get; }
-        IEntity[] EntityTypes { get; }
-        int MaxUsedId { get; }
-    }
+    string Name { get; }
+    int LowestId { get; }
+    int HighestId { get; }
+    int PacketSize { get; }
+    string KeyFormat { get; }
+    bool HasCheckDigit { get; }
+    IEntity[] EntityTypes { get; }
+    int MaxUsedId { get; }
 }

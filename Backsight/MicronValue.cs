@@ -13,54 +13,43 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="01-SEP-2006" />
+/// <summary>
+/// An ordinate (or dimension) that's stored in microns.
+/// </summary>
+public struct MicronValue : ILength
 {
-	/// <written by="Steve Stanton" on="01-SEP-2006" />
     /// <summary>
-    /// An ordinate (or dimension) that's stored in microns.
+    /// The value in microns.
     /// </summary>
-    public struct MicronValue : ILength
+    /// <remarks>
+    /// Take care if you modify this struct to allow value changes. Since the
+    /// <c>ILength</c> interface is implemented, you may fail to appreciate when
+    /// it is being passed around by value versus by reference (from what I can
+    /// see, a struct will be passed by reference if it was declared to be an
+    /// instance of the interface type).
+    /// </remarks>
+    readonly long m_Value;
+
+    public MicronValue(long value)
     {
-        #region Data
+        m_Value = value;
+    }
 
-        /// <summary>
-        /// The value in microns.
-        /// </summary>
-        /// <remarks>
-        /// Take care if you modify this struct to allow value changes. Since the
-        /// <c>ILength</c> interface is implemented, you may fail to appreciate when
-        /// it is being passed around by value versus by reference (from what I can
-        /// see, a struct will be passed by reference if it was declared to be an
-        /// instance of the interface type).
-        /// </remarks>
-        readonly long m_Value;
+    public MicronValue(double meters)
+    {
+        m_Value = Length.ToMicrons(meters);
+    }
 
-        #endregion
+    public long Microns
+    {
+        get { return m_Value; }
+    }
 
-        #region Constructors
-
-        public MicronValue(long value)
-        {
-            m_Value = value;
-        }
-
-        public MicronValue(double meters)
-        {
-            m_Value = Length.ToMicrons(meters);
-        }
-
-        #endregion
-
-        public long Microns
-        {
-            get { return m_Value; }
-        }
-
-        public double Meters
-        {
-            get { return Length.ToMeters(m_Value); }
-        }
+    public double Meters
+    {
+        get { return Length.ToMeters(m_Value); }
     }
 }

@@ -13,36 +13,33 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="14-APR-2008" />
+/// <summary>
+/// A database table that has been associated with the Backsight environment
+/// </summary>
+public interface ITable : IEnvironmentItem
 {
-    /// <written by="Steve Stanton" on="14-APR-2008" />
     /// <summary>
-    /// A database table that has been associated with the Backsight environment
+    /// The name of the database table (possibly decorated with schema name)
     /// </summary>
-    public interface ITable : IEnvironmentItem
-    {
-        /// <summary>
-        /// The name of the database table (possibly decorated with schema name)
-        /// </summary>
-        string TableName { get; }
+    string TableName { get; }
 
-        /// <summary>
-        /// The name of the column that corresponds to the user-perceived ID
-        /// associated with spatial features (this may or may not be the primary
-        /// key of the table).
-        /// </summary>
-        string IdColumnName { get; }
+    /// <summary>
+    /// The name of the column that corresponds to the user-perceived ID
+    /// associated with spatial features (this may or may not be the primary
+    /// key of the table).
+    /// </summary>
+    string IdColumnName { get; }
 
-        /// <summary>
-        /// Any text formatting templates associated with the table (may be an empty array)
-        /// </summary>
-        ITemplate[] Templates { get; }
+    /// <summary>
+    /// Any text formatting templates associated with the table (may be an empty array)
+    /// </summary>
+    ITemplate[] Templates { get; }
 
-        /// <summary>
-        /// Any domains associated with columns in the table
-        /// </summary>
-        IColumnDomain[] ColumnDomains { get; }
-    }
+    /// <summary>
+    /// Any domains associated with columns in the table
+    /// </summary>
+    IColumnDomain[] ColumnDomains { get; }
 }

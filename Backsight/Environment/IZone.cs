@@ -13,20 +13,17 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="29-APR-2008" />
+/// <summary>
+/// A zone is some named area of space. This is used to provide a form of spatial
+/// indexing when dealing with a Backsight database.
+/// </summary>
+public interface IZone : IEnvironmentItem
 {
-    /// <written by="Steve Stanton" on="29-APR-2008" />
     /// <summary>
-    /// A zone is some named area of space. This is used to provide a form of spatial
-    /// indexing when dealing with a Backsight database.
+    /// The name for the zone (e.g. "Vancouver")
     /// </summary>
-    public interface IZone : IEnvironmentItem
-    {
-        /// <summary>
-        /// The name for the zone (e.g. "Vancouver")
-        /// </summary>
-        string Name { get; }
-    }
+    string Name { get; }
 }

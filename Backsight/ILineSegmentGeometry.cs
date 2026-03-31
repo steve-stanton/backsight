@@ -13,24 +13,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="14-JUN-2007" />
+/// <summary>
+/// The geometry for a line segment.
+/// </summary>
+public interface ILineSegmentGeometry
 {
-	/// <written by="Steve Stanton" on="14-JUN-2007" />
     /// <summary>
-    /// The geometry for a line segment.
+    /// The position at the start of this line.
     /// </summary>
-    public interface ILineSegmentGeometry
-    {
-        /// <summary>
-        /// The position at the start of this line.
-        /// </summary>
-        IPointGeometry Start { get; }
+    IPointGeometry Start { get; }
 
-        /// <summary>
-        /// The position at the end of this line.
-        /// </summary>
-        IPointGeometry End { get; }
-    }
+    /// <summary>
+    /// The position at the end of this line.
+    /// </summary>
+    IPointGeometry End { get; }
 }

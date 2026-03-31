@@ -13,16 +13,13 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <summary>
+/// A ground position that can be modified
+/// </summary>
+public interface IEditPosition : IPosition
 {
-    /// <summary>
-    /// A ground position that can be modified
-    /// </summary>
-    public interface IEditPosition : IPosition
-    {
-        new double X { set; }
-        new double Y { set; }
-    }
+    new double X { set; }
+    new double Y { set; }
 }

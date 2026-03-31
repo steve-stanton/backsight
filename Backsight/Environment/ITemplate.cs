@@ -13,36 +13,33 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="15-APR-2008" />
+/// <summary>
+/// A template describing how to form a text string out of information that appears in
+/// a database table.
+/// </summary>
+public interface ITemplate : IEnvironmentItem
 {
-    /// <written by="Steve Stanton" on="15-APR-2008" />
     /// <summary>
-    /// A template describing how to form a text string out of information that appears in
-    /// a database table.
+    /// The database table the template applies to (the table may be associated with
+    /// several templates).
     /// </summary>
-    public interface ITemplate : IEnvironmentItem
-    {
-        /// <summary>
-        /// The database table the template applies to (the table may be associated with
-        /// several templates).
-        /// </summary>
-        ITable Schema { get; }
+    ITable Schema { get; }
 
-        /// <summary>
-        /// Is this a new item (not yet saved in the database)?
-        /// </summary>
-        bool IsNew { get; }
+    /// <summary>
+    /// Is this a new item (not yet saved in the database)?
+    /// </summary>
+    bool IsNew { get; }
 
-        /// <summary>
-        /// A name for the template
-        /// </summary>
-        string Name { get; }
+    /// <summary>
+    /// A name for the template
+    /// </summary>
+    string Name { get; }
 
-        /// <summary>
-        /// The format that defines the template
-        /// </summary>
-        string Format { get; }
-    }
+    /// <summary>
+    /// The format that defines the template
+    /// </summary>
+    string Format { get; }
 }

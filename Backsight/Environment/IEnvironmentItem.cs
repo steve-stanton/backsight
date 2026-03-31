@@ -13,22 +13,20 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.ComponentModel;
 
-namespace Backsight.Environment
+namespace Backsight.Environment;
+
+/// <written by="Steve Stanton" on="08-MAR-2007" />
+/// <summary>
+/// An item of information that relates to the Backsight operating environment.
+/// </summary>
+public interface IEnvironmentItem : IExpandablePropertyItem
 {
-	/// <written by="Steve Stanton" on="08-MAR-2007" />
     /// <summary>
-    /// An item of information that relates to the Backsight operating environment.
+    /// The item ID. No two items in an environment should have the same ID (with the
+    /// exception of Id==0, which is intended to refer to various types of "empty" item).
     /// </summary>
-    public interface IEnvironmentItem : IExpandablePropertyItem
-    {
-        /// <summary>
-        /// The item ID. No two items in an environment should have the same ID (with the
-        /// exception of Id==0, which is intended to refer to various types of "empty" item).
-        /// </summary>
-        [Browsable(false)]
-        int Id { get; }
-    }
+    [Browsable(false)]
+    int Id { get; }
 }

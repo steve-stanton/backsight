@@ -13,35 +13,34 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.ComponentModel;
 
-namespace Backsight
+namespace Backsight;
+
+/// <summary>
+/// A const ground position
+/// </summary>
+/// <seealso cref="IEditPosition"/>
+[TypeConverter(typeof(StringConverter))]
+public interface IPosition
 {
     /// <summary>
-    /// A const ground position
+    /// The easting value for this position.
     /// </summary>
-    /// <seealso cref="IEditPosition"/>
-    [TypeConverter(typeof(StringConverter))]
-    public interface IPosition
-    {
-        /// <summary>
-        /// The easting value for this position.
-        /// </summary>
-        double X { get; }
+    double X { get; }
 
-        /// <summary>
-        /// The northing value for this position.
-        /// </summary>
-        double Y { get; }
+    /// <summary>
+    /// The northing value for this position.
+    /// </summary>
+    double Y { get; }
 
-        /// <summary>
-        /// Does this position coincide with another one?
-        /// </summary>
-        /// <param name="p">The position to compare with</param>
-        /// <param name="tol">Tolerance to use for comparison</param>
-        /// <returns>True if this position is at the same position (within
-        /// the specified tolerance)</returns>
-        bool IsAt(IPosition p, double tol);
-    }
+    /// <summary>
+    /// Does this position coincide with another one?
+    /// </summary>
+    /// <param name="p">The position to compare with</param>
+    /// <param name="tol">Tolerance to use for comparison</param>
+    /// <returns>True if this position is at the same position (within
+    /// the specified tolerance)</returns>
+    bool IsAt(IPosition p, double tol);
 }
+

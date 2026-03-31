@@ -13,55 +13,51 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="08-JAN-2007" />
+/// <summary>
+/// A selection of spatial objects
+/// </summary>
+public interface ISpatialSelection
 {
-	/// <written by="Steve Stanton" on="08-JAN-2007" />
     /// <summary>
-    /// A selection of spatial objects
+    /// The number of items in the selection
     /// </summary>
-    public interface ISpatialSelection
-    {
-        /// <summary>
-        /// The number of items in the selection
-        /// </summary>
-        int Count { get; }
+    int Count { get; }
 
-        /// <summary>
-        /// The one and only item in this selection (null if the selection is empty, or
-        /// it contains more than one item).
-        /// </summary>
-        ISpatialObject Item { get; }
+    /// <summary>
+    /// The one and only item in this selection (null if the selection is empty, or
+    /// it contains more than one item).
+    /// </summary>
+    ISpatialObject Item { get; }
 
-        /// <summary>
-        /// The items in the selection
-        /// </summary>
-        IEnumerable<ISpatialObject> Items { get; }
+    /// <summary>
+    /// The items in the selection
+    /// </summary>
+    IEnumerable<ISpatialObject> Items { get; }
 
-        /// <summary>
-        /// Checks whether this selection refers to the same spatial objects as
-        /// another selection.
-        /// </summary>
-        /// <param name="that">The selection to compare with</param>
-        /// <returns>True if the two selections refer to the same spatial objects (not
-        /// necessarily in the same order)</returns>
-        bool Equals(ISpatialSelection that);
+    /// <summary>
+    /// Checks whether this selection refers to the same spatial objects as
+    /// another selection.
+    /// </summary>
+    /// <param name="that">The selection to compare with</param>
+    /// <returns>True if the two selections refer to the same spatial objects (not
+    /// necessarily in the same order)</returns>
+    bool Equals(ISpatialSelection that);
 
-        /// <summary>
-        /// Checks whether this selection refers to one specific spatial object.
-        /// </summary>
-        /// <param name="o">The object to compare with</param>
-        /// <returns>True if this selection refers to a single item that corresponds
-        /// to the specified spatial object</returns>
-        bool Equals(ISpatialObject o);
+    /// <summary>
+    /// Checks whether this selection refers to one specific spatial object.
+    /// </summary>
+    /// <param name="o">The object to compare with</param>
+    /// <returns>True if this selection refers to a single item that corresponds
+    /// to the specified spatial object</returns>
+    bool Equals(ISpatialObject o);
 
-        /// <summary>
-        /// Draws the content of this selection
-        /// </summary>
-        /// <param name="display">The display to draw to</param>
-        /// <param name="style">The drawing style to use</param>
-        void Render(ISpatialDisplay display, IDrawStyle style);
-    }
+    /// <summary>
+    /// Draws the content of this selection
+    /// </summary>
+    /// <param name="display">The display to draw to</param>
+    /// <param name="style">The drawing style to use</param>
+    void Render(ISpatialDisplay display, IDrawStyle style);
 }

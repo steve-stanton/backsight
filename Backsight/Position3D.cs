@@ -13,48 +13,37 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="27-NOV-2007" />
+/// <summary>
+/// A 3D position
+/// </summary>
+public class Position3D : Position, IEditPosition3D
 {
-    /// <written by="Steve Stanton" on="27-NOV-2007" />
     /// <summary>
-    /// A 3D position
+    /// The elevation for the position.
     /// </summary>
-    public class Position3D : Position, IEditPosition3D
+    double m_Z;
+
+    /// <summary>
+    /// Creates a new <c>Position3D</c> at the specified XYZ.
+    /// </summary>
+    /// <param name="x">The easting of the position</param>
+    /// <param name="y">The northing of the position</param>
+    /// <param name="z">The elevation of the position</param>
+    public Position3D(double x, double y, double z)
+        : base(x,y)
     {
-        #region Class data
+        m_Z = z;
+    }
 
-        /// <summary>
-        /// The elevation for the position.
-        /// </summary>
-        double m_Z;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>Position3D</c> at the specified XYZ.
-        /// </summary>
-        /// <param name="x">The easting of the position</param>
-        /// <param name="y">The northing of the position</param>
-        /// <param name="z">The elevation of the position</param>
-        public Position3D(double x, double y, double z)
-            : base(x,y)
-        {
-            m_Z = z;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// The elevation for the position.
-        /// </summary>
-        public double Z
-        {
-            get { return m_Z; }
-            set { m_Z = value; }
-        }
+    /// <summary>
+    /// The elevation for the position.
+    /// </summary>
+    public double Z
+    {
+        get { return m_Z; }
+        set { m_Z = value; }
     }
 }

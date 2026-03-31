@@ -13,22 +13,19 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="12-MAR-2007" />
+/// <summary>
+/// A mutable version of <c>ILayer</c>
+/// </summary>
+public interface IEditLayer : ILayer, IEditControl
 {
-	/// <written by="Steve Stanton" on="12-MAR-2007" />
-    /// <summary>
-    /// A mutable version of <c>ILayer</c>
-    /// </summary>
-    public interface IEditLayer : ILayer, IEditControl
-    {
-        new string Name { get; set; }
-        new IEntity DefaultPointType { get; set; }
-        new IEntity DefaultLineType { get; set; }
-        new IEntity DefaultTextType { get; set; }
-        new IEntity DefaultPolygonType { get; set; }
-        new ITheme Theme { get; set; }
-        new int ThemeSequence { get; set; }
-    }
+    new string Name { get; set; }
+    new IEntity DefaultPointType { get; set; }
+    new IEntity DefaultLineType { get; set; }
+    new IEntity DefaultTextType { get; set; }
+    new IEntity DefaultPolygonType { get; set; }
+    new ITheme Theme { get; set; }
+    new int ThemeSequence { get; set; }
 }

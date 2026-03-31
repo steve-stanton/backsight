@@ -13,29 +13,26 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="14-JUN-2007" />
+/// <summary>
+/// The geometry for a circular arc
+/// </summary>
+public interface ICircularArcGeometry : IClockwiseCircularArcGeometry
 {
-	/// <written by="Steve Stanton" on="14-JUN-2007" />
     /// <summary>
-    /// The geometry for a circular arc
+    /// The position of the beginning of curve
     /// </summary>
-    public interface ICircularArcGeometry : IClockwiseCircularArcGeometry
-    {
-        /// <summary>
-        /// The position of the beginning of curve
-        /// </summary>
-        IPointGeometry BC { get; }
+    IPointGeometry BC { get; }
 
-        /// <summary>
-        /// The position of the end of curve
-        /// </summary>
-        IPointGeometry EC { get; }
+    /// <summary>
+    /// The position of the end of curve
+    /// </summary>
+    IPointGeometry EC { get; }
 
-        /// <summary>
-        /// Does the arc run clockwise from the BC to the EC?
-        /// </summary>
-        bool IsClockwise { get; }
-    }
+    /// <summary>
+    /// Does the arc run clockwise from the BC to the EC?
+    /// </summary>
+    bool IsClockwise { get; }
 }

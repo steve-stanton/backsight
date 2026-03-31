@@ -13,21 +13,18 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="13-OCT-2006" />
+/// <summary>
+/// A mutable ground extent
+/// </summary>
+public interface IEditWindow : IWindow
 {
-	/// <written by="Steve Stanton" on="13-OCT-2006" />
-    /// <summary>
-    /// A mutable ground extent
-    /// </summary>
-    public interface IEditWindow : IWindow
-    {
-        void SetEmpty();
-        void Union(IWindow other);
-        void Union(double x, double y);
-        void Union(IPosition p);
-        void Expand(double factor);
-        void Expand(ILength margin);
-    }
+    void SetEmpty();
+    void Union(IWindow other);
+    void Union(double x, double y);
+    void Union(IPosition p);
+    void Expand(double factor);
+    void Expand(ILength margin);
 }

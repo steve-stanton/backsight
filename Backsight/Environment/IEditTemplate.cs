@@ -13,30 +13,27 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="15-APR-2008" />
+/// <summary>
+/// A mutable version of <c>ITemplate</c>
+/// </summary>
+public interface IEditTemplate : ITemplate, IEditControl
 {
-    /// <written by="Steve Stanton" on="15-APR-2008" />
     /// <summary>
-    /// A mutable version of <c>ITemplate</c>
+    /// The database table the template applies to (the table may be associated with
+    /// several templates).
     /// </summary>
-    public interface IEditTemplate : ITemplate, IEditControl
-    {
-        /// <summary>
-        /// The database table the template applies to (the table may be associated with
-        /// several templates).
-        /// </summary>
-        new ITable Schema { get; set; }
+    new ITable Schema { get; set; }
 
-        /// <summary>
-        /// A name for the template
-        /// </summary>
-        new string Name { get; set; }
+    /// <summary>
+    /// A name for the template
+    /// </summary>
+    new string Name { get; set; }
 
-        /// <summary>
-        /// The format that defines the template
-        /// </summary>
-        new string Format { get; set; }
-    }
+    /// <summary>
+    /// The format that defines the template
+    /// </summary>
+    new string Format { get; set; }
 }

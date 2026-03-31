@@ -13,16 +13,13 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="02-FEB-2007" />
+/// <summary>
+/// An immutable 3D position
+/// </summary>
+public interface IPosition3D : IPosition
 {
-	/// <written by="Steve Stanton" on="02-FEB-2007" />
-    /// <summary>
-    /// An immutable 3D position
-    /// </summary>
-    public interface IPosition3D : IPosition
-    {
-        double Z { get; }
-    }
+    double Z { get; }
 }

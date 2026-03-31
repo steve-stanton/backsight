@@ -13,34 +13,33 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Environment
+namespace Backsight.Environment;
+
+/// <written by="Steve Stanton" on="13-MAR-2007" />
+/// <summary>
+/// Methods for controlling the editing process.
+/// </summary>
+public interface IEditControl
 {
-	/// <written by="Steve Stanton" on="13-MAR-2007" />
     /// <summary>
-    /// Methods for controlling the editing process.
+    /// Begins a series of edits to an item.
     /// </summary>
-    public interface IEditControl
-    {
-        /// <summary>
-        /// Begins a series of edits to an item.
-        /// </summary>
-        void BeginEdit();
+    void BeginEdit();
 
-        /// <summary>
-        /// Undoes changes since edits were last committed.
-        /// </summary>
-        void CancelEdit();
+    /// <summary>
+    /// Undoes changes since edits were last committed.
+    /// </summary>
+    void CancelEdit();
 
-        /// <summary>
-        /// Commits an edit. If the item is brand new, this will add the item into an
-        /// instance of <c>IEnvironmentContainer</c>. If the item was previously part
-        /// of a container, constraint checking will be enabled.
-        /// </summary>
-        void FinishEdit();
+    /// <summary>
+    /// Commits an edit. If the item is brand new, this will add the item into an
+    /// instance of <c>IEnvironmentContainer</c>. If the item was previously part
+    /// of a container, constraint checking will be enabled.
+    /// </summary>
+    void FinishEdit();
 
-        /// <summary>
-        /// Marks something for deletion
-        /// </summary>
-        void Delete();
-    }
+    /// <summary>
+    /// Marks something for deletion
+    /// </summary>
+    void Delete();
 }

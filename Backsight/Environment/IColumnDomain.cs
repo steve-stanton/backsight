@@ -13,28 +13,25 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <summary>
+/// The association of a database column and a domain
+/// </summary>
+public interface IColumnDomain
 {
     /// <summary>
-    /// The association of a database column and a domain
+    /// The table the column is part of
     /// </summary>
-    public interface IColumnDomain
-    {
-        /// <summary>
-        /// The table the column is part of
-        /// </summary>
-        ITable ParentTable { get; }
+    ITable ParentTable { get; }
 
-        /// <summary>
-        /// The name of the database column that the domain is associated with
-        /// </summary>
-        string ColumnName { get; }
+    /// <summary>
+    /// The name of the database column that the domain is associated with
+    /// </summary>
+    string ColumnName { get; }
 
-        /// <summary>
-        /// The associated domain table
-        /// </summary>
-        IDomainTable Domain { get; }
-    }
+    /// <summary>
+    /// The associated domain table
+    /// </summary>
+    IDomainTable Domain { get; }
 }

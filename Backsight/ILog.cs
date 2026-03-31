@@ -13,21 +13,18 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="20-SEP-2007" />
+/// <summary>
+/// Something that logs messages (might just display them on a screen, might stuff
+/// them into some archive, whatever).
+/// </summary>
+public interface ILog
 {
-    /// <written by="Steve Stanton" on="20-SEP-2007" />
     /// <summary>
-    /// Something that logs messages (might just display them on a screen, might stuff
-    /// them into some archive, whatever).
+    /// Logs the specified message
     /// </summary>
-    public interface ILog
-    {
-        /// <summary>
-        /// Logs the specified message
-        /// </summary>
-        /// <param name="message">The message to log</param>
-        void LogMessage(string message);
-    }
+    /// <param name="message">The message to log</param>
+    void LogMessage(string message);
 }

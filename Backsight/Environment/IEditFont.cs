@@ -13,31 +13,27 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Drawing;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="09-APR-2008"/>
+/// <summary>
+/// A mutable version of <c>IFont</c>
+/// </summary>
+public interface IEditFont : IFont, IEditControl
 {
-    /// <written by="Steve Stanton" on="09-APR-2008"/>
     /// <summary>
-    /// A mutable version of <c>IFont</c>
+    /// The name of the font family (e.g. "Arial"). A null name is valid,
+    /// and means that any system-defined font should be used.
     /// </summary>
-    public interface IEditFont : IFont, IEditControl
-    {
-        /// <summary>
-        /// The name of the font family (e.g. "Arial"). A null name is valid,
-        /// and means that any system-defined font should be used.
-        /// </summary>
-        new string TypeFace { get; set; }
+    new string TypeFace { get; set; }
 
-        /// <summary>
-        /// The point-size of the font
-        /// </summary>
-        new float PointSize { get; set; }
+    /// <summary>
+    /// The point-size of the font
+    /// </summary>
+    new float PointSize { get; set; }
 
-        /// <summary>
-        /// Flag bits defining font modifiers.
-        /// </summary>
-        new FontStyle Modifiers { get; set; }
-    }
+    /// <summary>
+    /// Flag bits defining font modifiers.
+    /// </summary>
+    new FontStyle Modifiers { get; set; }
 }

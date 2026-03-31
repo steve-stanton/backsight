@@ -13,53 +13,49 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Windows.Forms;
+namespace Backsight.Forms;
 
-namespace Backsight.Forms
+abstract class SpatialDisplayTool : ISpatialDisplayTool
 {
-    abstract class SpatialDisplayTool : ISpatialDisplayTool
+    private readonly MapControl m_MapControl;
+
+    protected MapControl MapControl { get { return m_MapControl; } }
+
+    protected SpatialDisplayTool(MapControl mapControl)
     {
-        private readonly MapControl m_MapControl;
+        if (mapControl==null)
+            throw new ArgumentNullException();
 
-        protected MapControl MapControl { get { return m_MapControl; } }
+        m_MapControl = mapControl;
+    }
 
-        protected SpatialDisplayTool(MapControl mapControl)
-        {
-            if (mapControl==null)
-                throw new ArgumentNullException();
+    abstract public int Id { get; }
+    abstract public bool Start();
 
-            m_MapControl = mapControl;
-        }
+    public virtual bool Finish()
+    {
+        m_MapControl.Finish(this);
+        return true;
+    }
 
-        abstract public int Id { get; }
-        abstract public bool Start();
+    public virtual void MouseDown(IPosition p, MouseButtons b)
+    {
+    }
 
-        public virtual bool Finish()
-        {
-            m_MapControl.Finish(this);
-            return true;
-        }
+    public virtual void MouseUp(IPosition p, MouseButtons b)
+    {
+    }
 
-        public virtual void MouseDown(IPosition p, MouseButtons b)
-        {
-        }
+    public virtual void MouseMove(IPosition p, MouseButtons b)
+    {
+    }
 
-        public virtual void MouseUp(IPosition p, MouseButtons b)
-        {
-        }
+    public virtual void MouseWheel(int delta, Keys k)
+    {
+    }
 
-        public virtual void MouseMove(IPosition p, MouseButtons b)
-        {
-        }
-
-        public virtual void MouseWheel(int delta, Keys k)
-        {
-        }
-
-        public virtual void Escape()
-        {
-            m_MapControl.Escape(this);
-        }
+    public virtual void Escape()
+    {
+        m_MapControl.Escape(this);
     }
 }

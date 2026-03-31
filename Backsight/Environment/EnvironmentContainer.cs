@@ -13,231 +13,227 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="08-MAR-2007" />
+/// <summary>
+/// Methods relating to the object that holds items associated with the Backsight
+/// operating environment. This holds a reference to the one (and only)
+/// <see cref="IEnvironmentContainer"/> that an application is associated with.
+/// It also acts as a dumping ground for static methods that have something to do
+/// with the environment classes.
+/// </summary>
+public static class EnvironmentContainer
 {
-    /// <written by="Steve Stanton" on="08-MAR-2007" />
     /// <summary>
-    /// Methods relating to the object that holds items associated with the Backsight
-    /// operating environment. This holds a reference to the one (and only)
-    /// <see cref="IEnvironmentContainer"/> that an application is associated with.
-    /// It also acts as a dumping ground for static methods that have something to do
-    /// with the environment classes.
+    /// The one (and only) environment container.
     /// </summary>
-    public static class EnvironmentContainer
+    private static IEnvironmentContainer s_Container = null;
+
+    /// <summary>
+    /// The one (and only) container for environment-related information.
+    /// </summary>
+    public static IEnvironmentContainer Current
     {
-        /// <summary>
-        /// The one (and only) environment container.
-        /// </summary>
-        private static IEnvironmentContainer s_Container = null;
+        get { return s_Container; }
+        set { s_Container = value; }
+    }
 
-        /// <summary>
-        /// The one (and only) container for environment-related information.
-        /// </summary>
-        public static IEnvironmentContainer Current
+    /// <summary>
+    /// Small shortcut to <c>Current.Factory</c> (null if a container hasn't been defined).
+    /// </summary>
+    public static IEnvironmentFactory Factory
+    {
+        get { return (s_Container==null ? null : s_Container.Factory); }
+    }
+
+    /// <summary>
+    /// The entity types that relate to the specified spatial type, regardless of the
+    /// mapping layer they may be restricted to.
+    /// </summary>
+    /// <param name="t">The type(s) of interest</param>
+    /// <returns>The entity types associated with the specified spatial type.</returns>
+    public static IEntity[] EntityTypes(SpatialType t)
+    {
+        return Filter(s_Container.EntityTypes, t, null);
+    }
+
+    /// <summary>
+    /// The entity types that relate to the specified spatial type and mapping layer.
+    /// </summary>
+    /// <param name="t">The type(s) of interest</param>
+    /// <param name="layer">The layer of interest (null for all layers)</param>
+    /// <returns>The entity types associated with the specified spatial type and layer
+    /// (i.e. entities that either refer explicitly to the layer, or which can be
+    /// used on all layers).
+    /// </returns>
+    public static IEntity[] EntityTypes(SpatialType t, ILayer layer)
+    {
+        return Filter(s_Container.EntityTypes, t, layer);
+    }
+
+    /// <summary>
+    /// The schemas that relate to the specified spatial type and mapping layer.
+    /// </summary>
+    /// <param name="t">The type(s) of interest</param>
+    /// <param name="layer">The layer of interest (null for all layers)</param>
+    /// <returns>The schemas associated with the entity types that apply to the specified
+    /// spatial type and mapping layer</returns>
+    public static ITable[] Schemas(SpatialType t, ILayer layer)
+    {
+        List<ITable> result = new List<ITable>();
+        IEntity[] ents = EntityTypes(t, layer);
+
+        foreach (IEntity e in ents)
         {
-            get { return s_Container; }
-            set { s_Container = value; }
-        }
-
-        /// <summary>
-        /// Small shortcut to <c>Current.Factory</c> (null if a container hasn't been defined).
-        /// </summary>
-        public static IEnvironmentFactory Factory
-        {
-            get { return (s_Container==null ? null : s_Container.Factory); }
-        }
-
-        /// <summary>
-        /// The entity types that relate to the specified spatial type, regardless of the
-        /// mapping layer they may be restricted to.
-        /// </summary>
-        /// <param name="t">The type(s) of interest</param>
-        /// <returns>The entity types associated with the specified spatial type.</returns>
-        public static IEntity[] EntityTypes(SpatialType t)
-        {
-            return Filter(s_Container.EntityTypes, t, null);
-        }
-
-        /// <summary>
-        /// The entity types that relate to the specified spatial type and mapping layer.
-        /// </summary>
-        /// <param name="t">The type(s) of interest</param>
-        /// <param name="layer">The layer of interest (null for all layers)</param>
-        /// <returns>The entity types associated with the specified spatial type and layer
-        /// (i.e. entities that either refer explicitly to the layer, or which can be
-        /// used on all layers).
-        /// </returns>
-        public static IEntity[] EntityTypes(SpatialType t, ILayer layer)
-        {
-            return Filter(s_Container.EntityTypes, t, layer);
-        }
-
-        /// <summary>
-        /// The schemas that relate to the specified spatial type and mapping layer.
-        /// </summary>
-        /// <param name="t">The type(s) of interest</param>
-        /// <param name="layer">The layer of interest (null for all layers)</param>
-        /// <returns>The schemas associated with the entity types that apply to the specified
-        /// spatial type and mapping layer</returns>
-        public static ITable[] Schemas(SpatialType t, ILayer layer)
-        {
-            List<ITable> result = new List<ITable>();
-            IEntity[] ents = EntityTypes(t, layer);
-
-            foreach (IEntity e in ents)
+            ITable[] entSchemas = e.DefaultTables;
+            foreach (ITable schema in entSchemas)
             {
-                ITable[] entSchemas = e.DefaultTables;
-                foreach (ITable schema in entSchemas)
-                {
-                    if (!result.Contains(schema))
-                        result.Add(schema);
-                }
+                if (!result.Contains(schema))
+                    result.Add(schema);
             }
-
-            return result.ToArray();
         }
 
-        /// <summary>
-        /// Restricts the supplied array to those entity types where certain
-        /// spatial type(s) are valid.
-        /// </summary>
-        /// <param name="ents">The array to restrict</param>
-        /// <param name="t">The spatial type(s) of interest</param>
-        /// <returns>The entity types that are associated with the spatial type</returns>
-        public static IEntity[] Filter(IEntity[] ents, SpatialType t)
-        {
-            return Array.FindAll<IEntity>(ents, delegate(IEntity e)
-                            { return e.IsValid(t); });
-        }
+        return result.ToArray();
+    }
 
-        /// <summary>
-        /// Restricts the supplied array to those entity types where certain
-        /// spatial type(s) are valid, and that are associated with a specific map layer.
-        /// </summary>
-        /// <param name="ents">The array to restrict</param>
-        /// <param name="t">The spatial type(s) of interest</param>
-        /// <param name="layer">The layer of interest (null for all layers)</param>
-        /// <returns>The entity types that meet the filtering criteria</returns>
-        public static IEntity[] Filter(IEntity[] ents, SpatialType t, ILayer layer)
-        {
-            List<IEntity> result = new List<IEntity>(ents.Length);
-            int layerId = (layer==null ? 0 : layer.Id);
+    /// <summary>
+    /// Restricts the supplied array to those entity types where certain
+    /// spatial type(s) are valid.
+    /// </summary>
+    /// <param name="ents">The array to restrict</param>
+    /// <param name="t">The spatial type(s) of interest</param>
+    /// <returns>The entity types that are associated with the spatial type</returns>
+    public static IEntity[] Filter(IEntity[] ents, SpatialType t)
+    {
+        return Array.FindAll<IEntity>(ents, delegate(IEntity e)
+            { return e.IsValid(t); });
+    }
 
-            foreach (IEntity e in ents)
+    /// <summary>
+    /// Restricts the supplied array to those entity types where certain
+    /// spatial type(s) are valid, and that are associated with a specific map layer.
+    /// </summary>
+    /// <param name="ents">The array to restrict</param>
+    /// <param name="t">The spatial type(s) of interest</param>
+    /// <param name="layer">The layer of interest (null for all layers)</param>
+    /// <returns>The entity types that meet the filtering criteria</returns>
+    public static IEntity[] Filter(IEntity[] ents, SpatialType t, ILayer layer)
+    {
+        List<IEntity> result = new List<IEntity>(ents.Length);
+        int layerId = (layer==null ? 0 : layer.Id);
+
+        foreach (IEntity e in ents)
+        {
+            if (!e.IsValid(t))
+                continue;
+
+            // If a specific layer is required...
+            if (layerId!=0)
             {
-                if (!e.IsValid(t))
+                // Skip if the entity type is associated with a specific layer,
+                // and it's not the required one.
+                ILayer entLayer = e.Layer;
+                if (entLayer!=null && entLayer.Id!=layerId)
                     continue;
 
-                // If a specific layer is required...
-                if (layerId!=0)
-                {
-                    // Skip if the entity type is associated with a specific layer,
-                    // and it's not the required one.
-                    ILayer entLayer = e.Layer;
-                    if (entLayer!=null && entLayer.Id!=layerId)
-                        continue;
-
-                }
-
-                result.Add(e);
             }
 
-            return result.ToArray();
+            result.Add(e);
         }
 
-        /// <summary>
-        /// Locates a map layer based on it's unique ID
-        /// </summary>
-        /// <param name="id">The ID of the required layer</param>
-        /// <returns>The corresponding layer (null if not found)</returns>
-        public static ILayer FindLayerById(int id)
-        {
-            return FindById<ILayer>(s_Container.Layers, id);
-        }
+        return result.ToArray();
+    }
 
-        /// <summary>
-        /// Locates an entity type based on it's unique ID
-        /// </summary>
-        /// <param name="id">The ID of the required entity type</param>
-        /// <returns>The corresponding entity type (null if not found)</returns>
-        public static IEntity FindEntityById(int id)
-        {
-            return FindById<IEntity>(s_Container.EntityTypes, id);
-        }
+    /// <summary>
+    /// Locates a map layer based on it's unique ID
+    /// </summary>
+    /// <param name="id">The ID of the required layer</param>
+    /// <returns>The corresponding layer (null if not found)</returns>
+    public static ILayer FindLayerById(int id)
+    {
+        return FindById<ILayer>(s_Container.Layers, id);
+    }
 
-        /// <summary>
-        /// Locate the entity type with an ID==0.
-        /// </summary>
-        /// <returns>The "blank" entity type</returns>
-        public static IEntity FindBlankEntity()
-        {
-            return FindEntityById(0);
-        }
+    /// <summary>
+    /// Locates an entity type based on it's unique ID
+    /// </summary>
+    /// <param name="id">The ID of the required entity type</param>
+    /// <returns>The corresponding entity type (null if not found)</returns>
+    public static IEntity FindEntityById(int id)
+    {
+        return FindById<IEntity>(s_Container.EntityTypes, id);
+    }
 
-        /// <summary>
-        /// Locates a Backsight property
-        /// </summary>
-        /// <param name="propertyName">The name of the property</param>
-        /// <returns></returns>
-        public static IProperty FindPropertyByName(string propertyName)
-        {
-            IProperty[] props = s_Container.Properties;
-            return Array.Find<IProperty>(props, delegate(IProperty p) { return p.Name == propertyName; });
-        }
+    /// <summary>
+    /// Locate the entity type with an ID==0.
+    /// </summary>
+    /// <returns>The "blank" entity type</returns>
+    public static IEntity FindBlankEntity()
+    {
+        return FindEntityById(0);
+    }
 
-        /// <summary>
-        /// Locates font information based on it's unique ID
-        /// </summary>
-        /// <param name="id">The ID of the required font</param>
-        /// <returns>The corresponding font information  (null if not found)</returns>
-        public static IFont FindFontById(int id)
-        {
-            return FindById<IFont>(s_Container.Fonts, id);
-        }
+    /// <summary>
+    /// Locates a Backsight property
+    /// </summary>
+    /// <param name="propertyName">The name of the property</param>
+    /// <returns></returns>
+    public static IProperty FindPropertyByName(string propertyName)
+    {
+        IProperty[] props = s_Container.Properties;
+        return Array.Find<IProperty>(props, delegate(IProperty p) { return p.Name == propertyName; });
+    }
 
-        /// <summary>
-        /// Locates a text template based on it's unique ID
-        /// </summary>
-        /// <param name="id">The ID of the required template</param>
-        /// <returns>The corresponding template (null if not found)</returns>
-        public static ITemplate FindTemplateById(int id)
-        {
-            return FindById<ITemplate>(s_Container.Templates, id);
-        }
+    /// <summary>
+    /// Locates font information based on it's unique ID
+    /// </summary>
+    /// <param name="id">The ID of the required font</param>
+    /// <returns>The corresponding font information  (null if not found)</returns>
+    public static IFont FindFontById(int id)
+    {
+        return FindById<IFont>(s_Container.Fonts, id);
+    }
 
-        /// <summary>
-        /// Locates a map theme based on it's unique ID
-        /// </summary>
-        /// <param name="id">The ID of the required theme</param>
-        /// <returns>The corresponding theme (null if not found)</returns>
-        public static ITheme FindThemeById(int id)
-        {
-            return FindById<ITheme>(s_Container.Themes, id);
-        }
+    /// <summary>
+    /// Locates a text template based on it's unique ID
+    /// </summary>
+    /// <param name="id">The ID of the required template</param>
+    /// <returns>The corresponding template (null if not found)</returns>
+    public static ITemplate FindTemplateById(int id)
+    {
+        return FindById<ITemplate>(s_Container.Templates, id);
+    }
 
-        /// <summary>
-        /// Locates an ID group based on it's unique ID
-        /// </summary>
-        /// <param name="id">The ID of the required ID group</param>
-        /// <returns>The corresponding ID group (null if not found)</returns>
-        public static IIdGroup FindIdGroupById(int id)
-        {
-            return FindById<IIdGroup>(s_Container.IdGroups, id);
-        }
+    /// <summary>
+    /// Locates a map theme based on it's unique ID
+    /// </summary>
+    /// <param name="id">The ID of the required theme</param>
+    /// <returns>The corresponding theme (null if not found)</returns>
+    public static ITheme FindThemeById(int id)
+    {
+        return FindById<ITheme>(s_Container.Themes, id);
+    }
 
-        /// <summary>
-        /// Locates an environment item based on it's unique ID
-        /// </summary>
-        /// <typeparam name="T">The type of item to look for</typeparam>
-        /// <param name="items">The items to examine</param>
-        /// <param name="id">The ID of the required item</param>
-        /// <returns>The corresponding item (null if not found)</returns>
-        static T FindById<T>(T[] items, int id) where T : IEnvironmentItem
-        {
-            return Array.Find<T>(items, delegate(T t) { return t.Id == id; });
-        }
+    /// <summary>
+    /// Locates an ID group based on it's unique ID
+    /// </summary>
+    /// <param name="id">The ID of the required ID group</param>
+    /// <returns>The corresponding ID group (null if not found)</returns>
+    public static IIdGroup FindIdGroupById(int id)
+    {
+        return FindById<IIdGroup>(s_Container.IdGroups, id);
+    }
+
+    /// <summary>
+    /// Locates an environment item based on it's unique ID
+    /// </summary>
+    /// <typeparam name="T">The type of item to look for</typeparam>
+    /// <param name="items">The items to examine</param>
+    /// <param name="id">The ID of the required item</param>
+    /// <returns>The corresponding item (null if not found)</returns>
+    static T FindById<T>(T[] items, int id) where T : IEnvironmentItem
+    {
+        return Array.Find<T>(items, delegate(T t) { return t.Id == id; });
     }
 }

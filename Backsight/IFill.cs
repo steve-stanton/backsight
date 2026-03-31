@@ -13,19 +13,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Drawing;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="28-SEP-2007" />
+/// <summary>
+/// Something that represents fill colors & patterns. For
+/// use with the <see cref="IDrawStyle"/> interface.
+/// </summary>
+public interface IFill
 {
-    /// <written by="Steve Stanton" on="28-SEP-2007" />
-    /// <summary>
-    /// Something that represents fill colors & patterns. For
-    /// use with the <see cref="IDrawStyle"/> interface.
-    /// </summary>
-    public interface IFill
-    {
-        Brush Brush { get; }
-        Color Color { get; set; }
-    }
+    Brush Brush { get; }
+    Color Color { get; set; }
 }

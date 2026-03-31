@@ -13,19 +13,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="29-APR-2008"/>
+/// <summary>
+/// A mutable version of <c>IZone</c>
+/// </summary>
+public interface IEditZone : IZone, IEditControl
 {
-    /// <written by="Steve Stanton" on="29-APR-2008"/>
     /// <summary>
-    /// A mutable version of <c>IZone</c>
+    /// The name for the zone (e.g. "Vancouver")
     /// </summary>
-    public interface IEditZone : IZone, IEditControl
-    {
-        /// <summary>
-        /// The name for the zone (e.g. "Vancouver")
-        /// </summary>
-        new string Name { get; set; }
-    }
+    new string Name { get; set; }
 }

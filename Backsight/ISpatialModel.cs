@@ -13,52 +13,46 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
+namespace Backsight;
 
-using Backsight.Environment;
-
-namespace Backsight
+/// <summary>
+/// The data model for geographic space (typically some sort of map)
+/// </summary>
+public interface ISpatialModel : IExpandablePropertyItem
 {
     /// <summary>
-    /// The data model for geographic space (typically some sort of map)
+    /// A user-perceived name for the model.
     /// </summary>
-    public interface ISpatialModel : IExpandablePropertyItem
-    {
-        /// <summary>
-        /// A user-perceived name for the model.
-        /// </summary>
-        string Name { get; }
+    string Name { get; }
 
-        /// <summary>
-        /// Draws this model on the specified display
-        /// </summary>
-        /// <param name="display">The display to render to</param>
-        /// <param name="style">The display style to use</param>
-        void Render(ISpatialDisplay display, IDrawStyle style);
+    /// <summary>
+    /// Draws this model on the specified display
+    /// </summary>
+    /// <param name="display">The display to render to</param>
+    /// <param name="style">The display style to use</param>
+    void Render(ISpatialDisplay display, IDrawStyle style);
 
-        /// <summary>
-        /// Is this model currently empty?
-        /// </summary>
-        bool IsEmpty { get; }
+    /// <summary>
+    /// Is this model currently empty?
+    /// </summary>
+    bool IsEmpty { get; }
 
-        /// <summary>
-        /// The ground extent of the data in the model (null if the model is empty)
-        /// </summary>
-        IWindow Extent { get; }
+    /// <summary>
+    /// The ground extent of the data in the model (null if the model is empty)
+    /// </summary>
+    IWindow Extent { get; }
 
-        /// <summary>
-        /// Locates the object closest to a specific position.
-        /// </summary>
-        /// <param name="p">The search position</param>
-        /// <param name="radius">The search radius</param>
-        /// <param name="types">The type(s) of object to look for</param>
-        /// <returns>The closest object of the requested type (null if nothing found)</returns>
-        ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types);
+    /// <summary>
+    /// Locates the object closest to a specific position.
+    /// </summary>
+    /// <param name="p">The search position</param>
+    /// <param name="radius">The search radius</param>
+    /// <param name="types">The type(s) of object to look for</param>
+    /// <returns>The closest object of the requested type (null if nothing found)</returns>
+    ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types);
 
-        /// <summary>
-        /// The coordinate system for model positions.
-        /// </summary>
-        ISpatialSystem SpatialSystem { get; }
-    }
+    /// <summary>
+    /// The coordinate system for model positions.
+    /// </summary>
+    ISpatialSystem SpatialSystem { get; }
 }

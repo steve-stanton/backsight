@@ -13,19 +13,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.ComponentModel;
 
-namespace Backsight
-{
-	/// <written by="Steve Stanton" on="27-APR-2007" />
-    /// <summary>
-    /// Interface used to indicate that public properties can be shown via an
-    /// expandable item in a <c>PropertyGrid</c>. Defining the type converter
-    /// attribute here merely helps to avoid clutter elsewhere.
-    /// </summary>
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-    public interface IExpandablePropertyItem
-    {
-    }
-}
+namespace Backsight;
+
+/// <written by="Steve Stanton" on="27-APR-2007" />
+/// <summary>
+/// Interface used to indicate that public properties can be shown via an
+/// expandable item in a <c>PropertyGrid</c>. Defining the type converter
+/// attribute here merely helps to avoid clutter elsewhere.
+/// </summary>
+[TypeConverter(typeof(ExpandableObjectConverter))]
+public interface IExpandablePropertyItem;

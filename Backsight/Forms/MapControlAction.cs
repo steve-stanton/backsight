@@ -13,47 +13,35 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Windows.Forms;
+namespace Backsight.Forms;
 
-namespace Backsight.Forms
+/// <written by="Steve Stanton" on="04-OCT-2006" />
+/// <summary>A user action that initiates one of the display tools provided by the
+/// <c>MapControl</c> class</summary>
+/// <see>MapControl</see>
+public class MapControlAction : IUserAction
 {
-	/// <written by="Steve Stanton" on="04-OCT-2006" />
-    /// <summary>A user action that initiates one of the display tools provided by the
-    /// <c>MapControl</c> class</summary>
-    /// <see>MapControl</see>
-    public class MapControlAction : IUserAction
+    private readonly MapControl m_Control;
+    private readonly DisplayToolId m_ToolId;
+    private readonly UserActionSupport m_Elements;
+
+    public MapControlAction(MapControl control, DisplayToolId id, ToolStripItem[] items)
     {
-        #region Class data
-
-        private readonly MapControl m_Control;
-        private readonly DisplayToolId m_ToolId;
-        private readonly UserActionSupport m_Elements;
-
-        #endregion
-
-        #region Constructors
-
-        public MapControlAction(MapControl control, DisplayToolId id, ToolStripItem[] items)
-        {
-            m_Control = control;
-            m_ToolId = id;
-            m_Elements = new UserActionSupport(items);
-            m_Elements.SetHandler(Do);
-        }
-
-        #endregion
-
-        public void Update()
-        {
-            m_Elements.Enabled = m_Control.IsEnabled(m_ToolId);            
-        }
-
-        private void Do(object sender, EventArgs e)
-        {
-            m_Control.Do(m_ToolId);
-        }
-
-        public string Title { get { return m_Elements.Title; } }
+        m_Control = control;
+        m_ToolId = id;
+        m_Elements = new UserActionSupport(items);
+        m_Elements.SetHandler(Do);
     }
+
+    public void Update()
+    {
+        m_Elements.Enabled = m_Control.IsEnabled(m_ToolId);            
+    }
+
+    private void Do(object sender, EventArgs e)
+    {
+        m_Control.Do(m_ToolId);
+    }
+
+    public string Title { get { return m_Elements.Title; } }
 }

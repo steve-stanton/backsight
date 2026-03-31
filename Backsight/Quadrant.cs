@@ -13,20 +13,17 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="01-SEP-2006" />
+/// <summary>
+/// Identifiers for grid quadrants (clockwise from north)
+/// </summary>
+public enum Quadrant
 {
-	/// <written by="Steve Stanton" on="01-SEP-2006" />
-    /// <summary>
-    /// Identifiers for grid quadrants (clockwise from north)
-    /// </summary>
-    public enum Quadrant
-    {
-        All,
-        NE,
-        SE,
-        SW,
-        NW
-    }
+    All,
+    NE,
+    SE,
+    SW,
+    NW
 }

@@ -13,19 +13,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="22-JUN-07" />
+/// <summary>
+/// A spatial object that refers to a point in space.
+/// </summary>
+public interface IPoint : ISpatialObject
 {
-	/// <written by="Steve Stanton" on="22-JUN-07" />
     /// <summary>
-    /// A spatial object that refers to a point in space.
+    /// The geometry for this point.
     /// </summary>
-    public interface IPoint : ISpatialObject
-    {
-        /// <summary>
-        /// The geometry for this point.
-        /// </summary>
-        IPointGeometry Geometry { get; }
-    }
+    IPointGeometry Geometry { get; }
 }

@@ -13,22 +13,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Environment
-{
-    /// <written by="Steve Stanton" on="02-NOV-2009"/>
-    /// <summary>
-    /// A mutable version of <c>IProperty</c>
-    /// </summary>
-    public interface IEditProperty : IProperty, IEditControl
-    {
-        /// <summary>
-        /// The name of the property
-        /// </summary>
-        new string Name { get; set; }
+namespace Backsight.Environment;
 
-        /// <summary>
-        /// The value for the property
-        /// </summary>
-        new string Value { get; set; }
-    }
+/// <written by="Steve Stanton" on="02-NOV-2009"/>
+/// <summary>
+/// A mutable version of <c>IProperty</c>
+/// </summary>
+public interface IEditProperty : IProperty, IEditControl
+{
+    /// <summary>
+    /// The name of the property
+    /// </summary>
+    new string Name { get; set; }
+
+    /// <summary>
+    /// The value for the property
+    /// </summary>
+    new string Value { get; set; }
 }

@@ -13,106 +13,94 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.IO;
+namespace Backsight.Index.Point;
 
-namespace Backsight.Index.Point
+/// <written by="Steve Stanton" on="16-JAN-2007" />
+/// <summary>
+/// Information about the spatial index, for use in experimentation
+/// </summary>
+class PointIndexStatistics
 {
-	/// <written by="Steve Stanton" on="16-JAN-2007" />
     /// <summary>
-    /// Information about the spatial index, for use in experimentation
+    /// The number of <c>DataNode</c> instances
     /// </summary>
-    class PointIndexStatistics
+    uint m_NumDataNode;
+
+    /// <summary>
+    /// The number of <c>IndexNode</c> instances
+    /// </summary>
+    uint m_NumIndexNode;
+
+    /// <summary>
+    /// The maximum number of items in a node
+    /// </summary>
+    uint m_MaxItemInDataNode;
+
+    /// <summary>
+    /// The maximum number of items in an index node
+    /// </summary>
+    uint m_MaxItemInIndexNode;
+
+    /// <summary>
+    /// The total number of point features in the index.
+    /// </summary>
+    uint m_NumItem;
+
+    /// <summary>
+    /// The smallest dimension of a node
+    /// </summary>
+    ulong m_MinSize;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PointIndexStatistics"/> class.
+    /// Make calls to <see cref="Add"/> to accumulate statistics.
+    /// </summary>
+    internal PointIndexStatistics()
     {
-        #region Class data
+        m_MinSize = ulong.MaxValue;
+    }
 
-        /// <summary>
-        /// The number of <c>DataNode</c> instances
-        /// </summary>
-        uint m_NumDataNode;
-
-        /// <summary>
-        /// The number of <c>IndexNode</c> instances
-        /// </summary>
-        uint m_NumIndexNode;
-
-        /// <summary>
-        /// The maximum number of items in a node
-        /// </summary>
-        uint m_MaxItemInDataNode;
-
-        /// <summary>
-        /// The maximum number of items in an index node
-        /// </summary>
-        uint m_MaxItemInIndexNode;
-
-        /// <summary>
-        /// The total number of point features in the index.
-        /// </summary>
-        uint m_NumItem;
-
-        /// <summary>
-        /// The smallest dimension of a node
-        /// </summary>
-        ulong m_MinSize;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PointIndexStatistics"/> class.
-        /// Make calls to <see cref="Add"/> to accumulate statistics.
-        /// </summary>
-        internal PointIndexStatistics()
+    /// <summary>
+    /// Includes a spatial indexing node in these statistics
+    /// </summary>
+    /// <param name="n">The node to include</param>
+    internal void Add(Node n)
+    {
+        if (n is DataNode)
         {
-            m_MinSize = ulong.MaxValue;
+            m_NumDataNode++;
+            m_MaxItemInDataNode = Math.Max(m_MaxItemInDataNode, n.Count);
+            m_NumItem += n.Count;
+        }
+        else
+        {
+            m_NumIndexNode++;
+            m_MaxItemInIndexNode = Math.Max(m_MaxItemInIndexNode, n.Count);
         }
 
-        #endregion
+        m_MinSize = Math.Min(m_MinSize, n.Window.Width);
+    }
 
-        /// <summary>
-        /// Includes a spatial indexing node in these statistics
-        /// </summary>
-        /// <param name="n">The node to include</param>
-        internal void Add(Node n)
-        {
-            if (n is DataNode)
-            {
-                m_NumDataNode++;
-                m_MaxItemInDataNode = Math.Max(m_MaxItemInDataNode, n.Count);
-                m_NumItem += n.Count;
-            }
-            else
-            {
-                m_NumIndexNode++;
-                m_MaxItemInIndexNode = Math.Max(m_MaxItemInIndexNode, n.Count);
-            }
+    /// <summary>
+    /// Dumps statistics to a stream
+    /// </summary>
+    /// <param name="sw">The stream to write to</param>
+    internal void Dump(StreamWriter sw)
+    {
+        sw.WriteLine("Number of index nodes: "+m_NumIndexNode);
+        sw.WriteLine("MaxItemInIndexNode:    "+m_MaxItemInIndexNode);
+        sw.WriteLine("Number of data nodes:  "+m_NumDataNode);
+        sw.WriteLine("MaxItemInDataNode:     "+m_MaxItemInDataNode);
+        sw.WriteLine("Number or points:      "+m_NumItem);
+        sw.WriteLine("Avg points/data node:  "+ (double)m_NumItem / (double)m_NumDataNode);
+        sw.WriteLine("Min size:              "+m_MinSize);
+    }
 
-            m_MinSize = Math.Min(m_MinSize, n.Window.Width);
-        }
-
-        /// <summary>
-        /// Dumps statistics to a stream
-        /// </summary>
-        /// <param name="sw">The stream to write to</param>
-        internal void Dump(StreamWriter sw)
-        {
-            sw.WriteLine("Number of index nodes: "+m_NumIndexNode);
-            sw.WriteLine("MaxItemInIndexNode:    "+m_MaxItemInIndexNode);
-            sw.WriteLine("Number of data nodes:  "+m_NumDataNode);
-            sw.WriteLine("MaxItemInDataNode:     "+m_MaxItemInDataNode);
-            sw.WriteLine("Number or points:      "+m_NumItem);
-            sw.WriteLine("Avg points/data node:  "+ (double)m_NumItem / (double)m_NumDataNode);
-            sw.WriteLine("Min size:              "+m_MinSize);
-        }
-
-        /// <summary>
-        /// The number of points in the index
-        /// </summary>
-        internal uint PointCount
-        {
-            get { return m_NumItem; }
-        }
+    /// <summary>
+    /// The number of points in the index
+    /// </summary>
+    internal uint PointCount
+    {
+        get { return m_NumItem; }
     }
 }

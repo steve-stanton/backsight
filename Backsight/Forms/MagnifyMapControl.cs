@@ -13,36 +13,30 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Drawing;
-using System.Windows.Forms;
+namespace Backsight.Forms;
 
-namespace Backsight.Forms
+/// <written by="Steve Stanton" on="16-FEB-2007" />
+/// <summary>
+/// A map control that's used by the <c>MagnifyTool</c>. This is a bit of a hack,
+/// since all it does is remove the scrollbars that are part of a normal map control,
+/// and provides overrides to ensure their removal doesn't lead to null reference
+/// exceptions.
+/// 
+/// It would be nicer to provide a MapControl that doesn't have scrollbars (which
+/// the magnifier would use), then have a derived class that also has scrollbars
+/// (for use in normal draws).
+/// </summary>
+public partial class MagnifyMapControl : MapControl
 {
-	/// <written by="Steve Stanton" on="16-FEB-2007" />
-    /// <summary>
-    /// A map control that's used by the <c>MagnifyTool</c>. This is a bit of a hack,
-    /// since all it does is remove the scrollbars that are part of a normal map control,
-    /// and provides overrides to ensure their removal doesn't lead to null reference
-    /// exceptions.
-    /// 
-    /// It would be nicer to provide a MapControl that doesn't have scrollbars (which
-    /// the magnifier would use), then have a derived class that also has scrollbars
-    /// (for use in normal draws).
-    /// </summary>
-    public partial class MagnifyMapControl : MapControl
+    public MagnifyMapControl()
     {
-        public MagnifyMapControl()
-        {
-            InitializeComponent();
-            RemoveScrollBars(new Size(100,100));
-            SetMapBackground(Color.White);
-        }
+        InitializeComponent();
+        RemoveScrollBars(new Size(100,100));
+        SetMapBackground(Color.White);
+    }
 
-        internal override void SetScrollBars()
-        {
-            // since the constructor removed them, it's a good idea to do nothing
-        }
+    internal override void SetScrollBars()
+    {
+        // since the constructor removed them, it's a good idea to do nothing
     }
 }
-

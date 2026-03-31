@@ -13,36 +13,33 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+public class MathConstants
 {
-    public class MathConstants
-    {
-        public const double PI = System.Math.PI; // 3.14159265358979323846
-        public const double PIDIV2 = PI/2.0;
-        public const double PIDIV4 = PI/4.0;
-        public const double PIMUL1P5 = PI*1.5;
-        public const double PIMUL2 = PI*2.0;
+    public const double PI = System.Math.PI; // 3.14159265358979323846
+    public const double PIDIV2 = PI/2.0;
+    public const double PIDIV4 = PI/4.0;
+    public const double PIMUL1P5 = PI*1.5;
+    public const double PIMUL2 = PI*2.0;
 
-        /// <summary>
-        /// As good as zero
-        /// </summary>
-        public const double TINY = 10e-38;
+    /// <summary>
+    /// As good as zero
+    /// </summary>
+    public const double TINY = 10e-38;
 
-        /// <summary>
-        /// Multiplier to convert from radians to decimal degrees.
-        /// </summary>
-        public const double RADTODEG = 360.0/PIMUL2;
+    /// <summary>
+    /// Multiplier to convert from radians to decimal degrees.
+    /// </summary>
+    public const double RADTODEG = 360.0/PIMUL2;
 
-        /// <summary>
-        /// Multiplier to convert from decimal degrees to radians.
-        /// </summary>
-        public const double DEGTORAD = PIMUL2/360.0;
+    /// <summary>
+    /// Multiplier to convert from decimal degrees to radians.
+    /// </summary>
+    public const double DEGTORAD = PIMUL2/360.0;
 
-        /// <summary>
-        /// Multiplier to convert font pointsize (1/72 inch) to meters
-        /// </summary>
-        public const double POINTSIZE_TO_METERS = 0.000352778;
-    }
+    /// <summary>
+    /// Multiplier to convert font pointsize (1/72 inch) to meters
+    /// </summary>
+    public const double POINTSIZE_TO_METERS = 0.000352778;
 }

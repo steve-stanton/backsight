@@ -13,40 +13,34 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Windows.Forms;
-using System.Drawing;
-using System.IO;
-
 using Backsight.Properties;
 
-namespace Backsight.Forms
+namespace Backsight.Forms;
+
+public static class MapResources
 {
-    public static class MapResources
+    public static Cursor NewCenterCursor
     {
-        public static Cursor NewCenterCursor
-        {
-            get { return new Cursor(new MemoryStream(Resources.NewCenterCursor)); }
-        }
+        get { return new Cursor(new MemoryStream(Resources.NewCenterCursor)); }
+    }
 
-        public static Cursor StartPanCursor
-        {
-            get { return new Cursor(new MemoryStream(Resources.CarCursor)); }
-        }
+    public static Cursor StartPanCursor
+    {
+        get { return new Cursor(new MemoryStream(Resources.CarCursor)); }
+    }
 
-        public static Cursor PanCursor
-        {
-            get { return new Cursor(new MemoryStream(Resources.MovingCarCursor)); }
-        }
+    public static Cursor PanCursor
+    {
+        get { return new Cursor(new MemoryStream(Resources.MovingCarCursor)); }
+    }
 
-        public static Cursor MagnifyingGlassCursor
-        {
-            get { return new Cursor(new MemoryStream(Resources.MagnifyingGlass)); }
-        }
+    public static Cursor MagnifyingGlassCursor
+    {
+        get { return new Cursor(new MemoryStream(Resources.MagnifyingGlass)); }
+    }
 
-        public static Cursor HollowSquareCursor
-        {
-            get { return new Cursor(new MemoryStream(Resources.HollowSquareCursor)); }
-        }
+    public static Cursor HollowSquareCursor
+    {
+        get { return new Cursor(new MemoryStream(Resources.HollowSquareCursor)); }
     }
 }

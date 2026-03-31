@@ -13,18 +13,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="20-DEC-2006" />
+/// <summary>
+/// Identifies a positional dimension
+/// </summary>
+public enum Dimension
 {
-    /// <written by="Steve Stanton" on="20-DEC-2006" />
-    /// <summary>
-    /// Identifies a positional dimension
-    /// </summary>
-    public enum Dimension
-    {
-        X,
-        Y,
-        Z,
-    }
+    X,
+    Y,
+    Z,
 }

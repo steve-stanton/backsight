@@ -13,26 +13,23 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Forms;
 
-namespace Backsight.Forms
+/// <written by="Steve Stanton" on="14-SEP-2006" />
+/// <summary>
+/// IDs corresponding to the draw navigation tools supported by <c>MapControl</c>
+/// </summary>
+public enum DisplayToolId
 {
-	/// <written by="Steve Stanton" on="14-SEP-2006" />
-    /// <summary>
-    /// IDs corresponding to the draw navigation tools supported by <c>MapControl</c>
-    /// </summary>
-    public enum DisplayToolId
-    {
-        Overview,
-        ZoomIn,
-        ZoomOut,
-        ZoomRectangle,
-        DrawScale,
-        NewCentre,
-        Pan,
-        MapRefresh,
-        Previous,
-        Next,
-        Magnify,
-    }
+    Overview,
+    ZoomIn,
+    ZoomOut,
+    ZoomRectangle,
+    DrawScale,
+    NewCentre,
+    Pan,
+    MapRefresh,
+    Previous,
+    Next,
+    Magnify,
 }

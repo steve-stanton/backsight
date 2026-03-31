@@ -13,24 +13,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="06-DEC-2006" />
+/// <summary>
+/// Some sort of angular measure (with respect to an unspecified reference direction)
+/// </summary>
+public interface IAngle
 {
-	/// <written by="Steve Stanton" on="06-DEC-2006" />
     /// <summary>
-    /// Some sort of angular measure (with respect to an unspecified reference direction)
+    /// The angle in radians.
     /// </summary>
-    public interface IAngle
-    {
-        /// <summary>
-        /// The angle in radians.
-        /// </summary>
-        double Radians { get; }
+    double Radians { get; }
 
-        /// <summary>
-        /// The angle in decimal degrees.
-        /// </summary>
-        double Degrees { get; }
-    }
+    /// <summary>
+    /// The angle in decimal degrees.
+    /// </summary>
+    double Degrees { get; }
 }

@@ -13,238 +13,221 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-
 using Backsight.Forms;
 
-namespace Backsight
+namespace Backsight;
+
+public class SpatialController : ISpatialController
 {
-    public class SpatialController : ISpatialController
+    /// <summary>
+    /// The one (and only) controller.
+    /// </summary>
+    private static ISpatialController s_Controller = new DesignTimeController();
+
+    public static ISpatialController Current
     {
-        #region Statics
+        get { return s_Controller; }
+    }
 
-        /// <summary>
-        /// The one (and only) controller.
-        /// </summary>
-        private static ISpatialController s_Controller = new DesignTimeController();
+    private ISpatialModel m_Data;
 
-        public static ISpatialController Current
-        {
-            get { return s_Controller; }
-        }
+    /// <summary>
+    /// The currently selected elements (may be empty, but never null)
+    /// </summary>
+    private ISpatialSelection m_Selection;
 
-        #endregion
+    /// <summary>
+    /// Map displays that have been registered with this controller (see <c>Register</c> method)
+    /// </summary>
+    private readonly List<ISpatialDisplay> m_Displays;
 
-        #region Class data
+    /// <summary>
+    /// Creates a <c>SpatialController</c> with a map model that's suitable
+    /// for use at design time.
+    /// </summary>
+    public SpatialController()
+    {
+        s_Controller = this;
 
-        private ISpatialModel m_Data;
+        m_Data = new DesignTimeMapModel();
+        m_Selection = new SpatialSelection();
+        m_Displays = new List<ISpatialDisplay>();
 
-        /// <summary>
-        /// The currently selected elements (may be empty, but never null)
-        /// </summary>
-        private ISpatialSelection m_Selection;
+        // Initialize map model in case any of the prelim stuff needs it (the
+        // running application needs to replace it with something more appropriate).
+        SetMapModel(m_Data, null);
+    }
 
-        /// <summary>
-        /// Map displays that have been registered with this controller (see <c>Register</c> method)
-        /// </summary>
-        private readonly List<ISpatialDisplay> m_Displays;
+    public virtual void Close()
+    {
+        m_Data = null;
+        m_Selection = new SpatialSelection();
+    }
 
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a <c>SpatialController</c> with a map model that's suitable
-        /// for use at design time.
-        /// </summary>
-        public SpatialController()
-        {
-            s_Controller = this;
-
-            m_Data = new DesignTimeMapModel();
-            m_Selection = new SpatialSelection();
-            m_Displays = new List<ISpatialDisplay>();
-
-            // Initialize map model in case any of the prelim stuff needs it (the
-            // running application needs to replace it with something more appropriate).
-            SetMapModel(m_Data, null);
-        }
-
-        #endregion
-
-        public virtual void Close()
-        {
-            m_Data = null;
-            m_Selection = new SpatialSelection();
-        }
-
-        public ISpatialModel MapModel
-        {
-            get
-            {
-                if (m_Data==null)
-                    m_Data = new DesignTimeMapModel();
-
-                return m_Data;
-            }
-
-            //set { SetMapModel(value, null); }
-        }
-
-        public void SetMapModel(ISpatialModel model, IWindow initialDrawExtent)
-        {
-            m_Data = model;
-            SetSelection(null);
-
-            foreach (ISpatialDisplay display in m_Displays)
-                display.ReplaceMapModel(initialDrawExtent);
-
-            // Ensure the active display has focus (so that it reacts to any mouse-wheel events)
-            ISpatialDisplay ad = ActiveDisplay;
-            if (ad!=null)
-                ad.MapPanel.Focus();
-        }
-
-        public void Register(ISpatialDisplay display)
-        {
-            if (!m_Displays.Contains(display))
-                m_Displays.Add(display);
-
-            // Redraw the display now (ensures the background has the expected colour)
-            //display.Redraw();
-        }
-
-        public void Unregister(ISpatialDisplay display)
-        {
-            m_Displays.Remove(display);
-        }
-
-        /// <summary>
-        /// Handles a mouse double click event. This implementation does nothing.
-        /// </summary>
-        /// <param name="sender">The display where the mouse event originated</param>
-        /// <param name="p">The position where the mouse click occurred</param>
-        public virtual void MouseDoubleClick(ISpatialDisplay sender, IPosition p)
-        {
-        }
-
-        public virtual void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b)
-        {
-            if (b==MouseButtons.Right)
-                ShowContextMenu(sender, p);
-            else
-                Select(sender, p, SpatialType.All);
-        }
-
-        /// <summary>
-        /// Placeholder that displays a context menu. This implementation does nothing, since
-        /// the relevant context menu depends on the functionality provided by the application
-        /// that utilizes this controller. Derived classes (ones that know something about the
-        /// application) are expected to override.
-        /// </summary>
-        /// <param name="where">The display where the context menu should appear</param>
-        /// <param name="p">The preferred position for the menu (may not be honoured if
-        /// the context menu would be obscured)</param>
-        public virtual void ShowContextMenu(ISpatialDisplay where, IPosition p)
-        {
-        }
-
-        public virtual void MouseUp(ISpatialDisplay sender, IPosition p, MouseButtons b)
-        {
-        }
-
-        public virtual void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
-        {
-        }
-
-        public virtual void KeyDown(ISpatialDisplay sender, KeyEventArgs k)
-        {
-        }
-
-        public virtual void KeyUp(ISpatialDisplay sender, KeyEventArgs k)
-        {
-        }
-
-        public virtual void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
+    public ISpatialModel MapModel
+    {
+        get
         {
             if (m_Data==null)
-                return;
+                m_Data = new DesignTimeMapModel();
 
-            // Use a tolerance of 2mm at the map scale of the supplied display
-            ILength size = new Length(0.002 * display.MapScale);
-
-            ISpatialObject so = m_Data.QueryClosest(p, size, spatialType);
-            SetSelection(new SpatialSelection(so));
+            return m_Data;
         }
 
-        /// <summary>
-        /// The currently selected elements (may be empty, but never null)
-        /// </summary>
-        public ISpatialSelection SpatialSelection
+        //set { SetMapModel(value, null); }
+    }
+
+    public void SetMapModel(ISpatialModel model, IWindow initialDrawExtent)
+    {
+        m_Data = model;
+        SetSelection(null);
+
+        foreach (ISpatialDisplay display in m_Displays)
+            display.ReplaceMapModel(initialDrawExtent);
+
+        // Ensure the active display has focus (so that it reacts to any mouse-wheel events)
+        ISpatialDisplay ad = ActiveDisplay;
+        if (ad!=null)
+            ad.MapPanel.Focus();
+    }
+
+    public void Register(ISpatialDisplay display)
+    {
+        if (!m_Displays.Contains(display))
+            m_Displays.Add(display);
+
+        // Redraw the display now (ensures the background has the expected colour)
+        //display.Redraw();
+    }
+
+    public void Unregister(ISpatialDisplay display)
+    {
+        m_Displays.Remove(display);
+    }
+
+    /// <summary>
+    /// Handles a mouse double click event. This implementation does nothing.
+    /// </summary>
+    /// <param name="sender">The display where the mouse event originated</param>
+    /// <param name="p">The position where the mouse click occurred</param>
+    public virtual void MouseDoubleClick(ISpatialDisplay sender, IPosition p)
+    {
+    }
+
+    public virtual void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b)
+    {
+        if (b==MouseButtons.Right)
+            ShowContextMenu(sender, p);
+        else
+            Select(sender, p, SpatialType.All);
+    }
+
+    /// <summary>
+    /// Placeholder that displays a context menu. This implementation does nothing, since
+    /// the relevant context menu depends on the functionality provided by the application
+    /// that utilizes this controller. Derived classes (ones that know something about the
+    /// application) are expected to override.
+    /// </summary>
+    /// <param name="where">The display where the context menu should appear</param>
+    /// <param name="p">The preferred position for the menu (may not be honoured if
+    /// the context menu would be obscured)</param>
+    public virtual void ShowContextMenu(ISpatialDisplay where, IPosition p)
+    {
+    }
+
+    public virtual void MouseUp(ISpatialDisplay sender, IPosition p, MouseButtons b)
+    {
+    }
+
+    public virtual void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
+    {
+    }
+
+    public virtual void KeyDown(ISpatialDisplay sender, KeyEventArgs k)
+    {
+    }
+
+    public virtual void KeyUp(ISpatialDisplay sender, KeyEventArgs k)
+    {
+    }
+
+    public virtual void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
+    {
+        if (m_Data==null)
+            return;
+
+        // Use a tolerance of 2mm at the map scale of the supplied display
+        ILength size = new Length(0.002 * display.MapScale);
+
+        ISpatialObject so = m_Data.QueryClosest(p, size, spatialType);
+        SetSelection(new SpatialSelection(so));
+    }
+
+    /// <summary>
+    /// The currently selected elements (may be empty, but never null)
+    /// </summary>
+    public ISpatialSelection SpatialSelection
+    {
+        get { return m_Selection; }
+    }
+
+    /// <summary>
+    /// Remembers a new selection
+    /// </summary>
+    /// <param name="newSel">The new selection (specify null to clear any current selection)</param>
+    /// <returns>True if selection changed. False if the selection matches the#
+    /// current selection</returns>
+    public virtual bool SetSelection(ISpatialSelection newSel)
+    {
+        ISpatialSelection ss = (newSel==null ? new SpatialSelection() : newSel);
+        if (m_Selection.Equals(ss))
+            return false;
+
+        m_Selection = newSel; //new SpatialSelection(ss.Items);
+
+        foreach (ISpatialDisplay d in m_Displays)
+            d.OnSelectionChanged(m_Selection);
+
+        return true;
+    }
+
+    public virtual IDrawStyle DrawStyle
+    {
+        get { return new DrawStyle(); }
+    }
+
+    public virtual IDrawStyle HighlightStyle
+    {
+        get { return new HighlightStyle(); }
+    }
+
+    public virtual void RefreshAllDisplays()
+    {
+        foreach (ISpatialDisplay d in m_Displays)
+            d.Redraw();
+    }
+
+    public ISpatialDisplay ActiveDisplay
+    {
+        get { return (m_Displays.Count==0 ? null : m_Displays[0]); }
+    }
+
+    /// <summary>
+    /// Perform any processing whenever a display has changed the drawn extent
+    /// of a map. This implementation does nothing, derived classes may override.
+    /// </summary>
+    /// <param name="sender">The display that has changed</param>
+    public virtual void OnSetExtent(ISpatialDisplay sender)
+    {
+        // do nothing
+    }
+
+    protected void RedrawSelection()
+    {
+        if (m_Selection.Count>0)
         {
-            get { return m_Selection; }
-        }
-
-        /// <summary>
-        /// Remembers a new selection
-        /// </summary>
-        /// <param name="newSel">The new selection (specify null to clear any current selection)</param>
-        /// <returns>True if selection changed. False if the selection matches the#
-        /// current selection</returns>
-        public virtual bool SetSelection(ISpatialSelection newSel)
-        {
-            ISpatialSelection ss = (newSel==null ? new SpatialSelection() : newSel);
-            if (m_Selection.Equals(ss))
-                return false;
-
-            m_Selection = newSel; //new SpatialSelection(ss.Items);
-
             foreach (ISpatialDisplay d in m_Displays)
                 d.OnSelectionChanged(m_Selection);
-
-            return true;
-        }
-
-        public virtual IDrawStyle DrawStyle
-        {
-            get { return new DrawStyle(); }
-        }
-
-        public virtual IDrawStyle HighlightStyle
-        {
-            get { return new HighlightStyle(); }
-        }
-
-        public virtual void RefreshAllDisplays()
-        {
-            foreach (ISpatialDisplay d in m_Displays)
-                d.Redraw();
-        }
-
-        public ISpatialDisplay ActiveDisplay
-        {
-            get { return (m_Displays.Count==0 ? null : m_Displays[0]); }
-        }
-
-        /// <summary>
-        /// Perform any processing whenever a display has changed the drawn extent
-        /// of a map. This implementation does nothing, derived classes may override.
-        /// </summary>
-        /// <param name="sender">The display that has changed</param>
-        public virtual void OnSetExtent(ISpatialDisplay sender)
-        {
-            // do nothing
-        }
-
-        protected void RedrawSelection()
-        {
-            if (m_Selection.Count>0)
-            {
-                foreach (ISpatialDisplay d in m_Displays)
-                    d.OnSelectionChanged(m_Selection);
-            }
         }
     }
 }

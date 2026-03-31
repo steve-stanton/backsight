@@ -13,22 +13,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Environment
+namespace Backsight.Environment;
+
+public enum ItemType
 {
-    public enum ItemType
-    {
-        None,
-        Domain,
-        DomainEntry,
-        Entity,
-        Field,
-        Font,
-        IdGroup,
-        Layer,
-        Property,
-        Schema,
-        Template,
-        Theme,
-        Zone,
-    };
-}
+    None,
+    Domain,
+    DomainEntry,
+    Entity,
+    Field,
+    Font,
+    IdGroup,
+    Layer,
+    Property,
+    Schema,
+    Template,
+    Theme,
+    Zone,
+};

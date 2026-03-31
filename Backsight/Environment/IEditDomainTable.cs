@@ -13,20 +13,17 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="13-FEB-2009" />
+/// <summary>
+/// A mutable version of <see cref="IDomainTable"/>
+/// </summary>
+public interface IEditDomainTable : IDomainTable, IEditControl
 {
-    /// <written by="Steve Stanton" on="13-FEB-2009" />
     /// <summary>
-    /// A mutable version of <see cref="IDomainTable"/>
+    /// The name of the database table that holds the domain values (may be
+    /// prepended with schema name).
     /// </summary>
-    public interface IEditDomainTable : IDomainTable, IEditControl
-    {
-        /// <summary>
-        /// The name of the database table that holds the domain values (may be
-        /// prepended with schema name).
-        /// </summary>
-        new string TableName { get; set; }
-    }
+    new string TableName { get; set; }
 }

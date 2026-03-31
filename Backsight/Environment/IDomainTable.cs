@@ -13,37 +13,34 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="13-FEB-2009" />
+/// <summary>
+/// A domain where the values are recorded in some database table.
+/// </summary>
+/// <remarks>In the long run, it is possible that there will be different types
+/// of domains. For example, the old CEdit implementation permitted domains that
+/// were defined as a numeric range.</remarks>
+public interface IDomainTable : IEnvironmentItem
 {
-    /// <written by="Steve Stanton" on="13-FEB-2009" />
     /// <summary>
-    /// A domain where the values are recorded in some database table.
+    /// The name of the database table that holds the domain values (may be
+    /// prepended with schema name).
     /// </summary>
-    /// <remarks>In the long run, it is possible that there will be different types
-    /// of domains. For example, the old CEdit implementation permitted domains that
-    /// were defined as a numeric range.</remarks>
-    public interface IDomainTable : IEnvironmentItem
-    {
-        /// <summary>
-        /// The name of the database table that holds the domain values (may be
-        /// prepended with schema name).
-        /// </summary>
-        string TableName { get; }
+    string TableName { get; }
 
-        /// <summary>
-        /// Performs a lookup on the domain table
-        /// </summary>
-        /// <param name="connectionString">The connection string to the database holding domain data.</param>
-        /// <param name="shortValue">The abbreviated code to lookup</param>
-        /// <returns>The expanded value for the lookup (blank if not found)</returns>
-        string Lookup(string connectionString, string shortValue);
+    /// <summary>
+    /// Performs a lookup on the domain table
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database holding domain data.</param>
+    /// <param name="shortValue">The abbreviated code to lookup</param>
+    /// <returns>The expanded value for the lookup (blank if not found)</returns>
+    string Lookup(string connectionString, string shortValue);
 
-        /// <summary>
-        /// Retrieves the lookup values in the domain table.
-        /// </summary>
-        /// <param name="connectionString">The connection string to the database holding domain data.</param>
-        string[] GetLookupValues(string connectionString);
-    }
+    /// <summary>
+    /// Retrieves the lookup values in the domain table.
+    /// </summary>
+    /// <param name="connectionString">The connection string to the database holding domain data.</param>
+    string[] GetLookupValues(string connectionString);
 }

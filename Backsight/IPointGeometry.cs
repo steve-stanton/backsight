@@ -13,39 +13,36 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="01-NOV-2006" />
+/// <summary>
+/// The geometry for a point.
+/// </summary>
+public interface IPointGeometry : IPosition
 {
-	/// <written by="Steve Stanton" on="01-NOV-2006" />
     /// <summary>
-    /// The geometry for a point.
+    /// Is this point at the same position as another point.
     /// </summary>
-    public interface IPointGeometry : IPosition
-    {
-        /// <summary>
-        /// Is this point at the same position as another point.
-        /// </summary>
-        /// <param name="p">The point to compare with</param>
-        /// <returns>True if the positions are identical</returns>
-        /// <remarks>
-        /// When dealing with implementations that involve floating point numbers,
-        /// the comparison will probably involve some sort of tolerance (perhaps
-        /// an appropriate epsilon value, or perhaps a value that is consistent
-        /// with the resolution of an associated map model). If that is the case,
-        /// you may prefer to be explicit about the tolerance used by making use
-        /// of the <c>IPosition.IsAt</c> method.
-        /// </remarks>
-        bool IsCoincident(IPointGeometry p);
+    /// <param name="p">The point to compare with</param>
+    /// <returns>True if the positions are identical</returns>
+    /// <remarks>
+    /// When dealing with implementations that involve floating point numbers,
+    /// the comparison will probably involve some sort of tolerance (perhaps
+    /// an appropriate epsilon value, or perhaps a value that is consistent
+    /// with the resolution of an associated map model). If that is the case,
+    /// you may prefer to be explicit about the tolerance used by making use
+    /// of the <c>IPosition.IsAt</c> method.
+    /// </remarks>
+    bool IsCoincident(IPointGeometry p);
 
-        /// <summary>
-        /// The X position of this point.
-        /// </summary>
-        ILength Easting { get; }
+    /// <summary>
+    /// The X position of this point.
+    /// </summary>
+    ILength Easting { get; }
 
-        /// <summary>
-        /// The Y position of this point.
-        /// </summary>
-        ILength Northing { get; }
-    }
+    /// <summary>
+    /// The Y position of this point.
+    /// </summary>
+    ILength Northing { get; }
 }

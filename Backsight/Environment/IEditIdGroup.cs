@@ -13,18 +13,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+public interface IEditIdGroup : IIdGroup, IEditControl
 {
-    public interface IEditIdGroup : IIdGroup, IEditControl
-    {
-        new string Name { get; set; }
-        new int LowestId { get; set; }
-        new int HighestId { get; set; }
-        new int PacketSize { get; set; }
-        new string KeyFormat { get; set; }
-        new bool HasCheckDigit { get; set; }
-        new int MaxUsedId { get; set;  }
-    }
+    new string Name { get; set; }
+    new int LowestId { get; set; }
+    new int HighestId { get; set; }
+    new int PacketSize { get; set; }
+    new string KeyFormat { get; set; }
+    new bool HasCheckDigit { get; set; }
+    new int MaxUsedId { get; set;  }
 }

@@ -13,80 +13,97 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using Microsoft.Win32;
+using System.Diagnostics;
+using System.Text.Json;
 
-namespace Backsight
+namespace Backsight;
+
+/// <written by="Steve Stanton" on="30-MAR-2007" />
+/// <summary>
+/// A user-specific setting that should be accessible across applications.
+/// </summary>
+public static class GlobalUserSetting
 {
-	/// <written by="Steve Stanton" on="30-MAR-2007" />
-    /// <summary>
-    /// A user-specific setting that should be accessible across applications.
-    /// </summary>
-    /// <remarks>
-    /// For the sake of simplicity, this just makes use of the Windows registry.
-    /// Another more .net-centric implementation might involve System.IO.IsolatedStorage
-    /// (it looks interesting, but I got deterred when I started reading about things
-    /// like signed assemblies, app domains, and miscellaneous other crap).
-    /// </remarks>
-    public static class GlobalUserSetting
+    private static string? s_SettingsPath = null;
+    private static Dictionary<string, string>? s_Settings = null;
+
+    private static Dictionary<string, string> GetSettings()
     {
-        /// <summary>
-        /// The registry key for user-specific settings.
-        /// </summary>
-        static string s_UserRoot = Registry.CurrentUser + @"\Software\Backsight";
+        if (s_Settings is not null)
+            return s_Settings;
 
-        /// <summary>
-        /// The registry key that acts as the root for user-specific settings.
-        /// </summary>
-        public static string Root
+        // Ensure the Backsight folder is present
+        if (s_SettingsPath is null)
         {
-            get { return s_UserRoot; }
+            var appData = System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
+            var folder = Path.Combine(appData, "Backsight");
+            Directory.CreateDirectory(folder);
+            s_SettingsPath = Path.Combine(folder, "Settings.json");
         }
 
-        /// <summary>
-        /// Saves a global setting
-        /// </summary>
-        /// <param name="settingName">The name of the setting</param>
-        /// <param name="val">The value to save</param>
-        public static void Write(string settingName, string val)
+        if (File.Exists(s_SettingsPath))
         {
-            Registry.SetValue(s_UserRoot, settingName, val);
+            var json = File.ReadAllText(s_SettingsPath);
+            s_Settings = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
         }
+        else
+        {
+            s_Settings = new Dictionary<string, string>();
+            File.WriteAllText(s_SettingsPath, JsonSerializer.Serialize(s_Settings));
+        }
+        
+        if (s_Settings is null)
+            throw new ApplicationException("Failed to load settings");
+        
+        return s_Settings;
+    }
 
-        /// <summary>
-        /// Retrieves a global setting
-        /// </summary>
-        /// <param name="settingName">The name of the setting</param>
-        /// <returns>The saved value (blank if the setting has never been written)</returns>
-        public static string Read(string settingName)
-        {
-            object o = Registry.GetValue(s_UserRoot, settingName, String.Empty);
-            return (o==null ? String.Empty : o.ToString());
-        }
+    /// <summary>
+    /// Saves a global setting
+    /// </summary>
+    /// <param name="settingName">The name of the setting</param>
+    /// <param name="val">The value to save</param>
+    public static void Write(string settingName, string val)
+    {
+        var settings = GetSettings();
+        Debug.Assert(s_SettingsPath is not null);
+        
+        settings[settingName] = val;
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        File.WriteAllText(s_SettingsPath, JsonSerializer.Serialize(settings, options));
+    }
 
-        /// <summary>
-        /// Retrieves a global setting and converts to integer.
-        /// </summary>
-        /// <param name="settingName">The name of the setting</param>
-        /// <param name="defaultValue">The default value for the setting</param>
-        /// <returns>The parsed integer (equals <param name="defaultValue"/> if it's not
-        /// defined, or it couldn't be parsed)</returns>
-        public static int ReadInt(string settingName, int defaultValue)
-        {
-            string s = Read(settingName);
-            try { return Int32.Parse(s); }
-            catch { }
-            return defaultValue;
-        }
+    /// <summary>
+    /// Retrieves a global setting
+    /// </summary>
+    /// <param name="settingName">The name of the setting</param>
+    /// <returns>The saved value (blank if the setting has never been written)</returns>
+    public static string Read(string settingName)
+    {
+        var settings = GetSettings();
+        return settings.GetValueOrDefault(settingName, String.Empty);
+    }
 
-        /// <summary>
-        /// Saves a global setting that corresponds to an int value.
-        /// </summary>
-        /// <param name="settingName">The name of the setting</param>
-        /// <param name="val">The value to save</param>
-        public static void WriteInt(string settingName, int val)
-        {
-            Write(settingName, val.ToString());
-        }
+    /// <summary>
+    /// Retrieves a global setting and converts to integer.
+    /// </summary>
+    /// <param name="settingName">The name of the setting</param>
+    /// <param name="defaultValue">The default value for the setting</param>
+    /// <returns>The parsed integer (equals <param name="defaultValue"/> if it's not
+    /// defined, or it couldn't be parsed)</returns>
+    public static int ReadInt(string settingName, int defaultValue)
+    {
+        string s = Read(settingName);
+        return s.Length == 0 ? defaultValue : Int32.Parse(s);
+    }
+
+    /// <summary>
+    /// Saves a global setting that corresponds to an int value.
+    /// </summary>
+    /// <param name="settingName">The name of the setting</param>
+    /// <param name="val">The value to save</param>
+    public static void WriteInt(string settingName, int val)
+    {
+        Write(settingName, val.ToString());
     }
 }

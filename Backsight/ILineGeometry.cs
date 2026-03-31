@@ -13,43 +13,40 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="01-NOV-2006" />
+/// <summary>
+/// The geometry for a line.
+/// </summary>
+public interface ILineGeometry
 {
-	/// <written by="Steve Stanton" on="01-NOV-2006" />
     /// <summary>
-    /// The geometry for a line.
+    /// The position of the start of the line.
     /// </summary>
-    public interface ILineGeometry
-    {
-        /// <summary>
-        /// The position of the start of the line.
-        /// </summary>
-        IPointGeometry Start { get; }
+    IPointGeometry Start { get; }
 
-        /// <summary>
-        /// The position of the end of the line.
-        /// </summary>
-        IPointGeometry End { get; }
+    /// <summary>
+    /// The position of the end of the line.
+    /// </summary>
+    IPointGeometry End { get; }
 
-        /// <summary>
-        /// The length of the line (on the map projection).
-        /// </summary>
-        ILength Length { get; }
+    /// <summary>
+    /// The length of the line (on the map projection).
+    /// </summary>
+    ILength Length { get; }
 
-        /// <summary>
-        /// The spatial extent of the line.
-        /// </summary>
-        IWindow Extent { get; }
+    /// <summary>
+    /// The spatial extent of the line.
+    /// </summary>
+    IWindow Extent { get; }
 
-        /// <summary>
-        /// The shortest distance from this line to the specified position.
-        /// </summary>
-        /// <param name="point">The position of interest</param>
-        /// <returns>The perpendicular distance from the position to the line (if
-        /// the perpendicular isn't on the line, you'll get the distance to the
-        /// closest end point)</returns>
-        ILength Distance(IPosition point);
-    }
+    /// <summary>
+    /// The shortest distance from this line to the specified position.
+    /// </summary>
+    /// <param name="point">The position of interest</param>
+    /// <returns>The perpendicular distance from the position to the line (if
+    /// the perpendicular isn't on the line, you'll get the distance to the
+    /// closest end point)</returns>
+    ILength Distance(IPosition point);
 }

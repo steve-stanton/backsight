@@ -13,36 +13,32 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Windows.Forms;
+namespace Backsight;
 
-namespace Backsight
+/// <summary>
+/// A controller that's suitable for use in Visual Studio design mode.
+/// </summary>
+public class DesignTimeController : ISpatialController
 {
-    /// <summary>
-    /// A controller that's suitable for use in Visual Studio design mode.
-    /// </summary>
-    public class DesignTimeController : ISpatialController
+    private readonly ISpatialModel m_Model;
+
+    public DesignTimeController()
     {
-        private readonly ISpatialModel m_Model;
-
-        public DesignTimeController()
-        {
-            m_Model = new DesignTimeMapModel();
-        }
-
-        public ISpatialModel MapModel { get { return m_Model; } }
-        public void Register(ISpatialDisplay display) { }
-        public void Unregister(ISpatialDisplay display) { }
-        public void MouseDoubleClick(ISpatialDisplay sender, IPosition p) { }
-        public void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
-        public void MouseUp(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
-        public void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
-        public ISpatialSelection SpatialSelection { get { return null; } }
-        public IDrawStyle DrawStyle { get { return null; } }
-        public IDrawStyle HighlightStyle { get { return null; } }
-        public ISpatialDisplay ActiveDisplay { get { return null; } }
-        public void OnSetExtent(ISpatialDisplay sender) { }
-        public void KeyDown(ISpatialDisplay sender, KeyEventArgs k) {}
-        public void KeyUp(ISpatialDisplay sender, KeyEventArgs k) { }
+        m_Model = new DesignTimeMapModel();
     }
+
+    public ISpatialModel MapModel { get { return m_Model; } }
+    public void Register(ISpatialDisplay display) { }
+    public void Unregister(ISpatialDisplay display) { }
+    public void MouseDoubleClick(ISpatialDisplay sender, IPosition p) { }
+    public void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
+    public void MouseUp(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
+    public void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
+    public ISpatialSelection SpatialSelection { get { return null; } }
+    public IDrawStyle DrawStyle { get { return null; } }
+    public IDrawStyle HighlightStyle { get { return null; } }
+    public ISpatialDisplay ActiveDisplay { get { return null; } }
+    public void OnSetExtent(ISpatialDisplay sender) { }
+    public void KeyDown(ISpatialDisplay sender, KeyEventArgs k) {}
+    public void KeyUp(ISpatialDisplay sender, KeyEventArgs k) { }
 }

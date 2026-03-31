@@ -13,31 +13,28 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="14-APR-2008"/>
+/// <summary>
+/// A mutable version of <c>ITable</c>
+/// </summary>
+public interface IEditTable : ITable, IEditControl
 {
-    /// <written by="Steve Stanton" on="14-APR-2008"/>
     /// <summary>
-    /// A mutable version of <c>ITable</c>
+    /// The name of the database table (possibly decorated with schema name)
     /// </summary>
-    public interface IEditTable : ITable, IEditControl
-    {
-        /// <summary>
-        /// The name of the database table (possibly decorated with schema name)
-        /// </summary>
-        new string TableName { get; set; }
+    new string TableName { get; set; }
 
-        /// <summary>
-        /// The name of the column that corresponds to the user-perceived ID
-        /// associated with spatial features (this may or may not be the primary
-        /// key of the table).
-        /// </summary>
-        new string IdColumnName { get; set; }
+    /// <summary>
+    /// The name of the column that corresponds to the user-perceived ID
+    /// associated with spatial features (this may or may not be the primary
+    /// key of the table).
+    /// </summary>
+    new string IdColumnName { get; set; }
 
-        /// <summary>
-        /// Any domains associated with columns in the table
-        /// </summary>
-        new IColumnDomain[] ColumnDomains { get; set; }
-    }
+    /// <summary>
+    /// Any domains associated with columns in the table
+    /// </summary>
+    new IColumnDomain[] ColumnDomains { get; set; }
 }

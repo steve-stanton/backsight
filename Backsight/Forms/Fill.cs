@@ -13,89 +13,78 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 
-namespace Backsight.Forms
+namespace Backsight.Forms;
+
+/// <written by="Steve Stanton" on="28-SEP-2007" />
+/// <summary>
+/// Wrapper on a brush. This class exists only because the basic <see cref="Brush"/> class
+/// doesn't expose properties like <c>Color</c>.
+/// </summary>
+public class Fill : IFill
 {
-    /// <written by="Steve Stanton" on="28-SEP-2007" />
     /// <summary>
-    /// Wrapper on a brush. This class exists only because the basic <see cref="Brush"/> class
-    /// doesn't expose properties like <c>Color</c>.
+    /// The brush to use for the fill.
     /// </summary>
-    public class Fill : IFill
+    Brush m_Brush;
+
+    /// <summary>
+    /// Creates a new <c>Fill</c> that uses a <see cref="SolidBrush"/>.
+    /// </summary>
+    /// <param name="c">The color for the fill</param>
+    public Fill(Color c)
     {
-        #region Class data
+        m_Brush = new SolidBrush(c);
+    }
 
-        /// <summary>
-        /// The brush to use for the fill.
-        /// </summary>
-        Brush m_Brush;
+    /// <summary>
+    /// Creates a new <c>Fill</c> that uses a <see cref="HatchBrush"/>.
+    /// </summary>
+    /// <param name="style">The hatch style for the fill</param>
+    /// <param name="foreColor">The color for hatch lines</param>
+    /// <param name="backColor">The color behind the hatch lines</param>
+    public Fill(HatchStyle style, Color foreColor, Color backColor)
+    {
+        m_Brush = new HatchBrush(style, foreColor, backColor);
+    }
 
-        #endregion
+    /// <summary>
+    /// The brush to use for the fill.
+    /// </summary>
+    public Brush Brush
+    {
+        get { return m_Brush; }
+    }
 
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>Fill</c> that uses a <see cref="SolidBrush"/>.
-        /// </summary>
-        /// <param name="c">The color for the fill</param>
-        public Fill(Color c)
+    /// <summary>
+    /// The color for this fill. If the fill is a hatch-style, this relates to the
+    /// foreground color.
+    /// </summary>
+    public Color Color
+    {
+        get
         {
-            m_Brush = new SolidBrush(c);
+            if (m_Brush is SolidBrush)
+                return (m_Brush as SolidBrush).Color;
+
+            if (m_Brush is HatchBrush)
+                return (m_Brush as HatchBrush).ForegroundColor;
+
+            throw new NotSupportedException("Unhandled brush type");
         }
 
-        /// <summary>
-        /// Creates a new <c>Fill</c> that uses a <see cref="HatchBrush"/>.
-        /// </summary>
-        /// <param name="style">The hatch style for the fill</param>
-        /// <param name="foreColor">The color for hatch lines</param>
-        /// <param name="backColor">The color behind the hatch lines</param>
-        public Fill(HatchStyle style, Color foreColor, Color backColor)
+        set
         {
-            m_Brush = new HatchBrush(style, foreColor, backColor);
-        }
-
-        #endregion
-
-        /// <summary>
-        /// The brush to use for the fill.
-        /// </summary>
-        public Brush Brush
-        {
-            get { return m_Brush; }
-        }
-
-        /// <summary>
-        /// The color for this fill. If the fill is a hatch-style, this relates to the
-        /// foreground color.
-        /// </summary>
-        public Color Color
-        {
-            get
+            if (m_Brush is SolidBrush)
+                (m_Brush as SolidBrush).Color = value;
+            else if (m_Brush is HatchBrush)
             {
-                if (m_Brush is SolidBrush)
-                    return (m_Brush as SolidBrush).Color;
-
-                if (m_Brush is HatchBrush)
-                    return (m_Brush as HatchBrush).ForegroundColor;
-
+                HatchBrush hb = (m_Brush as HatchBrush);
+                m_Brush = new HatchBrush(hb.HatchStyle, value, hb.BackgroundColor);
+            }
+            else
                 throw new NotSupportedException("Unhandled brush type");
-            }
-
-            set
-            {
-                if (m_Brush is SolidBrush)
-                    (m_Brush as SolidBrush).Color = value;
-                else if (m_Brush is HatchBrush)
-                {
-                    HatchBrush hb = (m_Brush as HatchBrush);
-                    m_Brush = new HatchBrush(hb.HatchStyle, value, hb.BackgroundColor);
-                }
-                else
-                    throw new NotSupportedException("Unhandled brush type");
-            }
         }
     }
 }

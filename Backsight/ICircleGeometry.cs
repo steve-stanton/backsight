@@ -13,24 +13,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="14-JUN-2007" />
+/// <summary>
+/// The geometry for a circle
+/// </summary>
+public interface ICircleGeometry
 {
-	/// <written by="Steve Stanton" on="14-JUN-2007" />
     /// <summary>
-    /// The geometry for a circle
+    /// The position of the center of the circle.
     /// </summary>
-    public interface ICircleGeometry
-    {
-        /// <summary>
-        /// The position of the center of the circle.
-        /// </summary>
-        IPointGeometry Center { get; }
+    IPointGeometry Center { get; }
 
-        /// <summary>
-        /// The radius of the circle, in meters
-        /// </summary>
-        double Radius { get; }
-    }
+    /// <summary>
+    /// The radius of the circle, in meters
+    /// </summary>
+    double Radius { get; }
 }

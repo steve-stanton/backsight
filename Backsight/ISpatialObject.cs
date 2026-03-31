@@ -13,39 +13,36 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="14-SEP-2006" />
+/// <summary>
+/// Some sort of spatial object.
+/// </summary>
+/// <seealso cref="SpatialType"/>
+public interface ISpatialObject
 {
-	/// <written by="Steve Stanton" on="14-SEP-2006" />
     /// <summary>
-    /// Some sort of spatial object.
+    /// Value denoting the spatial object type.
     /// </summary>
-    /// <seealso cref="SpatialType"/>
-    public interface ISpatialObject
-    {
-        /// <summary>
-        /// Value denoting the spatial object type.
-        /// </summary>
-        SpatialType SpatialType { get; }
+    SpatialType SpatialType { get; }
 
-        /// <summary>
-        /// Draws this object on the specified display
-        /// </summary>
-        /// <param name="display">The display to draw to</param>
-        /// <param name="style">The drawing style</param>
-        void Render(ISpatialDisplay display, IDrawStyle style);
+    /// <summary>
+    /// Draws this object on the specified display
+    /// </summary>
+    /// <param name="display">The display to draw to</param>
+    /// <param name="style">The drawing style</param>
+    void Render(ISpatialDisplay display, IDrawStyle style);
 
-        /// <summary>
-        /// The spatial extent of this object.
-        /// </summary>
-        IWindow Extent { get; }
+    /// <summary>
+    /// The spatial extent of this object.
+    /// </summary>
+    IWindow Extent { get; }
 
-        /// <summary>
-        /// The shortest distance between this object and the specified position.
-        /// </summary>
-        /// <param name="point">The position of interest</param>
-        /// <returns>The shortest distance between the specified position and this object</returns>
-        ILength Distance(IPosition point);
-    }
+    /// <summary>
+    /// The shortest distance between this object and the specified position.
+    /// </summary>
+    /// <param name="point">The position of interest</param>
+    /// <returns>The shortest distance between the specified position and this object</returns>
+    ILength Distance(IPosition point);
 }

@@ -13,19 +13,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="14-JUN-2007" />
+/// <summary>
+/// The geometry for a series of connected line segments.
+/// </summary>
+public interface IMultiSegmentGeometry
 {
-	/// <written by="Steve Stanton" on="14-JUN-2007" />
     /// <summary>
-    /// The geometry for a series of connected line segments.
+    /// The positions defining the line
     /// </summary>
-    public interface IMultiSegmentGeometry
-    {
-        /// <summary>
-        /// The positions defining the line
-        /// </summary>
-        IPointGeometry[] Data { get; }
-    }
+    IPointGeometry[] Data { get; }
 }

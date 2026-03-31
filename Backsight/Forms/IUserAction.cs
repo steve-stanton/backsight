@@ -13,24 +13,20 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Windows.Forms;
+namespace Backsight.Forms;
 
-namespace Backsight.Forms
+/// <written by="Steve Stanton" on="14-SEP-2006" />
+/// <see>UserAction</see>
+public interface IUserAction
 {
-	/// <written by="Steve Stanton" on="14-SEP-2006" />
-    /// <see>UserAction</see>
-    public interface IUserAction
-    {
-        /// <summary>
-        /// Ensures that UI elements reflect the current state of the system (enables
-        /// or disables, sets or clears check marks, etc.).
-        /// </summary>
-        void Update();
+    /// <summary>
+    /// Ensures that UI elements reflect the current state of the system (enables
+    /// or disables, sets or clears check marks, etc.).
+    /// </summary>
+    void Update();
 
-        /// <summary>
-        /// A name for the action (typically the text that appears on a menu item)
-        /// </summary>
-        string Title { get; }
-    }
+    /// <summary>
+    /// A name for the action (typically the text that appears on a menu item)
+    /// </summary>
+    string Title { get; }
 }

@@ -13,12 +13,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+public interface IEditTheme : ITheme, IEditControl
 {
-    public interface IEditTheme : ITheme, IEditControl
-    {
-        new string Name { get; set; }
-    }
+    new string Name { get; set; }
 }

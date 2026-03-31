@@ -13,29 +13,26 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="17-FEB-2009" />
+/// <summary>
+/// A mutable version of <see cref="IColumnDomain"/>
+/// </summary>
+public interface IEditColumnDomain : IColumnDomain, IEditControl
 {
-    /// <written by="Steve Stanton" on="17-FEB-2009" />
     /// <summary>
-    /// A mutable version of <see cref="IColumnDomain"/>
+    /// The table the column is part of
     /// </summary>
-    public interface IEditColumnDomain : IColumnDomain, IEditControl
-    {
-        /// <summary>
-        /// The table the column is part of
-        /// </summary>
-        new ITable ParentTable { get; set; }
+    new ITable ParentTable { get; set; }
 
-        /// <summary>
-        /// The name of the database column that the domain is associated with
-        /// </summary>
-        new string ColumnName { get; set; }
+    /// <summary>
+    /// The name of the database column that the domain is associated with
+    /// </summary>
+    new string ColumnName { get; set; }
 
-        /// <summary>
-        /// The associated domain
-        /// </summary>
-        new IDomainTable Domain { get; set; }
-    }
+    /// <summary>
+    /// The associated domain
+    /// </summary>
+    new IDomainTable Domain { get; set; }
 }

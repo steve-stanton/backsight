@@ -13,46 +13,43 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="14-DEC-2006" />
+/// <summary>
+/// Identifies a spatial object type (or possible combination of types).
+/// </summary>
+[Flags]
+public enum SpatialType : byte
 {
-	/// <written by="Steve Stanton" on="14-DEC-2006" />
     /// <summary>
-    /// Identifies a spatial object type (or possible combination of types).
+    /// Point features
     /// </summary>
-    [Flags]
-    public enum SpatialType : byte
-    {
-        /// <summary>
-        /// Point features
-        /// </summary>
-        Point = 0x01,
+    Point = 0x01,
 
-        /// <summary>
-        /// Line features
-        /// </summary>
-        Line = 0x02,
+    /// <summary>
+    /// Line features
+    /// </summary>
+    Line = 0x02,
 
-        /// <summary>
-        /// Text features
-        /// </summary>
-        Text = 0x04,
+    /// <summary>
+    /// Text features
+    /// </summary>
+    Text = 0x04,
 
-        /// <summary>
-        /// Polygons
-        /// </summary>
-        Polygon = 0x08,
+    /// <summary>
+    /// Polygons
+    /// </summary>
+    Polygon = 0x08,
 
-        /// <summary>
-        /// Any sort of spatial feature (excludes polygons).
-        /// </summary>
-        Feature = (Point | Line | Text),
+    /// <summary>
+    /// Any sort of spatial feature (excludes polygons).
+    /// </summary>
+    Feature = (Point | Line | Text),
 
-        /// <summary>
-        /// Any type of spatial object (things that implement <c>ISpatialObject</c>)
-        /// </summary>
-        /// <see>ISpatialObject</see>
-        All = (Feature | Polygon),
-    }
+    /// <summary>
+    /// Any type of spatial object (things that implement <c>ISpatialObject</c>)
+    /// </summary>
+    /// <see>ISpatialObject</see>
+    All = (Feature | Polygon),
 }

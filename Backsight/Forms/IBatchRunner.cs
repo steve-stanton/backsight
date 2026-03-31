@@ -13,21 +13,18 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Forms;
 
-namespace Backsight.Forms
+/// <summary>
+/// Something that makes use of the <see cref="BatchRunnerControl"/> class.
+/// </summary>
+public interface IBatchRunner
 {
     /// <summary>
-    /// Something that makes use of the <see cref="BatchRunnerControl"/> class.
+    /// Handler that will be called upon completion of batch command (initiated
+    /// via a call to <see cref="BatchRunnerControl.RunCommand"/>)
     /// </summary>
-    public interface IBatchRunner
-    {
-        /// <summary>
-        /// Handler that will be called upon completion of batch command (initiated
-        /// via a call to <see cref="BatchRunnerControl.RunCommand"/>)
-        /// </summary>
-        /// <param name="e">Any exception denoting a failure (null if the command
-        /// completed successfully)</param>
-        void RunCompleted(Exception e);
-    }
+    /// <param name="e">Any exception denoting a failure (null if the command
+    /// completed successfully)</param>
+    void RunCompleted(Exception e);
 }

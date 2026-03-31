@@ -13,30 +13,27 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="12-MAR-2007" />
+/// <summary>
+/// A mutable version of <c>IEntity</c>
+/// </summary>
+public interface IEditEntity : IEntity, IEditControl
 {
-	/// <written by="Steve Stanton" on="12-MAR-2007" />
-    /// <summary>
-    /// A mutable version of <c>IEntity</c>
-    /// </summary>
-    public interface IEditEntity : IEntity, IEditControl
-    {
-        new string Name { get; set; }
-        new bool IsPointValid { get; set; }
-        new bool IsLineValid { get; set; }
-        new bool IsLineAutoTrimmed { get; set; }
-        new bool IsPolygonValid { get; set; }
-        new bool IsPolygonBoundaryValid { get; set; }
-        new bool IsTextValid { get; set; }
-        new IIdGroup IdGroup { get; set; }
-        new ILayer Layer { get; set; }
-        new IFont Font { get; set; }
+    new string Name { get; set; }
+    new bool IsPointValid { get; set; }
+    new bool IsLineValid { get; set; }
+    new bool IsLineAutoTrimmed { get; set; }
+    new bool IsPolygonValid { get; set; }
+    new bool IsPolygonBoundaryValid { get; set; }
+    new bool IsTextValid { get; set; }
+    new IIdGroup IdGroup { get; set; }
+    new ILayer Layer { get; set; }
+    new IFont Font { get; set; }
 
-        /// <summary>
-        /// The table(s) that are usually associated with this entity type.
-        /// </summary>
-        new ITable[] DefaultTables { get; set; }
-    }
+    /// <summary>
+    /// The table(s) that are usually associated with this entity type.
+    /// </summary>
+    new ITable[] DefaultTables { get; set; }
 }

@@ -13,35 +13,31 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Windows.Forms;
+namespace Backsight.Forms;
 
-namespace Backsight.Forms
+/// <summary>
+/// Tool to define a new map centre
+/// </summary>
+class NewCenterTool : SpatialDisplayTool
 {
-    /// <summary>
-    /// Tool to define a new map centre
-    /// </summary>
-    class NewCenterTool : SpatialDisplayTool
+    public NewCenterTool(MapControl mapControl) : base(mapControl)
     {
-        public NewCenterTool(MapControl mapControl) : base(mapControl)
-        {
-        }
+    }
 
-        public override int Id
-        {
-            get { return (int)DisplayToolId.NewCentre; }
-        }
+    public override int Id
+    {
+        get { return (int)DisplayToolId.NewCentre; }
+    }
 
-        public override bool Start()
-        {
-            this.MapControl.SetCursor(MapResources.NewCenterCursor);
-            return true;
-        }
+    public override bool Start()
+    {
+        this.MapControl.SetCursor(MapResources.NewCenterCursor);
+        return true;
+    }
 
-        public override void MouseDown(IPosition p, MouseButtons b)
-        {
-            this.MapControl.SetCenter(p);
-            Finish();
-        }
+    public override void MouseDown(IPosition p, MouseButtons b)
+    {
+        this.MapControl.SetCenter(p);
+        Finish();
     }
 }

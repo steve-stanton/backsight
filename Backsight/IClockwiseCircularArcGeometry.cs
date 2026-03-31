@@ -13,45 +13,42 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight;
 
-namespace Backsight
+/// <written by="Steve Stanton" on="28-NOV-2006" />
+/// <summary>
+/// A circular arc that is directed clockwise. Provided to make it
+/// convenient to draw arcs using GDI+
+/// </summary>
+public interface IClockwiseCircularArcGeometry
 {
-	/// <written by="Steve Stanton" on="28-NOV-2006" />
     /// <summary>
-    /// A circular arc that is directed clockwise. Provided to make it
-    /// convenient to draw arcs using GDI+
+    /// The circle the arc falls on.
     /// </summary>
-    public interface IClockwiseCircularArcGeometry
-    {
-        /// <summary>
-        /// The circle the arc falls on.
-        /// </summary>
-        ICircleGeometry Circle { get; }
+    ICircleGeometry Circle { get; }
 
-        /// <summary>
-        /// The bearing from the centre of circle to the start of the arc, in radians
-        /// </summary>
-        double StartBearingInRadians { get; }
+    /// <summary>
+    /// The bearing from the centre of circle to the start of the arc, in radians
+    /// </summary>
+    double StartBearingInRadians { get; }
 
-        /// <summary>
-        /// The angular length of the arc, in radians
-        /// </summary>
-        double SweepAngleInRadians { get; }
+    /// <summary>
+    /// The angular length of the arc, in radians
+    /// </summary>
+    double SweepAngleInRadians { get; }
 
-        /// <summary>
-        /// The point at the start of the clockwise arc.
-        /// </summary>
-        IPointGeometry First { get; }
+    /// <summary>
+    /// The point at the start of the clockwise arc.
+    /// </summary>
+    IPointGeometry First { get; }
 
-        /// <summary>
-        /// The point at the end of the clockwise arc.
-        /// </summary>
-        IPointGeometry Second { get; }
+    /// <summary>
+    /// The point at the end of the clockwise arc.
+    /// </summary>
+    IPointGeometry Second { get; }
 
-        /// <summary>
-        /// The length of the arc (on the map projection).
-        /// </summary>
-        ILength Length { get; }
-    }
+    /// <summary>
+    /// The length of the arc (on the map projection).
+    /// </summary>
+    ILength Length { get; }
 }

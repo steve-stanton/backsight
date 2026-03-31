@@ -13,21 +13,20 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Environment
+namespace Backsight.Environment;
+
+/// <summary>
+/// A Backsight property setting.
+/// </summary>
+public interface IProperty
 {
     /// <summary>
-    /// A Backsight property setting.
+    /// The name of the property
     /// </summary>
-    public interface IProperty
-    {
-        /// <summary>
-        /// The name of the property
-        /// </summary>
-        string Name { get; }
+    string Name { get; }
 
-        /// <summary>
-        /// The value for the property
-        /// </summary>
-        string Value { get; }
-    }
+    /// <summary>
+    /// The value for the property
+    /// </summary>
+    string Value { get; }
 }

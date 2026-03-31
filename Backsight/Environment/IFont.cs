@@ -13,34 +13,30 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Drawing;
+namespace Backsight.Environment;
 
-namespace Backsight.Environment
+/// <written by="Steve Stanton" on="09-APR-2008"/>
+/// <summary>
+/// Information for constructing one of the text fonts that have been
+/// registered for use with the Cadastral Editor. The registered fonts
+/// are likely to consist of a small subset of all fonts installed
+/// on a machine.
+/// </summary>
+public interface IFont : IEnvironmentItem
 {
-    /// <written by="Steve Stanton" on="09-APR-2008"/>
     /// <summary>
-    /// Information for constructing one of the text fonts that have been
-    /// registered for use with the Cadastral Editor. The registered fonts
-    /// are likely to consist of a small subset of all fonts installed
-    /// on a machine.
+    /// The name of the font family (e.g. "Arial"). A null name is valid,
+    /// and means that any system-defined font should be used.
     /// </summary>
-    public interface IFont : IEnvironmentItem
-    {
-        /// <summary>
-        /// The name of the font family (e.g. "Arial"). A null name is valid,
-        /// and means that any system-defined font should be used.
-        /// </summary>
-        string TypeFace { get; }
+    string TypeFace { get; }
 
-        /// <summary>
-        /// The point-size of the font
-        /// </summary>
-        float PointSize { get; }
+    /// <summary>
+    /// The point-size of the font
+    /// </summary>
+    float PointSize { get; }
 
-        /// <summary>
-        /// Flag bits defining font modifiers.
-        /// </summary>
-        FontStyle Modifiers { get; } // was FNF enum
-    }
+    /// <summary>
+    /// Flag bits defining font modifiers.
+    /// </summary>
+    FontStyle Modifiers { get; } // was FNF enum
 }
