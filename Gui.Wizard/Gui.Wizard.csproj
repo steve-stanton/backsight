@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Update="Header.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="HeaderDesigner.cs">
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="InfoContainer.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="InfoContainerDesigner.cs">
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="InfoPage.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="InfoPageDesigner.cs">
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="PageCollection.cs">
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="PageEventHandler.cs">
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Wizard.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="WizardDesigner.cs">
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="WizardPage.cs">
+        <SubType>Component</SubType>
+      </Compile>
+      <Compile Update="WizardPageDesigner.cs">
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Header.resx">
+        <DependentUpon>Header.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="InfoContainer.resx">
+        <DependentUpon>InfoContainer.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="InfoPage.resx">
+        <DependentUpon>InfoPage.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Wizard.resx">
+        <DependentUpon>Wizard.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="WizardPage.resx">
+        <DependentUpon>WizardPage.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+    </ItemGroup>
+
+</Project>
