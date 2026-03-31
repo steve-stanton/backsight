@@ -13,63 +13,60 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-
-using NTS=GisSharpBlog.NetTopologySuite.Geometries;
+using NTS=NetTopologySuite.Geometries;
 using Backsight.Geometry;
 
-namespace Backsight.ShapeViewer
+namespace Backsight.ShapeViewer;
+
+/// <summary>
+/// Wrapper on an <c>NTS.Point</c>
+/// </summary>
+class PointWrapper : GeometryWrapper, IPoint
 {
+    #region Static
+
+    static ILength HEIGHT = new Length(100.0);
+
+    #endregion
+
+    #region Constructors
+
     /// <summary>
-    /// Wrapper on an <c>NTS.Point</c>
+    /// Creates a new <c>PointWrapper</c> that wraps the supplied geometry.
     /// </summary>
-    class PointWrapper : GeometryWrapper, IPoint
+    /// <param name="g">The geometry to wrap</param>
+    internal PointWrapper(NTS.Point p)
+        : base(p)
     {
-        #region Static
+    }
 
-        static ILength HEIGHT = new Length(100.0);
+    #endregion
 
-        #endregion
 
-        #region Constructors
+    #region IPoint Members
 
-        /// <summary>
-        /// Creates a new <c>PointWrapper</c> that wraps the supplied geometry.
-        /// </summary>
-        /// <param name="g">The geometry to wrap</param>
-        internal PointWrapper(NTS.Point p)
-            : base(p)
+    /// <summary>
+    /// The geometry for this point.
+    /// </summary>
+    public IPointGeometry Geometry
+    {
+        get
         {
+            NTS.Point p = (NTS.Point)NtsGeometry;
+            return new PositionGeometry(p.X, p.Y);
         }
+    }
 
-        #endregion
+    #endregion
 
-
-        #region IPoint Members
-
-        /// <summary>
-        /// The geometry for this point.
-        /// </summary>
-        public IPointGeometry Geometry
-        {
-            get
-            {
-                NTS.Point p = (NTS.Point)NtsGeometry;
-                return new PositionGeometry(p.X, p.Y);
-            }
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Draws this object on the specified display
-        /// </summary>
-        /// <param name="display">The display to draw to</param>
-        /// <param name="style">The drawing style</param>
-        public override void Render(ISpatialDisplay display, IDrawStyle style)
-        {
-            style.PointHeight = HEIGHT;
-            style.RenderPlus(display, Geometry);
-        }
+    /// <summary>
+    /// Draws this object on the specified display
+    /// </summary>
+    /// <param name="display">The display to draw to</param>
+    /// <param name="style">The drawing style</param>
+    public override void Render(ISpatialDisplay display, IDrawStyle style)
+    {
+        style.PointHeight = HEIGHT;
+        style.RenderPlus(display, Geometry);
     }
 }

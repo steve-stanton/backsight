@@ -13,127 +13,118 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.IO;
-using System.ComponentModel;
-using System.Collections.Generic;
+using System.Text;
 
-using GisSharpBlog.NetTopologySuite.IO;
-using NTS=GisSharpBlog.NetTopologySuite.Geometries;
-using GisSharpBlog.NetTopologySuite.Geometries;
+using NetTopologySuite.Features;
+using NTS=NetTopologySuite.Geometries;
+using NetTopologySuite.IO.Esri;
 
 using Backsight.Index;
 using Backsight.Forms;
 
-namespace Backsight.ShapeViewer
+namespace Backsight.ShapeViewer;
+
+class ShapeFile : ISpatialData
 {
-    class ShapeFile : ISpatialData
+    private readonly string _mapName;
+    private readonly IWindow _extent;
+    private readonly ISpatialIndex _index;
+
+    public ShapeFile(string fileName)
     {
-        private readonly string m_MapName;
-        private readonly IWindow m_Extent;
-        private readonly ISpatialIndex m_Index;
-
-        public ShapeFile(string fileName)
-        {
-            if (String.IsNullOrEmpty(fileName))
-                throw new ArgumentNullException();
+        if (String.IsNullOrEmpty(fileName))
+            throw new ArgumentNullException();
                             
-            m_MapName = fileName;
-            IEditSpatialIndex index = new SpatialIndex();
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            ShapefileDataReader sfdr = Shapefile.CreateDataReader(fileName, new GeometryFactory());
-            ShapefileHeader hdr = sfdr.ShapeHeader;
-            Envelope ex = hdr.Bounds;
-            m_Extent = new Window(ex.MinX, ex.MinY, ex.MaxX, ex.MaxY);
+        _mapName = Path.GetFileName(fileName);
+        IEditSpatialIndex index = new SpatialIndex();
 
-            foreach (object o in sfdr)
+        var minX = Double.MaxValue;
+        var minY = Double.MaxValue;
+        var maxX = Double.MinValue;
+        var maxY = Double.MinValue;
+
+        foreach (var feature in Shapefile.ReadAllFeatures(fileName))
+        {
+            var geom = feature.Geometry;
+            if (geom.IsEmpty)
+                continue;
+
+            var attributes = CreatePropertyList(feature);
+            
+            // Update overall extent
+            var envelope = geom.EnvelopeInternal;
+
+            minX = Math.Min(minX, envelope.MinX);
+            minY = Math.Min(minY, envelope.MinY);
+            maxX = Math.Max(maxX, envelope.MaxX);
+            maxY = Math.Max(maxY, envelope.MaxY);
+            
+            List<NTS.Geometry> geoms = GetBasicGeometries(geom);
+            foreach (NTS.Geometry g in geoms)
             {
-                // You get back an instance of GisSharpBlog.NetTopologySuite.IO.RowStructure, but
-                // that's internal, so cast to the interface it implements (we'll attach this to
-                // the geometry we wrap).
-                //ICustomTypeDescriptor row = (ICustomTypeDescriptor)o;
-                AdhocPropertyList row = CreatePropertyList(sfdr);
-                NTS.Geometry geom = sfdr.Geometry;
-                geom.UserData = row;
-
-                List<NTS.Geometry> geoms = GetBasicGeometries(geom);
-                foreach (NTS.Geometry g in geoms)
-                {
-                    g.UserData = row;
-                    if (g is NTS.Point)
-                        index.Add(new PointWrapper((NTS.Point)g));
-                    else
-                        index.Add(new GeometryWrapper(g));
-                }
+                g.UserData = attributes;
+                if (g is NTS.Point)
+                    index.Add(new PointWrapper((NTS.Point)g));
+                else
+                    index.Add(new GeometryWrapper(g));
             }
-
-            // Don't permit any further additions
-            m_Index = index;
         }
 
-        private List<NTS.Geometry> GetBasicGeometries(NTS.Geometry geom)
+        _extent = new Window(minX, minY, maxX, maxY);
+
+        // Don't permit any further additions
+        _index = index;
+    }
+
+    private List<NTS.Geometry> GetBasicGeometries(NTS.Geometry geom)
+    {
+        List<NTS.Geometry> result = new List<NTS.Geometry>();
+        AppendBasicGeometries(result, geom);
+        return result;
+    }
+
+    private void AppendBasicGeometries(List<NTS.Geometry> result, NTS.Geometry geom)
+    {
+        if (geom is NTS.GeometryCollection || geom is NTS.MultiPolygon) 
         {
-            List<NTS.Geometry> result = new List<NTS.Geometry>();
-            AppendBasicGeometries(result, geom);
-            return result;
+            // Note that I initially had 'foreach (NTS.Geometry g in gc)', which compiled,
+            // but which led to an infinite loop when dealing with multi-polygons.
+            NTS.GeometryCollection gc = (NTS.GeometryCollection)geom;
+            NTS.Geometry[] ga = gc.Geometries;
+            foreach (NTS.Geometry g in ga)
+                AppendBasicGeometries(result, g); // recurse
         }
+        else
+            result.Add(geom);
+    }
 
-        private void AppendBasicGeometries(List<NTS.Geometry> result, NTS.Geometry geom)
+    private AdhocPropertyList CreatePropertyList(Feature feature)
+    {
+        var result = new AdhocPropertyList(feature.Attributes.Count);
+        
+        foreach (var attribute in feature.Attributes.GetNames())
         {
-            if (geom is GeometryCollection)
-            {
-                // Note that I initially had 'foreach (NTS.Geometry g in gc)', which compiled,
-                // but which led to an infinite loop when dealing with multi-polygons.
-                GeometryCollection gc = (GeometryCollection)geom;
-                NTS.Geometry[] ga = gc.Geometries;
-                foreach (NTS.Geometry g in ga)
-                    AppendBasicGeometries(result, g); // recurse
-            }
-            else
-                result.Add(geom);
+            result.Add(new AdhocProperty(attribute, feature.Attributes[attribute], true, true));
         }
 
-        // If you select the ICustomTypeDescriptor implemented by RowStructure into a
-        // property grid, the values are somehow missing, so copy them over to a class
-        // that works.
-        private AdhocPropertyList CreatePropertyList(ShapefileDataReader sfdr)
-        {
-            object[] vals = new object[sfdr.FieldCount-1]; // ignore the geometry column
-            sfdr.GetValues(vals);
-            AdhocPropertyList result = new AdhocPropertyList(vals.Length);
+        return result;
+    }
 
-            for(int i=0; i<vals.Length; i++)
-            {
-                string name = sfdr.GetName(i+1); // yes it's +1
-                result.Add(new AdhocProperty(name, vals[i], true, true)); // but the value isn't!
-            }
+    public IWindow Extent => _extent;
 
-            return result;
-        }
+    public string Name => _mapName;
 
-        public IWindow Extent
-        {
-            get { return m_Extent; }
-        }
+    public bool IsEmpty => _index.IsEmpty;
 
-        public string Name
-        {
-            get { return Path.GetFileName(m_MapName); }
-        }
+    public void Render(ISpatialDisplay display, IDrawStyle style)
+    {
+        new DrawQuery(_index, display, style);
+    }
 
-        public bool IsEmpty
-        {
-            get { return m_Index.IsEmpty; }
-        }
-
-        public void Render(ISpatialDisplay display, IDrawStyle style)
-        {
-            new DrawQuery(m_Index, display, style);
-        }
-
-        public ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types)
-        {
-            return m_Index.QueryClosest(p, radius, types);
-        }
+    public ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types)
+    {
+        return _index.QueryClosest(p, radius, types);
     }
 }

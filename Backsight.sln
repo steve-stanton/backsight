@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.Editor", "Backsig
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gui.Wizard", "Gui.Wizard\Gui.Wizard.csproj", "{B486F0FA-89B1-4666-BF8A-BD682A029D5D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.ShapeViewer", "Backsight.ShapeViewer\Backsight.ShapeViewer.csproj", "{4FC16F45-4DD2-4004-980B-C9D3905FD61C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,22 @@ Global
 		{B486F0FA-89B1-4666-BF8A-BD682A029D5D}.Release|Win32.Build.0 = Release|Any CPU
 		{B486F0FA-89B1-4666-BF8A-BD682A029D5D}.Release|x86.ActiveCfg = Release|Any CPU
 		{B486F0FA-89B1-4666-BF8A-BD682A029D5D}.Release|x86.Build.0 = Release|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Debug|Win32.Build.0 = Debug|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Debug|x86.Build.0 = Debug|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Release|Win32.ActiveCfg = Release|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Release|Win32.Build.0 = Release|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Release|x86.ActiveCfg = Release|Any CPU
+		{4FC16F45-4DD2-4004-980B-C9D3905FD61C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
