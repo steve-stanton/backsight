@@ -13,106 +13,103 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.ComponentModel;
-
 using Backsight.Environment;
 using Backsight.Data;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" on="20-FEB-2009"/>
+/// <summary>
+/// A type converter that may be used to provide drop-down property support
+/// for an <see cref="IColumnDomain"/> (when applied to an item in a <c>PropertyGrid</c>)
+/// </summary>
+class ColumnDomainConverter : StringConverter
 {
-    /// <written by="Steve Stanton" on="20-FEB-2009"/>
+    #region Class data
+
     /// <summary>
-    /// A type converter that may be used to provide drop-down property support
-    /// for an <see cref="IColumnDomain"/> (when applied to an item in a <c>PropertyGrid</c>)
+    /// The database holding the attribute data (not null).
     /// </summary>
-    class ColumnDomainConverter : StringConverter
+    readonly IDataServer m_DataServer;
+
+    /// <summary>
+    /// The column domain that is being converted
+    /// </summary>
+    readonly IColumnDomain m_ColumnDomain;
+
+    /// <summary>
+    /// The values that will be returned by a call to the <see cref="GetStandardValues"/> override.
+    /// </summary>
+    readonly StandardValuesCollection m_Values;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ColumnDomainConverter"/> class.
+    /// </summary>
+    /// <param name="ds">The database holding domain data</param>
+    /// <param name="cd">The column domain that is being converted (not null)</param>
+    public ColumnDomainConverter(IDataServer ds, IColumnDomain cd)
     {
-        #region Class data
+        if (ds == null || cd == null)
+            throw new ArgumentNullException();
 
-        /// <summary>
-        /// The database holding the attribute data (not null).
-        /// </summary>
-        readonly IDataServer m_DataServer;
+        m_DataServer = ds;
+        m_ColumnDomain = cd;
+        IDomainTable dt = cd.Domain;
+        string[] lookups = dt.GetLookupValues(ds.ConnectionString);
+        m_Values = new StandardValuesCollection(lookups);
+    }
 
-        /// <summary>
-        /// The column domain that is being converted
-        /// </summary>
-        readonly IColumnDomain m_ColumnDomain;
+    #endregion
 
-        /// <summary>
-        /// The values that will be returned by a call to the <see cref="GetStandardValues"/> override.
-        /// </summary>
-        readonly StandardValuesCollection m_Values;
+    /// <summary>
+    /// Returns whether this object supports a standard set of values that can be picked from a list,
+    /// using the specified context.
+    /// </summary>
+    /// <param name="context">The formatting context</param>
+    /// <returns>
+    /// True (always), meaning that the <see cref="GetStandardValues"/> override will be used to obtain
+    /// domain values.
+    /// </returns>
+    public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+    {
+        return true;
+    }
 
-        #endregion
+    /// <summary>
+    /// Returns a collection of standard values for the data type this type converter is designed for when
+    /// provided with a format context.
+    /// </summary>
+    /// <param name="context">The formatting context</param>
+    /// <returns>
+    /// A <see cref="T:System.ComponentModel.TypeConverter.StandardValuesCollection"></see> that holds a standard
+    /// set of valid values.
+    /// </returns>
+    public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+    {
+        return m_Values;
+    }
 
-        #region Constructors
+    /// <summary>
+    /// Performs a lookup on the domain table associated with this converter
+    /// </summary>
+    /// <param name="shortValue">The lookup code to use (expected to be one of the values selected
+    /// from the set of values returned by <see cref="GetStandardValues"/></param>
+    /// <returns>The expanded value for the lookup (blank if not found)</returns>
+    public string Lookup(string shortValue)
+    {
+        return m_ColumnDomain.Domain.Lookup(m_DataServer.ConnectionString, shortValue);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ColumnDomainConverter"/> class.
-        /// </summary>
-        /// <param name="ds">The database holding domain data</param>
-        /// <param name="cd">The column domain that is being converted (not null)</param>
-        public ColumnDomainConverter(IDataServer ds, IColumnDomain cd)
-        {
-            if (ds == null || cd == null)
-                throw new ArgumentNullException();
-
-            m_DataServer = ds;
-            m_ColumnDomain = cd;
-            IDomainTable dt = cd.Domain;
-            string[] lookups = dt.GetLookupValues(ds.ConnectionString);
-            m_Values = new StandardValuesCollection(lookups);
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Returns whether this object supports a standard set of values that can be picked from a list,
-        /// using the specified context.
-        /// </summary>
-        /// <param name="context">The formatting context</param>
-        /// <returns>
-        /// True (always), meaning that the <see cref="GetStandardValues"/> override will be used to obtain
-        /// domain values.
-        /// </returns>
-        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-        {
-            return true;
-        }
-
-        /// <summary>
-        /// Returns a collection of standard values for the data type this type converter is designed for when
-        /// provided with a format context.
-        /// </summary>
-        /// <param name="context">The formatting context</param>
-        /// <returns>
-        /// A <see cref="T:System.ComponentModel.TypeConverter.StandardValuesCollection"></see> that holds a standard
-        /// set of valid values.
-        /// </returns>
-        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
-        {
-            return m_Values;
-        }
-
-        /// <summary>
-        /// Performs a lookup on the domain table associated with this converter
-        /// </summary>
-        /// <param name="shortValue">The lookup code to use (expected to be one of the values selected
-        /// from the set of values returned by <see cref="GetStandardValues"/></param>
-        /// <returns>The expanded value for the lookup (blank if not found)</returns>
-        public string Lookup(string shortValue)
-        {
-            return m_ColumnDomain.Domain.Lookup(m_DataServer.ConnectionString, shortValue);
-        }
-
-        /// <summary>
-        /// The column domain that is being converted
-        /// </summary>
-        public IColumnDomain ColumnDomain
-        {
-            get { return m_ColumnDomain; }
-        }
+    /// <summary>
+    /// The column domain that is being converted
+    /// </summary>
+    public IColumnDomain ColumnDomain
+    {
+        get { return m_ColumnDomain; }
     }
 }

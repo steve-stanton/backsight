@@ -13,61 +13,58 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <summary>
+/// A forward reference that relates to an array of items.
+/// </summary>
+class ForwardFeatureRefArray : ForwardRef
 {
+    #region Class data
+
     /// <summary>
-    /// A forward reference that relates to an array of items.
+    /// The object that makes the forward-reference (not null).
     /// </summary>
-    class ForwardFeatureRefArray : ForwardRef
+    IFeatureRefArray ReferenceFrom { get; set; }
+
+    ForwardRefArrayItem[] Items { get; set; }
+
+    #endregion
+
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ForwardFeatureRefArray"/> class.
+    /// </summary>
+    /// <param name="referenceFrom">The object that makes the forward-reference (not null).</param>
+    /// <param name="field">The ID of the persistent array field.</param>
+    /// <param name="items">The items that need to be resolved.</param>
+    /// <exception cref="ArgumentNullException">If <paramref name="referenceFrom"/> is not defined.</exception>
+    internal ForwardFeatureRefArray(IFeatureRefArray referenceFrom, DataField field, ForwardRefArrayItem[] items)
+        : base(field)
     {
-        #region Class data
+        if (referenceFrom == null || items == null)
+            throw new ArgumentNullException();
 
-        /// <summary>
-        /// The object that makes the forward-reference (not null).
-        /// </summary>
-        IFeatureRefArray ReferenceFrom { get; set; }
+        if (items.Length == 0)
+            throw new ArgumentException();
 
-        ForwardRefArrayItem[] Items { get; set; }
+        ReferenceFrom = referenceFrom;
+        Items = items;
+    }
 
-        #endregion
+    #endregion
 
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ForwardFeatureRefArray"/> class.
-        /// </summary>
-        /// <param name="referenceFrom">The object that makes the forward-reference (not null).</param>
-        /// <param name="field">The ID of the persistent array field.</param>
-        /// <param name="items">The items that need to be resolved.</param>
-        /// <exception cref="ArgumentNullException">If <paramref name="referenceFrom"/> is not defined.</exception>
-        internal ForwardFeatureRefArray(IFeatureRefArray referenceFrom, DataField field, ForwardRefArrayItem[] items)
-            : base(field)
+    internal override void Resolve(CadastralMapModel mapModel)
+    {
+        foreach (ForwardRefArrayItem item in Items)
         {
-            if (referenceFrom == null || items == null)
-                throw new ArgumentNullException();
-
-            if (items.Length == 0)
-                throw new ArgumentException();
-
-            ReferenceFrom = referenceFrom;
-            Items = items;
+            item.Feature = mapModel.Find<Feature>(item.InternalId);
+            if (item.Feature == null)
+                throw new ApplicationException("Cannot locate forward reference " + item.InternalId);
         }
 
-        #endregion
-
-        internal override void Resolve(CadastralMapModel mapModel)
-        {
-            foreach (ForwardRefArrayItem item in Items)
-            {
-                item.Feature = mapModel.Find<Feature>(item.InternalId);
-                if (item.Feature == null)
-                    throw new ApplicationException("Cannot locate forward reference " + item.InternalId);
-            }
-
-            ReferenceFrom.ApplyFeatureRefArray(Field, Items);
-        }
+        ReferenceFrom.ApplyFeatureRefArray(Field, Items);
     }
 }

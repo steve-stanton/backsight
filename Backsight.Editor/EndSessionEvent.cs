@@ -13,41 +13,38 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="10-FEB-2012"/>
+/// <summary>
+/// Event data for normal completion of an editing session
+/// </summary>
+class EndSessionEvent : Change
 {
-    /// <written by="Steve Stanton" on="10-FEB-2012"/>
+    #region Class data
+
+    // No data (all I really want is the timestamp stored in the base class).
+
+    #endregion
+
+    #region Constructors
+
     /// <summary>
-    /// Event data for normal completion of an editing session
+    /// Initializes a new instance of the <see cref="EndSessionEvent"/> class.
     /// </summary>
-    class EndSessionEvent : Change
+    internal EndSessionEvent(uint id)
+        : base(id)
     {
-        #region Class data
-
-        // No data (all I really want is the timestamp stored in the base class).
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EndSessionEvent"/> class.
-        /// </summary>
-        internal EndSessionEvent(uint id)
-            : base(id)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EndSessionEvent"/> class.
-        /// </summary>
-        /// <param name="ed">The mechanism for reading back content.</param>
-        internal EndSessionEvent(EditDeserializer ed)
-            : base(ed)
-        {
-        }
-
-        #endregion
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EndSessionEvent"/> class.
+    /// </summary>
+    /// <param name="ed">The mechanism for reading back content.</param>
+    internal EndSessionEvent(EditDeserializer ed)
+        : base(ed)
+    {
+    }
+
+    #endregion
 }

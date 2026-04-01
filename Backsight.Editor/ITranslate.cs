@@ -13,25 +13,22 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-
 using Backsight.Environment;
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <written by="Steve Stanton" on="07-AUG-2007" />
+/// <summary>
+/// Something that performs entity type translations.
+/// </summary>
+interface ITranslate
 {
-    /// <written by="Steve Stanton" on="07-AUG-2007" />
     /// <summary>
-    /// Something that performs entity type translations.
+    /// Attempts to locate entity type, given an alias that it is known by in
+    /// some external system.
     /// </summary>
-    interface ITranslate
-    {
-        /// <summary>
-        /// Attempts to locate entity type, given an alias that it is known by in
-        /// some external system.
-        /// </summary>
-        /// <param name="alias">The external name</param>
-        /// <param name="type">The type of feature involved</param>
-        /// <returns>The corresponding entity type (null if it cannot be determined)</returns>
-        IEntity FindEntityTypeByExternalName(string alias, SpatialType type);
-    }
+    /// <param name="alias">The external name</param>
+    /// <param name="type">The type of feature involved</param>
+    /// <returns>The corresponding entity type (null if it cannot be determined)</returns>
+    IEntity FindEntityTypeByExternalName(string alias, SpatialType type);
 }

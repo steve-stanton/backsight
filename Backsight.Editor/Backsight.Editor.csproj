@@ -1,1334 +1,842 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3948DFAE-3A14-4582-A25E-3AC2784FB931}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Backsight.Editor</RootNamespace>
-    <AssemblyName>Backsight.Editor</AssemblyName>
-    <ApplicationIcon>Resources\Editor.ico</ApplicationIcon>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetZone>LocalIntranet</TargetZone>
-    <GenerateManifests>false</GenerateManifests>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>ExportedAssemblies\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\Backsight\ExportedAssemblies\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Runtime.Serialization">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="WizardLib, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ThirdParty\WizardLib\ExportedAssemblies\WizardLib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Annotation.cs" />
-    <Compile Include="ArcGeometry.cs" />
-    <Compile Include="AttributeData.cs" />
-    <Compile Include="AutoCad\AcLayerEntitySet.cs" />
-    <Compile Include="BasicList.cs" />
-    <Compile Include="CircularLegMetrics.cs" />
-    <Compile Include="EndSessionEvent.cs" />
-    <Compile Include="Forms\FindByInternalIdForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FindByInternalIdForm.Designer.cs">
-      <DependentUpon>FindByInternalIdForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NewProjectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\NewProjectForm.designer.cs">
-      <DependentUpon>NewProjectForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\OpenProjectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\OpenProjectForm.designer.cs">
-      <DependentUpon>OpenProjectForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ForwardFeatureRef.cs" />
-    <Compile Include="ForwardFeatureRefArray.cs" />
-    <Compile Include="ForwardRef.cs" />
-    <Compile Include="ForwardRefArrayItem.cs" />
-    <Compile Include="ForwardSplit.cs" />
-    <Compile Include="IdAllocation.cs" />
-    <Compile Include="IdMapping.cs" />
-    <Compile Include="IFeatureRef.cs" />
-    <Compile Include="IFeatureRefArray.cs" />
-    <Compile Include="LegFace.cs" />
-    <Compile Include="LoadingContext.cs" />
-    <Compile Include="NewProjectEvent.cs" />
-    <Compile Include="CircularLeg.cs" />
-    <Compile Include="CircularLegFlag.cs" />
-    <Compile Include="ClosedShape.cs" />
-    <Compile Include="ControlPoint.cs" />
-    <Compile Include="ControlRange.cs" />
-    <Compile Include="DataField.cs" />
-    <Compile Include="DeserializationFactory.cs" />
-    <Compile Include="DxfWriter.cs" />
-    <Compile Include="EditDeserializer.cs" />
-    <Compile Include="EditingContext.cs" />
-    <Compile Include="EditingHelpProvider.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="EditSerializer.cs" />
-    <Compile Include="EnvironmentResource.cs" />
-    <Compile Include="Change.cs" />
-    <Compile Include="NewSessionEvent.cs" />
-    <Compile Include="Operations\RevisedEdit.cs" />
-    <Compile Include="PathEditor.cs" />
-    <Compile Include="PersonalIdServer.cs" />
-    <Compile Include="Project.cs" />
-    <Compile Include="ProjectDatabase.cs" />
-    <Compile Include="ProjectSettings.cs" />
-    <Compile Include="TextEditReader.cs" />
-    <Compile Include="EntityBlock.cs" />
-    <Compile Include="EntityFile.cs" />
-    <Compile Include="EntityTranslation.cs" />
-    <Compile Include="EntityUtil.cs" />
-    <Compile Include="FeatureFactory.cs" />
-    <Compile Include="FeatureStub.cs" />
-    <Compile Include="FindPolygonLabelQuery.cs" />
-    <Compile Include="FontInfo.cs" />
-    <Compile Include="ForeignId.cs" />
-    <Compile Include="Forms\AdjustmentForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AdjustmentForm.Designer.cs">
-      <DependentUpon>AdjustmentForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\AngleForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AngleForm.Designer.cs">
-      <DependentUpon>AngleForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ArcForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ArcForm.Designer.cs">
-      <DependentUpon>ArcForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\AttributeDataForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AttributeDataForm.Designer.cs">
-      <DependentUpon>AttributeDataForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\AutoCadExportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AutoCadExportForm.Designer.cs">
-      <DependentUpon>AutoCadExportForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ColumnDomainConverter.cs" />
-    <Compile Include="Forms\CoordSystemForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\CoordSystemForm.Designer.cs">
-      <DependentUpon>CoordSystemForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\CulDeSacForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\CulDeSacForm.Designer.cs">
-      <DependentUpon>CulDeSacForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\DashPattern.cs" />
-    <Compile Include="EditingController.cs" />
-    <Compile Include="EditingIndex.cs" />
-    <Compile Include="CadastralMapModel.cs" />
-    <Compile Include="ArcFeature.cs" />
-    <Compile Include="FindOverlapsQuery.cs" />
-    <Compile Include="FindPointByIdQuery.cs" />
-    <Compile Include="Forms\DistanceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\DistanceForm.Designer.cs">
-      <DependentUpon>DistanceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\DistForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\DistForm.Designer.cs">
-      <DependentUpon>DistForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditDetailsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EditDetailsForm.Designer.cs">
-      <DependentUpon>EditDetailsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EntityTypeComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\EntityTypeComboBox.Designer.cs">
-      <DependentUpon>EntityTypeComboBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EnvironmentStructureForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EnvironmentStructureForm.Designer.cs">
-      <DependentUpon>EnvironmentStructureForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetControlForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetControlForm.Designer.cs">
-      <DependentUpon>GetControlForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetDirectionControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\GetDirectionControl.Designer.cs">
-      <DependentUpon>GetDirectionControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetDistanceControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\GetDistanceControl.Designer.cs">
-      <DependentUpon>GetDistanceControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetIdForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetIdForm.Designer.cs">
-      <DependentUpon>GetIdForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetKeyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetKeyForm.Designer.cs">
-      <DependentUpon>GetKeyForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetLineControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\GetLineControl.Designer.cs">
-      <DependentUpon>GetLineControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetPointForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetPointForm.Designer.cs">
-      <DependentUpon>GetPointForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\IntersectDirectionAndDistanceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\IntersectDirectionAndDistanceForm.Designer.cs">
-      <DependentUpon>IntersectDirectionAndDistanceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\IntersectDirectionAndLineForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\IntersectDirectionAndLineForm.Designer.cs">
-      <DependentUpon>IntersectDirectionAndLineForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\IntersectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\IntersectForm.Designer.cs">
-      <DependentUpon>IntersectForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\IntersectInfoControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\IntersectInfoControl.Designer.cs">
-      <DependentUpon>IntersectInfoControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\IntersectTwoDirectionsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\IntersectTwoDirectionsForm.Designer.cs">
-      <DependentUpon>IntersectTwoDirectionsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\IntersectTwoDistancesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\IntersectTwoDistancesForm.Designer.cs">
-      <DependentUpon>IntersectTwoDistancesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\IntersectTwoLinesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\IntersectTwoLinesForm.Designer.cs">
-      <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\LegForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\LegForm.Designer.cs">
-      <DependentUpon>LegForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\LineStyle.cs" />
-    <Compile Include="Forms\LineSubdivisionUpdateForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\LineSubdivisionUpdateForm.Designer.cs">
-      <DependentUpon>LineSubdivisionUpdateForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ListOperationsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ListOperationsForm.designer.cs">
-      <DependentUpon>ListOperationsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NewCircleForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\NewCircleForm.Designer.cs">
-      <DependentUpon>NewCircleForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NewCircularArcContextMenu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\NewCircularArcContextMenu.Designer.cs">
-      <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NewLabelContextMenu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\NewLabelContextMenu.Designer.cs">
-      <DependentUpon>NewLabelContextMenu.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NewLabelForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\NewLabelForm.Designer.cs">
-      <DependentUpon>NewLabelForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NewLineContextMenu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\NewLineContextMenu.designer.cs">
-      <DependentUpon>NewLineContextMenu.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NewTextContextMenu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\NewTextContextMenu.Designer.cs">
-      <DependentUpon>NewTextContextMenu.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NewTextForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\NewTextForm.Designer.cs">
-      <DependentUpon>NewTextForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\PathForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\PathForm.Designer.cs">
-      <DependentUpon>PathForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\PickEditForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\PickEditForm.Designer.cs">
-      <DependentUpon>PickEditForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\PickPredecessorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\PickPredecessorForm.Designer.cs">
-      <DependentUpon>PickPredecessorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\PositionedIcon.cs" />
-    <Compile Include="Forms\PropertyDisplayControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\PropertyDisplayControl.Designer.cs">
-      <DependentUpon>PropertyDisplayControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\PropertyPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\PropertyPage.Designer.cs">
-      <DependentUpon>PropertyPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\RecalledEditingAction.cs" />
-    <Compile Include="Forms\ScaleSpecificPen.cs" />
-    <Compile Include="Forms\SchemaComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\SchemaComboBox.Designer.cs">
-      <DependentUpon>SchemaComboBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SimpleLineSubdivisionControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\SimpleLineSubdivisionControl.designer.cs">
-      <DependentUpon>SimpleLineSubdivisionControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SplashScreen.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\StartupForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\StartupForm.Designer.cs">
-      <DependentUpon>StartupForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\TextSizeAction.cs" />
-    <Compile Include="Forms\UpdatePathForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\UpdatePathForm.Designer.cs">
-      <DependentUpon>UpdatePathForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="IPersistent.cs" />
-    <Compile Include="IdPacket.cs" />
-    <Compile Include="IEditReader.cs" />
-    <Compile Include="IEditWriter.cs" />
-    <Compile Include="IFeature.cs" />
-    <Compile Include="InternalIdValue.cs" />
-    <Compile Include="KeyTextGeometry.cs" />
-    <Compile Include="MiscTextGeometry.cs" />
-    <Compile Include="NativeId.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="Observations\AngleDirection.cs" />
-    <Compile Include="Observations\BearingDirection.cs" />
-    <Compile Include="Observations\DeflectionDirection.cs" />
-    <Compile Include="Observations\Direction.cs" />
-    <Compile Include="Observations\Distance.cs" />
-    <Compile Include="Observations\Offset.cs" />
-    <Compile Include="Observations\OffsetDistance.cs" />
-    <Compile Include="Observations\OffsetPoint.cs" />
-    <Compile Include="Observations\ParallelDirection.cs" />
-    <Compile Include="OldCoordinateSystem.cs" />
-    <Compile Include="Operations\ImportOperation.cs" />
-    <Compile Include="Operations\IRecallable.cs" />
-    <Compile Include="Operations\IRevisable.cs" />
-    <Compile Include="Operations\LineSubdivisionFace.cs" />
-    <Compile Include="Operations\MovePolygonPositionOperation.cs" />
-    <Compile Include="Operations\NewArcOperation.cs" />
-    <Compile Include="Operations\NewKeyTextOperation.cs" />
-    <Compile Include="Operations\NewMiscTextOperation.cs" />
-    <Compile Include="Operations\NewRowTextOperation.cs" />
-    <Compile Include="Operations\NewSegmentOperation.cs" />
-    <Compile Include="Operations\NewTextOperation.cs" />
-    <Compile Include="Operations\ParallelLineOperation.cs" />
-    <Compile Include="Operations\SimpleLineSubdivisionOperation.cs" />
-    <Compile Include="Operations\TextRotationOperation.cs" />
-    <Compile Include="Operations\UpdateOperation.cs" />
-    <Compile Include="PathInfo.cs" />
-    <Compile Include="PathParser.cs" />
-    <Compile Include="PointGeometry.cs" />
-    <Compile Include="RadianValue.cs" />
-    <Compile Include="RowTextContent.cs" />
-    <Compile Include="RowTextGeometry.cs" />
-    <Compile Include="Operations\GetControlOperation.cs" />
-    <Compile Include="Operations\IntersectDirectionAndDistanceOperation.cs" />
-    <Compile Include="Operations\IntersectDirectionAndLineOperation.cs" />
-    <Compile Include="Operations\IntersectOperation.cs" />
-    <Compile Include="Operations\IntersectTwoDirectionsOperation.cs" />
-    <Compile Include="Operations\IntersectTwoDistancesOperation.cs" />
-    <Compile Include="Operations\IntersectTwoLinesOperation.cs" />
-    <Compile Include="Operations\NewCircleOperation.cs" />
-    <Compile Include="Operations\TrimLineOperation.cs" />
-    <Compile Include="PathItem.cs" />
-    <Compile Include="PathItemType.cs" />
-    <Compile Include="Selection.cs" />
-    <Compile Include="CheckItem.cs" />
-    <Compile Include="CheckType.cs" />
-    <Compile Include="CleanupQuery.cs" />
-    <Compile Include="CommandUI.cs" />
-    <Compile Include="Comparison.cs" />
-    <Compile Include="ConnectionFinder.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="DataStub.cs" />
-    <Compile Include="DividerObject.cs" />
-    <Compile Include="Face.cs" />
-    <Compile Include="FileCheckQuery.cs" />
-    <Compile Include="FloatingTerminal.cs" />
-    <Compile Include="Forms\CheckReviewForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\CheckReviewForm.Designer.cs">
-      <DependentUpon>CheckReviewForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\FileCheckForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FileCheckForm.Designer.cs">
-      <DependentUpon>FileCheckForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ForwardingTraceListener.cs" />
-    <Compile Include="IDivider.cs" />
-    <Compile Include="DividerCheck.cs" />
-    <Compile Include="LineDivider.cs" />
-    <Compile Include="DisplayId.cs" />
-    <Compile Include="DistanceUnit.cs" />
-    <Compile Include="DistanceUnitType.cs" />
-    <Compile Include="EditorResources.cs" />
-    <Compile Include="EnvironmentItemFacade.cs" />
-    <Compile Include="ExTranslation.cs" />
-    <Compile Include="Feature.cs" />
-    <Compile Include="FeatureFlag.cs" />
-    <Compile Include="FeatureId.cs" />
-    <Compile Include="FileCheckUI.cs" />
-    <Compile Include="FileImportSource.cs" />
-    <Compile Include="FindCirclesQuery.cs" />
-    <Compile Include="FindIntersectionsQuery.cs" />
-    <Compile Include="FindIslandContainerQuery.cs" />
-    <Compile Include="FindPointContainerQuery.cs" />
-    <Compile Include="FindPointQuery.cs" />
-    <Compile Include="FindPointsOnLineQuery.cs" />
-    <Compile Include="Forms\AttachPointForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AttachPointForm.Designer.cs">
-      <DependentUpon>AttachPointForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ContainerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ContainerForm.Designer.cs">
-      <DependentUpon>ContainerForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EntityTranslationForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EntityTranslationForm.Designer.cs">
-      <DependentUpon>EntityTranslationForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetCircleForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetCircleForm.Designer.cs">
-      <DependentUpon>GetCircleForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetEntityForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetEntityForm.Designer.cs">
-      <DependentUpon>GetEntityForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetLayerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetLayerForm.Designer.cs">
-      <DependentUpon>GetLayerForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\GetOffsetForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GetOffsetForm.Designer.cs">
-      <DependentUpon>GetOffsetForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\HistoryForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\HistoryForm.Designer.cs">
-      <DependentUpon>HistoryForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\IControlContainer.cs" />
-    <Compile Include="Forms\IdAllocationForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\IdAllocationForm.Designer.cs">
-      <DependentUpon>IdAllocationForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\InverseArcDistanceBearingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\InverseArcDistanceBearingForm.Designer.cs">
-      <DependentUpon>InverseArcDistanceBearingForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\InverseArcDistanceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\InverseArcDistanceForm.Designer.cs">
-      <DependentUpon>InverseArcDistanceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\InverseChoiceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\InverseChoiceForm.Designer.cs">
-      <DependentUpon>InverseChoiceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\InverseDistanceAngleForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\InverseDistanceAngleForm.Designer.cs">
-      <DependentUpon>InverseDistanceAngleForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\InverseDistanceBearingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\InverseDistanceBearingForm.Designer.cs">
-      <DependentUpon>InverseDistanceBearingForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\InverseDistanceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\InverseDistanceForm.Designer.cs">
-      <DependentUpon>InverseDistanceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\InverseForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\InverseForm.Designer.cs">
-      <DependentUpon>InverseForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\LineExtensionControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\LineExtensionControl.Designer.cs">
-      <DependentUpon>LineExtensionControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\LineSubdivisionControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\LineSubdivisionControl.Designer.cs">
-      <DependentUpon>LineSubdivisionControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NtxImportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\NtxImportForm.Designer.cs">
-      <DependentUpon>NtxImportForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ParallelControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\ParallelControl.Designer.cs">
-      <DependentUpon>ParallelControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SessionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SessionForm.Designer.cs">
-      <DependentUpon>SessionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\TerminalControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\TerminalControl.Designer.cs">
-      <DependentUpon>TerminalControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="IFeatureDependent.cs" />
-    <Compile Include="IIntersectable.cs" />
-    <Compile Include="Intersection.cs" />
-    <Compile Include="IntersectionFlag.cs" />
-    <Compile Include="IntersectionHelper.cs" />
-    <Compile Include="InverseType.cs" />
-    <Compile Include="IPossibleList.cs" />
-    <Compile Include="ISection.cs" />
-    <Compile Include="Island.cs" />
-    <Compile Include="ITerminal.cs" />
-    <Compile Include="ITranslate.cs" />
-    <Compile Include="Leg.cs" />
-    <Compile Include="LegItemFlag.cs" />
-    <Compile Include="LineGeometry.cs" />
-    <Compile Include="LineOverlap.cs" />
-    <Compile Include="RingCheck.cs" />
-    <Compile Include="SectionDivider.cs" />
-    <Compile Include="SectionOverlap.cs" />
-    <Compile Include="SelectionTool.cs" />
-    <Compile Include="Forms\Style.cs" />
-    <Compile Include="Forms\StyleEntry.cs" />
-    <Compile Include="Forms\StyleFile.cs" />
-    <Compile Include="SpanInfo.cs" />
-    <Compile Include="StraightLeg.cs" />
-    <Compile Include="TextCheck.cs" />
-    <Compile Include="TextEditWriter.cs" />
-    <Compile Include="ThrowawayFeatureFactory.cs" />
-    <Compile Include="Topology.cs" />
-    <Compile Include="Operations\AttachPointOperation.cs" />
-    <Compile Include="Operations\DeletionOperation.cs" />
-    <Compile Include="Operations\LineExtensionOperation.cs" />
-    <Compile Include="Operations\MoveTextOperation.cs" />
-    <Compile Include="Operations\PathOperation.cs" />
-    <Compile Include="Operations\PolygonSubdivisionOperation.cs" />
-    <Compile Include="Operations\SetTopologyOperation.cs" />
-    <Compile Include="RingFlag.cs" />
-    <Compile Include="Ring.cs" />
-    <Compile Include="RingMetrics.cs" />
-    <Compile Include="SectionTopologyList.cs" />
-    <Compile Include="SectionGeometry.cs" />
-    <Compile Include="SectionTopology.cs" />
-    <Compile Include="SegmentGeometry.cs" />
-    <Compile Include="Circle.cs" />
-    <Compile Include="OperationFlag.cs" />
-    <Compile Include="Operations\LineSubdivisionOperation.cs" />
-    <Compile Include="Operations\NewLineOperation.cs" />
-    <Compile Include="Orientation.cs" />
-    <Compile Include="Geom.cs" />
-    <Compile Include="HorizontalRay.cs" />
-    <Compile Include="IdGroup.cs" />
-    <Compile Include="IdGroupFacade.cs" />
-    <Compile Include="IdHandle.cs" />
-    <Compile Include="IdHelper.cs" />
-    <Compile Include="IdManager.cs" />
-    <Compile Include="IEditingAction.cs" />
-    <Compile Include="Forms\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MainForm.designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\NewPointForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\NewPointForm.designer.cs">
-      <DependentUpon>NewPointForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\EditingAction.cs" />
-    <Compile Include="Forms\PreferencesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\PreferencesForm.Designer.cs">
-      <DependentUpon>PreferencesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\UpdateForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\UpdateForm.Designer.cs">
-      <DependentUpon>UpdateForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="IntersectionData.cs" />
-    <Compile Include="IntersectionResult.cs" />
-    <Compile Include="IntersectionType.cs" />
-    <Compile Include="IntersectionFinder.cs" />
-    <Compile Include="LineAnnotationOptions.cs" />
-    <Compile Include="LineAnnotationStyle.cs" />
-    <Compile Include="LineFeature.cs" />
-    <Compile Include="NtxImport.cs" />
-    <Compile Include="EditingActionId.cs" />
-    <Compile Include="Observation.cs" />
-    <Compile Include="Operations\NewPointOperation.cs" />
-    <Compile Include="Operation.cs" />
-    <Compile Include="Operations\RadialOperation.cs" />
-    <Compile Include="MultiSegmentGeometry.cs" />
-    <Compile Include="PointFeature.cs" />
-    <Compile Include="Polygon.cs" />
-    <Compile Include="PolygonBuilder.cs" />
-    <Compile Include="PolygonFace.cs" />
-    <Compile Include="PolygonLink.cs" />
-    <Compile Include="PolygonSub.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\AdjustmentForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>AdjustmentForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AngleForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>AngleForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ArcForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ArcForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AttachPointForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>AttachPointForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AttributeDataForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>AttributeDataForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CheckReviewForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>CheckReviewForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ContainerForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ContainerForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CoordSystemForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>CoordSystemForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CulDeSacForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>CulDeSacForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DistanceForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>DistanceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditDetailsForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>EditDetailsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EntityTranslationForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>EntityTranslationForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EntityTypeComboBox.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>EntityTypeComboBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EnvironmentStructureForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>EnvironmentStructureForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FileCheckForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>FileCheckForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetCircleForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetCircleForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetControlForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetControlForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetDirectionControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetDirectionControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetDistanceControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetDistanceControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetEntityForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetEntityForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetIdForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetIdForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FindByInternalIdForm.resx">
-      <DependentUpon>FindByInternalIdForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetKeyForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetKeyForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetLayerForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetLayerForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetLineControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetLineControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetOffsetForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetOffsetForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GetPointForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>GetPointForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\HistoryForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>HistoryForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IdAllocationForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>IdAllocationForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IntersectDirectionAndDistanceForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>IntersectDirectionAndDistanceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IntersectDirectionAndLineForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>IntersectDirectionAndLineForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IntersectForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>IntersectForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IntersectInfoControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>IntersectInfoControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IntersectTwoDirectionsForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>IntersectTwoDirectionsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IntersectTwoDistancesForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>IntersectTwoDistancesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IntersectTwoLinesForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InverseArcDistanceBearingForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>InverseArcDistanceBearingForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InverseArcDistanceForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>InverseArcDistanceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InverseChoiceForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>InverseChoiceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InverseDistanceAngleForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>InverseDistanceAngleForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InverseDistanceBearingForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>InverseDistanceBearingForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InverseDistanceForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>InverseDistanceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InverseForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>InverseForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\LineExtensionControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>LineExtensionControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\LineSubdivisionControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>LineSubdivisionControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewCircleForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>NewCircleForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewCircularArcContextMenu.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewLabelContextMenu.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>NewLabelContextMenu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewLabelForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>NewLabelForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewLineContextMenu.resx">
-      <DependentUpon>NewLineContextMenu.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewPointForm.resx">
-      <DependentUpon>NewPointForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewProjectForm.resx">
-      <DependentUpon>NewProjectForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewTextContextMenu.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>NewTextContextMenu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NewTextForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>NewTextForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NtxImportForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>NtxImportForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\OpenProjectForm.resx">
-      <DependentUpon>OpenProjectForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ParallelControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ParallelControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PathForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PathForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PreferencesForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PreferencesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PropertyDisplayControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PropertyDisplayControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PropertyPage.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PropertyPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SchemaComboBox.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>SchemaComboBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SessionForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>SessionForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SplashScreen.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>SplashScreen.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\StartupForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>StartupForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\TerminalControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>TerminalControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UpdateForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>UpdateForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UpdatePathForm.resx">
-      <DependentUpon>UpdatePathForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\RadialControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>RadialControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="Forms\RadialControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\RadialControl.Designer.cs">
-      <DependentUpon>RadialControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="RollforwardException.cs" />
-    <Compile Include="Row.cs" />
-    <Compile Include="Session.cs" />
-    <Compile Include="Side.cs" />
-    <Compile Include="SimpleCommandUI.cs" />
-    <Compile Include="LineTopology.cs" />
-    <Compile Include="TaggedObject.cs" />
-    <Compile Include="TextFeature.cs" />
-    <Compile Include="TextGeometry.cs" />
-    <Compile Include="Translation.cs" />
-    <Compile Include="TranslationFile.cs" />
-    <Compile Include="UI\AddLabelUI.cs" />
-    <Compile Include="UI\AttachPointUI.cs" />
-    <Compile Include="UI\DeletionUI.cs" />
-    <Compile Include="UI\GetControlUI.cs" />
-    <Compile Include="UI\IntersectUI.cs" />
-    <Compile Include="UI\LineExtensionUI.cs" />
-    <Compile Include="UI\LineSubdivisionUI.cs" />
-    <Compile Include="UI\MovePolygonPositionUI.cs" />
-    <Compile Include="UI\MoveTextUI.cs" />
-    <Compile Include="UI\NewCircleUI.cs" />
-    <Compile Include="UI\NewCircularArcUI.cs" />
-    <Compile Include="UI\NewLabelUI.cs" />
-    <Compile Include="UI\NewLineUI.cs" />
-    <Compile Include="UI\NewPointUI.cs" />
-    <Compile Include="UI\NewTextUI.cs" />
-    <Compile Include="UI\ParallelLineUI.cs" />
-    <Compile Include="UI\PathUI.cs" />
-    <Compile Include="UI\PolygonSubdivisionUI.cs" />
-    <Compile Include="UI\RadialUI.cs" />
-    <Compile Include="UI\SetTopologyUI.cs" />
-    <Compile Include="UI\SimpleLineSubdivisionUI.cs" />
-    <Compile Include="UI\TextRotationUI.cs" />
-    <Compile Include="UI\TrimLineUI.cs" />
-    <Compile Include="UI\UndoUI.cs" />
-    <Compile Include="UI\UpdateUI.cs" />
-    <Compile Include="UnsectionedLineGeometry.cs" />
-    <Compile Include="UpdateEditingContext.cs" />
-    <Compile Include="UpdateItem.cs" />
-    <Compile Include="UpdateItemCollection.cs" />
-    <Compile Include="Wildcard.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomRectangle.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ConnectionPath.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DrawScale.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\EnlargePoints.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ExtendLine.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\FileNew.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\FileOpen.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\FilePrint.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\FileSave.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\InverseCalculator.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NewCenter.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NewCircularArc.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NewLabel.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NewLine.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Overview.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RedCar.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ReducePoints.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Scissors.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SetLabelRotation.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Sideshot.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SubdivideLine.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SubdividePolygon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Undo.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomIn.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Properties\app.manifest" />
-    <None Include="Resources\ZoomOut.ico" />
-    <EmbeddedResource Include="Forms\AutoCadExportForm.resx">
-      <DependentUpon>AutoCadExportForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DistForm.resx">
-      <DependentUpon>DistForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\LegForm.resx">
-      <DependentUpon>LegForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\LineSubdivisionUpdateForm.resx">
-      <DependentUpon>LineSubdivisionUpdateForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ListOperationsForm.resx">
-      <DependentUpon>ListOperationsForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PickEditForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PickEditForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PickPredecessorForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PickPredecessorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SimpleLineSubdivisionControl.resx">
-      <DependentUpon>SimpleLineSubdivisionControl.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj">
-      <Project>{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}</Project>
-      <Name>Backsight.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj">
-      <Project>{97BC1364-B469-4AF2-BD4F-B13AB981A4B1}</Project>
-      <Name>Backsight.SqlServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Backsight\Backsight.csproj">
-      <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
-      <Name>Backsight</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Ntx\Ntx.csproj">
-      <Project>{A40CEB5A-1ED4-41B8-961F-BDD7AC737C33}</Project>
-      <Name>Ntx</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ThirdParty\netDxf\netDxf\netDxf.csproj">
-      <Project>{785380E0-CEB9-4C34-82E5-60D0E33E848E}</Project>
-      <Name>netDxf</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\AmberTrafficLight.ico" />
-    <Content Include="Resources\AttachPointCursor.cur" />
-    <Content Include="Resources\AttributeContainerIcon.ico" />
-    <Content Include="Resources\BodyIcon.ico" />
-    <Content Include="Resources\CheckBridgeIcon.ico" />
-    <Content Include="Resources\CheckDanglingIcon.ico" />
-    <Content Include="Resources\CheckFloatingIcon.ico" />
-    <Content Include="Resources\CheckLineIgnoreIcon.ico" />
-    <Content Include="Resources\CheckMultiLabelIcon.ico" />
-    <Content Include="Resources\CheckNoAttributesIcon.ico" />
-    <Content Include="Resources\CheckNoLabelIcon.ico" />
-    <Content Include="Resources\CheckNoPolygonForLabelIcon.ico" />
-    <Content Include="Resources\CheckNotEnclosedIcon.ico" />
-    <Content Include="Resources\CheckOverlapIcon.ico" />
-    <Content Include="Resources\CheckPolygonIgnoreIcon.ico" />
-    <Content Include="Resources\CheckSmallLineIcon.ico" />
-    <Content Include="Resources\CheckSmallPolygonIcon.ico" />
-    <Content Include="Resources\CircleIcon.ico" />
-    <EmbeddedResource Include="Resources\DefaultEnvironment.xml" />
-    <Content Include="Resources\DiagonalCursor.cur" />
-    <Content Include="Resources\DomainIcon.ico" />
-    <Content Include="Resources\Editor.ico" />
-    <Content Include="Resources\FieldDefinitionIcon.ico" />
-    <Content Include="Resources\GrayCircleIcon.ico" />
-    <Content Include="Resources\GrayReverseArrowCursor.cur" />
-    <Content Include="Resources\GrayWandCursor.cur" />
-    <Content Include="Resources\GreenTrafficLight.ico" />
-    <Content Include="Resources\LayerIcon.ico" />
-    <Content Include="Resources\LineIcon.ico" />
-    <Content Include="Resources\NoEntryIcon.ico" />
-    <Content Include="Resources\PenCursor.cur" />
-    <Content Include="Resources\Point1Cursor.cur" />
-    <Content Include="Resources\Point2Cursor.cur" />
-    <Content Include="Resources\PolygonSubdivisionCursor.cur" />
-    <Content Include="Resources\RedTrafficLight.ico" />
-    <Content Include="Resources\ReverseArrowCursor.cur" />
-    <Content Include="Resources\TableDefinitionIcon.ico" />
-    <Content Include="Resources\TemplateIcon.ico" />
-    <Content Include="Resources\ThemeIcon.ico" />
-    <Content Include="Resources\WandCursor.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Update="EditingHelpProvider.cs">
+        <SubType>Component</SubType>
+      </Compile>
+      <Compile Update="Forms\FindByInternalIdForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\NewProjectForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\OpenProjectForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\AdjustmentForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\AngleForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\ArcForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\AttributeDataForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\CoordSystemForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\CulDeSacForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\DistanceForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\DistForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\EditDetailsForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\EntityTypeComboBox.cs">
+        <SubType>Component</SubType>
+      </Compile>
+      <Compile Update="Forms\EnvironmentStructureForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\GetControlForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\GetDirectionControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Forms\GetDistanceControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Forms\GetIdForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\GetKeyForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\GetLineControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Forms\GetPointForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\IntersectDirectionAndDistanceForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\IntersectDirectionAndLineForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\IntersectForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\IntersectInfoControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Forms\IntersectTwoDirectionsForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\IntersectTwoDistancesForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\IntersectTwoLinesForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\LegForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\LineSubdivisionUpdateForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\ListOperationsForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\NewCircleForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\NewCircularArcContextMenu.cs">
+        <SubType>Component</SubType>
+      </Compile>
+      <Compile Update="Forms\NewLabelContextMenu.cs">
+        <SubType>Component</SubType>
+      </Compile>
+      <Compile Update="Forms\NewLabelForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\NewLineContextMenu.cs">
+        <SubType>Component</SubType>
+      </Compile>
+      <Compile Update="Forms\NewTextContextMenu.cs">
+        <SubType>Component</SubType>
+      </Compile>
+      <Compile Update="Forms\NewTextForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\PathForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\PickEditForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\PickPredecessorForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\PropertyDisplayControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Forms\PropertyPage.cs">
+        <SubType>Component</SubType>
+      </Compile>
+      <Compile Update="Forms\SchemaComboBox.cs">
+        <SubType>Component</SubType>
+      </Compile>
+      <Compile Update="Forms\SimpleLineSubdivisionControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Forms\SplashScreen.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\StartupForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\UpdatePathForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\CheckReviewForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\FileCheckForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\AttachPointForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\ContainerForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\EntityTranslationForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\GetCircleForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\GetEntityForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\GetLayerForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\GetOffsetForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\HistoryForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\IdAllocationForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\InverseArcDistanceBearingForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\InverseArcDistanceForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\InverseChoiceForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\InverseDistanceAngleForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\InverseDistanceBearingForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\InverseDistanceForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\InverseForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\LineExtensionControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Forms\LineSubdivisionControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Forms\NtxImportForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\ParallelControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Forms\SessionForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\TerminalControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Forms\MainForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\NewPointForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\PreferencesForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\UpdateForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Forms\RadialControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Properties\Resources.Designer.cs">
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Resources.resx</DependentUpon>
+        <DesignTime>True</DesignTime>
+      </Compile>
+      <Compile Update="Properties\Resources.Designer.cs">
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Resources.resx</DependentUpon>
+        <DesignTime>True</DesignTime>
+      </Compile>
+      <Compile Update="Properties\Settings.Designer.cs">
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Settings.settings</DependentUpon>
+        <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      </Compile>
+      <Compile Update="Properties\Settings.Designer.cs">
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Settings.settings</DependentUpon>
+        <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj" />
+      <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj" />
+      <ProjectReference Include="..\Backsight\Backsight.csproj" />
+      <ProjectReference Include="..\Gui.Wizard\Gui.Wizard.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Forms\AdjustmentForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>AdjustmentForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\AngleForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>AngleForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\ArcForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>ArcForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\AttributeDataForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>AttributeDataForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\CoordSystemForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>CoordSystemForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\CulDeSacForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>CulDeSacForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\DistanceForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>DistanceForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\EditDetailsForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>EditDetailsForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\EntityTypeComboBox.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>EntityTypeComboBox.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\EnvironmentStructureForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>EnvironmentStructureForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetControlForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetControlForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetDirectionControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetDirectionControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetDistanceControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetDistanceControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetIdForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetIdForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetKeyForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetKeyForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetLineControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetLineControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetPointForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetPointForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectDirectionAndDistanceForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectDirectionAndDistanceForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectDirectionAndLineForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectDirectionAndLineForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectInfoControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectInfoControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectTwoDirectionsForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectTwoDirectionsForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectTwoDistancesForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectTwoDistancesForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectTwoLinesForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\ListOperationsForm.resx">
+        <DependentUpon>ListOperationsForm.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewCircleForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewCircleForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewCircularArcContextMenu.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewLabelContextMenu.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewLabelContextMenu.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewLabelForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewLabelForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewLineContextMenu.resx">
+        <DependentUpon>NewLineContextMenu.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewTextContextMenu.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewTextContextMenu.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewTextForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewTextForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PathForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PathForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PickEditForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PickEditForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PickPredecessorForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PickPredecessorForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PropertyDisplayControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PropertyDisplayControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PropertyPage.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PropertyPage.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\SchemaComboBox.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>SchemaComboBox.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\SplashScreen.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>SplashScreen.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\StartupForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>StartupForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\CheckReviewForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>CheckReviewForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\FileCheckForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>FileCheckForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\AttachPointForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>AttachPointForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\ContainerForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>ContainerForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\EntityTranslationForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>EntityTranslationForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetCircleForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetCircleForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetEntityForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetEntityForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetLayerForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetLayerForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetOffsetForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetOffsetForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\HistoryForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>HistoryForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IdAllocationForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IdAllocationForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseArcDistanceBearingForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseArcDistanceBearingForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseArcDistanceForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseArcDistanceForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseChoiceForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseChoiceForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseDistanceAngleForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseDistanceAngleForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseDistanceBearingForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseDistanceBearingForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseDistanceForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseDistanceForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\LineExtensionControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>LineExtensionControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\LineSubdivisionControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>LineSubdivisionControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NtxImportForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NtxImportForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\ParallelControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>ParallelControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\SessionForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>SessionForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\TerminalControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>TerminalControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\MainForm.resx">
+        <DependentUpon>MainForm.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewPointForm.resx">
+        <DependentUpon>NewPointForm.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PreferencesForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PreferencesForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\UpdateForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>UpdateForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\AdjustmentForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>AdjustmentForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\AngleForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>AngleForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\ArcForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>ArcForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\AttachPointForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>AttachPointForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\AttributeDataForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>AttributeDataForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\CheckReviewForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>CheckReviewForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\ContainerForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>ContainerForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\CoordSystemForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>CoordSystemForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\CulDeSacForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>CulDeSacForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\DistanceForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>DistanceForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\EditDetailsForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>EditDetailsForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\EntityTranslationForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>EntityTranslationForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\EntityTypeComboBox.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>EntityTypeComboBox.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\EnvironmentStructureForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>EnvironmentStructureForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\FileCheckForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>FileCheckForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetCircleForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetCircleForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetControlForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetControlForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetDirectionControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetDirectionControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetDistanceControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetDistanceControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetEntityForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetEntityForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetIdForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetIdForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetKeyForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetKeyForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetLayerForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetLayerForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetLineControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetLineControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetOffsetForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetOffsetForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\GetPointForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>GetPointForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\HistoryForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>HistoryForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IdAllocationForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IdAllocationForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectDirectionAndDistanceForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectDirectionAndDistanceForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectDirectionAndLineForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectDirectionAndLineForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectInfoControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectInfoControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectTwoDirectionsForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectTwoDirectionsForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectTwoDistancesForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectTwoDistancesForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\IntersectTwoLinesForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>IntersectTwoLinesForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseArcDistanceBearingForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseArcDistanceBearingForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseArcDistanceForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseArcDistanceForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseChoiceForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseChoiceForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseDistanceAngleForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseDistanceAngleForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseDistanceBearingForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseDistanceBearingForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseDistanceForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseDistanceForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\InverseForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>InverseForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\LineExtensionControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>LineExtensionControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\LineSubdivisionControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>LineSubdivisionControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\MainForm.resx">
+        <DependentUpon>MainForm.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewCircleForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewCircleForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewCircularArcContextMenu.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewCircularArcContextMenu.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewLabelContextMenu.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewLabelContextMenu.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewLabelForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewLabelForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewLineContextMenu.resx">
+        <DependentUpon>NewLineContextMenu.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewPointForm.resx">
+        <DependentUpon>NewPointForm.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewTextContextMenu.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewTextContextMenu.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NewTextForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NewTextForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\NtxImportForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>NtxImportForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\ParallelControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>ParallelControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PathForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PathForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PreferencesForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PreferencesForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PropertyDisplayControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PropertyDisplayControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PropertyPage.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PropertyPage.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\SchemaComboBox.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>SchemaComboBox.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\SessionForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>SessionForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\SplashScreen.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>SplashScreen.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\StartupForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>StartupForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\TerminalControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>TerminalControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\UpdateForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>UpdateForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\RadialControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>RadialControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\RadialControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>RadialControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\ListOperationsForm.resx">
+        <DependentUpon>ListOperationsForm.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PickEditForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PickEditForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Forms\PickPredecessorForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PickPredecessorForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Properties\Resources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources\DefaultEnvironment.xml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Properties\Settings.settings">
+        <Generator>SettingsSingleFileGenerator</Generator>
+        <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
 </Project>

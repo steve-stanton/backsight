@@ -13,231 +13,228 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 using System.Drawing;
-
 using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <summary>
+/// Dialog for the <see cref="SimpleLineSubdivisionUI"/>
+/// </summary>
+public partial class SimpleLineSubdivisionControl : UserControl
 {
+    #region Class data
+
     /// <summary>
-    /// Dialog for the <see cref="SimpleLineSubdivisionUI"/>
+    /// The command that is running this dialog.
     /// </summary>
-    public partial class SimpleLineSubdivisionControl : UserControl
+    CommandUI m_Cmd;
+
+    /// <summary>
+    /// The line that is being subdivided.
+    /// </summary>
+    LineFeature m_Line;
+
+    /// <summary>
+    /// The distance to the split point.
+    /// </summary>
+    Distance m_Length;
+
+    /// <summary>
+    /// True if distance is from the end of the line. False if from start.
+    /// </summary>
+    bool m_IsFromEnd;
+
+    /// <summary>
+    /// The maximum length, in metres on the ground (as opposed to the mapping plane).
+    /// </summary>
+    double m_MaxLength;
+
+    #endregion
+
+    #region Constructors
+
+    internal SimpleLineSubdivisionControl(SimpleLineSubdivisionUI cmd, LineFeature line, Operation recall)
     {
-        #region Class data
+        InitializeComponent();
 
-        /// <summary>
-        /// The command that is running this dialog.
-        /// </summary>
-        CommandUI m_Cmd;
+        m_Cmd = cmd;
+        m_Line = line;
+        m_MaxLength = 0.0;
 
-        /// <summary>
-        /// The line that is being subdivided.
-        /// </summary>
-        LineFeature m_Line;
-
-        /// <summary>
-        /// The distance to the split point.
-        /// </summary>
-        Distance m_Length;
-
-        /// <summary>
-        /// True if distance is from the end of the line. False if from start.
-        /// </summary>
-        bool m_IsFromEnd;
-
-        /// <summary>
-        /// The maximum length, in metres on the ground (as opposed to the mapping plane).
-        /// </summary>
-        double m_MaxLength;
-
-        #endregion
-
-        #region Constructors
-
-        internal SimpleLineSubdivisionControl(SimpleLineSubdivisionUI cmd, LineFeature line, Operation recall)
+        SimpleLineSubdivisionOperation op = (recall as SimpleLineSubdivisionOperation);
+        if (op!=null)
         {
-            InitializeComponent();
-
-            m_Cmd = cmd;
-            m_Line = line;
-            m_MaxLength = 0.0;
-
-            SimpleLineSubdivisionOperation op = (recall as SimpleLineSubdivisionOperation);
-            if (op!=null)
-            {
-                m_Length = new Distance(op.Distance);
-                m_IsFromEnd = op.IsFromEnd;
-            }
-            else
-            {
-                m_Length = new Distance();
-                m_IsFromEnd = false;
-            }
+            m_Length = new Distance(op.Distance);
+            m_IsFromEnd = op.IsFromEnd;
         }
-        internal SimpleLineSubdivisionControl(UpdateUI updcmd)
+        else
         {
-            InitializeComponent();
-
-            m_Cmd = updcmd;
-            m_Line = null;
-            m_IsFromEnd = false;
             m_Length = new Distance();
-            m_MaxLength = 0.0;
+            m_IsFromEnd = false;
         }
+    }
+    internal SimpleLineSubdivisionControl(UpdateUI updcmd)
+    {
+        InitializeComponent();
 
-        #endregion
+        m_Cmd = updcmd;
+        m_Line = null;
+        m_IsFromEnd = false;
+        m_Length = new Distance();
+        m_MaxLength = 0.0;
+    }
 
-        /// <summary>
-        /// True if distance is from the end of the line. False if from start.
-        /// </summary>
-        internal bool IsFromEnd
+    #endregion
+
+    /// <summary>
+    /// True if distance is from the end of the line. False if from start.
+    /// </summary>
+    internal bool IsFromEnd
+    {
+        get { return m_IsFromEnd; }
+    }
+
+    /// <summary>
+    /// The distance to the split point.
+    /// </summary>
+    internal Distance Length
+    {
+        get { return m_Length; }
+    }
+
+    private void PointOnLineControl_Load(object sender, EventArgs e)
+    {
+        // Hide warning message.
+        warningLabel.Visible = false;
+
+        // If we are doing an update, pull in the previously defined stuff
+        InitUpdate();
+
+        // Get the max observed length.
+        m_MaxLength = m_Line.GroundLength.Meters;
+
+        // Display the original observed distance (if any). Do this
+        // AFTER setting m_MaxLength (otherwise IDC_WARNING will appear
+        // when doing an update).
+        if (m_Length.IsDefined)
+            distanceTextBox.Text = m_Length.Format();
+    }
+
+    private void distanceTextBox_TextChanged(object sender, EventArgs e)
+    {
+        // Parse the distance to the split point.
+        string d = distanceTextBox.Text.Trim();
+        if (d.Length==0)
+            m_Length = new Distance();
+        else
+            m_Length = new Distance(d);
+
+        // If the observed length is greater than the max, reveal warning.
+        warningLabel.Visible = (m_Length.Meters > m_MaxLength);
+
+        // Clear current highlightling (Draw will be called in idle time)
+        m_Cmd.ErasePainting();
+    }
+
+    private void otherWayButton_Click(object sender, EventArgs e)
+    {
+        // Toggle the end the distance is observed from.
+        m_IsFromEnd = !m_IsFromEnd;
+
+        // Set the focus to something useful (keeping the focus on
+        // the "other way" button is kind of useless).
+        distanceTextBox.Focus();
+
+        // Clear current highlightling (Draw will be called in idle time)
+        m_Cmd.ErasePainting();
+    }
+
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        // Abort the command.
+        m_Cmd.DialAbort(this);
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        if (m_Line!=null && m_Length.IsDefined)
         {
-            get { return m_IsFromEnd; }
+            // The observed length can't be too long.
+            if (m_Length.Meters > m_MaxLength)
+            {
+                MessageBox.Show("Observed distance is longer than the length of the line.");
+                return;
+            }
+
+            m_Cmd.DialFinish(this);
         }
-
-        /// <summary>
-        /// The distance to the split point.
-        /// </summary>
-        internal Distance Length
+        else
         {
-            get { return m_Length; }
-        }
-
-        private void PointOnLineControl_Load(object sender, EventArgs e)
-        {
-            // Hide warning message.
-            warningLabel.Visible = false;
-
-            // If we are doing an update, pull in the previously defined stuff
-            InitUpdate();
-
-            // Get the max observed length.
-            m_MaxLength = m_Line.GroundLength.Meters;
-
-            // Display the original observed distance (if any). Do this
-            // AFTER setting m_MaxLength (otherwise IDC_WARNING will appear
-            // when doing an update).
-            if (m_Length.IsDefined)
-                distanceTextBox.Text = m_Length.Format();
-        }
-
-        private void distanceTextBox_TextChanged(object sender, EventArgs e)
-        {
-            // Parse the distance to the split point.
-            string d = distanceTextBox.Text.Trim();
-            if (d.Length==0)
-                m_Length = new Distance();
+            if (m_Line==null)
+                MessageBox.Show("The line to subdivide has not been specified.");
             else
-                m_Length = new Distance(d);
-
-            // If the observed length is greater than the max, reveal warning.
-            warningLabel.Visible = (m_Length.Meters > m_MaxLength);
-
-            // Clear current highlightling (Draw will be called in idle time)
-            m_Cmd.ErasePainting();
+                MessageBox.Show("The distance to the split point has not been specified.");
         }
+    }
 
-        private void otherWayButton_Click(object sender, EventArgs e)
+    internal void Draw()
+    {
+        ISpatialDisplay display = m_Cmd.ActiveDisplay;
+
+        // If we're doing an update, draw the original split point in grey.
+        SimpleLineSubdivisionOperation pop = UpdateOp;
+        if (pop!=null)
         {
-            // Toggle the end the distance is observed from.
-            m_IsFromEnd = !m_IsFromEnd;
-
-            // Set the focus to something useful (keeping the focus on
-            // the "other way" button is kind of useless).
-            distanceTextBox.Focus();
-
-            // Clear current highlightling (Draw will be called in idle time)
-            m_Cmd.ErasePainting();
+            PointFeature point = pop.NewPoint;
+            if (point!=null)
+                point.Draw(display, Color.Gray);
         }
 
-        private void cancelButton_Click(object sender, EventArgs e)
+        // Ensure the line that's being subdivided is still highlighted
+        IDrawStyle style = EditingController.Current.HighlightStyle;
+        m_Line.Render(display, style);
+
+        // Calculate the position of the split point.
+        IPosition splitpos = SimpleLineSubdivisionOperation.Calculate(m_Line, m_Length, m_IsFromEnd);
+        if (splitpos!=null)
         {
-            // Abort the command.
-            m_Cmd.DialAbort(this);
+            style = EditingController.Current.Style(Color.Magenta);
+            style.Render(display, splitpos);
         }
+    }
 
-        private void okButton_Click(object sender, EventArgs e)
+    SimpleLineSubdivisionOperation UpdateOp
+    {
+        get
         {
-            if (m_Line!=null && m_Length.IsDefined)
-            {
-                // The observed length can't be too long.
-                if (m_Length.Meters > m_MaxLength)
-                {
-                    MessageBox.Show("Observed distance is longer than the length of the line.");
-                    return;
-                }
-
-                m_Cmd.DialFinish(this);
-            }
-            else
-            {
-                if (m_Line==null)
-                    MessageBox.Show("The line to subdivide has not been specified.");
-                else
-                    MessageBox.Show("The distance to the split point has not been specified.");
-            }
+            UpdateUI up = (m_Cmd as UpdateUI);
+            return (up==null ? null : (SimpleLineSubdivisionOperation)up.GetOp());
         }
+    }
 
-        internal void Draw()
-        {
-            ISpatialDisplay display = m_Cmd.ActiveDisplay;
+    bool IsUpdate
+    {
+        get { return (m_Cmd is UpdateUI); }
+    }
 
-            // If we're doing an update, draw the original split point in grey.
-            SimpleLineSubdivisionOperation pop = UpdateOp;
-            if (pop!=null)
-            {
-                PointFeature point = pop.NewPoint;
-                if (point!=null)
-                    point.Draw(display, Color.Gray);
-            }
+    bool InitUpdate()
+    {
+        // Get the creating op.
+        SimpleLineSubdivisionOperation pop = this.UpdateOp;
+        if (pop==null)
+            return false;
 
-            // Ensure the line that's being subdivided is still highlighted
-            IDrawStyle style = EditingController.Current.HighlightStyle;
-            m_Line.Render(display, style);
+        Form parent = ParentForm;
+        parent.Text = "Update Line Subdivision";
 
-            // Calculate the position of the split point.
-            IPosition splitpos = SimpleLineSubdivisionOperation.Calculate(m_Line, m_Length, m_IsFromEnd);
-            if (splitpos!=null)
-            {
-                style = EditingController.Current.Style(Color.Magenta);
-                style.Render(display, splitpos);
-            }
-        }
+        m_Line = pop.Line;
+        m_Length = new Distance(pop.Distance);
+        m_IsFromEnd = pop.IsFromEnd;
 
-        SimpleLineSubdivisionOperation UpdateOp
-        {
-            get
-            {
-                UpdateUI up = (m_Cmd as UpdateUI);
-                return (up==null ? null : (SimpleLineSubdivisionOperation)up.GetOp());
-            }
-        }
-
-        bool IsUpdate
-        {
-            get { return (m_Cmd is UpdateUI); }
-        }
-
-        bool InitUpdate()
-        {
-            // Get the creating op.
-            SimpleLineSubdivisionOperation pop = this.UpdateOp;
-            if (pop==null)
-                return false;
-
-            Form parent = ParentForm;
-            parent.Text = "Update Line Subdivision";
-
-            m_Line = pop.Line;
-            m_Length = new Distance(pop.Distance);
-            m_IsFromEnd = pop.IsFromEnd;
-
-            return true;
-        }
+        return true;
     }
 }

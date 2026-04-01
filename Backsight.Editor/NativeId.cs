@@ -13,92 +13,89 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="13-JUN-2008" />
+/// <summary>
+/// An ID that corresponds to an item within an <see cref="IdGroup"/>
+/// </summary>
+/// <seealso cref="ForeignId"/>
+class NativeId : FeatureId
 {
-    /// <written by="Steve Stanton" on="13-JUN-2008" />
+    #region Static
+
     /// <summary>
-    /// An ID that corresponds to an item within an <see cref="IdGroup"/>
+    /// Gets the check digit for a numeric key. 
     /// </summary>
-    /// <seealso cref="ForeignId"/>
-    class NativeId : FeatureId
+    /// <param name="num">The numeric key</param>
+    /// <returns></returns>
+    internal static uint GetCheckDigit(uint num)
     {
-        #region Static
+        uint val = num;
+        uint total;			// The total for one iteration
 
-        /// <summary>
-        /// Gets the check digit for a numeric key. 
-        /// </summary>
-        /// <param name="num">The numeric key</param>
-        /// <returns></returns>
-        internal static uint GetCheckDigit(uint num)
+        for (; val>9; val=total)
         {
-            uint val = num;
-            uint total;			// The total for one iteration
-
-            for (; val>9; val=total)
+            for (total=0; val!=0; val /= 10)
             {
-                for (total=0; val!=0; val /= 10)
-                {
-                    total += (val % 10);
-                }
+                total += (val % 10);
             }
-
-            return val;
         }
 
-        #endregion
+        return val;
+    }
 
-        #region Class data
+    #endregion
 
-        /// <summary>
-        /// The associated ID group
-        /// </summary>
-        readonly IdGroup m_Group;
+    #region Class data
 
-        /// <summary>
-        /// The undecorated ID value (excluding any prefix or suffix or check digit).
-        /// </summary>
-        readonly uint m_Key;
+    /// <summary>
+    /// The associated ID group
+    /// </summary>
+    readonly IdGroup m_Group;
 
-        #endregion
+    /// <summary>
+    /// The undecorated ID value (excluding any prefix or suffix or check digit).
+    /// </summary>
+    readonly uint m_Key;
 
-        #region Constructors
+    #endregion
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NativeId"/> class.
-        /// </summary>
-        /// <param name="key">The raw ID value that identifies a feature</param>
-        internal NativeId(IdGroup group, uint key)
-        {
-            m_Group = group;
-            m_Key = key;
-        }
+    #region Constructors
 
-        #endregion
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NativeId"/> class.
+    /// </summary>
+    /// <param name="key">The raw ID value that identifies a feature</param>
+    internal NativeId(IdGroup group, uint key)
+    {
+        m_Group = group;
+        m_Key = key;
+    }
 
-        /// <summary>
-        /// The user-perceived ID value
-        /// </summary>
-        internal override string FormattedKey
-        {
-            get { return m_Group.FormatId(m_Key); }
-        }
+    #endregion
 
-        /// <summary>
-        /// The undecorated ID value (excluding any prefix or suffix or check digit).
-        /// </summary>
-        internal override uint RawId
-        {
-            get { return m_Key; }
-        }
+    /// <summary>
+    /// The user-perceived ID value
+    /// </summary>
+    internal override string FormattedKey
+    {
+        get { return m_Group.FormatId(m_Key); }
+    }
 
-        /// <summary>
-        /// The associated ID group
-        /// </summary>
-        internal IdGroup IdGroup
-        {
-            get { return m_Group; }
-        }
+    /// <summary>
+    /// The undecorated ID value (excluding any prefix or suffix or check digit).
+    /// </summary>
+    internal override uint RawId
+    {
+        get { return m_Key; }
+    }
+
+    /// <summary>
+    /// The associated ID group
+    /// </summary>
+    internal IdGroup IdGroup
+    {
+        get { return m_Group; }
     }
 }

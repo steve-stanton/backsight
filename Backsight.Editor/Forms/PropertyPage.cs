@@ -13,124 +13,121 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 using System.Data;
-
 using Backsight.Forms;
 using Backsight.Environment;
 using Backsight.Data;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" on="10-FEB-2009"/>
+/// <summary>
+/// A TabPage that contains a PropertyGrid
+/// </summary>
+partial class PropertyPage : TabPage
 {
-    /// <written by="Steve Stanton" on="10-FEB-2009"/>
+    #region Class data
+
     /// <summary>
-    /// A TabPage that contains a PropertyGrid
+    /// The database holding the attribute data (not null).
     /// </summary>
-    partial class PropertyPage : TabPage
+    readonly IDataServer m_DataServer;
+
+    /// <summary>
+    /// The database row that's being displayed
+    /// </summary>
+    Row m_Row;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PropertyPage"/> class.
+    /// </summary>
+    /// <param name="row">The database row that's being displayed (not null)</param>
+    /// <exception cref="ArgumentNullException">If the supplied row is null</exception>
+    /// <exception cref="InvalidOperationException">If no database is available</exception>
+    internal PropertyPage(Row row)
+        : base()
     {
-        #region Class data
+        InitializeComponent();
 
-        /// <summary>
-        /// The database holding the attribute data (not null).
-        /// </summary>
-        readonly IDataServer m_DataServer;
+        m_DataServer = EditingController.Current.DataServer;
+        if (m_DataServer == null)
+            throw new InvalidOperationException("No database available");
 
-        /// <summary>
-        /// The database row that's being displayed
-        /// </summary>
-        Row m_Row;
+        SetRow(row);
+    }
 
-        #endregion
+    #endregion
 
-        #region Constructors
+    /// <summary>
+    /// The database row that's being displayed
+    /// </summary>
+    internal Row DisplayedRow
+    {
+        get { return m_Row; }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyPage"/> class.
-        /// </summary>
-        /// <param name="row">The database row that's being displayed (not null)</param>
-        /// <exception cref="ArgumentNullException">If the supplied row is null</exception>
-        /// <exception cref="InvalidOperationException">If no database is available</exception>
-        internal PropertyPage(Row row)
-            : base()
+    /// <summary>
+    /// Refreshes the display of row attributes (e.g. after the user has edited
+    /// the data)
+    /// </summary>
+    internal void RefreshRow()
+    {
+        SetRow(m_Row);
+    }
+
+    /// <summary>
+    /// Display the attributes of a specific row on this property page
+    /// </summary>
+    /// <param name="row">The row of interest (not null)</param>
+    /// <exception cref="ArgumentNullException">If the supplied row is null</exception>
+    internal void SetRow(Row row)
+    {
+        if (row == null)
+            throw new ArgumentNullException();
+
+        m_Row = row;
+
+        // Set the text on the tab
+        this.Text = row.Table.TableName;
+
+        // We'll display any expanded domain values if we can
+        IColumnDomain[] cds = row.Table.ColumnDomains;
+
+        // Hmm, there isn't a PropertyGrid.DataSource property, so do it the
+        // hard way (is there a better way?)
+
+        DataRow data = row.Data;
+        DataTable table = data.Table;
+        object[] items = data.ItemArray;
+        AdhocPropertyList props = new AdhocPropertyList(items.Length);
+
+        for (int i=0; i<items.Length; i++)
         {
-            InitializeComponent();
+            DataColumn dc = table.Columns[i];
+            string columnName = dc.ColumnName;
+            AdhocProperty item = new AdhocProperty(columnName, items[i]);
+            item.ReadOnly = true;
 
-            m_DataServer = EditingController.Current.DataServer;
-            if (m_DataServer == null)
-                throw new InvalidOperationException("No database available");
+            // If the column is associated with a domain, lookup the expanded value and
+            // record as the item's description
 
-            SetRow(row);
-        }
+            IColumnDomain cd = Array.Find<IColumnDomain>(cds, t => String.Compare(t.ColumnName, columnName, true) == 0);
 
-        #endregion
-
-        /// <summary>
-        /// The database row that's being displayed
-        /// </summary>
-        internal Row DisplayedRow
-        {
-            get { return m_Row; }
-        }
-
-        /// <summary>
-        /// Refreshes the display of row attributes (e.g. after the user has edited
-        /// the data)
-        /// </summary>
-        internal void RefreshRow()
-        {
-            SetRow(m_Row);
-        }
-
-        /// <summary>
-        /// Display the attributes of a specific row on this property page
-        /// </summary>
-        /// <param name="row">The row of interest (not null)</param>
-        /// <exception cref="ArgumentNullException">If the supplied row is null</exception>
-        internal void SetRow(Row row)
-        {
-            if (row == null)
-                throw new ArgumentNullException();
-
-            m_Row = row;
-
-            // Set the text on the tab
-            this.Text = row.Table.TableName;
-
-            // We'll display any expanded domain values if we can
-            IColumnDomain[] cds = row.Table.ColumnDomains;
-
-            // Hmm, there isn't a PropertyGrid.DataSource property, so do it the
-            // hard way (is there a better way?)
-
-            DataRow data = row.Data;
-            DataTable table = data.Table;
-            object[] items = data.ItemArray;
-            AdhocPropertyList props = new AdhocPropertyList(items.Length);
-
-            for (int i=0; i<items.Length; i++)
+            if (cd != null)
             {
-                DataColumn dc = table.Columns[i];
-                string columnName = dc.ColumnName;
-                AdhocProperty item = new AdhocProperty(columnName, items[i]);
-                item.ReadOnly = true;
-
-                // If the column is associated with a domain, lookup the expanded value and
-                // record as the item's description
-
-                IColumnDomain cd = Array.Find<IColumnDomain>(cds, t => String.Compare(t.ColumnName, columnName, true) == 0);
-
-                if (cd != null)
-                {
-                    string shortValue = items[i].ToString();
-                    string longValue = cd.Domain.Lookup(m_DataServer.ConnectionString, shortValue);
-                    item.Description = longValue;
-                }
-
-                props.Add(item);
+                string shortValue = items[i].ToString();
+                string longValue = cd.Domain.Lookup(m_DataServer.ConnectionString, shortValue);
+                item.Description = longValue;
             }
 
-            propertyGrid.SelectedObject = props;
+            props.Add(item);
         }
+
+        propertyGrid.SelectedObject = props;
     }
 }

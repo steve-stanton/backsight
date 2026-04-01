@@ -13,118 +13,114 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <written by="Steve Stanton" on="11-MAY-2009" />
+/// <summary>
+/// Information about changes made while the user makes a series of editing revisions.
+/// </summary>
+class UpdateContext
 {
-    /// <written by="Steve Stanton" on="11-MAY-2009" />
+    #region Class data
+
     /// <summary>
-    /// Information about changes made while the user makes a series of editing revisions.
+    /// Items that have been moved as a result of editing revision. Each list contains the
+    /// moves relating to a single revision.
     /// </summary>
-    class UpdateContext
+    readonly Stack<UpdateUndoMarker> m_Moves;
+
+    /// <summary>
+    /// The last editing operation that was completed prior to the creation of this context
+    /// instance (null if the context was created at the very beginning of the session).
+    /// </summary>
+    readonly Operation m_LastEdit;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateContext"/> class.
+    /// </summary>
+    internal UpdateContext()
     {
-        #region Class data
+        m_Moves = new Stack<UpdateUndoMarker>();
+        m_LastEdit = Session.WorkingSession.LastOperation;
+    }
 
-        /// <summary>
-        /// Items that have been moved as a result of editing revision. Each list contains the
-        /// moves relating to a single revision.
-        /// </summary>
-        readonly Stack<UpdateUndoMarker> m_Moves;
+    #endregion
 
-        /// <summary>
-        /// The last editing operation that was completed prior to the creation of this context
-        /// instance (null if the context was created at the very beginning of the session).
-        /// </summary>
-        readonly Operation m_LastEdit;
+    /// <summary>
+    /// The number of undo markers that have been created via calls to <see cref="SetUndoMarker"/>.
+    /// </summary>
+    internal uint NumUndoMarkers
+    {
+        get { return (uint)m_Moves.Count; }
+    }
 
-        #endregion
+    /// <summary>
+    /// Sets an undo marker to indicate a savepoint that the user may go back to
+    /// while making a series of editing revisions.
+    /// </summary>
+    internal void SetUndoMarker()
+    {
+        UpdateUndoMarker um = new UpdateUndoMarker();
 
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateContext"/> class.
-        /// </summary>
-        internal UpdateContext()
+        if (m_Moves.Count > 0)
         {
-            m_Moves = new Stack<UpdateUndoMarker>();
-            m_LastEdit = Session.WorkingSession.LastOperation;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// The number of undo markers that have been created via calls to <see cref="SetUndoMarker"/>.
-        /// </summary>
-        internal uint NumUndoMarkers
-        {
-            get { return (uint)m_Moves.Count; }
-        }
-
-        /// <summary>
-        /// Sets an undo marker to indicate a savepoint that the user may go back to
-        /// while making a series of editing revisions.
-        /// </summary>
-        internal void SetUndoMarker()
-        {
-            UpdateUndoMarker um = new UpdateUndoMarker();
-
-            if (m_Moves.Count > 0)
+            UpdateUndoMarker lastMarker = m_Moves.Peek();
+            if (lastMarker!=null && lastMarker.EditSequence==um.EditSequence)
             {
-                UpdateUndoMarker lastMarker = m_Moves.Peek();
-                if (lastMarker!=null && lastMarker.EditSequence==um.EditSequence)
-                {
-                    // If the last marker is empty, just get rid of it (user may have cancelled
-                    // from previous edit)
-                    if (lastMarker.IsEmpty)
-                        m_Moves.Pop();
-                    else
-                        throw new InvalidOperationException("Attempt to create another undo marker for the same edit");
-                }
+                // If the last marker is empty, just get rid of it (user may have cancelled
+                // from previous edit)
+                if (lastMarker.IsEmpty)
+                    m_Moves.Pop();
+                else
+                    throw new InvalidOperationException("Attempt to create another undo marker for the same edit");
             }
-
-            m_Moves.Push(um);
         }
 
-        /// <summary>
-        /// Remembers a point that is about to be moved
-        /// </summary>
-        /// <param name="p">The point that is about to move</param>
-        internal void AddMove(PointFeature p)
-        {
-            UpdateUndoMarker um = m_Moves.Peek();
-            Debug.Assert(um != null);
-            um.AddMove(p);
-        }
+        m_Moves.Push(um);
+    }
 
-        /// <summary>
-        /// Rolls back changes (moves) that have occurred since the last undo marker (as defined
-        /// via a prior call to <see cref="SetUndoMarker"/>).
-        /// </summary>
-        /// <returns>True if an undo marker was rolled back. False if everything has already
-        /// been undone.</returns>
-        internal bool Undo()
-        {
-            if (m_Moves.Count == 0)
-                return false;
+    /// <summary>
+    /// Remembers a point that is about to be moved
+    /// </summary>
+    /// <param name="p">The point that is about to move</param>
+    internal void AddMove(PointFeature p)
+    {
+        UpdateUndoMarker um = m_Moves.Peek();
+        Debug.Assert(um != null);
+        um.AddMove(p);
+    }
 
-            UpdateUndoMarker um = m_Moves.Pop();
-            Debug.Assert(um != null);
-            um.Undo();
-            return true;
-        }
+    /// <summary>
+    /// Rolls back changes (moves) that have occurred since the last undo marker (as defined
+    /// via a prior call to <see cref="SetUndoMarker"/>).
+    /// </summary>
+    /// <returns>True if an undo marker was rolled back. False if everything has already
+    /// been undone.</returns>
+    internal bool Undo()
+    {
+        if (m_Moves.Count == 0)
+            return false;
 
-        /// <summary>
-        /// Rolls back all changes known to this context instance. This just makes repetitive
-        /// calls to <see cref="Undo"/>, exiting only when it returns <c>false</c>.
-        /// </summary>
-        internal void UndoAll()
+        UpdateUndoMarker um = m_Moves.Pop();
+        Debug.Assert(um != null);
+        um.Undo();
+        return true;
+    }
+
+    /// <summary>
+    /// Rolls back all changes known to this context instance. This just makes repetitive
+    /// calls to <see cref="Undo"/>, exiting only when it returns <c>false</c>.
+    /// </summary>
+    internal void UndoAll()
+    {
+        while (Undo())
         {
-            while (Undo())
-            {
-            }
         }
     }
 }

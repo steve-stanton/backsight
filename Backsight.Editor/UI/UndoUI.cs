@@ -13,72 +13,69 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Forms;
 
-namespace Backsight.Editor.UI
+namespace Backsight.Editor.UI;
+
+/// <written by="Steve Stanton" on="17-OCT-2007" />
+/// <summary>
+/// User interface for undoing an edit. This doesn't do much, since there is currently
+/// no user interaction.
+/// </summary>
+class UndoUI : SimpleCommandUI
 {
-    /// <written by="Steve Stanton" on="17-OCT-2007" />
+    #region Class data
+
+    // no data
+
+    #endregion
+
+    #region Constructors
+
     /// <summary>
-    /// User interface for undoing an edit. This doesn't do much, since there is currently
-    /// no user interaction.
+    /// Creates a new <c>UndoUI</c>
     /// </summary>
-    class UndoUI : SimpleCommandUI
+    /// <param name="action">The action that initiated this command</param>
+    internal UndoUI(IUserAction action)
+        : base(action)
     {
-        #region Class data
+    }
 
-        // no data
+    #endregion
 
-        #endregion
+    /// <summary>
+    /// Undoes the last edit.
+    /// </summary>
+    /// <returns>True if the command ran to completion. False if there was nothing to
+    /// undo in the current editing session, or an exception arose.</returns>
+    internal override bool Run()
+    {
+        EditingController c = Controller;
 
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>UndoUI</c>
-        /// </summary>
-        /// <param name="action">The action that initiated this command</param>
-        internal UndoUI(IUserAction action)
-            : base(action)
+        try
         {
-        }
+            // Turn off any highlighted features (confusing if the feature is undone by the rollback).
+            c.ClearSelection();
 
-        #endregion
-
-        /// <summary>
-        /// Undoes the last edit.
-        /// </summary>
-        /// <returns>True if the command ran to completion. False if there was nothing to
-        /// undo in the current editing session, or an exception arose.</returns>
-        internal override bool Run()
-        {
-            EditingController c = Controller;
-
-            try
+            // Ask the map to rollback the last operation (restricting 
+            // to the current editing session).
+            Session s = CadastralMapModel.Current.WorkingSession;
+            if (CadastralMapModel.Current.Rollback(s))
             {
-                // Turn off any highlighted features (confusing if the feature is undone by the rollback).
-                c.ClearSelection();
-
-                // Ask the map to rollback the last operation (restricting 
-                // to the current editing session).
-                Session s = CadastralMapModel.Current.WorkingSession;
-                if (CadastralMapModel.Current.Rollback(s))
-                {
-                    c.FinishCommand(this);
-                    return true;
-                }
-
-                MessageBox.Show("Nothing to undo from current session.");
+                c.FinishCommand(this);
+                return true;
             }
 
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-
-            c.AbortCommand(this);
-            return false;
+            MessageBox.Show("Nothing to undo from current session.");
         }
+
+        catch (Exception e)
+        {
+            MessageBox.Show(e.Message);
+        }
+
+        c.AbortCommand(this);
+        return false;
     }
 }

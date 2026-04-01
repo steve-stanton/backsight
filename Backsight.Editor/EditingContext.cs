@@ -13,18 +13,17 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <summary>
+/// Something that keeps track of changes arising from edits.
+/// Base class for <see cref="UpdateEditingContext"/> and <see cref="LoadingContext"/>
+/// </summary>
+abstract class EditingContext
 {
     /// <summary>
-    /// Something that keeps track of changes arising from edits.
-    /// Base class for <see cref="UpdateEditingContext"/> and <see cref="LoadingContext"/>
+    /// Remembers a modification to the position of a point.
     /// </summary>
-    abstract class EditingContext
-    {
-        /// <summary>
-        /// Remembers a modification to the position of a point.
-        /// </summary>
-        /// <param name="point">The point that is about to be modified</param>
-        abstract internal void RegisterChange(PointFeature p);
-    }
+    /// <param name="point">The point that is about to be modified</param>
+    abstract internal void RegisterChange(PointFeature p);
 }

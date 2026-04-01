@@ -13,131 +13,127 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
 using System.Data;
-
 using Backsight.Environment;
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <summary>
+/// A row of miscellaneous attribute data
+/// </summary>
+class Row : IPossibleList<Row>
 {
+    #region Class data
+
     /// <summary>
-    /// A row of miscellaneous attribute data
+    /// The ID for the row
     /// </summary>
-    class Row : IPossibleList<Row>
+    readonly FeatureId m_Id;
+
+    /// <summary>
+    /// The definition of the table this row is part of 
+    /// </summary>
+    readonly ITable m_Table;
+
+    /// <summary>
+    /// The data for the row 
+    /// </summary>
+    readonly DataRow m_Data;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Row"/> class,
+    /// forming a two-way association with the ID
+    /// </summary>
+    /// <param name="id">The ID for the row (not null). Modified to refer to
+    /// the newly created <c>Row</c> object.</param>
+    /// <param name="table">The definition of the table this row is part of (not null).</param>
+    /// <param name="data">Data for the row (not null).</param>
+    /// <exception cref="ArgumentNullException">If any parameter is null</exception>
+    internal Row(FeatureId id, ITable table, DataRow data)
     {
-        #region Class data
+        if (id == null || table == null || data == null)
+            throw new ArgumentNullException();
 
-        /// <summary>
-        /// The ID for the row
-        /// </summary>
-        readonly FeatureId m_Id;
+        m_Id = id;
+        m_Table = table;
+        m_Data = data;
 
-        /// <summary>
-        /// The definition of the table this row is part of 
-        /// </summary>
-        readonly ITable m_Table;
+        // Relate the ID to this row
+        id.AddReference(this);
+    }
 
-        /// <summary>
-        /// The data for the row 
-        /// </summary>
-        readonly DataRow m_Data;
+    #endregion
 
-        #endregion
+    #region Implement IPossibleList<Row>
 
-        #region Constructors
+    public int Count { get { return 1; } }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Row"/> class,
-        /// forming a two-way association with the ID
-        /// </summary>
-        /// <param name="id">The ID for the row (not null). Modified to refer to
-        /// the newly created <c>Row</c> object.</param>
-        /// <param name="table">The definition of the table this row is part of (not null).</param>
-        /// <param name="data">Data for the row (not null).</param>
-        /// <exception cref="ArgumentNullException">If any parameter is null</exception>
-        internal Row(FeatureId id, ITable table, DataRow data)
+    public Row this[int index]
+    {
+        get
         {
-            if (id == null || table == null || data == null)
-                throw new ArgumentNullException();
+            if (index!=0)
+                throw new ArgumentOutOfRangeException();
 
-            m_Id = id;
-            m_Table = table;
-            m_Data = data;
-
-            // Relate the ID to this row
-            id.AddReference(this);
+            return this;
         }
+    }
 
-        #endregion
+    public IEnumerator<Row> GetEnumerator()
+    {
+        yield return this;
+    }
 
-        #region Implement IPossibleList<Row>
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator(); // the other one
+    }
 
-        public int Count { get { return 1; } }
+    public IPossibleList<Row> Add(Row thing)
+    {
+        return new BasicList<Row>(this, thing);
+    }
 
-        public Row this[int index]
-        {
-            get
-            {
-                if (index!=0)
-                    throw new ArgumentOutOfRangeException();
+    public IPossibleList<Row> Remove(Row thing)
+    {
+        if (!Object.ReferenceEquals(this, thing))
+            throw new ArgumentException();
 
-                return this;
-            }
-        }
+        return null;
+    }
 
-        public IEnumerator<Row> GetEnumerator()
-        {
-            yield return this;
-        }
+    #endregion
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator(); // the other one
-        }
+    internal Row Extract(ExTranslation xref, Feature xfeat)
+    {
+        throw new NotImplementedException("Row.Extract");
+    }
 
-        public IPossibleList<Row> Add(Row thing)
-        {
-            return new BasicList<Row>(this, thing);
-        }
+    /// <summary>
+    /// The ID for the row
+    /// </summary>
+    internal FeatureId Id
+    {
+        get { return m_Id; }
+    }
 
-        public IPossibleList<Row> Remove(Row thing)
-        {
-            if (!Object.ReferenceEquals(this, thing))
-                throw new ArgumentException();
+    /// <summary>
+    /// The definition of the table this row is part of 
+    /// </summary>
+    internal ITable Table
+    {
+        get { return m_Table; }
+    }
 
-            return null;
-        }
-
-        #endregion
-
-        internal Row Extract(ExTranslation xref, Feature xfeat)
-        {
-            throw new NotImplementedException("Row.Extract");
-        }
-
-        /// <summary>
-        /// The ID for the row
-        /// </summary>
-        internal FeatureId Id
-        {
-            get { return m_Id; }
-        }
-
-        /// <summary>
-        /// The definition of the table this row is part of 
-        /// </summary>
-        internal ITable Table
-        {
-            get { return m_Table; }
-        }
-
-        /// <summary>
-        /// The data for the row 
-        /// </summary>
-        internal DataRow Data
-        {
-            get { return m_Data; }
-        }
+    /// <summary>
+    /// The data for the row 
+    /// </summary>
+    internal DataRow Data
+    {
+        get { return m_Data; }
     }
 }

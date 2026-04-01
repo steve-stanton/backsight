@@ -13,95 +13,92 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Environment;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <summary>
+/// Dialog used to obtain the entity type that corresponds to an externally defined alias.
+/// </summary>
+public partial class EntityTranslationForm : Form
 {
+    #region Class data
+
     /// <summary>
-    /// Dialog used to obtain the entity type that corresponds to an externally defined alias.
+    /// The feature code that needs to be translated.
     /// </summary>
-    public partial class EntityTranslationForm : Form
+    readonly string m_Alias;
+
+    /// <summary>
+    /// The spatial type(s) the translation relates to.
+    /// </summary>
+    readonly SpatialType m_Type;
+
+    /// <summary>
+    /// The selected entity type. On return, this will normally be not null.
+    /// The only exception is a situation where there were no suitable entity
+    /// types for the user to select.
+    /// </summary>
+    IEntity m_Result;
+
+    #endregion
+
+    #region Constructors
+
+    internal EntityTranslationForm(string alias, SpatialType type)
     {
-        #region Class data
+        InitializeComponent();
 
-        /// <summary>
-        /// The feature code that needs to be translated.
-        /// </summary>
-        readonly string m_Alias;
+        m_Alias = alias;
+        m_Type = type;
+        m_Result = null;
+    }
 
-        /// <summary>
-        /// The spatial type(s) the translation relates to.
-        /// </summary>
-        readonly SpatialType m_Type;
+    #endregion
 
-        /// <summary>
-        /// The selected entity type. On return, this will normally be not null.
-        /// The only exception is a situation where there were no suitable entity
-        /// types for the user to select.
-        /// </summary>
-        IEntity m_Result;
+    /// <summary>
+    /// The selected entity type (may be null if there are no suitable entity
+    /// types to select).
+    /// </summary>
+    internal IEntity Result
+    {
+        get { return m_Result; }
+    }
 
-        #endregion
+    private void EntityTranslationForm_Shown(object sender, EventArgs e)
+    {
+        unknownTextBox.Text = m_Alias;
 
-        #region Constructors
+        IEntity[] ents = EnvironmentContainer.EntityTypes(m_Type);
+        listBox.Items.AddRange(ents);
+    }
 
-        internal EntityTranslationForm(string alias, SpatialType type)
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        if (listBox.SelectedIndex<0 && listBox.Items.Count>0)
         {
-            InitializeComponent();
-
-            m_Alias = alias;
-            m_Type = type;
-            m_Result = null;
+            MessageBox.Show("You must first select an entity type from the list.");
+            return;
         }
 
-        #endregion
+        m_Result = (IEntity)listBox.SelectedItem;
+        Close();
+    }
 
-        /// <summary>
-        /// The selected entity type (may be null if there are no suitable entity
-        /// types to select).
-        /// </summary>
-        internal IEntity Result
+    private void EntityTranslationForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        if (m_Result==null && listBox.Items.Count>0)
         {
-            get { return m_Result; }
+            MessageBox.Show("You must select an entity type from the list.");
+            e.Cancel = true;
         }
+    }
 
-        private void EntityTranslationForm_Shown(object sender, EventArgs e)
-        {
-            unknownTextBox.Text = m_Alias;
-
-            IEntity[] ents = EnvironmentContainer.EntityTypes(m_Type);
-            listBox.Items.AddRange(ents);
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            if (listBox.SelectedIndex<0 && listBox.Items.Count>0)
-            {
-                MessageBox.Show("You must first select an entity type from the list.");
-                return;
-            }
-
-            m_Result = (IEntity)listBox.SelectedItem;
+    private void listBox_DoubleClick(object sender, EventArgs e)
+    {
+        m_Result = (listBox.SelectedItem as IEntity);
+        if (m_Result!=null)
             Close();
-        }
-
-        private void EntityTranslationForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (m_Result==null && listBox.Items.Count>0)
-            {
-                MessageBox.Show("You must select an entity type from the list.");
-                e.Cancel = true;
-            }
-        }
-
-        private void listBox_DoubleClick(object sender, EventArgs e)
-        {
-            m_Result = (listBox.SelectedItem as IEntity);
-            if (m_Result!=null)
-                Close();
-        }
     }
 }

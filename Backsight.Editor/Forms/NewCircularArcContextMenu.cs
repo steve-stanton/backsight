@@ -13,50 +13,49 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Forms;
 using Backsight.Editor.UI;
+using System.ComponentModel;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" on="07-JAN-2008" />
+/// <summary>
+/// Context menu for the <see cref="NewCircularArcUI"/>
+/// </summary>
+partial class NewCircularArcContextMenu : ContextMenuStrip
 {
-    /// <written by="Steve Stanton" on="07-JAN-2008" />
+    #region Constructors
+
     /// <summary>
-    /// Context menu for the <see cref="NewCircularArcUI"/>
+    /// Creates a new <c>NewCircularArcContextMenu</c>, wiring each menuitem to the specified UI.
     /// </summary>
-    partial class NewCircularArcContextMenu : ContextMenuStrip
+    /// <param name="ui">The user interface displaying this context menu</param>
+    internal NewCircularArcContextMenu(NewCircularArcUI ui)
     {
-        #region Constructors
+        InitializeComponent();
 
-        /// <summary>
-        /// Creates a new <c>NewCircularArcContextMenu</c>, wiring each menuitem to the specified UI.
-        /// </summary>
-        /// <param name="ui">The user interface displaying this context menu</param>
-        internal NewCircularArcContextMenu(NewCircularArcUI ui)
+        new UserAction(ctxSpecifyId, ui.SpecifyId);
+        new UserAction(ctxShortArc, ui.ShortArc);
+        new UserAction(ctxLongArc, ui.LongArc);
+        new UserAction(ctxCancel, ui.Cancel);
+    }
+
+    #endregion
+
+    /// <summary>
+    /// Is the "Short Arc" menuitem currently checked? If true, the "Long Arc" menuitem
+    /// should be unchecked (and vice versa).
+    /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    internal bool IsShortArc
+    {
+        get { return ctxShortArc.Checked; }
+        set
         {
-            InitializeComponent();
-
-            new UserAction(ctxSpecifyId, ui.SpecifyId);
-            new UserAction(ctxShortArc, ui.ShortArc);
-            new UserAction(ctxLongArc, ui.LongArc);
-            new UserAction(ctxCancel, ui.Cancel);
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Is the "Short Arc" menuitem currently checked? If true, the "Long Arc" menuitem
-        /// should be unchecked (and vice versa).
-        /// </summary>
-        internal bool IsShortArc
-        {
-            get { return ctxShortArc.Checked; }
-            set
-            {
-                ctxShortArc.Checked = value;
-                ctxLongArc.Checked = !value;
-            }
+            ctxShortArc.Checked = value;
+            ctxLongArc.Checked = !value;
         }
     }
 }

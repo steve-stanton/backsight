@@ -13,24 +13,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="30-AUG-2007" />
+/// <summary>
+/// Defines the terminal positions for a section of a line.
+/// </summary>
+interface ISection
 {
-    /// <written by="Steve Stanton" on="30-AUG-2007" />
     /// <summary>
-    /// Defines the terminal positions for a section of a line.
+    /// The start position for the section.
     /// </summary>
-    interface ISection
-    {
-        /// <summary>
-        /// The start position for the section.
-        /// </summary>
-        ITerminal From { get; }
+    ITerminal From { get; }
 
-        /// <summary>
-        /// The end position for the section.
-        /// </summary>
-        ITerminal To { get; }
-    }
+    /// <summary>
+    /// The end position for the section.
+    /// </summary>
+    ITerminal To { get; }
 }

@@ -13,56 +13,52 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="29-OCT-2007" />
+/// <summary>
+/// Topology for a line that seperates a pair of polygons.
+/// </summary>
+/// <seealso cref="SectionDivider"/>
+class LineDivider : LineTopology
 {
-    /// <written by="Steve Stanton" on="29-OCT-2007" />
+    #region Class data
+
     /// <summary>
-    /// Topology for a line that seperates a pair of polygons.
+    /// The polygon ring to the left of this divider.
     /// </summary>
-    /// <seealso cref="SectionDivider"/>
-    class LineDivider : LineTopology
+    Ring m_Left;
+
+    /// <summary>
+    /// The polygon ring to the right of this divider.
+    /// </summary>
+    Ring m_Right;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Creates a new <c>Divider</c> that relates to the specified line.
+    /// </summary>
+    /// <param name="line">The line the topology relates to.</param>
+    internal LineDivider(LineFeature line)
+        : base(line)
     {
-        #region Class data
+        m_Left = m_Right = null;
+    }
 
-        /// <summary>
-        /// The polygon ring to the left of this divider.
-        /// </summary>
-        Ring m_Left;
+    #endregion
 
-        /// <summary>
-        /// The polygon ring to the right of this divider.
-        /// </summary>
-        Ring m_Right;
+    public override Ring Left // IDivider
+    {
+        get { return m_Left; }
+        set { m_Left = value; }
+    }
 
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>Divider</c> that relates to the specified line.
-        /// </summary>
-        /// <param name="line">The line the topology relates to.</param>
-        internal LineDivider(LineFeature line)
-            : base(line)
-        {
-            m_Left = m_Right = null;
-        }
-
-        #endregion
-
-        public override Ring Left // IDivider
-        {
-            get { return m_Left; }
-            set { m_Left = value; }
-        }
-
-        public override Ring Right // IDivider
-        {
-            get { return m_Right; }
-            set { m_Right = value; }
-        }
+    public override Ring Right // IDivider
+    {
+        get { return m_Right; }
+        set { m_Right = value; }
     }
 }

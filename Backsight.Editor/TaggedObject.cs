@@ -13,42 +13,39 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <summary>
+/// Some sort of object that is tagged with something
+/// </summary>
+/// <typeparam name="S">The type of the object</typeparam>
+/// <typeparam name="T">The type for the tag</typeparam>
+class TaggedObject<S,T>
 {
-    /// <summary>
-    /// Some sort of object that is tagged with something
-    /// </summary>
-    /// <typeparam name="S">The type of the object</typeparam>
-    /// <typeparam name="T">The type for the tag</typeparam>
-    class TaggedObject<S,T>
+    #region Class data
+
+    readonly S m_Thing;
+    readonly T m_Tag;
+
+    #endregion
+
+    #region Constructors
+
+    internal TaggedObject(S thing, T tag)
     {
-        #region Class data
+        m_Thing = thing;
+        m_Tag = tag;
+    }
 
-        readonly S m_Thing;
-        readonly T m_Tag;
+    #endregion
 
-        #endregion
+    internal T Tag
+    {
+        get { return m_Tag; }
+    }
 
-        #region Constructors
-
-        internal TaggedObject(S thing, T tag)
-        {
-            m_Thing = thing;
-            m_Tag = tag;
-        }
-
-        #endregion
-
-        internal T Tag
-        {
-            get { return m_Tag; }
-        }
-
-        internal S Thing
-        {
-            get { return m_Thing; }
-        }
+    internal S Thing
+    {
+        get { return m_Thing; }
     }
 }

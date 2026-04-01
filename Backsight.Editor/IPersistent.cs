@@ -13,24 +13,23 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <written by="Steve Stanton" on="31-OCT-2011" />
+/// <summary>
+/// Something that can be persisted using an implementation of <see cref="EditSerializer"/>.
+/// </summary>
+/// <remarks>
+/// Classes that implement this interface are expected to handle deserialization by
+/// providing a constructor that accepts an instance of <see cref="EditDeserializer"/>
+/// (the intention is to make it possible to tag class members as <c>readonly</c> where
+/// that is applicable). Unfortunately, you can't specify constructors as part of an interface.
+/// </remarks>
+interface IPersistent
 {
-    /// <written by="Steve Stanton" on="31-OCT-2011" />
     /// <summary>
-    /// Something that can be persisted using an implementation of <see cref="EditSerializer"/>.
+    /// Writes the content of this instance to a persistent storage area.
     /// </summary>
-    /// <remarks>
-    /// Classes that implement this interface are expected to handle deserialization by
-    /// providing a constructor that accepts an instance of <see cref="EditDeserializer"/>
-    /// (the intention is to make it possible to tag class members as <c>readonly</c> where
-    /// that is applicable). Unfortunately, you can't specify constructors as part of an interface.
-    /// </remarks>
-    interface IPersistent
-    {
-        /// <summary>
-        /// Writes the content of this instance to a persistent storage area.
-        /// </summary>
-        /// <param name="editSerializer">The mechanism for storing content.</param>
-        void WriteData(EditSerializer editSerializer);
-    }
+    /// <param name="editSerializer">The mechanism for storing content.</param>
+    void WriteData(EditSerializer editSerializer);
 }

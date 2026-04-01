@@ -13,14 +13,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <summary>
+/// An ID server that is suitable for a single user.
+/// </summary>
+class PersonalIdServer
 {
-    /// <summary>
-    /// An ID server that is suitable for a single user.
-    /// </summary>
-    class PersonalIdServer
-    {
-    }
 }

@@ -13,21 +13,18 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-
 using Backsight.Forms;
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <written by="Steve Stanton" on="02-FEB-2007" />
+/// <summary>
+/// Some sort of editing action provided by the Cadastral Editor.
+/// </summary>
+interface IEditingAction : IUserAction
 {
-	/// <written by="Steve Stanton" on="02-FEB-2007" />
     /// <summary>
-    /// Some sort of editing action provided by the Cadastral Editor.
+    /// The unique ID that identifies the editing action.
     /// </summary>
-    interface IEditingAction : IUserAction
-    {
-        /// <summary>
-        /// The unique ID that identifies the editing action.
-        /// </summary>
-        EditingActionId EditId { get; }
-    }
+    EditingActionId EditId { get; }
 }

@@ -13,75 +13,70 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Drawing;
-
 using Backsight.Editor.Operations;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" on="06-MAY-2009" was="CdOpList" />
+/// <summary>
+/// Dialog for listing a series of edits (used to list dependencies from
+/// <see cref="UpdateForm"/>).
+/// </summary>
+/// <seealso cref="PickPredecessorForm"/>
+partial class ListOperationsForm : Form
 {
-    /// <written by="Steve Stanton" on="06-MAY-2009" was="CdOpList" />
+    #region Class data
+
     /// <summary>
-    /// Dialog for listing a series of edits (used to list dependencies from
-    /// <see cref="UpdateForm"/>).
+    /// The edits to display
     /// </summary>
-    /// <seealso cref="PickPredecessorForm"/>
-    partial class ListOperationsForm : Form
+    readonly Operation[] m_Edits;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ListOperationsForm"/> class.
+    /// </summary>
+    /// <param name="edits">The edits to display</param>
+    internal ListOperationsForm(Operation[] edits)
     {
-        #region Class data
+        InitializeComponent();
+        m_Edits = edits;
+    }
 
-        /// <summary>
-        /// The edits to display
-        /// </summary>
-        readonly Operation[] m_Edits;
+    #endregion
 
-        #endregion
+    private void ListOperationsForm_Shown(object sender, EventArgs e)
+    {
+        grid.RowCount = m_Edits.Length;
 
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ListOperationsForm"/> class.
-        /// </summary>
-        /// <param name="edits">The edits to display</param>
-        internal ListOperationsForm(Operation[] edits)
+        for (int i=0; i<m_Edits.Length; i++)
         {
-            InitializeComponent();
-            m_Edits = edits;
-        }
+            Operation op = m_Edits[i];
+            DataGridViewRow row = grid.Rows[i];
 
-        #endregion
+            row.Tag = op;
+            row.Cells["opIdColumn"].Value = op.InternalId;
+            row.Cells["operationColumn"].Value = op.Name;
+            row.Cells["createdColumn"].Value = op.Session.StartTime.ToShortDateString();
+            row.Cells["editorColumn"].Value = op.Session.User;
 
-        private void ListOperationsForm_Shown(object sender, EventArgs e)
-        {
-            grid.RowCount = m_Edits.Length;
-
-            for (int i=0; i<m_Edits.Length; i++)
+            // If the line was created by a connection path, display the precision.
+            if (op is PathOperation)
             {
-                Operation op = m_Edits[i];
-                DataGridViewRow row = grid.Rows[i];
-
-                row.Tag = op;
-                row.Cells["opIdColumn"].Value = op.InternalId;
-                row.Cells["operationColumn"].Value = op.Name;
-                row.Cells["createdColumn"].Value = op.Session.StartTime.ToShortDateString();
-                row.Cells["editorColumn"].Value = op.Session.User;
-
-                // If the line was created by a connection path, display the precision.
-                if (op is PathOperation)
-                {
-                    PathOperation path = (PathOperation)op;
-                    row.Cells["precisionColumn"].Value = path.GetPrecision();
-                }
+                PathOperation path = (PathOperation)op;
+                row.Cells["precisionColumn"].Value = path.GetPrecision();
             }
-
-            grid.CurrentCell = null;
         }
 
-        private void closeButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
+        grid.CurrentCell = null;
+    }
+
+    private void closeButton_Click(object sender, EventArgs e)
+    {
+        Close();
     }
 }

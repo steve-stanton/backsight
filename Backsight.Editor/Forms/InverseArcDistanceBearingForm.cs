@@ -13,55 +13,51 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Windows.Forms;
+namespace Backsight.Editor.Forms;
 
-namespace Backsight.Editor.Forms
+/// <summary>
+/// Inverse distance calculator for circular arcs (with bearings to the center of
+/// the circle)
+/// </summary>
+partial class InverseArcDistanceBearingForm : InverseArcDistanceForm
 {
-    /// <summary>
-    /// Inverse distance calculator for circular arcs (with bearings to the center of
-    /// the circle)
-    /// </summary>
-    partial class InverseArcDistanceBearingForm : InverseArcDistanceForm
+    #region Constructors
+
+    internal InverseArcDistanceBearingForm()
     {
-        #region Constructors
+        InitializeComponent();
+    }
 
-        internal InverseArcDistanceBearingForm()
+    #endregion
+
+    internal override void ShowResult()
+    {
+        base.ShowResult();
+
+        // Now show the bearings too. Don't bother if we've
+        // only got 1 point, since that may involve more than
+        // one circle (also true when we have 2 points, but in
+        // that case, we use the first circle arbitrarily).
+
+        if (Point1!=null && Point2!=null)
         {
-            InitializeComponent();
+            // It's conceivable that the two points share more than
+            // one common circle. For now, just pick off the first
+            // common circle and use that.
+            Circle circle = FirstCommonCircle;
+            if (circle==null)
+                return;
+
+            // Get the bearing from the center to both points
+            double bear1 = Geom.BearingInRadians(Point1, circle.Center);
+            double bear2 = Geom.BearingInRadians(Point2, circle.Center);
+
+            bearing1TextBox.Text = RadianValue.AsString(bear1);
+            bearing2TextBox.Text = RadianValue.AsString(bear2);
         }
-
-        #endregion
-
-        internal override void ShowResult()
+        else
         {
-            base.ShowResult();
-
-            // Now show the bearings too. Don't bother if we've
-            // only got 1 point, since that may involve more than
-            // one circle (also true when we have 2 points, but in
-            // that case, we use the first circle arbitrarily).
-
-            if (Point1!=null && Point2!=null)
-            {
-                // It's conceivable that the two points share more than
-                // one common circle. For now, just pick off the first
-                // common circle and use that.
-                Circle circle = FirstCommonCircle;
-                if (circle==null)
-                    return;
-
-                // Get the bearing from the center to both points
-                double bear1 = Geom.BearingInRadians(Point1, circle.Center);
-                double bear2 = Geom.BearingInRadians(Point2, circle.Center);
-
-                bearing1TextBox.Text = RadianValue.AsString(bear1);
-                bearing2TextBox.Text = RadianValue.AsString(bear2);
-            }
-            else
-            {
-                bearing1TextBox.Text = bearing2TextBox.Text = "<no bearing>";
-            }
+            bearing1TextBox.Text = bearing2TextBox.Text = "<no bearing>";
         }
     }
 }

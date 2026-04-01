@@ -13,75 +13,72 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Environment;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+public partial class GetLayerForm : Form
 {
-    public partial class GetLayerForm : Form
+    private ILayer m_SelectedLayer;
+
+    public GetLayerForm()
     {
-        private ILayer m_SelectedLayer;
+        InitializeComponent();
+        m_SelectedLayer = null;
+    }
 
-        public GetLayerForm()
+    public GetLayerForm(ILayer layer) : this()
+    {
+        m_SelectedLayer = layer;
+    }
+
+    internal ILayer SelectedLayer
+    {
+        get { return m_SelectedLayer; }
+    }
+
+    private void GetLayerForm_Shown(object sender, EventArgs e)
+    {
+        // Load the layers
+        ILayer[] layers = EnvironmentContainer.Current.Layers;
+        listBox.Items.AddRange(layers);
+
+        // Remove first item if it's blank
+        if (listBox.Items.Count > 0 && listBox.Items[0].ToString().Length==0)
+            listBox.Items.RemoveAt(0);
+
+        if (m_SelectedLayer!=null)
+            listBox.SelectedItem = Array.Find<ILayer>(layers, layer => layer.Id==m_SelectedLayer.Id);
+    }
+
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        this.DialogResult = DialogResult.Cancel;
+        Close();
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        m_SelectedLayer = (ILayer)listBox.SelectedItem;
+        if (m_SelectedLayer==null)
         {
-            InitializeComponent();
-            m_SelectedLayer = null;
+            MessageBox.Show("You must first select the map layer");
+            listBox.Focus();
+            return;
         }
 
-        public GetLayerForm(ILayer layer) : this()
+        this.DialogResult = DialogResult.OK;
+        Close();
+    }
+
+    private void listBox_DoubleClick(object sender, EventArgs e)
+    {
+        m_SelectedLayer = (ILayer)listBox.SelectedItem;
+        if (m_SelectedLayer!=null)
         {
-            m_SelectedLayer = layer;
-        }
-
-        internal ILayer SelectedLayer
-        {
-            get { return m_SelectedLayer; }
-        }
-
-        private void GetLayerForm_Shown(object sender, EventArgs e)
-        {
-            // Load the layers
-            ILayer[] layers = EnvironmentContainer.Current.Layers;
-            listBox.Items.AddRange(layers);
-
-            // Remove first item if it's blank
-            if (listBox.Items.Count > 0 && listBox.Items[0].ToString().Length==0)
-                listBox.Items.RemoveAt(0);
-
-            if (m_SelectedLayer!=null)
-                listBox.SelectedItem = Array.Find<ILayer>(layers, layer => layer.Id==m_SelectedLayer.Id);
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            m_SelectedLayer = (ILayer)listBox.SelectedItem;
-            if (m_SelectedLayer==null)
-            {
-                MessageBox.Show("You must first select the map layer");
-                listBox.Focus();
-                return;
-            }
-
             this.DialogResult = DialogResult.OK;
             Close();
-        }
-
-        private void listBox_DoubleClick(object sender, EventArgs e)
-        {
-            m_SelectedLayer = (ILayer)listBox.SelectedItem;
-            if (m_SelectedLayer!=null)
-            {
-                this.DialogResult = DialogResult.OK;
-                Close();
-            }
         }
     }
 }

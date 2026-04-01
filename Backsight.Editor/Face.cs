@@ -13,67 +13,64 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="16-MAY-1999" />
+/// <summary>
+///	A polygon ring divider that is associated with a facing direction. This is a transient
+///	class that is utilized when a new polygon is being created.
+/// </summary>
+class Face : IEquatable<Face>
 {
-    /// <written by="Steve Stanton" on="16-MAY-1999" />
+    #region Class data
+
     /// <summary>
-    ///	A polygon ring divider that is associated with a facing direction. This is a transient
-    ///	class that is utilized when a new polygon is being created.
+    /// What divider?
     /// </summary>
-    class Face : IEquatable<Face>
+    readonly IDivider m_Divider;
+
+    /// <summary>
+    /// Is it facing left?
+    /// </summary>
+    readonly bool m_IsLeft;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Creates a new <c>Face</c> for the specified divider.
+    /// </summary>
+    internal Face(IDivider d, bool isLeft)
     {
-        #region Class data
-
-        /// <summary>
-        /// What divider?
-        /// </summary>
-        readonly IDivider m_Divider;
-
-        /// <summary>
-        /// Is it facing left?
-        /// </summary>
-        readonly bool m_IsLeft;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>Face</c> for the specified divider.
-        /// </summary>
-        internal Face(IDivider d, bool isLeft)
-        {
-            m_Divider = d;
-            m_IsLeft = isLeft;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// The divider involved.
-        /// </summary>
-        internal IDivider Divider
-        {
-            get { return m_Divider; }
-        }
-
-        /// <summary>
-        /// Is the polygon involved to the left of the divider?
-        /// </summary>
-        internal bool IsLeft
-        {
-            get { return m_IsLeft; }
-        }
-
-        #region IEquatable<Face> Members
-
-        public bool Equals(Face that)
-        {
-            return (Object.ReferenceEquals(this.m_Divider, that.m_Divider) && this.m_IsLeft==that.m_IsLeft);
-        }
-
-        #endregion
+        m_Divider = d;
+        m_IsLeft = isLeft;
     }
+
+    #endregion
+
+    /// <summary>
+    /// The divider involved.
+    /// </summary>
+    internal IDivider Divider
+    {
+        get { return m_Divider; }
+    }
+
+    /// <summary>
+    /// Is the polygon involved to the left of the divider?
+    /// </summary>
+    internal bool IsLeft
+    {
+        get { return m_IsLeft; }
+    }
+
+    #region IEquatable<Face> Members
+
+    public bool Equals(Face that)
+    {
+        return (Object.ReferenceEquals(this.m_Divider, that.m_Divider) && this.m_IsLeft==that.m_IsLeft);
+    }
+
+    #endregion
 }

@@ -13,427 +13,422 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-using Backsight.Geometry;
-
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="13-FEB-1998" was="CeXData" />
+/// <summary>
+/// Information about an intersection.
+/// </summary>
+public class IntersectionData : IComparable<IntersectionData>
 {
-	/// <written by="Steve Stanton" on="13-FEB-1998" was="CeXData" />
+    #region Class data
+
     /// <summary>
-    /// Information about an intersection.
+    /// Initial intersection point.
     /// </summary>
-    public class IntersectionData : IComparable<IntersectionData>
+    IPosition m_X1;
+
+    /// <summary>
+    /// Secondary intersection point.
+    /// </summary>
+    IPosition m_X2;
+
+    /// <summary>
+    /// A value to be used in sorting the intersections.
+    /// </summary>
+    double m_SortValue;
+
+    /// <summary>
+    /// The way this intersect info relates to a primary line.
+    /// </summary>
+    IntersectionType m_Context1;
+
+    /// <summary>
+    /// The way this intersect info relates to a secondary line.
+    /// </summary>
+    IntersectionType m_Context2;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Default constructor
+    /// </summary>
+    IntersectionData()
     {
-        #region Class data
+        Reset();
+    }
 
-        /// <summary>
-        /// Initial intersection point.
-        /// </summary>
-        IPosition m_X1;
+    /// <summary>
+    /// Constructor for a simple intersection (with a default sort value of 0.0)
+    /// </summary>
+    /// <param name="x">The position of the intersection.</param>
+    internal IntersectionData(IPosition x)
+    {
+        m_X1 = x;
+        m_X2 = null;
+        m_SortValue = 0.0;
+        m_Context1 = 0;
+        m_Context2 = 0;
+    }
 
-        /// <summary>
-        /// Secondary intersection point.
-        /// </summary>
-        IPosition m_X2;
+    /// <summary>
+    /// Constructor for a simple intersection (with a default sort value of 0.0)
+    /// </summary>
+    /// <param name="xi">X-value of intersection.</param>
+    /// <param name="yi">Y-value of intersection.</param>
+    IntersectionData(double xi, double yi)
+        : this(xi, yi, 0.0)
+    {
+    }
 
-        /// <summary>
-        /// A value to be used in sorting the intersections.
-        /// </summary>
-        double m_SortValue;
+    /// <summary>
+    /// Constructor for simple intersection with a specific sort value.
+    /// </summary>
+    /// <param name="xi">X-value of intersection.</param>
+    /// <param name="yi">Y-value of intersection.</param>
+    /// <param name="sortval">Some value to associate with the intersection</param>
+    internal IntersectionData(double xi, double yi, double sortval)
+    {
+        m_X1 = new Position(xi, yi);
+        m_X2 = null;
+        m_SortValue = sortval;
+        m_Context1 = 0;
+        m_Context2 = 0;
+    }
 
-        /// <summary>
-        /// The way this intersect info relates to a primary line.
-        /// </summary>
-        IntersectionType m_Context1;
+    /// <summary>
+    /// Constructor for a grazing intersection. If the supplied positions are
+    /// actually closer than the coordinate resolution (1 micron), a simple
+    /// intersection will be defined.
+    /// </summary>
+    /// <param name="x1">X-value of 1st intersection.</param>
+    /// <param name="y1">Y-value of 1st intersection.</param>
+    /// <param name="x2">X-value of 2nd intersection.</param>
+    /// <param name="y2">Y-value of 2nd intersection.</param>
+    internal IntersectionData(double x1, double y1, double x2, double y2)
+    {
+        IPointGeometry p1 = new PointGeometry(x1, y1);
+        IPointGeometry p2 = new PointGeometry(x2, y2);
 
-        /// <summary>
-        /// The way this intersect info relates to a secondary line.
-        /// </summary>
-        IntersectionType m_Context2;
+        m_X1 = p1;
+        if (!p1.IsCoincident(p2))
+            m_X2 = p2;
 
-        #endregion
+        m_SortValue = 0.0;
+        m_Context1 = 0;
+        m_Context2 = 0;
+    }
 
-        #region Constructors
+    /// <summary>
+    /// Constructor for a grazing intersection. If the supplied positions are
+    /// actually closer than the coordinate resolution (1 micron), a simple
+    /// intersection will be defined.
+    /// </summary>
+    /// <param name="p1">The 1st intersection.</param>
+    /// <param name="p2">The 2nd intersection.</param>
+    IntersectionData(IPointGeometry p1, IPointGeometry p2)
+    {
+        m_X1 = p1;
+        if (!p1.IsCoincident(p2))
+            m_X2 = p2;
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        IntersectionData()
+        m_SortValue = 0.0;
+        m_Context1 = 0;
+        m_Context2 = 0;
+    }
+
+    #endregion
+
+    internal bool IsGraze
+    {
+        get { return (m_X1!=null && m_X2!=null); }
+    }
+
+    internal double SortValue
+    {
+        get { return m_SortValue; }
+        set { m_SortValue = value; }
+    }
+
+    #region IComparable<IntersectionData> Members
+
+    /// <summary>
+    /// Collating function ensures that grazes sort to the end if the sort
+    /// values are the same.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public int CompareTo(IntersectionData other)
+    {
+        if (Math.Abs(m_SortValue - other.m_SortValue) < Constants.TINY)
+            return (this.IsGraze ? 1 : 0); // THIS sorts 1st if it is NOT a graze
+        else
+            return m_SortValue.CompareTo(other.m_SortValue);
+    }
+
+    #endregion
+
+    internal void Reverse()
+    {
+        IPosition temp = m_X1;
+        m_X1 = m_X2;
+        m_X2 = temp;
+
+        // Not sure why this was commented out...
+        //	UINT2 context = m_Context1;
+        //	m_Context1 = m_Context2;
+        //	m_Context2 = context;
+    }
+
+    /// <summary>
+    /// Reverses the context codes.
+    /// </summary>
+    internal void ReverseContext()
+    {
+        if (m_Context1 != m_Context2)
         {
-            Reset();
+            IntersectionType temp = m_Context1;
+            m_Context1 = m_Context2;
+            m_Context2 = temp;
         }
+    }
 
-        /// <summary>
-        /// Constructor for a simple intersection (with a default sort value of 0.0)
-        /// </summary>
-        /// <param name="x">The position of the intersection.</param>
-        internal IntersectionData(IPosition x)
+    internal IPosition P1
+    {
+        get { return m_X1; }
+    }
+
+    internal IPosition P2
+    {
+        get { return m_X2; }
+    }
+
+    /// <summary>
+    /// Do two lines meet end to end?
+    /// </summary>
+    internal bool IsEndEnd
+    {
+        get
         {
-            m_X1 = x;
-            m_X2 = null;
-            m_SortValue = 0.0;
-            m_Context1 = 0;
-            m_Context2 = 0;
+            IntersectionType mask = (IntersectionType.TouchStart | IntersectionType.TouchEnd);
+            return ((m_Context1 & mask)!=0 && (m_Context2 & mask)!=0);
         }
+    }
 
-        /// <summary>
-        /// Constructor for a simple intersection (with a default sort value of 0.0)
-        /// </summary>
-        /// <param name="xi">X-value of intersection.</param>
-        /// <param name="yi">Y-value of intersection.</param>
-        IntersectionData(double xi, double yi)
-            : this(xi, yi, 0.0)
+    internal bool IsEnd
+    {
+        get { return ((m_Context1 & (IntersectionType.TouchStart | IntersectionType.TouchEnd)) != 0); }
+    }
+
+    internal bool IsStartGraze
+    {
+        get { return ((m_Context1 & IntersectionType.GrazeStart) != 0); }
+    }
+
+    internal bool IsEndGraze
+    {
+        get { return ((m_Context1 & IntersectionType.GrazeEnd) != 0); }
+    }
+
+    internal bool IsInteriorGraze
+    {
+        get { return ((m_Context1 & IntersectionType.GrazeOther) != 0); }
+    }
+
+    internal bool IsTotalGraze
+    {
+        get { return ((m_Context1 & IntersectionType.GrazeTotal) != 0); }
+    }
+
+    internal double GetDeltaSort(IntersectionData other)
+    {
+        return (other.m_SortValue - m_SortValue);
+    }
+
+    /// <summary>
+    /// Return XY position of the 1st intersection. You get back (0,0) if the
+    /// intersection has not been defined.
+    /// </summary>
+    /// <param name="x1">The X-value of the first intersection (0 if none)</param>
+    /// <param name="y1">The Y-value of the first intersection (0 if none)</param>
+    void GetXY1(out double x1, out double y1)
+    {
+        if (m_X1==null)
         {
+            x1 = 0.0;
+            y1 = 0.0;
         }
-
-        /// <summary>
-        /// Constructor for simple intersection with a specific sort value.
-        /// </summary>
-        /// <param name="xi">X-value of intersection.</param>
-        /// <param name="yi">Y-value of intersection.</param>
-        /// <param name="sortval">Some value to associate with the intersection</param>
-        internal IntersectionData(double xi, double yi, double sortval)
+        else
         {
-            m_X1 = new Position(xi, yi);
-            m_X2 = null;
-            m_SortValue = sortval;
-            m_Context1 = 0;
-            m_Context2 = 0;
+            x1 = m_X1.X;
+            y1 = m_X1.Y;
         }
+    }
 
-        /// <summary>
-        /// Constructor for a grazing intersection. If the supplied positions are
-        /// actually closer than the coordinate resolution (1 micron), a simple
-        /// intersection will be defined.
-        /// </summary>
-        /// <param name="x1">X-value of 1st intersection.</param>
-        /// <param name="y1">Y-value of 1st intersection.</param>
-        /// <param name="x2">X-value of 2nd intersection.</param>
-        /// <param name="y2">Y-value of 2nd intersection.</param>
-        internal IntersectionData(double x1, double y1, double x2, double y2)
+    /// <summary>
+    /// Return XY position of the 2nd intersection. You get back (0,0) if the
+    /// intersection has not been defined.
+    /// </summary>
+    /// <param name="x2">The X-value of the first intersection (0 if none)</param>
+    /// <param name="y2">The Y-value of the first intersection (0 if none)</param>
+    void GetXY2(out double x2, out double y2)
+    {
+        if (m_X2==null)
         {
-            IPointGeometry p1 = new PointGeometry(x1, y1);
-            IPointGeometry p2 = new PointGeometry(x2, y2);
-
-            m_X1 = p1;
-            if (!p1.IsCoincident(p2))
-                m_X2 = p2;
-
-            m_SortValue = 0.0;
-            m_Context1 = 0;
-            m_Context2 = 0;
+            x2 = 0.0;
+            y2 = 0.0;
         }
-
-        /// <summary>
-        /// Constructor for a grazing intersection. If the supplied positions are
-        /// actually closer than the coordinate resolution (1 micron), a simple
-        /// intersection will be defined.
-        /// </summary>
-        /// <param name="p1">The 1st intersection.</param>
-        /// <param name="p2">The 2nd intersection.</param>
-        IntersectionData(IPointGeometry p1, IPointGeometry p2)
+        else
         {
-            m_X1 = p1;
-            if (!p1.IsCoincident(p2))
-                m_X2 = p2;
-
-            m_SortValue = 0.0;
-            m_Context1 = 0;
-            m_Context2 = 0;
+            x2 = m_X2.X;
+            y2 = m_X2.Y;
         }
+    }
 
-        #endregion
+    /// <summary>
+    /// Checks if this intersection refers to a specific position.
+    /// The match has to be exact.
+    /// </summary>
+    /// <param name="p">The position to look for</param>
+    /// <returns>True if the position was found.</returns>
+    internal bool IsReferredTo(IPosition p)
+    {
+        // The value used here is intended to be consistent with the use
+        // of 1 micron precision for positions
 
-        internal bool IsGraze
+        if (m_X1!=null && m_X1.IsAt(p, 0.0000009))
+            return true;
+
+        if (m_X2!=null && m_X2.IsAt(p, 0.0000009))
+            return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Resets this intersection so that it has undefined values.
+    /// </summary>
+    internal void Reset()
+    {
+        m_X1 = null;
+        m_X2 = null;
+        m_SortValue = 0.0;
+        m_Context1 = 0;
+        m_Context2 = 0;
+    }
+
+    /// <summary>
+    /// Is this intersection defined? (meaning it has a defined position for the 1st intersection)
+    /// </summary>
+    internal bool IsDefined
+    {
+        get { return (m_X1!=null); }
+    }
+
+    /// <summary>
+    /// Define the relationship that this intersection has to a pair of lines.
+    /// </summary>
+    /// <param name="line1">The 1st line.</param>
+    /// <param name="line2">The 2nd line.</param>
+    internal void SetContext(ILineGeometry line1, ILineGeometry line2)
+    {
+        m_Context1 = 0;
+        m_Context2 = 0;
+
+        if (this.IsGraze)
         {
-            get { return (m_X1!=null && m_X2!=null); }
+            IPointGeometry loc1 = new PointGeometry(m_X1);
+            IPointGeometry loc2 = new PointGeometry(m_X2);
+            m_Context1 = GetContext(loc1,loc2,line1);
+            m_Context2 = GetContext(loc1,loc2,line2);
         }
-
-        internal double SortValue
+        else
         {
-            get { return m_SortValue; }
-            set { m_SortValue = value; }
+            IPointGeometry loc = new PointGeometry(m_X1);
+            m_Context1 = GetContext(loc,line1);
+            m_Context2 = GetContext(loc,line2);
         }
+    }
 
-        #region IComparable<IntersectionData> Members
+    /// <summary>
+    /// Returns the context code for a simple intersection with a line.
+    /// </summary>
+    /// <param name="loc">The location of the intersection.</param>
+    /// <param name="line">The line to compare with.</param>
+    /// <returns>The context code.</returns>
+    static IntersectionType GetContext(IPointGeometry loc, ILineGeometry line)
+    {
+        IntersectionType context = 0;
 
-        /// <summary>
-        /// Collating function ensures that grazes sort to the end if the sort
-        /// values are the same.
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public int CompareTo(IntersectionData other)
+        if (loc.IsCoincident(line.Start))
+            context |= IntersectionType.TouchStart;
+
+        if (loc.IsCoincident(line.End))
+            context |= IntersectionType.TouchEnd;
+
+        if (context==0)
+            context = IntersectionType.TouchOther;
+
+        return context;
+    }
+
+    /// <summary>
+    /// Returns the context code for a grazing intersection with a line.
+    /// </summary>
+    /// <param name="loc1">The 1st intersection.</param>
+    /// <param name="loc2">The 2nd intersection.</param>
+    /// <param name="line">The line the context code is for.</param>
+    /// <returns>The context code.</returns>
+    static IntersectionType GetContext(IPointGeometry loc1, IPointGeometry loc2, ILineGeometry line)
+    {
+        // Get the context of the start and end of the graze.
+        IntersectionType context1 = GetContext(loc1, line);
+        IntersectionType context2 = GetContext(loc2, line);
+
+        if (context1 == IntersectionType.TouchOther)
         {
-            if (Math.Abs(m_SortValue - other.m_SortValue) < Constants.TINY)
-                return (this.IsGraze ? 1 : 0); // THIS sorts 1st if it is NOT a graze
-            else
-                return m_SortValue.CompareTo(other.m_SortValue);
+            if (context2 == IntersectionType.TouchStart)
+                return IntersectionType.GrazeStart;
+
+            if (context2 == IntersectionType.TouchOther)
+                return IntersectionType.GrazeOther;
+
+            return IntersectionType.GrazeEnd;
         }
-
-        #endregion
-
-        internal void Reverse()
+        else if (context1 == IntersectionType.TouchStart)
         {
-            IPosition temp = m_X1;
-            m_X1 = m_X2;
-            m_X2 = temp;
-
-            // Not sure why this was commented out...
-            //	UINT2 context = m_Context1;
-            //	m_Context1 = m_Context2;
-            //	m_Context2 = context;
-        }
-
-        /// <summary>
-        /// Reverses the context codes.
-        /// </summary>
-        internal void ReverseContext()
-        {
-            if (m_Context1 != m_Context2)
-            {
-                IntersectionType temp = m_Context1;
-                m_Context1 = m_Context2;
-                m_Context2 = temp;
-            }
-        }
-
-        internal IPosition P1
-        {
-            get { return m_X1; }
-        }
-
-        internal IPosition P2
-        {
-            get { return m_X2; }
-        }
-
-        /// <summary>
-        /// Do two lines meet end to end?
-        /// </summary>
-        internal bool IsEndEnd
-        {
-            get
-            {
-                IntersectionType mask = (IntersectionType.TouchStart | IntersectionType.TouchEnd);
-                return ((m_Context1 & mask)!=0 && (m_Context2 & mask)!=0);
-            }
-        }
-
-        internal bool IsEnd
-        {
-            get { return ((m_Context1 & (IntersectionType.TouchStart | IntersectionType.TouchEnd)) != 0); }
-        }
-
-        internal bool IsStartGraze
-        {
-            get { return ((m_Context1 & IntersectionType.GrazeStart) != 0); }
-        }
-
-        internal bool IsEndGraze
-        {
-            get { return ((m_Context1 & IntersectionType.GrazeEnd) != 0); }
-        }
-
-        internal bool IsInteriorGraze
-        {
-            get { return ((m_Context1 & IntersectionType.GrazeOther) != 0); }
-        }
-
-        internal bool IsTotalGraze
-        {
-            get { return ((m_Context1 & IntersectionType.GrazeTotal) != 0); }
-        }
-
-        internal double GetDeltaSort(IntersectionData other)
-        {
-            return (other.m_SortValue - m_SortValue);
-        }
-
-        /// <summary>
-        /// Return XY position of the 1st intersection. You get back (0,0) if the
-        /// intersection has not been defined.
-        /// </summary>
-        /// <param name="x1">The X-value of the first intersection (0 if none)</param>
-        /// <param name="y1">The Y-value of the first intersection (0 if none)</param>
-        void GetXY1(out double x1, out double y1)
-        {
-            if (m_X1==null)
-            {
-                x1 = 0.0;
-                y1 = 0.0;
-            }
-            else
-            {
-                x1 = m_X1.X;
-                y1 = m_X1.Y;
-            }
-        }
-
-        /// <summary>
-        /// Return XY position of the 2nd intersection. You get back (0,0) if the
-        /// intersection has not been defined.
-        /// </summary>
-        /// <param name="x2">The X-value of the first intersection (0 if none)</param>
-        /// <param name="y2">The Y-value of the first intersection (0 if none)</param>
-        void GetXY2(out double x2, out double y2)
-        {
-            if (m_X2==null)
-            {
-                x2 = 0.0;
-                y2 = 0.0;
-            }
-            else
-            {
-                x2 = m_X2.X;
-                y2 = m_X2.Y;
-            }
-        }
-
-        /// <summary>
-        /// Checks if this intersection refers to a specific position.
-        /// The match has to be exact.
-        /// </summary>
-        /// <param name="p">The position to look for</param>
-        /// <returns>True if the position was found.</returns>
-        internal bool IsReferredTo(IPosition p)
-        {
-            // The value used here is intended to be consistent with the use
-            // of 1 micron precision for positions
-
-            if (m_X1!=null && m_X1.IsAt(p, 0.0000009))
-                return true;
-
-            if (m_X2!=null && m_X2.IsAt(p, 0.0000009))
-                return true;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Resets this intersection so that it has undefined values.
-        /// </summary>
-        internal void Reset()
-        {
-            m_X1 = null;
-            m_X2 = null;
-            m_SortValue = 0.0;
-            m_Context1 = 0;
-            m_Context2 = 0;
-        }
-
-        /// <summary>
-        /// Is this intersection defined? (meaning it has a defined position for the 1st intersection)
-        /// </summary>
-        internal bool IsDefined
-        {
-            get { return (m_X1!=null); }
-        }
-
-        /// <summary>
-        /// Define the relationship that this intersection has to a pair of lines.
-        /// </summary>
-        /// <param name="line1">The 1st line.</param>
-        /// <param name="line2">The 2nd line.</param>
-        internal void SetContext(ILineGeometry line1, ILineGeometry line2)
-        {
-	        m_Context1 = 0;
-	        m_Context2 = 0;
-
-	        if (this.IsGraze)
-            {
-                IPointGeometry loc1 = new PointGeometry(m_X1);
-                IPointGeometry loc2 = new PointGeometry(m_X2);
-		        m_Context1 = GetContext(loc1,loc2,line1);
-		        m_Context2 = GetContext(loc1,loc2,line2);
-	        }
-	        else
-            {
-                IPointGeometry loc = new PointGeometry(m_X1);
-		        m_Context1 = GetContext(loc,line1);
-		        m_Context2 = GetContext(loc,line2);
-	        }
-        }
-
-        /// <summary>
-        /// Returns the context code for a simple intersection with a line.
-        /// </summary>
-        /// <param name="loc">The location of the intersection.</param>
-        /// <param name="line">The line to compare with.</param>
-        /// <returns>The context code.</returns>
-        static IntersectionType GetContext(IPointGeometry loc, ILineGeometry line)
-        {
-            IntersectionType context = 0;
-
-            if (loc.IsCoincident(line.Start))
-                context |= IntersectionType.TouchStart;
-
-            if (loc.IsCoincident(line.End))
-                context |= IntersectionType.TouchEnd;
-
-            if (context==0)
-                context = IntersectionType.TouchOther;
-
-            return context;
-        }
-
-        /// <summary>
-        /// Returns the context code for a grazing intersection with a line.
-        /// </summary>
-        /// <param name="loc1">The 1st intersection.</param>
-        /// <param name="loc2">The 2nd intersection.</param>
-        /// <param name="line">The line the context code is for.</param>
-        /// <returns>The context code.</returns>
-        static IntersectionType GetContext(IPointGeometry loc1, IPointGeometry loc2, ILineGeometry line)
-        {
-            // Get the context of the start and end of the graze.
-            IntersectionType context1 = GetContext(loc1, line);
-            IntersectionType context2 = GetContext(loc2, line);
-
-            if (context1 == IntersectionType.TouchOther)
-            {
-                if (context2 == IntersectionType.TouchStart)
-                    return IntersectionType.GrazeStart;
-
-                if (context2 == IntersectionType.TouchOther)
-                    return IntersectionType.GrazeOther;
-
-                return IntersectionType.GrazeEnd;
-            }
-            else if (context1 == IntersectionType.TouchStart)
-            {
-                if (context2 == IntersectionType.TouchStart)
-                    return IntersectionType.GrazeTotal;
-
-                if (context2 == IntersectionType.TouchOther)
-                    return IntersectionType.GrazeStart;
-
-                return IntersectionType.GrazeTotal;
-            }
-
-            // context1 == IntersectionType.TounchEnd
-
             if (context2 == IntersectionType.TouchStart)
                 return IntersectionType.GrazeTotal;
 
             if (context2 == IntersectionType.TouchOther)
-                return IntersectionType.GrazeEnd;
+                return IntersectionType.GrazeStart;
 
             return IntersectionType.GrazeTotal;
         }
 
-        /// <summary>
-        /// Draws intersections on the specified display
-        /// </summary>
-        /// <param name="display">The display to draw to</param>
-        /// <param name="style">The drawing style</param>
-        internal void Render(ISpatialDisplay display, IDrawStyle style)
-        {
-            style.Render(display, m_X1);
+        // context1 == IntersectionType.TounchEnd
 
-            if (IsGraze)
-                style.Render(display, m_X2);
-        }
+        if (context2 == IntersectionType.TouchStart)
+            return IntersectionType.GrazeTotal;
+
+        if (context2 == IntersectionType.TouchOther)
+            return IntersectionType.GrazeEnd;
+
+        return IntersectionType.GrazeTotal;
+    }
+
+    /// <summary>
+    /// Draws intersections on the specified display
+    /// </summary>
+    /// <param name="display">The display to draw to</param>
+    /// <param name="style">The drawing style</param>
+    internal void Render(ISpatialDisplay display, IDrawStyle style)
+    {
+        style.Render(display, m_X1);
+
+        if (IsGraze)
+            style.Render(display, m_X2);
     }
 }

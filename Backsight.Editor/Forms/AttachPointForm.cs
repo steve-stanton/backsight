@@ -13,149 +13,146 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Environment;
 using Backsight.Editor.UI;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <summary>
+/// Dialog for the <see cref="AttachPointUI"/>
+/// </summary>
+public partial class AttachPointForm : Form
 {
+    #region Constants
+
     /// <summary>
-    /// Dialog for the <see cref="AttachPointUI"/>
+    /// Registry key indicating whether the command should auto-repeat. The value of
+    /// the entry should be 1 or 0 (for true or false).
     /// </summary>
-    public partial class AttachPointForm : Form
+    const string REPEAT_KEY = "AttachPointRepeat";
+
+    /// <summary>
+    /// The format of the registry key for default point type (the substitution refers
+    /// to the ID of the relevant map layer, while the value is the ID of the corresponding
+    /// entity type).
+    /// </summary>
+    const string DEFAULT_KEY_FORMAT = "AttachPointType.{0}";
+
+    #endregion
+
+    #region Class data
+
+    /// <summary>
+    /// The command that displayed this dialog
+    /// </summary>
+    readonly AttachPointUI m_Cmd;
+
+    /// <summary>
+    /// The entity type to assign to new points 
+    /// </summary>
+    IEntity m_PointType;
+
+    /// <summary>
+    /// Should the command be automatically repeated? 
+    /// </summary>
+    bool m_Repeat;
+
+    #endregion
+
+    internal AttachPointForm(AttachPointUI cmd)
     {
-        #region Constants
+        InitializeComponent();
 
-        /// <summary>
-        /// Registry key indicating whether the command should auto-repeat. The value of
-        /// the entry should be 1 or 0 (for true or false).
-        /// </summary>
-        const string REPEAT_KEY = "AttachPointRepeat";
+        m_Cmd = cmd;
+        m_Repeat = false;
+        m_PointType = null;
+    }
 
-        /// <summary>
-        /// The format of the registry key for default point type (the substitution refers
-        /// to the ID of the relevant map layer, while the value is the ID of the corresponding
-        /// entity type).
-        /// </summary>
-        const string DEFAULT_KEY_FORMAT = "AttachPointType.{0}";
+    internal IEntity PointType
+    {
+        get { return m_PointType; }
+    }
 
-        #endregion
+    internal bool ShouldRepeat
+    {
+        get { return m_Repeat; }
+    }
 
-        #region Class data
+    private void AttachPointForm_Shown(object sender, EventArgs e)
+    {
+        // Load the entity combo box with a list for point features.
+        m_PointType = entityTypeComboBox.Load(SpatialType.Point);
 
-        /// <summary>
-        /// The command that displayed this dialog
-        /// </summary>
-        readonly AttachPointUI m_Cmd;
+        // The option to make the selected type the default for
+        // this command is ALWAYS set by default
+        defaultCheckBox.Checked = true;
 
-        /// <summary>
-        /// The entity type to assign to new points 
-        /// </summary>
-        IEntity m_PointType;
-
-        /// <summary>
-        /// Should the command be automatically repeated? 
-        /// </summary>
-        bool m_Repeat;
-
-        #endregion
-
-        internal AttachPointForm(AttachPointUI cmd)
+        // If there is a default entity for this command (on the
+        // current editing layer), select that instead & disable
+        // the corresponding checkbox
+        int entId = ReadDefaultPointEntityTypeId();
+        if (entId > 0)
         {
-            InitializeComponent();
-
-            m_Cmd = cmd;
-            m_Repeat = false;
-            m_PointType = null;
-        }
-
-        internal IEntity PointType
-        {
-            get { return m_PointType; }
-        }
-
-        internal bool ShouldRepeat
-        {
-            get { return m_Repeat; }
-        }
-
-        private void AttachPointForm_Shown(object sender, EventArgs e)
-        {
-            // Load the entity combo box with a list for point features.
-            m_PointType = entityTypeComboBox.Load(SpatialType.Point);
-
-            // The option to make the selected type the default for
-            // this command is ALWAYS set by default
-            defaultCheckBox.Checked = true;
-
-            // If there is a default entity for this command (on the
-            // current editing layer), select that instead & disable
-            // the corresponding checkbox
-            int entId = ReadDefaultPointEntityTypeId();
-            if (entId > 0)
+            IEntity ent = EnvironmentContainer.FindEntityById(entId);
+            if (ent!=null)
             {
-                IEntity ent = EnvironmentContainer.FindEntityById(entId);
-                if (ent!=null)
-                {
-                    entityTypeComboBox.SelectEntity(ent);
-                    defaultCheckBox.Enabled = false;
-                    m_PointType = ent;
-                }
+                entityTypeComboBox.SelectEntity(ent);
+                defaultCheckBox.Enabled = false;
+                m_PointType = ent;
             }
-
-            // Check auto-repeat option (default is to repeat)
-            int repeat = GlobalUserSetting.ReadInt(REPEAT_KEY, 1);
-            m_Repeat = (repeat!=0);
-            repeatCheckBox.Checked = m_Repeat;
         }
 
-        int ReadDefaultPointEntityTypeId()
-        {
-            string key = GetDefaultPointEntityTypeIdKey();
-            return GlobalUserSetting.ReadInt(key, 0);
-        }
+        // Check auto-repeat option (default is to repeat)
+        int repeat = GlobalUserSetting.ReadInt(REPEAT_KEY, 1);
+        m_Repeat = (repeat!=0);
+        repeatCheckBox.Checked = m_Repeat;
+    }
 
-        void WriteDefaultPointEntityTypeId(IEntity e)
-        {
-            string key = GetDefaultPointEntityTypeIdKey();
-            GlobalUserSetting.WriteInt(key, e.Id);
-        }
+    int ReadDefaultPointEntityTypeId()
+    {
+        string key = GetDefaultPointEntityTypeIdKey();
+        return GlobalUserSetting.ReadInt(key, 0);
+    }
 
-        string GetDefaultPointEntityTypeIdKey()
-        {
-            ILayer layer = m_Cmd.ActiveLayer;
-            return String.Format(DEFAULT_KEY_FORMAT, layer.Id);
-        }
+    void WriteDefaultPointEntityTypeId(IEntity e)
+    {
+        string key = GetDefaultPointEntityTypeIdKey();
+        GlobalUserSetting.WriteInt(key, e.Id);
+    }
 
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            // Get the selected point type.
-            m_PointType = entityTypeComboBox.SelectedEntityType;
+    string GetDefaultPointEntityTypeIdKey()
+    {
+        ILayer layer = m_Cmd.ActiveLayer;
+        return String.Format(DEFAULT_KEY_FORMAT, layer.Id);
+    }
 
-            // Ensure the currently selected repeat option is saved in the registry
-            if (defaultCheckBox.Checked)
-                WriteDefaultPointEntityTypeId(m_PointType);
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        // Get the selected point type.
+        m_PointType = entityTypeComboBox.SelectedEntityType;
 
-            // Ensure the auto-repeat option is saved too
-            m_Repeat = repeatCheckBox.Checked;
-            GlobalUserSetting.WriteInt(REPEAT_KEY, (m_Repeat ? 1 : 0));
+        // Ensure the currently selected repeat option is saved in the registry
+        if (defaultCheckBox.Checked)
+            WriteDefaultPointEntityTypeId(m_PointType);
 
-            this.DialogResult = DialogResult.OK;
-            Close();
-        }
+        // Ensure the auto-repeat option is saved too
+        m_Repeat = repeatCheckBox.Checked;
+        GlobalUserSetting.WriteInt(REPEAT_KEY, (m_Repeat ? 1 : 0));
 
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-        }
+        this.DialogResult = DialogResult.OK;
+        Close();
+    }
 
-        private void entityComboBox_SelectedValueChanged(object sender, EventArgs e)
-        {
-            // Ensure the option to make it the default is enabled
-            defaultCheckBox.Enabled = true;
-        }
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        this.DialogResult = DialogResult.Cancel;
+        Close();
+    }
+
+    private void entityComboBox_SelectedValueChanged(object sender, EventArgs e)
+    {
+        // Ensure the option to make it the default is enabled
+        defaultCheckBox.Enabled = true;
     }
 }

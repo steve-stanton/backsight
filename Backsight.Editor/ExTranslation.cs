@@ -13,9 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+public class ExTranslation
 {
-    public class ExTranslation
-    {
-    }
 }

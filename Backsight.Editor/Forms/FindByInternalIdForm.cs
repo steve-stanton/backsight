@@ -13,67 +13,65 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <summary>
+/// Dialog for selecting a specific spatial feature (by entering it's internal ID), for use
+/// in debugging.
+/// </summary>
+public partial class FindByInternalIdForm : Form
 {
-    /// <summary>
-    /// Dialog for selecting a specific spatial feature (by entering it's internal ID), for use
-    /// in debugging.
-    /// </summary>
-    public partial class FindByInternalIdForm : Form
+    public FindByInternalIdForm()
     {
-        public FindByInternalIdForm()
+        InitializeComponent();
+    }
+
+    private void findButton_Click(object sender, EventArgs e)
+    {
+        try
         {
-            InitializeComponent();
+            CadastralMapModel mapModel = CadastralMapModel.Current;
+            string s = idTextBox.Text;
+            uint idValue = UInt32.Parse(s);
+            Feature f = mapModel.Find<Feature>(new InternalIdValue(idValue));
+            if (f == null)
+            {
+                MessageBox.Show("Cannot find feature with ID=" + idValue);
+                return;
+            }
+
+            EditingController.Current.Select(f);
+            Position p = null;
+
+            if (f is PointFeature)
+                p = new Position((f as PointFeature).PointGeometry);
+            else if (f is LineFeature)
+                p = new Position((f as LineFeature).StartPoint);
+            else if (f is TextFeature)
+                p = new Position((f as TextFeature).Position);
+
+            if (p == null)
+            {
+                MessageBox.Show("Cannot determine position for selected feature");
+                return;
+            }
+
+            ISpatialDisplay d = EditingController.Current.ActiveDisplay;
+
+            if (d.MapScale > 2000.0)
+                d.MapScale = 2000.0;
+
+            d.Center = p;
+
+            this.DialogResult = DialogResult.Cancel;
+            Close();
         }
 
-        private void findButton_Click(object sender, EventArgs e)
+        catch (Exception ex)
         {
-            try
-            {
-                CadastralMapModel mapModel = CadastralMapModel.Current;
-                string s = idTextBox.Text;
-                uint idValue = UInt32.Parse(s);
-                Feature f = mapModel.Find<Feature>(new InternalIdValue(idValue));
-                if (f == null)
-                {
-                    MessageBox.Show("Cannot find feature with ID=" + idValue);
-                    return;
-                }
-
-                EditingController.Current.Select(f);
-                Position p = null;
-
-                if (f is PointFeature)
-                    p = new Position((f as PointFeature).PointGeometry);
-                else if (f is LineFeature)
-                    p = new Position((f as LineFeature).StartPoint);
-                else if (f is TextFeature)
-                    p = new Position((f as TextFeature).Position);
-
-                if (p == null)
-                {
-                    MessageBox.Show("Cannot determine position for selected feature");
-                    return;
-                }
-
-                ISpatialDisplay d = EditingController.Current.ActiveDisplay;
-
-                if (d.MapScale > 2000.0)
-                    d.MapScale = 2000.0;
-
-                d.Center = p;
-
-                this.DialogResult = DialogResult.Cancel;
-                Close();
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            MessageBox.Show(ex.Message);
         }
     }
 }

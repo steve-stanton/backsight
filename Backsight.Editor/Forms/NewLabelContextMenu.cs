@@ -13,55 +13,51 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-using System.Diagnostics;
-
 using Backsight.Forms;
 using Backsight.Editor.UI;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" on="21-APR-2008" />
+/// <summary>
+/// Context menu for the <see cref="NewLabelUI"/>
+/// </summary>
+partial class NewLabelContextMenu : ContextMenuStrip
 {
-    /// <written by="Steve Stanton" on="21-APR-2008" />
+    #region Constructors
+
     /// <summary>
-    /// Context menu for the <see cref="NewLabelUI"/>
+    /// Creates a new <c>NewLabelContextMenu</c>, wiring each menuitem to the specified UI.
     /// </summary>
-    partial class NewLabelContextMenu : ContextMenuStrip
+    /// <param name="ui">The user interface displaying this context menu</param>
+    internal NewLabelContextMenu(NewLabelUI ui)
     {
-        #region Constructors
+        InitializeComponent();
 
-        /// <summary>
-        /// Creates a new <c>NewLabelContextMenu</c>, wiring each menuitem to the specified UI.
-        /// </summary>
-        /// <param name="ui">The user interface displaying this context menu</param>
-        internal NewLabelContextMenu(NewLabelUI ui)
-        {
-            InitializeComponent();
+        new UserAction(ctxAutoPosition, ui.ToggleAutoPosition);
+        new UserAction(ctxAutoAngle, ui.ToggleAutoAngle);
 
-            new UserAction(ctxAutoPosition, ui.ToggleAutoPosition);
-            new UserAction(ctxAutoAngle, ui.ToggleAutoAngle);
+        ctxAutoPosition.Checked = ui.IsAutoPosition;
+        ctxAutoAngle.Checked = ui.IsAutoAngle;
 
-            ctxAutoPosition.Checked = ui.IsAutoPosition;
-            ctxAutoAngle.Checked = ui.IsAutoAngle;
+        // If we're auto-positioning, the auto-angle option should be disabled (it may
+        // still be checked to signify that it'll be re-enabled on turning off the
+        // auto-angle option).
+        if (ui.IsAutoPosition)
+            ctxAutoAngle.Enabled = false;
 
-            // If we're auto-positioning, the auto-angle option should be disabled (it may
-            // still be checked to signify that it'll be re-enabled on turning off the
-            // auto-angle option).
-            if (ui.IsAutoPosition)
-                ctxAutoAngle.Enabled = false;
+        uint sizeFactor = ui.SizeFactor;
+        new TextSizeAction(ctx500, ui.SetSizeFactor, 500, sizeFactor);
+        new TextSizeAction(ctx200, ui.SetSizeFactor, 200, sizeFactor);
+        new TextSizeAction(ctx150, ui.SetSizeFactor, 150, sizeFactor);
+        new TextSizeAction(ctx100, ui.SetSizeFactor, 100, sizeFactor);
+        new TextSizeAction(ctx75, ui.SetSizeFactor, 75, sizeFactor);
+        new TextSizeAction(ctx50, ui.SetSizeFactor, 50, sizeFactor);
+        new TextSizeAction(ctx25, ui.SetSizeFactor, 25, sizeFactor);
 
-            uint sizeFactor = ui.SizeFactor;
-            new TextSizeAction(ctx500, ui.SetSizeFactor, 500, sizeFactor);
-            new TextSizeAction(ctx200, ui.SetSizeFactor, 200, sizeFactor);
-            new TextSizeAction(ctx150, ui.SetSizeFactor, 150, sizeFactor);
-            new TextSizeAction(ctx100, ui.SetSizeFactor, 100, sizeFactor);
-            new TextSizeAction(ctx75, ui.SetSizeFactor, 75, sizeFactor);
-            new TextSizeAction(ctx50, ui.SetSizeFactor, 50, sizeFactor);
-            new TextSizeAction(ctx25, ui.SetSizeFactor, 25, sizeFactor);
-
-            new UserAction(ctxFinish, ui.Finish);
-        }
-
-        #endregion
+        new UserAction(ctxFinish, ui.Finish);
     }
+
+    #endregion
 }

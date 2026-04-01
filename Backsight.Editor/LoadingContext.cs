@@ -13,20 +13,19 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <summary>
+/// Context indicating that the map model is being loaded.
+/// </summary>
+class LoadingContext : EditingContext
 {
     /// <summary>
-    /// Context indicating that the map model is being loaded.
+    /// Remembers a modification to the position of a point.
     /// </summary>
-    class LoadingContext : EditingContext
+    /// <param name="p"></param>
+    internal override void RegisterChange(PointFeature p)
     {
-        /// <summary>
-        /// Remembers a modification to the position of a point.
-        /// </summary>
-        /// <param name="p"></param>
-        internal override void RegisterChange(PointFeature p)
-        {
-            // Do nothing
-        }
+        // Do nothing
     }
 }

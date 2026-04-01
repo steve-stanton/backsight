@@ -13,107 +13,103 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
+namespace Backsight.Editor.Operations;
 
-namespace Backsight.Editor.Operations
+/// <summary>
+/// An edit that creates a circular arc.
+/// </summary>
+class NewArcOperation : NewLineOperation
 {
     /// <summary>
-    /// An edit that creates a circular arc.
+    /// Initializes a new instance of the <see cref="NewArcOperation"/> class.
     /// </summary>
-    class NewArcOperation : NewLineOperation
+    internal NewArcOperation()
+        : base()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewArcOperation"/> class.
-        /// </summary>
-        internal NewArcOperation()
-            : base()
-        {
-        }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewArcOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal NewArcOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            // I originally let the base class do it, but it needs to be an instance
-            // of ArcFeature. This is a bit rough - does NewArcOperation really need
-            // to extend NewLineOperation?
-            ArcFeature arc = editDeserializer.ReadPersistent<ArcFeature>(DataField.Line);
-            SetNewLine(arc);
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NewArcOperation"/> class
+    /// using the data read from persistent storage.
+    /// </summary>
+    /// <param name="editDeserializer">The mechanism for reading back content.</param>
+    internal NewArcOperation(EditDeserializer editDeserializer)
+        : base(editDeserializer)
+    {
+        // I originally let the base class do it, but it needs to be an instance
+        // of ArcFeature. This is a bit rough - does NewArcOperation really need
+        // to extend NewLineOperation?
+        ArcFeature arc = editDeserializer.ReadPersistent<ArcFeature>(DataField.Line);
+        SetNewLine(arc);
+    }
 
-        /// <summary>
-        /// Creates a new circular arc.
-        /// </summary>
-        /// <param name="start">The point at the start of the new arc.</param>
-        /// <param name="end">The point at the end of the new arc.</param>
-        /// <param name="circle">The circle that the new arc should sit on.</param>
-        /// <param name="isShortArc">True if the new arc refers to the short arc. False
-        /// if it's a long arc (i.e. greater than half the circumference of the circle).</param>
-        internal void Execute(PointFeature start, PointFeature end, Circle circle, bool isShortArc)
-        {
-            // Disallow an attempt to add a null line.
-            if (start.Geometry.IsCoincident(end.Geometry))
-                throw new Exception("NewArcOperation.Execute - Attempt to add null line.");
+    /// <summary>
+    /// Creates a new circular arc.
+    /// </summary>
+    /// <param name="start">The point at the start of the new arc.</param>
+    /// <param name="end">The point at the end of the new arc.</param>
+    /// <param name="circle">The circle that the new arc should sit on.</param>
+    /// <param name="isShortArc">True if the new arc refers to the short arc. False
+    /// if it's a long arc (i.e. greater than half the circumference of the circle).</param>
+    internal void Execute(PointFeature start, PointFeature end, Circle circle, bool isShortArc)
+    {
+        // Disallow an attempt to add a null line.
+        if (start.Geometry.IsCoincident(end.Geometry))
+            throw new Exception("NewArcOperation.Execute - Attempt to add null line.");
 
-            // Figure out whether the arc should go clockwise or not.
-            IPointGeometry centre = circle.Center;
+        // Figure out whether the arc should go clockwise or not.
+        IPointGeometry centre = circle.Center;
 
-            // Get the clockwise angle from the start to the end.
-            Turn sturn = new Turn(centre, start);
-            double angle = sturn.GetAngleInRadians(end);
+        // Get the clockwise angle from the start to the end.
+        Turn sturn = new Turn(centre, start);
+        double angle = sturn.GetAngleInRadians(end);
 
-            // Figure out which direction the curve should go, depending
-            // on whether the user wants the short arc or the long one.
-            bool iscw;
-            if (angle < Constants.PI)
-                iscw = isShortArc;
-            else
-                iscw = !isShortArc;
+        // Figure out which direction the curve should go, depending
+        // on whether the user wants the short arc or the long one.
+        bool iscw;
+        if (angle < Constants.PI)
+            iscw = isShortArc;
+        else
+            iscw = !isShortArc;
 
-            // Add the new arc with default line entity type (this will
-            // cross-reference the circle to the arc that gets created).
-            CadastralMapModel map = CadastralMapModel.Current;
-            LineFeature newLine = map.AddCircularArc(circle, start, end, iscw, map.DefaultLineType, this);
-            base.SetNewLine(newLine);
+        // Add the new arc with default line entity type (this will
+        // cross-reference the circle to the arc that gets created).
+        CadastralMapModel map = CadastralMapModel.Current;
+        LineFeature newLine = map.AddCircularArc(circle, start, end, iscw, map.DefaultLineType, this);
+        base.SetNewLine(newLine);
 
-            // Peform standard completion steps
-            Complete();
-        }
+        // Peform standard completion steps
+        Complete();
+    }
 
-        /// <summary>
-        /// Obtains the features that are referenced by this operation (including features
-        /// that are indirectly referenced by observation classes).
-        /// </summary>
-        /// <returns>
-        /// The referenced features (never null, but may be an empty array).
-        /// </returns>
-        public override Feature[] GetRequiredFeatures()
-        {
-            List<Feature> result = new List<Feature>(base.GetRequiredFeatures());
-            ArcFeature arc = (ArcFeature)this.Line;
-            PointFeature center = arc.Circle.CenterPoint;
-            if (center.Creator != this)
-                result.Add(center);
+    /// <summary>
+    /// Obtains the features that are referenced by this operation (including features
+    /// that are indirectly referenced by observation classes).
+    /// </summary>
+    /// <returns>
+    /// The referenced features (never null, but may be an empty array).
+    /// </returns>
+    public override Feature[] GetRequiredFeatures()
+    {
+        List<Feature> result = new List<Feature>(base.GetRequiredFeatures());
+        ArcFeature arc = (ArcFeature)this.Line;
+        PointFeature center = arc.Circle.CenterPoint;
+        if (center.Creator != this)
+            result.Add(center);
 
-            return result.ToArray();
-        }
+        return result.ToArray();
+    }
 
-        /// <summary>
-        /// Writes the content of this instance to a persistent storage area.
-        /// </summary>
-        /// <param name="editSerializer">The mechanism for storing content.</param>
-        public override void WriteData(EditSerializer editSerializer)
-        {
-            base.WriteData(editSerializer);
+    /// <summary>
+    /// Writes the content of this instance to a persistent storage area.
+    /// </summary>
+    /// <param name="editSerializer">The mechanism for storing content.</param>
+    public override void WriteData(EditSerializer editSerializer)
+    {
+        base.WriteData(editSerializer);
 
-            // Let the base class do it
-            // ArcFeature arc = (ArcFeature)base.Line;
-            // editSerializer.WritePersistent<ArcFeature>("Line", arc);
-        }
+        // Let the base class do it
+        // ArcFeature arc = (ArcFeature)base.Line;
+        // editSerializer.WritePersistent<ArcFeature>("Line", arc);
     }
 }

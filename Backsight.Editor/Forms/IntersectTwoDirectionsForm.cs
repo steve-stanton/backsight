@@ -13,211 +13,207 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 using System.Drawing;
-
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Editor.Observations;
 using Backsight.Editor.UI;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" was="CdIntersectDir" />
+/// <summary>
+/// Dialog for the Intersect - Two Directions command.
+/// </summary>
+partial class IntersectTwoDirectionsForm : IntersectForm
 {
-    /// <written by="Steve Stanton" was="CdIntersectDir" />
     /// <summary>
-    /// Dialog for the Intersect - Two Directions command.
+    /// Creates a new <c>IntersectTwoDirectionsForm</c>
     /// </summary>
-    partial class IntersectTwoDirectionsForm : IntersectForm
+    /// <param name="cmd">The command displaying this dialog (not null)</param>
+    /// <param name="title">The string to display in the form's title bar</param>
+    internal IntersectTwoDirectionsForm(CommandUI cmd, string title)
+        : base(cmd, title)
     {
-        /// <summary>
-        /// Creates a new <c>IntersectTwoDirectionsForm</c>
-        /// </summary>
-        /// <param name="cmd">The command displaying this dialog (not null)</param>
-        /// <param name="title">The string to display in the form's title bar</param>
-        internal IntersectTwoDirectionsForm(CommandUI cmd, string title)
-            : base(cmd, title)
+        InitializeComponent();
+    }
+
+    private void IntersectTwoDirectionsForm_Shown(object sender, EventArgs e)
+    {
+        // Initialize the first page last, to ensure focus is on the initial text box
+        // of the first page.
+        intersectInfo.InitializeControl(this);
+        getDirection1.InitializeControl(this, 1);
+
+        // getDirection2 gets initialized by directionTwoPage_ShowFromNext
+    }
+
+    internal override void OnDraw(PointFeature point)
+    {
+        getDirection1.OnDrawAll();
+        getDirection2.OnDrawAll();
+
+        if (intersectInfo.Visible)
         {
-            InitializeComponent();
-        }
+            intersectInfo.OnDraw();
 
-        private void IntersectTwoDirectionsForm_Shown(object sender, EventArgs e)
-        {
-            // Initialize the first page last, to ensure focus is on the initial text box
-            // of the first page.
-            intersectInfo.InitializeControl(this);
-            getDirection1.InitializeControl(this, 1);
-
-            // getDirection2 gets initialized by directionTwoPage_ShowFromNext
-        }
-
-        internal override void OnDraw(PointFeature point)
-        {
-            getDirection1.OnDrawAll();
-            getDirection2.OnDrawAll();
-
-            if (intersectInfo.Visible)
+            IPosition x = intersectInfo.Intersection;
+            if (x!=null)
             {
-                intersectInfo.OnDraw();
+                ISpatialDisplay display = GetCommand().ActiveDisplay;
+                IDrawStyle style = EditingController.Current.Style(Color.Magenta);
 
-                IPosition x = intersectInfo.Intersection;
-                if (x!=null)
+                if (getDirection1.LineType!=null)
                 {
-                    ISpatialDisplay display = GetCommand().ActiveDisplay;
-                    IDrawStyle style = EditingController.Current.Style(Color.Magenta);
+                    Direction d = getDirection1.Direction;
+                    style.Render(display, new IPosition[] { d.StartPosition, x });
+                }
 
-                    if (getDirection1.LineType!=null)
-                    {
-                        Direction d = getDirection1.Direction;
-                        style.Render(display, new IPosition[] { d.StartPosition, x });
-                    }
-
-                    if (getDirection2.LineType!=null)
-                    {
-                        Direction d = getDirection2.Direction;
-                        style.Render(display, new IPosition[] { d.StartPosition, x });
-                    }
+                if (getDirection2.LineType!=null)
+                {
+                    Direction d = getDirection2.Direction;
+                    style.Render(display, new IPosition[] { d.StartPosition, x });
                 }
             }
         }
+    }
 
-        /// <summary>
-        /// Reacts to the selection of a point feature.
-        /// </summary>
-        /// <param name="point">The point (if any) that has been selected.</param>
-        internal override void OnSelectPoint(PointFeature point)
+    /// <summary>
+    /// Reacts to the selection of a point feature.
+    /// </summary>
+    /// <param name="point">The point (if any) that has been selected.</param>
+    internal override void OnSelectPoint(PointFeature point)
+    {
+        GetDirectionControl gdc = GetVisibleDirectionControl();
+        if (gdc!=null)
+            gdc.OnSelectPoint(point);
+    }
+
+    /// <summary>
+    /// Reacts to the selection of a line feature.
+    /// </summary>
+    /// <param name="line">The line (if any) that has been selected.</param>
+    internal override void OnSelectLine(LineFeature line)
+    {
+        GetDirectionControl gdc = GetVisibleDirectionControl();
+        if (gdc!=null)
+            gdc.OnSelectLine(line);
+    }
+
+    GetDirectionControl GetVisibleDirectionControl()
+    {
+        if (getDirection1.Visible)
+            return getDirection1;
+
+        if (getDirection2.Visible)
+            return getDirection2;
+
+        return null;
+    }
+
+    /// <summary>
+    /// Handles the Finish button.
+    /// </summary>
+    /// <returns>The point created at the intersection (null if an error was reported).
+    /// The caller is responsible for disposing of the dialog and telling the controller
+    /// the command is done)</returns>
+    internal override PointFeature Finish()
+    {
+        // The intersection SHOULD be defined (the Finish button should have
+        // been disabled if it wasn't)
+        IPosition x = intersectInfo.Intersection;
+        if (x==null)
         {
-            GetDirectionControl gdc = GetVisibleDirectionControl();
-            if (gdc!=null)
-                gdc.OnSelectPoint(point);
-        }
-
-        /// <summary>
-        /// Reacts to the selection of a line feature.
-        /// </summary>
-        /// <param name="line">The line (if any) that has been selected.</param>
-        internal override void OnSelectLine(LineFeature line)
-        {
-            GetDirectionControl gdc = GetVisibleDirectionControl();
-            if (gdc!=null)
-                gdc.OnSelectLine(line);
-        }
-
-        GetDirectionControl GetVisibleDirectionControl()
-        {
-            if (getDirection1.Visible)
-                return getDirection1;
-
-            if (getDirection2.Visible)
-                return getDirection2;
-
+            MessageBox.Show("No intersection. Nothing to save");
             return null;
         }
 
-        /// <summary>
-        /// Handles the Finish button.
-        /// </summary>
-        /// <returns>The point created at the intersection (null if an error was reported).
-        /// The caller is responsible for disposing of the dialog and telling the controller
-        /// the command is done)</returns>
-        internal override PointFeature Finish()
+        // If we're not doing an update, just save the edit
+        UpdateUI up = (GetCommand() as UpdateUI);
+        if (up == null)
+            return SaveDirDir();
+
+        // Remember the changes as part of the UI object (the original edit remains
+        // unchanged for now)
+        IntersectTwoDirectionsOperation op = (IntersectTwoDirectionsOperation)up.GetOp();
+        UpdateItemCollection changes = op.GetUpdateItems(getDirection1.Direction,
+            getDirection2.Direction);
+        if (!up.AddUpdate(op, changes))
+            return null;
+
+        // Return the point previously created at the intersect
+        return op.IntersectionPoint;
+    }
+
+    /// <summary>
+    /// Saves a direction-direction intersection. 
+    /// </summary>
+    /// <returns>The point feature at the intersection (null if something went wrong).</returns>
+    PointFeature SaveDirDir()
+    {
+        IntersectTwoDirectionsOperation op = null;
+
+        try
         {
-            // The intersection SHOULD be defined (the Finish button should have
-            // been disabled if it wasn't)
-            IPosition x = intersectInfo.Intersection;
-            if (x==null)
-            {
-                MessageBox.Show("No intersection. Nothing to save");
-                return null;
-            }
+            Direction d1 = getDirection1.Direction;
+            IEntity e1 = getDirection1.LineType;
+            Direction d2 = getDirection2.Direction;
+            IEntity e2 = getDirection2.LineType;
+            IdHandle pointId = intersectInfo.PointId;
 
-            // If we're not doing an update, just save the edit
-            UpdateUI up = (GetCommand() as UpdateUI);
-            if (up == null)
-                return SaveDirDir();
-
-            // Remember the changes as part of the UI object (the original edit remains
-            // unchanged for now)
-            IntersectTwoDirectionsOperation op = (IntersectTwoDirectionsOperation)up.GetOp();
-            UpdateItemCollection changes = op.GetUpdateItems(getDirection1.Direction,
-                                                             getDirection2.Direction);
-            if (!up.AddUpdate(op, changes))
-                return null;
-
-            // Return the point previously created at the intersect
+            op = new IntersectTwoDirectionsOperation(d1, d2);
+            op.Execute(pointId, e1, e2);
             return op.IntersectionPoint;
         }
 
-        /// <summary>
-        /// Saves a direction-direction intersection. 
-        /// </summary>
-        /// <returns>The point feature at the intersection (null if something went wrong).</returns>
-        PointFeature SaveDirDir()
+        catch (Exception ex)
         {
-            IntersectTwoDirectionsOperation op = null;
+            MessageBox.Show(ex.StackTrace, ex.Message);
+        }
 
-            try
-            {
-                Direction d1 = getDirection1.Direction;
-                IEntity e1 = getDirection1.LineType;
-                Direction d2 = getDirection2.Direction;
-                IEntity e2 = getDirection2.LineType;
-                IdHandle pointId = intersectInfo.PointId;
+        return null;
+    }
 
-                op = new IntersectTwoDirectionsOperation(d1, d2);
-                op.Execute(pointId, e1, e2);
-                return op.IntersectionPoint;
-            }
+    private void finishPage_ShowFromNext(object sender, EventArgs e)
+    {
+        // Enable finish button only if we have an intersection
+        IPosition x = CalculateIntersect();
+        wizard.NextEnabled = (x!=null);
+    }
 
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.StackTrace, ex.Message);
-            }
-
+    /// <summary>
+    /// Attempts to calculate the position of the intersect, using the currently
+    /// entered information.
+    /// </summary>
+    /// <returns>The position of the intersect (null if there isn't one)</returns>
+    internal override IPosition CalculateIntersect()
+    {
+        Direction d1 = getDirection1.Direction;
+        if (d1==null)
             return null;
-        }
 
-        private void finishPage_ShowFromNext(object sender, EventArgs e)
-        {
-            // Enable finish button only if we have an intersection
-            IPosition x = CalculateIntersect();
-            wizard.NextEnabled = (x!=null);
-        }
+        Direction d2 = getDirection2.Direction;
+        if (d2==null)
+            return null;
 
-        /// <summary>
-        /// Attempts to calculate the position of the intersect, using the currently
-        /// entered information.
-        /// </summary>
-        /// <returns>The position of the intersect (null if there isn't one)</returns>
-        internal override IPosition CalculateIntersect()
-        {
-            Direction d1 = getDirection1.Direction;
-            if (d1==null)
-                return null;
+        return d1.Intersect(d2);
+    }
 
-            Direction d2 = getDirection2.Direction;
-            if (d2==null)
-                return null;
+    private void directionTwoPage_ShowFromNext(object sender, EventArgs e)
+    {
+        // Initialize the direction now (rather than when the form is shown). In
+        // a situation where the user has just changed the default offset (on page
+        // 1 of the wizard), it makes little sense to show the old offset when
+        // page 2 is displayed.
 
-            return d1.Intersect(d2);
-        }
+        getDirection2.InitializeControl(this, 2);
+    }
 
-        private void directionTwoPage_ShowFromNext(object sender, EventArgs e)
-        {
-            // Initialize the direction now (rather than when the form is shown). In
-            // a situation where the user has just changed the default offset (on page
-            // 1 of the wizard), it makes little sense to show the old offset when
-            // page 2 is displayed.
-
-            getDirection2.InitializeControl(this, 2);
-        }
-
-        private void finishPage_CloseFromBack(object sender, Gui.Wizard.PageEventArgs e)
-        {
-            // The intersection and any connecting lines should only be visible when
-            // the finish page is on screen.
-            ErasePainting();            
-        }
+    private void finishPage_CloseFromBack(object sender, Gui.Wizard.PageEventArgs e)
+    {
+        // The intersection and any connecting lines should only be visible when
+        // the finish page is on screen.
+        ErasePainting();            
     }
 }
-

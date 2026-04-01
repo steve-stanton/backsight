@@ -13,39 +13,36 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
 using Backsight.Editor.Forms;
-//using netDxf.Tables;
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+static class Program
 {
-    static class Program
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
+    [STAThread]
+    static void Main(string[] args)
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main(string[] args)
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+
+        //netDxf.DxfDocument dd = new netDxf.DxfDocument();
+        //MessageBox.Show("LineTypes.Count="+dd.LineTypes.Count);
+        //LineType lt = LineType.Continuous;
+        //MessageBox.Show(lt.Name);
+
+        try
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm(args));
+        }
 
-            //netDxf.DxfDocument dd = new netDxf.DxfDocument();
-            //MessageBox.Show("LineTypes.Count="+dd.LineTypes.Count);
-            //LineType lt = LineType.Continuous;
-            //MessageBox.Show(lt.Name);
-
-            try
-            {
-                Application.Run(new MainForm(args));
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.StackTrace, ex.Message);
-            }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.StackTrace, ex.Message);
         }
     }
 }

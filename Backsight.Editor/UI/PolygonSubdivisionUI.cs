@@ -13,100 +13,96 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Forms;
-using Backsight.Geometry;
 using Backsight.Editor.Operations;
 
-namespace Backsight.Editor.UI
+namespace Backsight.Editor.UI;
+
+/// <written by="Steve Stanton" on="26-SEP-2007" />
+/// <summary>
+/// User interface for subdividing a polygon.
+/// </summary>
+class PolygonSubdivisionUI : SimpleCommandUI
 {
-    /// <written by="Steve Stanton" on="26-SEP-2007" />
+    #region Class data
+
+    #endregion
+
+    #region Constructors
+
     /// <summary>
-    /// User interface for subdividing a polygon.
+    /// Creates a new <c>PolygonSubdivisionUI</c>
     /// </summary>
-    class PolygonSubdivisionUI : SimpleCommandUI
+    /// <param name="action">The action that initiated the command</param>
+    internal PolygonSubdivisionUI(IUserAction action)
+        : base(action)
     {
-        #region Class data
+    }
 
-        #endregion
+    #endregion
 
-        #region Constructors
+    internal override bool Run()
+    {
+        SetCommandCursor();
+        return true;
+    }
 
-        /// <summary>
-        /// Creates a new <c>PolygonSubdivisionUI</c>
-        /// </summary>
-        /// <param name="action">The action that initiated the command</param>
-        internal PolygonSubdivisionUI(IUserAction action)
-            : base(action)
+    internal override void SetCommandCursor()
+    {
+        ActiveDisplay.MapPanel.Cursor = EditorResources.PolygonSubdivisionCursor;
+    }
+
+    /// <summary>
+    /// Handles a mouse down event
+    /// </summary>
+    /// <param name="p">The position where the click occurred</param>
+    /// <returns>True if the command handled the mouse down. False if it did nothing.</returns>
+    internal override bool LButtonDown(IPosition p)
+    {
+        // Find out what polygon we need to subdivide
+        IPointGeometry pg = PointGeometry.Create(p);
+        ISpatialIndex index = CadastralMapModel.Current.Index;
+        Polygon pol = new FindPointContainerQuery(index, pg).Result;
+        if (pol==null)
         {
+            MessageBox.Show("Specified position does not fall inside any polygon.");
+            return false;
         }
 
-        #endregion
 
-        internal override bool Run()
-        {
-            SetCommandCursor();
-            return true;
-        }
+        PolygonSubdivisionOperation op = null;
 
-        internal override void SetCommandCursor()
+        try
         {
-            ActiveDisplay.MapPanel.Cursor = EditorResources.PolygonSubdivisionCursor;
-        }
-
-        /// <summary>
-        /// Handles a mouse down event
-        /// </summary>
-        /// <param name="p">The position where the click occurred</param>
-        /// <returns>True if the command handled the mouse down. False if it did nothing.</returns>
-        internal override bool LButtonDown(IPosition p)
-        {
-            // Find out what polygon we need to subdivide
-            IPointGeometry pg = PointGeometry.Create(p);
-            ISpatialIndex index = CadastralMapModel.Current.Index;
-            Polygon pol = new FindPointContainerQuery(index, pg).Result;
-            if (pol==null)
+            // Form the links. Return if we didn't find any links.
+            PolygonSub sub = new PolygonSub(pol);
+            PointFeature start, end;
+            if (!sub.GetLink(0, out start, out end))
             {
-                MessageBox.Show("Specified position does not fall inside any polygon.");
-                return false;
+                MessageBox.Show("Cannot locate any points to connect.");
+                return true;
             }
 
-
-            PolygonSubdivisionOperation op = null;
-
-            try
-            {
-                // Form the links. Return if we didn't find any links.
-                PolygonSub sub = new PolygonSub(pol);
-                PointFeature start, end;
-                if (!sub.GetLink(0, out start, out end))
-                {
-                    MessageBox.Show("Cannot locate any points to connect.");
-                    return true;
-                }
-
-                op = new PolygonSubdivisionOperation();
-                op.Execute(sub);
-                FinishCommand();
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.StackTrace, ex.Message);
-                AbortCommand();
-            }
-
-            return true;
+            op = new PolygonSubdivisionOperation();
+            op.Execute(sub);
+            FinishCommand();
         }
 
-        /// <summary>
-        /// Reacts to a situation where the user presses the ESC key, by aborting this command.
-        /// </summary>
-        internal override void Escape()
+        catch (Exception ex)
         {
+            MessageBox.Show(ex.StackTrace, ex.Message);
             AbortCommand();
         }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Reacts to a situation where the user presses the ESC key, by aborting this command.
+    /// </summary>
+    internal override void Escape()
+    {
+        AbortCommand();
     }
 }

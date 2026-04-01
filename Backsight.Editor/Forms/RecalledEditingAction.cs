@@ -13,50 +13,47 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor.Forms;
 
-namespace Backsight.Editor.Forms
+/// <summary>
+/// An editing action that is being recalled using the Cadastral Editor's
+/// <c>Edit - Recall</c> command
+/// </summary>
+class RecalledEditingAction : EditingAction
 {
+    #region Class data
+
     /// <summary>
-    /// An editing action that is being recalled using the Cadastral Editor's
-    /// <c>Edit - Recall</c> command
+    /// The edit that is being recalled (not null)
     /// </summary>
-    class RecalledEditingAction : EditingAction
+    readonly Operation m_Recall;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RecalledEditingAction"/> class.
+    /// </summary>
+    /// <param name="action">The editing action (not null)</param>
+    /// <param name="recall">The editing operation that is being recalled (not null)</param>
+    /// <exception cref="ArgumentNullException">If either parameter is null</exception>
+    internal RecalledEditingAction(EditingAction action, Operation recall)
+        : base(action)
     {
-        #region Class data
+        if (action==null || recall==null)
+            throw new ArgumentNullException();
 
-        /// <summary>
-        /// The edit that is being recalled (not null)
-        /// </summary>
-        readonly Operation m_Recall;
+        m_Recall = recall;
+    }
 
-        #endregion
+    #endregion
 
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RecalledEditingAction"/> class.
-        /// </summary>
-        /// <param name="action">The editing action (not null)</param>
-        /// <param name="recall">The editing operation that is being recalled (not null)</param>
-        /// <exception cref="ArgumentNullException">If either parameter is null</exception>
-        internal RecalledEditingAction(EditingAction action, Operation recall)
-            : base(action)
-        {
-            if (action==null || recall==null)
-                throw new ArgumentNullException();
-
-            m_Recall = recall;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// The edit that is being recalled (not null)
-        /// </summary>
-        internal Operation RecalledEdit
-        {
-            get { return m_Recall; }
-        }
+    /// <summary>
+    /// The edit that is being recalled (not null)
+    /// </summary>
+    internal Operation RecalledEdit
+    {
+        get { return m_Recall; }
     }
 }

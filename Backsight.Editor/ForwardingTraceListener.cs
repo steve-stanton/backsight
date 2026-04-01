@@ -13,66 +13,64 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Diagnostics;
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <written by="Steve Stanton" on="01-NOV-2007" />
+/// <summary>
+/// A <c>TraceListener</c> that forwards trace output to a delegate.
+/// </summary>
+public class ForwardingTraceListener : TraceListener
 {
-    /// <written by="Steve Stanton" on="01-NOV-2007" />
     /// <summary>
-    /// A <c>TraceListener</c> that forwards trace output to a delegate.
+    /// Delegate for accepting trace output.
     /// </summary>
-    public class ForwardingTraceListener : TraceListener
+    /// <param name="message"></param>
+    public delegate void MessageReceiver (string message);
+
+    #region Class data
+
+    /// <summary>
+    /// The delegate that trace output should be forwarded to (not null)
+    /// </summary>
+    readonly MessageReceiver m_Receiver;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Creates a new <c>ForwardingTraceListener</c> that forwards to the
+    /// specified receiver.
+    /// </summary>
+    /// <param name="receiver">The method that accepts forwarded trace output (not null)</param>
+    /// <exception cref="ArgumentNullException">If <paramref name="receiver"/> is null</exception>
+    public ForwardingTraceListener(MessageReceiver receiver)
     {
-        /// <summary>
-        /// Delegate for accepting trace output.
-        /// </summary>
-        /// <param name="message"></param>
-        public delegate void MessageReceiver (string message);
+        if (receiver==null)
+            throw new ArgumentNullException();
 
-        #region Class data
+        m_Receiver = receiver;
+    }
 
-        /// <summary>
-        /// The delegate that trace output should be forwarded to (not null)
-        /// </summary>
-        readonly MessageReceiver m_Receiver;
+    #endregion
 
-        #endregion
+    /// <summary>
+    /// Forwards a trace message
+    /// </summary>
+    /// <param name="message">The message to forward</param>
+    public override void Write(string message)
+    {
+        m_Receiver(message);
+    }
 
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>ForwardingTraceListener</c> that forwards to the
-        /// specified receiver.
-        /// </summary>
-        /// <param name="receiver">The method that accepts forwarded trace output (not null)</param>
-        /// <exception cref="ArgumentNullException">If <paramref name="receiver"/> is null</exception>
-        public ForwardingTraceListener(MessageReceiver receiver)
-        {
-            if (receiver==null)
-                throw new ArgumentNullException();
-
-            m_Receiver = receiver;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Forwards a trace message
-        /// </summary>
-        /// <param name="message">The message to forward</param>
-        public override void Write(string message)
-        {
-            m_Receiver(message);
-        }
-
-        /// <summary>
-        /// Forwards a trace message
-        /// </summary>
-        /// <param name="message">The message to forward</param>
-        public override void WriteLine(string message)
-        {
-            m_Receiver(message);
-        }
+    /// <summary>
+    /// Forwards a trace message
+    /// </summary>
+    /// <param name="message">The message to forward</param>
+    public override void WriteLine(string message)
+    {
+        m_Receiver(message);
     }
 }

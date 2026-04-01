@@ -13,48 +13,45 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Forms;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" on="02-FEB-2007" />
+/// <summary>
+/// An editing action is a <c>UserAction</c> that's associated with a numeric ID.
+/// </summary>
+class EditingAction : UserAction, IEditingAction
 {
-	/// <written by="Steve Stanton" on="02-FEB-2007" />
-    /// <summary>
-    /// An editing action is a <c>UserAction</c> that's associated with a numeric ID.
-    /// </summary>
-    class EditingAction : UserAction, IEditingAction
+    #region Class data
+
+    private readonly EditingActionId m_Id;
+
+    #endregion
+
+    #region Constructors
+
+    public EditingAction(EditingActionId id, ToolStripItem[] items, IsActionEnabled isActionEnabled, DoAction doAction)
+        : base(items, isActionEnabled, doAction)
     {
-        #region Class data
+        m_Id = id;
+    }
 
-        private readonly EditingActionId m_Id;
+    /// <summary>
+    /// Copy constructor
+    /// </summary>
+    /// <param name="action">The action to copy</param>
+    protected EditingAction(EditingAction action)
+        : base(action)
+    {
+        m_Id = action.m_Id;
+    }
 
-        #endregion
+    #endregion
 
-        #region Constructors
-
-        public EditingAction(EditingActionId id, ToolStripItem[] items, IsActionEnabled isActionEnabled, DoAction doAction)
-            : base(items, isActionEnabled, doAction)
-        {
-            m_Id = id;
-        }
-
-        /// <summary>
-        /// Copy constructor
-        /// </summary>
-        /// <param name="action">The action to copy</param>
-        protected EditingAction(EditingAction action)
-            : base(action)
-        {
-            m_Id = action.m_Id;
-        }
-
-        #endregion
-
-        public EditingActionId EditId
-        {
-            get { return m_Id; }
-        }
+    public EditingActionId EditId
+    {
+        get { return m_Id; }
     }
 }

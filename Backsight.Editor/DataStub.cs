@@ -13,32 +13,31 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+abstract class DataStub
 {
-    abstract class DataStub
+    #region Class data
+
+    /// <summary>
+    /// The unique ID for an object (0 indicates a null). Values less than zero
+    /// are not currently expected.
+    /// </summary>
+    private readonly int m_Id;
+
+    #endregion
+
+    #region Constructors
+
+    protected DataStub(int id)
     {
-        #region Class data
+        m_Id = id;
+    }
 
-        /// <summary>
-        /// The unique ID for an object (0 indicates a null). Values less than zero
-        /// are not currently expected.
-        /// </summary>
-        private readonly int m_Id;
+    #endregion
 
-        #endregion
-
-        #region Constructors
-
-        protected DataStub(int id)
-        {
-            m_Id = id;
-        }
-
-        #endregion
-
-        public int Id
-        {
-            get { return m_Id; }
-        }
+    public int Id
+    {
+        get { return m_Id; }
     }
 }

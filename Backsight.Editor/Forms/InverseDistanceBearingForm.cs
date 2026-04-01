@@ -13,35 +13,31 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Windows.Forms;
+namespace Backsight.Editor.Forms;
 
-namespace Backsight.Editor.Forms
+/// <summary>
+/// Inverse distance and bearing calculator
+/// </summary>
+partial class InverseDistanceBearingForm : InverseDistanceForm
 {
-    /// <summary>
-    /// Inverse distance and bearing calculator
-    /// </summary>
-    partial class InverseDistanceBearingForm : InverseDistanceForm
+    #region Constructors
+
+    internal InverseDistanceBearingForm()
     {
-        #region Constructors
+        InitializeComponent();
+    }
 
-        internal InverseDistanceBearingForm()
+    #endregion
+
+    internal override void ShowResult()
+    {
+        base.ShowResult();
+
+        // Now show the bearing too.
+        if (Point1!=null && Point2!=null)
         {
-            InitializeComponent();
+            double bearing = Geom.BearingInRadians(Point1, Point2);
+            bearingTextBox.Text = RadianValue.AsString(bearing);
         }
-
-        #endregion
-
-        internal override void ShowResult()
-        {
-	        base.ShowResult();
-
-            // Now show the bearing too.
-	        if (Point1!=null && Point2!=null)
-            {
-                double bearing = Geom.BearingInRadians(Point1, Point2);
-                bearingTextBox.Text = RadianValue.AsString(bearing);
-            }
-        }
-	}
+    }
 }

@@ -13,80 +13,76 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-using Backsight.Forms;
+namespace Backsight.Editor.Forms;
 
-namespace Backsight.Editor.Forms
+/// <written by="Steve Stanton" on="30-MAY-2007" />
+/// <summary>
+/// A form for holding some sort of dialog (user control).
+/// </summary>
+public partial class ContainerForm : Form, IControlContainer
 {
-	/// <written by="Steve Stanton" on="30-MAY-2007" />
+    #region Class data
+
+    // None
+
+    #endregion
+
+    #region Constructors
+
     /// <summary>
-    /// A form for holding some sort of dialog (user control).
+    /// Creates a container for some sort of user action.
     /// </summary>
-    public partial class ContainerForm : Form, IControlContainer
+    /// <param name="title">The title for the dialog</param>
+    /// <remarks>When created this way, the dialog will be a top-most form, which can be
+    /// annoying when running in the debugger. Where possible, use the constructor that
+    /// also specifies a parent (owner) form.</remarks>
+    public ContainerForm(string title)
     {
-        #region Class data
-
-        // None
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a container for some sort of user action.
-        /// </summary>
-        /// <param name="title">The title for the dialog</param>
-        /// <remarks>When created this way, the dialog will be a top-most form, which can be
-        /// annoying when running in the debugger. Where possible, use the constructor that
-        /// also specifies a parent (owner) form.</remarks>
-        public ContainerForm(string title)
-        {
-            InitializeComponent();
-            Text = title;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerForm"/> class that is not
-        /// a top-most window.
-        /// </summary>
-        /// <param name="title">The title for the dialog</param>
-        /// <param name="parent">The form that should be defined as the owner.</param>
-        public ContainerForm(string title, Form parent)
-        {
-            InitializeComponent();
-            Text = title;
-            TopMost = false;
-            Owner = parent;
-        }
-
-        #endregion
-
-        #region IControlContainer Members
-
-        /// <summary>
-        /// Modeless display of the specified control.
-        /// </summary>
-        /// <param name="c">The control to display.</param>
-        /// <exception cref="ArgumentException">If a control has already been
-        /// displayed in this container (and not cleared via a call to <c>Clear</c>)</exception>
-        public void Display(Control c)
-        {
-            if (Controls.Count!=0)
-                throw new ArgumentException("Container already contains something");
-
-            ClientSize = c.Size;
-            Controls.Add(c);
-            Show();
-        }
-
-        public void Clear()
-        {
-            Hide();
-            Controls.Clear();
-        }
-
-        #endregion
+        InitializeComponent();
+        Text = title;
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContainerForm"/> class that is not
+    /// a top-most window.
+    /// </summary>
+    /// <param name="title">The title for the dialog</param>
+    /// <param name="parent">The form that should be defined as the owner.</param>
+    public ContainerForm(string title, Form parent)
+    {
+        InitializeComponent();
+        Text = title;
+        TopMost = false;
+        Owner = parent;
+    }
+
+    #endregion
+
+    #region IControlContainer Members
+
+    /// <summary>
+    /// Modeless display of the specified control.
+    /// </summary>
+    /// <param name="c">The control to display.</param>
+    /// <exception cref="ArgumentException">If a control has already been
+    /// displayed in this container (and not cleared via a call to <c>Clear</c>)</exception>
+    public void Display(Control c)
+    {
+        if (Controls.Count!=0)
+            throw new ArgumentException("Container already contains something");
+
+        ClientSize = c.Size;
+        Controls.Add(c);
+        Show();
+    }
+
+    public void Clear()
+    {
+        Hide();
+        Controls.Clear();
+    }
+
+    #endregion
 }

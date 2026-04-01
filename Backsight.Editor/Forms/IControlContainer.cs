@@ -13,25 +13,23 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <summary>
+/// Something that is capable of displaying any sort of control.
+/// </summary>
+interface IControlContainer
 {
     /// <summary>
-    /// Something that is capable of displaying any sort of control.
+    /// Displays a control in the container.
     /// </summary>
-    interface IControlContainer
-    {
-        /// <summary>
-        /// Displays a control in the container.
-        /// </summary>
-        /// <param name="c">The control to display</param>
-        void Display(Control c);
+    /// <param name="c">The control to display</param>
+    void Display(Control c);
 
-        /// <summary>
-        /// Hides all controls in the container.
-        /// </summary>
-        void Clear();
-    }
+    /// <summary>
+    /// Hides all controls in the container.
+    /// </summary>
+    void Clear();
 }

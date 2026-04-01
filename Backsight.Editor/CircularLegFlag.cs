@@ -13,30 +13,27 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="21-JAN-1998"/>
+/// <summary>
+/// Flag bits relating to the <see cref="CircularLeg"/> class.
+/// </summary>
+[Flags]
+enum CircularLegFlag : byte
 {
-    /// <written by="Steve Stanton" on="21-JAN-1998"/>
     /// <summary>
-    /// Flag bits relating to the <see cref="CircularLeg"/> class.
+    /// Leg is a cul-de-sac
     /// </summary>
-    [Flags]
-    enum CircularLegFlag : byte
-    {
-        /// <summary>
-        /// Leg is a cul-de-sac
-        /// </summary>
-        CulDeSac = 0x01,
+    CulDeSac = 0x01,
 
-        /// <summary>
-        /// Two angles were specified
-        /// </summary>
-        TwoAngles = 0x02,
+    /// <summary>
+    /// Two angles were specified
+    /// </summary>
+    TwoAngles = 0x02,
 
-        /// <summary>
-        /// Counter-clockwise arc
-        /// </summary>
-        CounterClockwise = 0x04,
-    }
+    /// <summary>
+    /// Counter-clockwise arc
+    /// </summary>
+    CounterClockwise = 0x04,
 }

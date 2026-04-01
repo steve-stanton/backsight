@@ -13,107 +13,104 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Environment;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" was="CdAttributes"/>
+/// <summary>
+/// Dialog for showing the structure of the Backsight environment.
+/// </summary>
+partial class EnvironmentStructureForm : Form
 {
-    /// <written by="Steve Stanton" was="CdAttributes"/>
-    /// <summary>
-    /// Dialog for showing the structure of the Backsight environment.
-    /// </summary>
-    partial class EnvironmentStructureForm : Form
+    internal EnvironmentStructureForm()
     {
-        internal EnvironmentStructureForm()
+        InitializeComponent();
+    }
+
+    private void EnvironmentStructureForm_Shown(object sender, EventArgs e)
+    {
+        // Hide the color label, since it only applies when an entity type is selected
+        colorLabel.Visible = false;
+
+        IEnvironmentContainer ec = EnvironmentContainer.Current;
+
+        TreeNode root = new TreeNode(ec.Name);
+        root.ImageKey = root.SelectedImageKey = "AttributeContainer";
+        tree.Nodes.Add(root);
+
+        // Themes and layers
+
+        ITheme[] themes = ec.Themes;
+        if (themes.Length > 0)
         {
-            InitializeComponent();
-        }
-
-        private void EnvironmentStructureForm_Shown(object sender, EventArgs e)
-        {
-            // Hide the color label, since it only applies when an entity type is selected
-            colorLabel.Visible = false;
-
-            IEnvironmentContainer ec = EnvironmentContainer.Current;
-
-            TreeNode root = new TreeNode(ec.Name);
-            root.ImageKey = root.SelectedImageKey = "AttributeContainer";
-            tree.Nodes.Add(root);
-
-            // Themes and layers
-
-            ITheme[] themes = ec.Themes;
-            if (themes.Length > 0)
+            for (int i=0; i<themes.Length; i++)
             {
-                for (int i=0; i<themes.Length; i++)
+                // Ignore the blank theme
+                ITheme theme = themes[i];
+                if (theme.Id==0)
+                    continue;
+
+                TreeNode themeNode = new TreeNode(theme.Name);
+                themeNode.ImageKey = themeNode.SelectedImageKey = "Theme";
+                themeNode.Tag = theme;
+
+                ILayer[] layers = theme.Layers;
+                for (int j=0; j<layers.Length; j++)
                 {
-                    // Ignore the blank theme
-                    ITheme theme = themes[i];
-                    if (theme.Id==0)
-                        continue;
-
-                    TreeNode themeNode = new TreeNode(theme.Name);
-                    themeNode.ImageKey = themeNode.SelectedImageKey = "Theme";
-                    themeNode.Tag = theme;
-
-                    ILayer[] layers = theme.Layers;
-                    for (int j=0; j<layers.Length; j++)
-                    {
-                        ILayer layer = layers[j];
-                        TreeNode layerNode = new TreeNode(layer.Name);
-                        layerNode.ImageKey = layerNode.SelectedImageKey = "Layer";
-                        layerNode.Tag = layer;
-                        themeNode.Nodes.Add(layerNode);
-                    }
-
-                    root.Nodes.Add(themeNode);
-                }
-            }
-
-            // Now any layers that aren't associated with a theme
-            ILayer[] allLayers = ec.Layers;
-            foreach (ILayer layer in allLayers)
-            {
-                if (layer.Theme == null)
-                {
+                    ILayer layer = layers[j];
                     TreeNode layerNode = new TreeNode(layer.Name);
                     layerNode.ImageKey = layerNode.SelectedImageKey = "Layer";
                     layerNode.Tag = layer;
-                    root.Nodes.Add(layerNode);
+                    themeNode.Nodes.Add(layerNode);
                 }
-            }
 
-            // Entity types
-            IEntity[] ents = ec.EntityTypes;
-            foreach (IEntity ent in ents)
+                root.Nodes.Add(themeNode);
+            }
+        }
+
+        // Now any layers that aren't associated with a theme
+        ILayer[] allLayers = ec.Layers;
+        foreach (ILayer layer in allLayers)
+        {
+            if (layer.Theme == null)
             {
-                if (ent.Id != 0)
-                {
-                    TreeNode entNode = new TreeNode(ent.Name);
-                    entNode.ImageKey = entNode.SelectedImageKey = "Body";
-                    entNode.Tag = ent;
-                    root.Nodes.Add(entNode);
-                }
+                TreeNode layerNode = new TreeNode(layer.Name);
+                layerNode.ImageKey = layerNode.SelectedImageKey = "Layer";
+                layerNode.Tag = layer;
+                root.Nodes.Add(layerNode);
             }
         }
 
-        private void okButton_Click(object sender, EventArgs e)
+        // Entity types
+        IEntity[] ents = ec.EntityTypes;
+        foreach (IEntity ent in ents)
         {
-            Close();
+            if (ent.Id != 0)
+            {
+                TreeNode entNode = new TreeNode(ent.Name);
+                entNode.ImageKey = entNode.SelectedImageKey = "Body";
+                entNode.Tag = ent;
+                root.Nodes.Add(entNode);
+            }
         }
+    }
 
-        private void tree_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            // Display the color of any selected entity type
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
 
-            TreeNode node = e.Node;
-            IEntity ent = (node.Tag as IEntity);
-            colorLabel.Visible = (ent != null);
+    private void tree_AfterSelect(object sender, TreeViewEventArgs e)
+    {
+        // Display the color of any selected entity type
 
-            if (ent !=null)
-                colorLabel.BackColor = EntityUtil.GetColor(ent);
-        }
+        TreeNode node = e.Node;
+        IEntity ent = (node.Tag as IEntity);
+        colorLabel.Visible = (ent != null);
+
+        if (ent !=null)
+            colorLabel.BackColor = EntityUtil.GetColor(ent);
     }
 }

@@ -13,139 +13,136 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Diagnostics;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <summary>
+/// Dialog for listing the editing sessions (and individual edits). Also
+/// lets the user undo edits.
+/// </summary>
+public partial class HistoryForm : Form
 {
-    /// <summary>
-    /// Dialog for listing the editing sessions (and individual edits). Also
-    /// lets the user undo edits.
-    /// </summary>
-    public partial class HistoryForm : Form
+    #region Class data
+
+    // none
+
+    #endregion
+
+    #region Constructors
+
+    public HistoryForm()
     {
-        #region Class data
+        InitializeComponent();
+    }
 
-        // none
+    #endregion
 
-        #endregion
+    private void HistoryForm_Shown(object sender, EventArgs e)
+    {
+        LoadSessionList();
+    }
 
-        #region Constructors
-
-        public HistoryForm()
+    void LoadSessionList()
+    {
+        Session[] sa = CadastralMapModel.Current.Sessions;
+        grid.ColumnCount = 4;
+        grid.RowCount = sa.Length;
+        int rowIndex = grid.RowCount;
+        for (int i = 0; i < sa.Length; i++)
         {
-            InitializeComponent();
+            rowIndex--;
+            DataGridViewRow row = grid.Rows[rowIndex];
+            row.Cells["StartTime"].Value = sa[i].StartTime;
+            if (sa[i].EndTime == DateTime.MinValue)
+                row.Cells["EndTime"].Value = String.Empty;
+            else
+                row.Cells["EndTime"].Value = sa[i].EndTime;
+
+            row.Cells["userColumn"].Value = sa[i].User;
+            row.Cells["EditCount"].Value = sa[i].OperationCount;
+            row.Tag = sa[i];
         }
 
-        #endregion
+        grid.CurrentCell = null;
+    }
 
-        private void HistoryForm_Shown(object sender, EventArgs e)
-        {
-            LoadSessionList();
-        }
+    /// <summary>
+    /// Rolls back the last known edit
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void rollbackButton_Click(object sender, EventArgs e)
+    {
+        // If the working session contains anything, rollback that
+        Session ws = CadastralMapModel.Current.WorkingSession;
+        bool done = false;
 
-        void LoadSessionList()
+        if (ws.OperationCount > 0)
+            done = CadastralMapModel.Current.Rollback(ws);
+        else
         {
             Session[] sa = CadastralMapModel.Current.Sessions;
-            grid.ColumnCount = 4;
-            grid.RowCount = sa.Length;
-            int rowIndex = grid.RowCount;
-            for (int i = 0; i < sa.Length; i++)
+            Debug.Assert(sa.Length>0);
+
+            if (sa.Length == 1)
             {
-                rowIndex--;
-                DataGridViewRow row = grid.Rows[rowIndex];
-                row.Cells["StartTime"].Value = sa[i].StartTime;
-                if (sa[i].EndTime == DateTime.MinValue)
-                    row.Cells["EndTime"].Value = String.Empty;
-                else
-                    row.Cells["EndTime"].Value = sa[i].EndTime;
-
-                row.Cells["userColumn"].Value = sa[i].User;
-                row.Cells["EditCount"].Value = sa[i].OperationCount;
-                row.Tag = sa[i];
-            }
-
-            grid.CurrentCell = null;
-        }
-
-        /// <summary>
-        /// Rolls back the last known edit
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void rollbackButton_Click(object sender, EventArgs e)
-        {
-            // If the working session contains anything, rollback that
-            Session ws = CadastralMapModel.Current.WorkingSession;
-            bool done = false;
-
-            if (ws.OperationCount > 0)
-                done = CadastralMapModel.Current.Rollback(ws);
-            else
-            {
-                Session[] sa = CadastralMapModel.Current.Sessions;
-                Debug.Assert(sa.Length>0);
-
-                if (sa.Length == 1)
-                {
-                    MessageBox.Show("Nothing to undo");
-                    Debug.Assert(sa[0] == ws);
-                    return;
-                }
-
-                // Get the session that precedes the working session
-                Session s = sa[sa.Length-2];
-                done = CadastralMapModel.Current.Rollback(s);
-            }
-
-            if (done)
-            {
-                LoadSessionList();
-                EditingController.Current.RefreshAllDisplays();
-            }
-        }
-
-        private void detailsButton_Click(object sender, EventArgs e)
-        {
-            Session s = GetSelectedSession();
-            if (s==null)
-            {
-                MessageBox.Show("Select the session you want details for");
+                MessageBox.Show("Nothing to undo");
+                Debug.Assert(sa[0] == ws);
                 return;
             }
 
+            // Get the session that precedes the working session
+            Session s = sa[sa.Length-2];
+            done = CadastralMapModel.Current.Rollback(s);
+        }
+
+        if (done)
+        {
+            LoadSessionList();
+            EditingController.Current.RefreshAllDisplays();
+        }
+    }
+
+    private void detailsButton_Click(object sender, EventArgs e)
+    {
+        Session s = GetSelectedSession();
+        if (s==null)
+        {
+            MessageBox.Show("Select the session you want details for");
+            return;
+        }
+
+        ShowSession(s);
+    }
+
+    private void grid_DoubleClick(object sender, EventArgs e)
+    {
+        Session s = GetSelectedSession();
+        if (s!=null)
             ShowSession(s);
-        }
+    }
 
-        private void grid_DoubleClick(object sender, EventArgs e)
-        {
-            Session s = GetSelectedSession();
-            if (s!=null)
-                ShowSession(s);
-        }
+    Session GetSelectedSession()
+    {
+        DataGridViewSelectedRowCollection sel = grid.SelectedRows;
+        if (sel.Count==0)
+            return null;
 
-        Session GetSelectedSession()
-        {
-            DataGridViewSelectedRowCollection sel = grid.SelectedRows;
-            if (sel.Count==0)
-                return null;
+        DataGridViewRow row = sel[0];
+        return (Session)row.Tag;
+    }
 
-            DataGridViewRow row = sel[0];
-            return (Session)row.Tag;
-        }
+    void ShowSession(Session s)
+    {
+        SessionForm dial = new SessionForm(s);
+        dial.ShowDialog();
+        dial.Dispose();
+    }
 
-        void ShowSession(Session s)
-        {
-            SessionForm dial = new SessionForm(s);
-            dial.ShowDialog();
-            dial.Dispose();
-        }
-
-        private void closeButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
+    private void closeButton_Click(object sender, EventArgs e)
+    {
+        Close();
     }
 }

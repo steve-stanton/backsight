@@ -14,189 +14,186 @@
 // </remarks>
 
 using System.Diagnostics;
-using System.Collections.Generic;
 using System.Drawing;
-
 using Backsight.Index;
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <written by="Steve Stanton" on="12-AUG-2007" />
+/// <summary>
+/// Spatial index utilized by the Cadastral Editor. In addition to the usual
+/// stuff, this provides an additional index for circles, plus an index of
+/// line intersections.
+/// </summary>
+class EditingIndex : SpatialIndex
 {
-    /// <written by="Steve Stanton" on="12-AUG-2007" />
+    #region Class data
+
     /// <summary>
-    /// Spatial index utilized by the Cadastral Editor. In addition to the usual
-    /// stuff, this provides an additional index for circles, plus an index of
-    /// line intersections.
+    /// Spatial index of all extra stuff that is required for the cadastral editor.
+    /// This consists of lines representing circles (instances of <see cref="Circle"/>), and
+    /// points representing line intersections (instances of <see cref="Intersection"/>).
     /// </summary>
-    class EditingIndex : SpatialIndex
+    readonly SpatialIndex m_ExtraData;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Creates a new <c>EditingIndex</c> with nothing in it.
+    /// </summary>
+    internal EditingIndex()
     {
-        #region Class data
-
-        /// <summary>
-        /// Spatial index of all extra stuff that is required for the cadastral editor.
-        /// This consists of lines representing circles (instances of <see cref="Circle"/>), and
-        /// points representing line intersections (instances of <see cref="Intersection"/>).
-        /// </summary>
-        readonly SpatialIndex m_ExtraData;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>EditingIndex</c> with nothing in it.
-        /// </summary>
-        internal EditingIndex()
-        {
-            m_ExtraData = new SpatialIndex();
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Includes a circle in this index.
-        /// </summary>
-        /// <param name="c">The circle to add to the index</param>
-        internal void AddCircle(Circle c)
-        {
-            Debug.Assert(c.SpatialType==SpatialType.Line);
-            m_ExtraData.Add(c);
-        }
-
-        /// <summary>
-        /// Removes a circle from this index.
-        /// </summary>
-        /// <param name="c">The circle to remove from the index</param>
-        internal void RemoveCircle(Circle c)
-        {
-            m_ExtraData.Remove(c);
-        }
-
-        /// <summary>
-        /// Adds a feature to this index, and sets the <see cref="Feature.IsIndexed"/> property.
-        /// </summary>
-        /// <param name="f">The feature to add</param>
-        internal void AddFeature(Feature f)
-        {
-            if (!f.IsIndexed)
-            {
-                base.Add(f);
-                f.IsIndexed = true;
-            }
-        }
-
-        /// <summary>
-        /// Removes a feature from this index, and clears the <see cref="Feature.IsIndexed"/> property.
-        /// </summary>
-        /// <param name="f">The feature to remove</param>
-        internal void RemoveFeature(Feature f)
-        {
-            if (f.IsIndexed)
-            {
-                base.Remove(f);
-                f.IsIndexed = false;
-            }
-        }
-
-        /// <summary>
-        /// Attempts to locate the circle closest to a position of interest.
-        /// </summary>
-        /// <param name="p">The search position (on the circumference of the circle)</param>
-        /// <param name="tol">The search tolerance</param>
-        /// <returns>The circle closest to the search position (null if nothing found)</returns>
-        internal Circle QueryClosestCircle(IPosition p, ILength tol)
-        {
-            ISpatialObject so = m_ExtraData.QueryClosest(p, tol, SpatialType.Line);
-            if (so==null)
-                return null;
-
-            Debug.Assert(so is Circle);
-            return (so as Circle);
-        }
-
-        /// <summary>
-        /// Locates circles close to a specific position.
-        /// </summary>
-        /// <param name="p">The search position.</param>
-        /// <param name="tol">The search tolerance (expected to be greater than zero).</param>
-        /// <returns>The result of the query (may be an empty list).</returns>
-        internal List<Circle> QueryCircles(IPosition p, ILength tol)
-        {
-            return new FindCirclesQuery(this, p, tol).Result;
-        }
-
-        /// <summary>
-        /// Processes circles that overlap the specified window.
-        /// Used by <c>FindCirclesQuery</c> to execute the query.
-        /// </summary>
-        /// <param name="extent">The query extent</param>
-        /// <param name="itemHandler">Delegate for processing each query hit</param>
-        internal void FindCircles(IWindow extent, ProcessItem itemHandler)
-        {
-            m_ExtraData.QueryWindow(extent, SpatialType.Line, itemHandler);
-        }
-
-        /// <summary>
-        /// Attempts to find a location that can act as a terminal for a polygon boundary.
-        /// This either refers to a user-perceived point feature, or an intersection
-        /// point (as added via a prior call to <see cref="AddIntersection"/>).
-        /// </summary>
-        /// <param name="p">The position of interest</param>
-        /// <remarks>The corresponding terminal (null if nothing found). This should either
-        /// be an instance of <see cref="PointFeature"/> or <see cref="Intersection"/>.</remarks>
-        internal ITerminal FindTerminal(IPointGeometry p)
-        {
-            // Search the base index for a real point feature
-            PointFeature pf = (base.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature);
-            if (pf!=null)
-                return pf;
-
-            // Search for an intersection
-            return (m_ExtraData.QueryClosest(p, Length.Zero, SpatialType.Point) as Intersection);
-        }
-
-        /// <summary>
-        /// Includes an intersection in this index.
-        /// </summary>
-        /// <param name="x">The intersection to add to the index (and sets the 
-        /// <see cref="Intersection.IsIndexed"/> property to true)
-        /// </param>
-        internal void AddIntersection(Intersection x)
-        {
-            m_ExtraData.Add(x);
-            x.IsIndexed = true;
-        }
-
-        /// <summary>
-        /// Removes an intersection from this index
-        /// </summary>
-        /// <param name="x">The intersection to remove (on successful removal, the
-        /// <see cref="Intersection.IsIndexed"/> property will be set false)
-        /// </param>
-        internal void RemoveIntersection(Intersection x)
-        {
-            if (m_ExtraData.Remove(x))
-                x.IsIndexed = false;
-        }
-
-        /// <summary>
-        /// Counts the number of intersections in this index
-        /// </summary>
-        /// <returns>The number of intersection points</returns>
-        internal uint GetIntersectCount()
-        {
-            return m_ExtraData.GetPointCount();
-        }
-
-        /// <summary>
-        /// Draws intersection points
-        /// </summary>
-        /// <param name="display">The display to draw to</param>
-        internal void DrawIntersections(ISpatialDisplay display)
-        {
-            IDrawStyle style = EditingController.Current.DrawStyle;
-            style.FillColor = Color.Transparent;
-            new DrawQuery(m_ExtraData, display, style, SpatialType.Point);
-        }
-
+        m_ExtraData = new SpatialIndex();
     }
+
+    #endregion
+
+    /// <summary>
+    /// Includes a circle in this index.
+    /// </summary>
+    /// <param name="c">The circle to add to the index</param>
+    internal void AddCircle(Circle c)
+    {
+        Debug.Assert(c.SpatialType==SpatialType.Line);
+        m_ExtraData.Add(c);
+    }
+
+    /// <summary>
+    /// Removes a circle from this index.
+    /// </summary>
+    /// <param name="c">The circle to remove from the index</param>
+    internal void RemoveCircle(Circle c)
+    {
+        m_ExtraData.Remove(c);
+    }
+
+    /// <summary>
+    /// Adds a feature to this index, and sets the <see cref="Feature.IsIndexed"/> property.
+    /// </summary>
+    /// <param name="f">The feature to add</param>
+    internal void AddFeature(Feature f)
+    {
+        if (!f.IsIndexed)
+        {
+            base.Add(f);
+            f.IsIndexed = true;
+        }
+    }
+
+    /// <summary>
+    /// Removes a feature from this index, and clears the <see cref="Feature.IsIndexed"/> property.
+    /// </summary>
+    /// <param name="f">The feature to remove</param>
+    internal void RemoveFeature(Feature f)
+    {
+        if (f.IsIndexed)
+        {
+            base.Remove(f);
+            f.IsIndexed = false;
+        }
+    }
+
+    /// <summary>
+    /// Attempts to locate the circle closest to a position of interest.
+    /// </summary>
+    /// <param name="p">The search position (on the circumference of the circle)</param>
+    /// <param name="tol">The search tolerance</param>
+    /// <returns>The circle closest to the search position (null if nothing found)</returns>
+    internal Circle QueryClosestCircle(IPosition p, ILength tol)
+    {
+        ISpatialObject so = m_ExtraData.QueryClosest(p, tol, SpatialType.Line);
+        if (so==null)
+            return null;
+
+        Debug.Assert(so is Circle);
+        return (so as Circle);
+    }
+
+    /// <summary>
+    /// Locates circles close to a specific position.
+    /// </summary>
+    /// <param name="p">The search position.</param>
+    /// <param name="tol">The search tolerance (expected to be greater than zero).</param>
+    /// <returns>The result of the query (may be an empty list).</returns>
+    internal List<Circle> QueryCircles(IPosition p, ILength tol)
+    {
+        return new FindCirclesQuery(this, p, tol).Result;
+    }
+
+    /// <summary>
+    /// Processes circles that overlap the specified window.
+    /// Used by <c>FindCirclesQuery</c> to execute the query.
+    /// </summary>
+    /// <param name="extent">The query extent</param>
+    /// <param name="itemHandler">Delegate for processing each query hit</param>
+    internal void FindCircles(IWindow extent, ProcessItem itemHandler)
+    {
+        m_ExtraData.QueryWindow(extent, SpatialType.Line, itemHandler);
+    }
+
+    /// <summary>
+    /// Attempts to find a location that can act as a terminal for a polygon boundary.
+    /// This either refers to a user-perceived point feature, or an intersection
+    /// point (as added via a prior call to <see cref="AddIntersection"/>).
+    /// </summary>
+    /// <param name="p">The position of interest</param>
+    /// <remarks>The corresponding terminal (null if nothing found). This should either
+    /// be an instance of <see cref="PointFeature"/> or <see cref="Intersection"/>.</remarks>
+    internal ITerminal FindTerminal(IPointGeometry p)
+    {
+        // Search the base index for a real point feature
+        PointFeature pf = (base.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature);
+        if (pf!=null)
+            return pf;
+
+        // Search for an intersection
+        return (m_ExtraData.QueryClosest(p, Length.Zero, SpatialType.Point) as Intersection);
+    }
+
+    /// <summary>
+    /// Includes an intersection in this index.
+    /// </summary>
+    /// <param name="x">The intersection to add to the index (and sets the 
+    /// <see cref="Intersection.IsIndexed"/> property to true)
+    /// </param>
+    internal void AddIntersection(Intersection x)
+    {
+        m_ExtraData.Add(x);
+        x.IsIndexed = true;
+    }
+
+    /// <summary>
+    /// Removes an intersection from this index
+    /// </summary>
+    /// <param name="x">The intersection to remove (on successful removal, the
+    /// <see cref="Intersection.IsIndexed"/> property will be set false)
+    /// </param>
+    internal void RemoveIntersection(Intersection x)
+    {
+        if (m_ExtraData.Remove(x))
+            x.IsIndexed = false;
+    }
+
+    /// <summary>
+    /// Counts the number of intersections in this index
+    /// </summary>
+    /// <returns>The number of intersection points</returns>
+    internal uint GetIntersectCount()
+    {
+        return m_ExtraData.GetPointCount();
+    }
+
+    /// <summary>
+    /// Draws intersection points
+    /// </summary>
+    /// <param name="display">The display to draw to</param>
+    internal void DrawIntersections(ISpatialDisplay display)
+    {
+        IDrawStyle style = EditingController.Current.DrawStyle;
+        style.FillColor = Color.Transparent;
+        new DrawQuery(m_ExtraData, display, style, SpatialType.Point);
+    }
+
 }

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Windows.Forms;
-
+﻿using System.Windows.Forms;
 using Backsight.Editor.Properties;
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+public class EditingHelpProvider : HelpProvider
 {
-    public class EditingHelpProvider : HelpProvider
+    public EditingHelpProvider()
     {
-        public EditingHelpProvider()
-        {
-            base.HelpNamespace = Settings.Default.HelpFile;
-        }
+        base.HelpNamespace = Settings.Default.HelpFile;
     }
 }

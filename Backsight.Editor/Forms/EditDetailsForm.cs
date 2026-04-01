@@ -13,25 +13,23 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-namespace Backsight.Editor.Forms
-{
-    /// <summary>
-    /// Displays details about an editing operation (the string saved to the database)
-    /// </summary>
-    partial class EditDetailsForm : Form
-    {
-        internal EditDetailsForm(Operation op)
-        {
-            InitializeComponent();
-            detailsLabel.Text = op.GetEditString();
-        }
+namespace Backsight.Editor.Forms;
 
-        private void closeButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
+/// <summary>
+/// Displays details about an editing operation (the string saved to the database)
+/// </summary>
+partial class EditDetailsForm : Form
+{
+    internal EditDetailsForm(Operation op)
+    {
+        InitializeComponent();
+        detailsLabel.Text = op.GetEditString();
+    }
+
+    private void closeButton_Click(object sender, EventArgs e)
+    {
+        Close();
     }
 }

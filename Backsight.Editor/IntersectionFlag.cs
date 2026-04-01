@@ -13,20 +13,17 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="26-OCT-2007" />
+/// <summary>
+/// Flag bits relating to an <see cref="Intersection"/>
+/// </summary>
+[Flags]
+enum IntersectionFlag : byte
 {
-    /// <written by="Steve Stanton" on="26-OCT-2007" />
     /// <summary>
-    /// Flag bits relating to an <see cref="Intersection"/>
+    /// Intersection has been spatially indexed.
     /// </summary>
-    [Flags]
-    enum IntersectionFlag : byte
-    {
-        /// <summary>
-        /// Intersection has been spatially indexed.
-        /// </summary>
-        Indexed = 0x01,
-    }
+    Indexed = 0x01,
 }

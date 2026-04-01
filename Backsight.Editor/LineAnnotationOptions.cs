@@ -13,31 +13,28 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <summary>
+/// Options relating to line annotation (as noted by <see cref="LineAnnotationStyle"/>)
+/// </summary>
+[Flags]
+enum LineAnnotationOptions : byte
 {
     /// <summary>
-    /// Options relating to line annotation (as noted by <see cref="LineAnnotationStyle"/>)
+    /// Should the adjusted length of lines be displayed?
+    /// (the units used for the display is determined via another display preference)
     /// </summary>
-    [Flags]
-    enum LineAnnotationOptions : byte
-    {
-        /// <summary>
-        /// Should the adjusted length of lines be displayed?
-        /// (the units used for the display is determined via another display preference)
-        /// </summary>
-        ShowAdjustedLengths = 0x01,
+    ShowAdjustedLengths = 0x01,
 
-        /// <summary>
-        /// Should the observed length of lines be displayed?
-        /// (the units used for the display is determined via another display preference)
-        /// </summary>
-        ShowObservedLengths = 0x02,
+    /// <summary>
+    /// Should the observed length of lines be displayed?
+    /// (the units used for the display is determined via another display preference)
+    /// </summary>
+    ShowObservedLengths = 0x02,
 
-        /// <summary>
-        /// Should observed angles be displayed?
-        /// </summary>
-        ShowObservedAngles = 0x04,
-    }
+    /// <summary>
+    /// Should observed angles be displayed?
+    /// </summary>
+    ShowObservedAngles = 0x04,
 }

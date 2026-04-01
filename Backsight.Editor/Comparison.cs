@@ -13,15 +13,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+class Comparison
 {
-    class Comparison
+    internal void Write(string s)
     {
-        internal void Write(string s)
-        {
-            throw new NotImplementedException("Comparison.Write");
-        }
+        throw new NotImplementedException("Comparison.Write");
     }
 }

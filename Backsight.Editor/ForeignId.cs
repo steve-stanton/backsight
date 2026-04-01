@@ -13,45 +13,42 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="13-JUN-2008" />
+/// <summary>
+/// An ID that has been imported from some alien data source.
+/// </summary>
+/// <seealso cref="NativeId"/>
+class ForeignId : FeatureId
 {
-    /// <written by="Steve Stanton" on="13-JUN-2008" />
+    #region Class data
+
     /// <summary>
-    /// An ID that has been imported from some alien data source.
+    /// The foreign key used to identify a feature
     /// </summary>
-    /// <seealso cref="NativeId"/>
-    class ForeignId : FeatureId
+    readonly string m_Key;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ForeignId"/> class.
+    /// </summary>
+    /// <param name="key">The foreign key used to identify a feature</param>
+    internal ForeignId(string key)
     {
-        #region Class data
+        m_Key = key;
+    }
 
-        /// <summary>
-        /// The foreign key used to identify a feature
-        /// </summary>
-        readonly string m_Key;
+    #endregion
 
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ForeignId"/> class.
-        /// </summary>
-        /// <param name="key">The foreign key used to identify a feature</param>
-        internal ForeignId(string key)
-        {
-            m_Key = key;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// The user-perceived ID value
-        /// </summary>
-        internal override string FormattedKey
-        {
-            get { return m_Key; }
-        }
+    /// <summary>
+    /// The user-perceived ID value
+    /// </summary>
+    internal override string FormattedKey
+    {
+        get { return m_Key; }
     }
 }

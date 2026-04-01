@@ -13,75 +13,71 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Backsight.Forms;
 using Backsight.Editor.Operations;
 
-namespace Backsight.Editor.UI
+namespace Backsight.Editor.UI;
+
+/// <written by="Steve Stanton" on="10-OCT-2007" />
+/// <summary>
+/// User interface for changing the topological status of a line.
+/// </summary>
+class SetTopologyUI : SimpleCommandUI
 {
-    /// <written by="Steve Stanton" on="10-OCT-2007" />
+    #region Class data
+
     /// <summary>
-    /// User interface for changing the topological status of a line.
+    /// The line that will have it's topological status changed.
     /// </summary>
-    class SetTopologyUI : SimpleCommandUI
+    readonly LineFeature m_Line;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Creates a new <c>SetTopologyUI</c>
+    /// </summary>
+    /// <param name="action">The action that initiated this command</param>
+    /// <param name="line">The line to change topological status (not null)</param>
+    internal SetTopologyUI(IUserAction action, LineFeature line)
+        : base(action)
     {
-        #region Class data
+        if (line==null)
+            throw new ArgumentNullException();
 
-        /// <summary>
-        /// The line that will have it's topological status changed.
-        /// </summary>
-        readonly LineFeature m_Line;
+        m_Line = line;
+    }
 
-        #endregion
+    #endregion
 
-        #region Constructors
+    /// <summary>
+    /// Starts the user interface (if any) for this command. This will change the
+    /// topological status of the line that was passed to the constructor, then
+    /// complete the command.
+    /// </summary>
+    /// <returns>True if command started (and completed) ok.</returns>
+    internal override bool Run()
+    {
+        EditingController c = Controller;
+        SetTopologyOperation op = null;
 
-        /// <summary>
-        /// Creates a new <c>SetTopologyUI</c>
-        /// </summary>
-        /// <param name="action">The action that initiated this command</param>
-        /// <param name="line">The line to change topological status (not null)</param>
-        internal SetTopologyUI(IUserAction action, LineFeature line)
-            : base(action)
+        try
         {
-            if (line==null)
-                throw new ArgumentNullException();
-
-            m_Line = line;
+            op = new SetTopologyOperation(m_Line);
+            op.Execute();
+            c.ClearSelection();
+            c.FinishCommand(this);
+            return true;
         }
 
-        #endregion
-
-        /// <summary>
-        /// Starts the user interface (if any) for this command. This will change the
-        /// topological status of the line that was passed to the constructor, then
-        /// complete the command.
-        /// </summary>
-        /// <returns>True if command started (and completed) ok.</returns>
-        internal override bool Run()
+        catch (Exception e)
         {
-            EditingController c = Controller;
-            SetTopologyOperation op = null;
-
-            try
-            {
-                op = new SetTopologyOperation(m_Line);
-                op.Execute();
-                c.ClearSelection();
-                c.FinishCommand(this);
-                return true;
-            }
-
-            catch (Exception e)
-            {
-                c.AbortCommand(this);
-                MessageBox.Show(e.StackTrace, e.Message);
-            }
-
-            return false;
+            c.AbortCommand(this);
+            MessageBox.Show(e.StackTrace, e.Message);
         }
+
+        return false;
     }
 }

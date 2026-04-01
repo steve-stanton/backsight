@@ -13,182 +13,178 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Observations;
-using Backsight.Editor.Operations;
 
-namespace Backsight.Editor.UI
+namespace Backsight.Editor.UI;
+
+/// <written by="Steve Stanton" on="13-DEC-1999" />
+/// <was>CuiNewPoint</was>
+/// <summary>
+/// User interface for defining a new point (also used for updating control points).
+/// </summary>
+class NewPointUI : SimpleCommandUI, IDisposable
 {
-	/// <written by="Steve Stanton" on="13-DEC-1999" />
-    /// <was>CuiNewPoint</was>
+    #region Class data
+
     /// <summary>
-    /// User interface for defining a new point (also used for updating control points).
+    /// The dialog for the command.
     /// </summary>
-    class NewPointUI : SimpleCommandUI, IDisposable
+    private NewPointForm m_Dialog;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="action">The action that initiated this command</param>
+    internal NewPointUI(IControlContainer cc, IUserAction action)
+        : base(cc, action)
     {
-        #region Class data
+        m_Dialog = null;
+    }
 
-        /// <summary>
-        /// The dialog for the command.
-        /// </summary>
-        private NewPointForm m_Dialog;
+    /// <summary>
+    /// Constructor for command recall.
+    /// </summary>
+    /// <param name="action">The action that initiated this command</param>
+    /// <param name="op">The operation that's being recalled.</param>
+    internal NewPointUI(IControlContainer cc, IUserAction action, Operation op)
+        : base(cc, action, null, op)
+    {
+        m_Dialog = null;
+    }
 
-        #endregion
+    /// <summary>
+    /// Constructor for doing an update.
+    /// </summary>
+    /// <param name="editId">The ID of the edit this command deals with.</param>
+    /// <param name="updcmd">The update command.</param>
+    internal NewPointUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
+        : base(cc, editId, updcmd)
+    {
+        m_Dialog = null;
+    }
 
-        #region Constructors
+    #endregion
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="action">The action that initiated this command</param>
-        internal NewPointUI(IControlContainer cc, IUserAction action)
-            : base(cc, action)
+    public override void Dispose()
+    {
+        if (m_Dialog!=null)
         {
+            m_Dialog.Dispose();
             m_Dialog = null;
         }
+    }
 
-        /// <summary>
-        /// Constructor for command recall.
-        /// </summary>
-        /// <param name="action">The action that initiated this command</param>
-        /// <param name="op">The operation that's being recalled.</param>
-        internal NewPointUI(IControlContainer cc, IUserAction action, Operation op)
-            : base(cc, action, null, op)
+    /// <summary>
+    /// Starts the user interface (if any) for this command.
+    /// </summary>
+    /// <returns>True if command started ok.</returns>
+    internal override bool Run()
+    {
+        // Don't run more than once.
+        if (m_Dialog!=null)
+            throw new InvalidOperationException("NewPointUI.Run - Command is already running.");
+
+        UpdateUI pup = this.Update;
+
+        // Create the appropriate sort of dialog.
+        switch (this.EditId)
         {
-            m_Dialog = null;
+            case EditingActionId.NewPoint:
+            {
+                if (pup!=null)
+                    m_Dialog = new NewPointForm(pup, "Update Point", null);
+                else
+                    m_Dialog = new NewPointForm(this, "Define New Point", this.Recall);
+
+                break;
+            }
+
+            case EditingActionId.GetControl:
+            {
+                if (pup!=null)
+                {
+                    m_Dialog = new NewPointForm(pup, "Update Control Point", null);
+                    break;
+                }
+
+                // Drop through to default if not making an update.
+                goto default;
+            }
+
+            default:
+            {
+                throw new Exception("NewPointUI.Run - Unexpected command id.");
+            }
         }
 
-        /// <summary>
-        /// Constructor for doing an update.
-        /// </summary>
-        /// <param name="editId">The ID of the edit this command deals with.</param>
-        /// <param name="updcmd">The update command.</param>
-        internal NewPointUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
-            : base(cc, editId, updcmd)
+        m_Dialog.Show();
+        return true;
+    }
+
+    /// <summary>
+    /// Reacts to selection of the OK button in the dialog.
+    /// </summary>
+    /// <param name="wnd">The dialog window.</param>
+    /// <returns></returns>
+    internal override bool DialFinish(Control wnd)
+    {
+        if (m_Dialog==null)
+            throw new Exception("NewPointUI.DialFinish -- No dialog!");
+
+        // Hide the dialog so it doesn't become part of any saved display
+        m_Dialog.Visible = false;
+
+        // If we are doing an update, remember the changes
+        UpdateUI up = this.Update;
+
+        if (up != null)
         {
-            m_Dialog = null;
+            // Remember the changes as part of the UI object (the original edit remains
+            // unchanged for now)
+
+            Operation revisedEdit = up.GetOp();
+            UpdateItemCollection changes = m_Dialog.GetUpdateItems();
+            if (!up.AddUpdate(revisedEdit, changes))
+                return false;
+        }
+        else
+        {
+            // Save the new point.
+            PointFeature p = m_Dialog.Save();
+            if (p == null)
+                return false;
+
+            // Ensure the point is on screen, and select it.
+            Controller.EnsureVisible(p, true);
         }
 
-        #endregion
+        // Get the base class to finish up.
+        return FinishCommand();
+    }
 
-        public override void Dispose()
+    /// <summary>
+    /// The position that has been specified for the point (null if no position available)
+    /// </summary>
+    internal IPosition Position
+    {
+        get
         {
             if (m_Dialog!=null)
-            {
-                m_Dialog.Dispose();
-                m_Dialog = null;
-            }
-        }
-
-        /// <summary>
-        /// Starts the user interface (if any) for this command.
-        /// </summary>
-        /// <returns>True if command started ok.</returns>
-        internal override bool Run()
-        {
-	        // Don't run more than once.
-	        if (m_Dialog!=null)
-                throw new InvalidOperationException("NewPointUI.Run - Command is already running.");
-
-        	UpdateUI pup = this.Update;
-
-	        // Create the appropriate sort of dialog.
-	        switch (this.EditId)
-            {
-                case EditingActionId.NewPoint:
-                {
-        		    if (pup!=null)
-			            m_Dialog = new NewPointForm(pup, "Update Point", null);
-		            else
-			            m_Dialog = new NewPointForm(this, "Define New Point", this.Recall);
-
-		            break;
-                }
-
-                case EditingActionId.GetControl:
-                {
-		            if (pup!=null)
-                    {
-			            m_Dialog = new NewPointForm(pup, "Update Control Point", null);
-			            break;
-		            }
-
-                    // Drop through to default if not making an update.
-                    goto default;
-                }
-
-            	default:
-                {
-                    throw new Exception("NewPointUI.Run - Unexpected command id.");
-                }
-            }
-
-        	m_Dialog.Show();
-	        return true;
-        }
-
-        /// <summary>
-        /// Reacts to selection of the OK button in the dialog.
-        /// </summary>
-        /// <param name="wnd">The dialog window.</param>
-        /// <returns></returns>
-        internal override bool DialFinish(Control wnd)
-        {
-	        if (m_Dialog==null)
-                throw new Exception("NewPointUI.DialFinish -- No dialog!");
-
-            // Hide the dialog so it doesn't become part of any saved display
-            m_Dialog.Visible = false;
-
-            // If we are doing an update, remember the changes
-            UpdateUI up = this.Update;
-
-            if (up != null)
-            {
-                // Remember the changes as part of the UI object (the original edit remains
-                // unchanged for now)
-
-                Operation revisedEdit = up.GetOp();
-                UpdateItemCollection changes = m_Dialog.GetUpdateItems();
-                if (!up.AddUpdate(revisedEdit, changes))
-                    return false;
-            }
+                return m_Dialog.Position;
             else
-            {
-                // Save the new point.
-                PointFeature p = m_Dialog.Save();
-                if (p == null)
-                    return false;
-
-                // Ensure the point is on screen, and select it.
-                Controller.EnsureVisible(p, true);
-            }
-
-	        // Get the base class to finish up.
-	        return FinishCommand();
+                return null;
         }
+    }
 
-        /// <summary>
-        /// The position that has been specified for the point (null if no position available)
-        /// </summary>
-        internal IPosition Position
-        {
-            get
-            {
-                if (m_Dialog!=null)
-                    return m_Dialog.Position;
-                else
-                    return null;
-        	}
-        }
-
-        internal override void SetOffset(Offset offset)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
+    internal override void SetOffset(Offset offset)
+    {
+        throw new Exception("The method or operation is not implemented.");
     }
 }

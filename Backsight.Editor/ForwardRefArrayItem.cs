@@ -13,19 +13,18 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Editor
-{
-    class ForwardRefArrayItem
-    {
-        internal int ArrayIndex { get; private set; }
-        internal InternalIdValue InternalId { get; private set; }
-        internal Feature Feature { get; set; }
+namespace Backsight.Editor;
 
-        internal ForwardRefArrayItem(InternalIdValue id, int arrayIndex)
-        {
-            InternalId = id;
-            ArrayIndex = arrayIndex;
-            Feature = null;
-        }        
-    }
+class ForwardRefArrayItem
+{
+    internal int ArrayIndex { get; private set; }
+    internal InternalIdValue InternalId { get; private set; }
+    internal Feature Feature { get; set; }
+
+    internal ForwardRefArrayItem(InternalIdValue id, int arrayIndex)
+    {
+        InternalId = id;
+        ArrayIndex = arrayIndex;
+        Feature = null;
+    }        
 }

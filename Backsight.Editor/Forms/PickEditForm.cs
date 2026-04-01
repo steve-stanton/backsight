@@ -13,161 +13,157 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Editor.Operations;
 
+namespace Backsight.Editor.Forms;
 
-namespace Backsight.Editor.Forms
+/// <summary>
+/// Dialog for selecting a specific edit from the edits that have been
+/// performed during the current editing. For use when recalling an edit
+/// using the <c>Edit - Recall</c> command.
+/// </summary>
+/// <seealso cref="SessionForm"/>
+partial class PickEditForm : Form
 {
+    #region Class data
+
     /// <summary>
-    /// Dialog for selecting a specific edit from the edits that have been
-    /// performed during the current editing. For use when recalling an edit
-    /// using the <c>Edit - Recall</c> command.
+    /// The session of interest
     /// </summary>
-    /// <seealso cref="SessionForm"/>
-    partial class PickEditForm : Form
+    readonly Session m_Session;
+
+    /// <summary>
+    /// The currently select edit
+    /// </summary>
+    Operation m_SelectedEdit;
+
+    #endregion
+
+    #region Constructors
+
+    internal PickEditForm(Session s)
     {
-        #region Class data
+        InitializeComponent();
 
-        /// <summary>
-        /// The session of interest
-        /// </summary>
-        readonly Session m_Session;
+        if (s==null)
+            throw new ArgumentNullException();
 
-        /// <summary>
-        /// The currently select edit
-        /// </summary>
-        Operation m_SelectedEdit;
+        m_Session = s;
+        m_SelectedEdit = null;
+    }
 
-        #endregion
+    #endregion
 
-        #region Constructors
+    Operation[] GetOperations()
+    {
+        Operation[] result = m_Session.Edits;
 
-        internal PickEditForm(Session s)
+        // Return in reverse order
+        for (int i = 0, j = result.Length - 1; i < j; i++, j--)
         {
-            InitializeComponent();
-
-            if (s==null)
-                throw new ArgumentNullException();
-
-            m_Session = s;
-            m_SelectedEdit = null;
+            Operation temp = result[i];
+            result[i] = result[j];
+            result[j] = temp;
         }
 
-        #endregion
+        return result;
+    }
 
-        Operation[] GetOperations()
+    private void PickEditForm_Shown(object sender, EventArgs e)
+    {
+        // Load the list of operations that were performed in the session (in reverse order).
+        Operation[] ops = GetOperations();
+
+        grid.RowCount = ops.Length;
+        for (int i = 0; i < ops.Length; i++)
         {
-            Operation[] result = m_Session.Edits;
+            Operation op = ops[i];
+            DataGridViewRow row = grid.Rows[i];
 
-            // Return in reverse order
-            for (int i = 0, j = result.Length - 1; i < j; i++, j--)
-            {
-                Operation temp = result[i];
-                result[i] = result[j];
-                result[j] = temp;
-            }
-
-            return result;
+            row.Tag = op;
+            row.Cells["EditSequence"].Value = op.EditSequence;
+            row.Cells["EditType"].Value = op.Name;
+            row.Cells["FeatureCount"].Value = op.FeatureCount;
+            row.Cells["Recallable"].Value = (op is IRecallable ? "yes" : "no");
         }
 
-        private void PickEditForm_Shown(object sender, EventArgs e)
+        // The first edit in the grid is selected by default. If it's
+        // recallable, ensure the OK button reflects this and focus there (so
+        // that hitting the Return key will close the dialog).
+        if (ops.Length > 0)
         {
-            // Load the list of operations that were performed in the session (in reverse order).
-            Operation[] ops = GetOperations();
-
-            grid.RowCount = ops.Length;
-            for (int i = 0; i < ops.Length; i++)
-            {
-                Operation op = ops[i];
-                DataGridViewRow row = grid.Rows[i];
-
-                row.Tag = op;
-                row.Cells["EditSequence"].Value = op.EditSequence;
-                row.Cells["EditType"].Value = op.Name;
-                row.Cells["FeatureCount"].Value = op.FeatureCount;
-                row.Cells["Recallable"].Value = (op is IRecallable ? "yes" : "no");
-            }
-
-            // The first edit in the grid is selected by default. If it's
-            // recallable, ensure the OK button reflects this and focus there (so
-            // that hitting the Return key will close the dialog).
-            if (ops.Length > 0)
-            {
-                okButton.Enabled = (ops[0] is IRecallable);
-                if (okButton.Enabled)
-                    okButton.Focus();
-            }
+            okButton.Enabled = (ops[0] is IRecallable);
+            if (okButton.Enabled)
+                okButton.Focus();
         }
+    }
 
-        Operation GetSelectedOperation()
+    Operation GetSelectedOperation()
+    {
+        DataGridViewSelectedRowCollection sel = grid.SelectedRows;
+        if (sel.Count==0)
+            return null;
+
+        DataGridViewRow row = sel[0];
+        return (row.Tag as Operation);
+    }
+
+    private void grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+    {
+        Operation op = GetSelectedOperation();
+
+        if (IsAcceptableEdit(op))
         {
-            DataGridViewSelectedRowCollection sel = grid.SelectedRows;
-            if (sel.Count==0)
-                return null;
-
-            DataGridViewRow row = sel[0];
-            return (row.Tag as Operation);
-        }
-
-        private void grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            Operation op = GetSelectedOperation();
-
-            if (IsAcceptableEdit(op))
-            {
-                m_SelectedEdit = op;
-                this.DialogResult = DialogResult.OK;
-                Close();
-            }
-        }
-
-        bool IsAcceptableEdit(Operation op)
-        {
-            if (op==null)
-                return false;
-
-            if (op is IRecallable)
-                return true;
-
-            MessageBox.Show("Specified edit does not have a recall facility.");
-            return false;
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            Operation op = GetSelectedOperation();
-
-            if (op == null)
-                MessageBox.Show("You must first select an edit");
-            else if (IsAcceptableEdit(op))
-            {
-                m_SelectedEdit = op;
-                this.DialogResult = DialogResult.OK;
-                Close();
-            }
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
+            m_SelectedEdit = op;
+            this.DialogResult = DialogResult.OK;
             Close();
         }
+    }
 
-        /// <summary>
-        /// The currently select edit
-        /// </summary>
-        internal Operation SelectedEdit
-        {
-            get { return m_SelectedEdit; }
-        }
+    bool IsAcceptableEdit(Operation op)
+    {
+        if (op==null)
+            return false;
 
-        private void grid_SelectionChanged(object sender, EventArgs e)
+        if (op is IRecallable)
+            return true;
+
+        MessageBox.Show("Specified edit does not have a recall facility.");
+        return false;
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        Operation op = GetSelectedOperation();
+
+        if (op == null)
+            MessageBox.Show("You must first select an edit");
+        else if (IsAcceptableEdit(op))
         {
-            Operation op = GetSelectedOperation();
-            okButton.Enabled = (op is IRecallable);
+            m_SelectedEdit = op;
+            this.DialogResult = DialogResult.OK;
+            Close();
         }
+    }
+
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        this.DialogResult = DialogResult.Cancel;
+        Close();
+    }
+
+    /// <summary>
+    /// The currently select edit
+    /// </summary>
+    internal Operation SelectedEdit
+    {
+        get { return m_SelectedEdit; }
+    }
+
+    private void grid_SelectionChanged(object sender, EventArgs e)
+    {
+        Operation op = GetSelectedOperation();
+        okButton.Enabled = (op is IRecallable);
     }
 }

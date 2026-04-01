@@ -13,145 +13,143 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <summary>
+/// Dialog for showing the results of the adjustment performed for a connection path.
+/// </summary>
+/// <remarks>Not currently used (formerly displayed from <see cref="PathForm"/>)</remarks>
+partial class AdjustmentForm : Form
 {
+    #region Class data
+
     /// <summary>
-    /// Dialog for showing the results of the adjustment performed for a connection path.
+    /// Total observed length (in meters)
     /// </summary>
-    /// <remarks>Not currently used (formerly displayed from <see cref="PathForm"/>)</remarks>
-    partial class AdjustmentForm : Form
+    readonly double m_Length;
+
+    /// <summary>
+    /// Misclosure in northing (in meters)
+    /// </summary>
+    readonly double m_DeltaN;
+
+    /// <summary>
+    /// Misclosure in easthing (in meters)
+    /// </summary>
+    readonly double m_DeltaE;
+
+    /// <summary>
+    /// Precision denominator
+    /// </summary>
+    readonly double m_Precision;
+
+    /// <summary>
+    /// The dialog that invoked this dialog.
+    /// </summary>
+    readonly PathForm m_Parent;
+
+    #endregion
+
+    #region Constructors
+
+    internal AdjustmentForm(double dN, double dE, double precision, double length, PathForm parent)
     {
-        #region Class data
+        InitializeComponent();
 
-        /// <summary>
-        /// Total observed length (in meters)
-        /// </summary>
-        readonly double m_Length;
+        m_DeltaN = dN;
+        m_DeltaE = dE;
+        m_Precision = precision;
+        m_Length = length;
+        m_Parent = parent;
+    }
 
-        /// <summary>
-        /// Misclosure in northing (in meters)
-        /// </summary>
-        readonly double m_DeltaN;
+    #endregion
 
-        /// <summary>
-        /// Misclosure in easthing (in meters)
-        /// </summary>
-        readonly double m_DeltaE;
+    private void AdjustmentForm_Shown(object sender, EventArgs e)
+    {
+        // Display at top left corner of the screen.
+        this.Location = new Point(0, 0);
 
-        /// <summary>
-        /// Precision denominator
-        /// </summary>
-        readonly double m_Precision;
+        // Display the adjustment results in the current data entry units.
 
-        /// <summary>
-        /// The dialog that invoked this dialog.
-        /// </summary>
-        readonly PathForm m_Parent;
+        DistanceUnitType unitType = EditingController.Current.Project.Settings.EntryUnitType;
+        if (unitType==DistanceUnitType.Feet)
+            OnFeet();
+        else if (unitType==DistanceUnitType.Chains)
+            OnChains();
+        else
+            OnMeters();
 
-        #endregion
+        if (Math.Abs(m_Precision) < MathConstants.TINY)
+            precisionLabel.Text = "exact";
+        else
+            precisionLabel.Text = String.Format("1:{0:0.0}", m_Precision);
+    }
 
-        #region Constructors
+    private void mRadioButton_CheckedChanged(object sender, EventArgs e)
+    {
+        if (mRadioButton.Checked)
+            OnMeters();
+    }
 
-        internal AdjustmentForm(double dN, double dE, double precision, double length, PathForm parent)
-        {
-            InitializeComponent();
+    void OnMeters()
+    {
+        mRadioButton.Checked = true;
+        ShowResults(DistanceUnitType.Meters);
+    }
 
-            m_DeltaN = dN;
-            m_DeltaE = dE;
-            m_Precision = precision;
-            m_Length = length;
-            m_Parent = parent;
-        }
+    private void fRadioButton_CheckedChanged(object sender, EventArgs e)
+    {
+        if (fRadioButton.Checked)
+            OnFeet();
+    }
 
-        #endregion
+    void OnFeet()
+    {
+        fRadioButton.Checked = true;
+        ShowResults(DistanceUnitType.Feet);
+    }
 
-        private void AdjustmentForm_Shown(object sender, EventArgs e)
-        {
-            // Display at top left corner of the screen.
-            this.Location = new Point(0, 0);
+    private void cRadioButton_CheckedChanged(object sender, EventArgs e)
+    {
+        if (cRadioButton.Checked)
+            OnChains();
+    }
 
-            // Display the adjustment results in the current data entry units.
+    void OnChains()
+    {
+        cRadioButton.Checked = true;
+        ShowResults(DistanceUnitType.Chains);
+    }
 
-            DistanceUnitType unitType = EditingController.Current.Project.Settings.EntryUnitType;
-            if (unitType==DistanceUnitType.Feet)
-                OnFeet();
-            else if (unitType==DistanceUnitType.Chains)
-                OnChains();
-            else
-                OnMeters();
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        DialogResult = DialogResult.Cancel;
+        Close();
 
-            if (Math.Abs(m_Precision) < MathConstants.TINY)
-                precisionLabel.Text = "exact";
-            else
-                precisionLabel.Text = String.Format("1:{0:0.0}", m_Precision);
-        }
+        m_Parent.OnDestroyAdj();
+    }
 
-        private void mRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (mRadioButton.Checked)
-                OnMeters();
-        }
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        DialogResult = DialogResult.OK;
+        Close();
 
-        void OnMeters()
-        {
-            mRadioButton.Checked = true;
-            ShowResults(DistanceUnitType.Meters);
-        }
+        // Tell the parent to save the path.
+        m_Parent.Save();
+    }
 
-        private void fRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (fRadioButton.Checked)
-                OnFeet();
-        }
+    void ShowResults(DistanceUnitType type)
+    {
+        DistanceUnit unit = EditingController.GetUnits(type);
+        if (unit==null)
+            return;
 
-        void OnFeet()
-        {
-            fRadioButton.Checked = true;
-            ShowResults(DistanceUnitType.Feet);
-        }
-
-        private void cRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (cRadioButton.Checked)
-                OnChains();
-        }
-
-        void OnChains()
-        {
-            cRadioButton.Checked = true;
-            ShowResults(DistanceUnitType.Chains);
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Cancel;
-            Close();
-
-            m_Parent.OnDestroyAdj();
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.OK;
-            Close();
-
-            // Tell the parent to save the path.
-            m_Parent.Save();
-        }
-
-        void ShowResults(DistanceUnitType type)
-        {
-            DistanceUnit unit = EditingController.GetUnits(type);
-            if (unit==null)
-                return;
-
-            lengthLabel.Text = unit.Format(m_Length, false, -1);
-            deltaNorthingLabel.Text = unit.Format(m_DeltaN, false, -1);
-            deltaEastingLabel.Text = unit.Format(m_DeltaE, false, -1);
-        }
+        lengthLabel.Text = unit.Format(m_Length, false, -1);
+        deltaNorthingLabel.Text = unit.Format(m_DeltaN, false, -1);
+        deltaEastingLabel.Text = unit.Format(m_DeltaE, false, -1);
     }
 }

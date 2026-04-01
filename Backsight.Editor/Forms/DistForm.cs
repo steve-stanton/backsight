@@ -13,129 +13,125 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Editor.Observations;
 
+namespace Backsight.Editor.Forms;
 
-namespace Backsight.Editor.Forms
+/// <written by="Steve Stanton" was="CdDist"/>
+/// <summary>
+/// Simple dialog for entering a distance.
+/// </summary>
+partial class DistForm : Form
 {
-    /// <written by="Steve Stanton" was="CdDist"/>
+    #region Class data
+
     /// <summary>
-    /// Simple dialog for entering a distance.
+    /// The entered distance
     /// </summary>
-    partial class DistForm : Form
+    Distance m_Dist;
+
+    /// <summary>
+    /// Should the "want line too" check box be shown?
+    /// </summary>
+    bool m_ShowWantLine;
+
+    /// <summary>
+    /// Does the user want a line?
+    /// </summary>
+    bool m_WantLine;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DistForm"/> class.
+    /// </summary>
+    internal DistForm()
     {
-        #region Class data
+        InitializeComponent();
 
-        /// <summary>
-        /// The entered distance
-        /// </summary>
-        Distance m_Dist;
+        m_Dist = null;
+        m_ShowWantLine = true;
+        m_WantLine = false;
+    }
 
-        /// <summary>
-        /// Should the "want line too" check box be shown?
-        /// </summary>
-        bool m_ShowWantLine;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DistForm"/> class.
+    /// </summary>
+    /// <param name="dist">The initial distance to display.</param>
+    /// <param name="showWantLine">Should the "want line too" check box be shown?</param>
+    internal DistForm(Distance dist, bool showWantLine)
+        : this()
+    {
+        m_Dist = dist;
+        m_ShowWantLine = showWantLine;
+    }
 
-        /// <summary>
-        /// Does the user want a line?
-        /// </summary>
-        bool m_WantLine;
+    #endregion
 
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DistForm"/> class.
-        /// </summary>
-        internal DistForm()
+    private void DistForm_Shown(object sender, EventArgs e)
+    {
+        if (m_Dist != null)
         {
-            InitializeComponent();
-
+            distTextBox.Text = m_Dist.Format();
             m_Dist = null;
-            m_ShowWantLine = true;
-            m_WantLine = false;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DistForm"/> class.
-        /// </summary>
-        /// <param name="dist">The initial distance to display.</param>
-        /// <param name="showWantLine">Should the "want line too" check box be shown?</param>
-        internal DistForm(Distance dist, bool showWantLine)
-            : this()
+        // Hide the "want line" checkbox if requested. Otherwise
+        // check it by default.
+
+        if (m_ShowWantLine)
+            wantLineCheckBox.Checked = true;
+        else
+            wantLineCheckBox.Visible = false;
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        string dstr = distTextBox.Text.Trim();
+        if (dstr.Length == 0)
         {
-            m_Dist = dist;
-            m_ShowWantLine = showWantLine;
+            MessageBox.Show("You have not entered a distance.");
+            return;
         }
 
-        #endregion
-
-        private void DistForm_Shown(object sender, EventArgs e)
+        Distance dist;
+        if (!Distance.TryParse(dstr, out dist))
         {
-            if (m_Dist != null)
-            {
-                distTextBox.Text = m_Dist.Format();
-                m_Dist = null;
-            }
-
-            // Hide the "want line" checkbox if requested. Otherwise
-            // check it by default.
-
-            if (m_ShowWantLine)
-                wantLineCheckBox.Checked = true;
-            else
-                wantLineCheckBox.Visible = false;
+            MessageBox.Show("Don't understand entered distance.");
+            return;
         }
 
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            string dstr = distTextBox.Text.Trim();
-            if (dstr.Length == 0)
-            {
-                MessageBox.Show("You have not entered a distance.");
-                return;
-            }
+        m_Dist = dist;
 
-            Distance dist;
-            if (!Distance.TryParse(dstr, out dist))
-            {
-                MessageBox.Show("Don't understand entered distance.");
-                return;
-            }
+        if (m_ShowWantLine)
+            m_WantLine = wantLineCheckBox.Checked;
 
-            m_Dist = dist;
+        this.DialogResult = DialogResult.OK;
+        Close();
+    }
 
-            if (m_ShowWantLine)
-                m_WantLine = wantLineCheckBox.Checked;
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        this.DialogResult = DialogResult.Cancel;
+        Close();
+    }
 
-            this.DialogResult = DialogResult.OK;
-            Close();
-        }
+    /// <summary>
+    /// The entered distance (null if the user cancelled the dialog).
+    /// </summary>
+    internal Distance Distance
+    {
+        get { return m_Dist; }
+    }
 
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-        }
-
-        /// <summary>
-        /// The entered distance (null if the user cancelled the dialog).
-        /// </summary>
-        internal Distance Distance
-        {
-            get { return m_Dist; }
-        }
-
-        /// <summary>
-        /// Does the user want a line?
-        /// </summary>
-        internal bool WantLine
-        {
-            get { return m_WantLine; }
-        }
+    /// <summary>
+    /// Does the user want a line?
+    /// </summary>
+    internal bool WantLine
+    {
+        get { return m_WantLine; }
     }
 }

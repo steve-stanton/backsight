@@ -13,72 +13,68 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor.Observations;
 
-
-namespace Backsight.Editor.Observations
+/// <written by="Steve Stanton" on="09-JUN-1999" />
+/// <summary>A deflection angle.</summary>
+class DeflectionDirection : AngleDirection
 {
-	/// <written by="Steve Stanton" on="09-JUN-1999" />
-    /// <summary>A deflection angle.</summary>
-    class DeflectionDirection : AngleDirection
+    #region Class data
+
+    // no data
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DeflectionDirection"/> class.
+    /// </summary>
+    internal DeflectionDirection()
+        : base()
     {
-        #region Class data
+    }
 
-        // no data
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DeflectionDirection"/> class
+    /// using the data read from persistent storage.
+    /// </summary>
+    /// <param name="editDeserializer">The mechanism for reading back content.</param>
+    internal DeflectionDirection(EditDeserializer editDeserializer)
+        : base(editDeserializer)
+    {
+    }
 
-        #endregion
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="backsight">The backsight point.</param>
+    /// <param name="occupied">The occupied station.</param>
+    /// <param name="observation">The angle to an observed point, measured with respect
+    /// to the projection of an orientation line defined by the backsight and the occupied
+    /// station. Positive values indicate a clockwise rotation & negated values for
+    /// counter-clockwise.
+    /// </param>
+    internal DeflectionDirection(PointFeature backsight, PointFeature occupied, IAngle observation)
+        : base(backsight, occupied, observation)
+    {
+    }
 
-        #region Constructors
+    #endregion
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeflectionDirection"/> class.
-        /// </summary>
-        internal DeflectionDirection()
-            : base()
+    /// <summary>
+    /// The angle as a bearing
+    /// </summary>
+    internal override IAngle Bearing
+    {
+        get
         {
-        }
+            // Get the bearing to the backsight
+            double bb = Geom.BearingInRadians(this.Backsight, this.From);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeflectionDirection"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        internal DeflectionDirection(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="backsight">The backsight point.</param>
-        /// <param name="occupied">The occupied station.</param>
-        /// <param name="observation">The angle to an observed point, measured with respect
-        /// to the projection of an orientation line defined by the backsight and the occupied
-        /// station. Positive values indicate a clockwise rotation & negated values for
-        /// counter-clockwise.
-        /// </param>
-        internal DeflectionDirection(PointFeature backsight, PointFeature occupied, IAngle observation)
-            : base(backsight, occupied, observation)
-        {
-        }
-
-        #endregion
-
-        /// <summary>
-        /// The angle as a bearing
-        /// </summary>
-        internal override IAngle Bearing
-        {
-            get
-            {
-                // Get the bearing to the backsight
-                double bb = Geom.BearingInRadians(this.Backsight, this.From);
-
-                // Add on the observed angle, and restrict to [0,2*PI]
-                double a = bb + this.ObservationInRadians;
-                return new RadianValue(Direction.Normalize(a));
-            }
+            // Add on the observed angle, and restrict to [0,2*PI]
+            double a = bb + this.ObservationInRadians;
+            return new RadianValue(Direction.Normalize(a));
         }
     }
 }

@@ -13,34 +13,31 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Forms;
 using Backsight.Editor.UI;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" on="07-JAN-2008" />
+/// <summary>
+/// Context menu for the <see cref="NewCircularArcUI"/>
+/// </summary>
+partial class NewLineContextMenu : ContextMenuStrip
 {
-    /// <written by="Steve Stanton" on="07-JAN-2008" />
+    #region Constructors
+
     /// <summary>
-    /// Context menu for the <see cref="NewCircularArcUI"/>
+    /// Creates a new <c>NewLineContextMenu</c>, wiring each menuitem to the specified UI.
     /// </summary>
-    partial class NewLineContextMenu : ContextMenuStrip
+    /// <param name="ui">The user interface displaying this context menu</param>
+    internal NewLineContextMenu(NewLineUI ui)
     {
-        #region Constructors
+        InitializeComponent();
 
-        /// <summary>
-        /// Creates a new <c>NewLineContextMenu</c>, wiring each menuitem to the specified UI.
-        /// </summary>
-        /// <param name="ui">The user interface displaying this context menu</param>
-        internal NewLineContextMenu(NewLineUI ui)
-        {
-            InitializeComponent();
-
-            new UserAction(ctxSpecifyId, ui.SpecifyId);
-            new UserAction(ctxCancel, ui.Cancel);
-        }
-
-        #endregion
+        new UserAction(ctxSpecifyId, ui.SpecifyId);
+        new UserAction(ctxCancel, ui.Cancel);
     }
+
+    #endregion
 }

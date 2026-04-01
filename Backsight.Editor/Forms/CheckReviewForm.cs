@@ -13,280 +13,278 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" on="17-NOV-1999" was="CdCheck" />
+/// <summary>
+/// Dialog for reviewing the results of a file check
+/// </summary>
+partial class CheckReviewForm : Form
 {
-    /// <written by="Steve Stanton" on="17-NOV-1999" was="CdCheck" />
+    #region Class data
+
     /// <summary>
-    /// Dialog for reviewing the results of a file check
+    /// The object running the overall check.
     /// </summary>
-    partial class CheckReviewForm : Form
+    readonly FileCheckUI m_Cmd;
+
+    /// <summary>
+    /// The index of the current item (-1 prior to first item).
+    /// Should always be less than <c>m_nTotal</c>.
+    /// </summary>
+    int m_nCurrent;
+
+    /// <summary>
+    /// The total number of items.
+    /// </summary>
+    int m_nTotal;
+
+    /// <summary>
+    /// Have edits been made?
+    /// </summary>
+    bool m_IsEdited;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Creates a new <c>CheckReviewForm</c> for the specified file checker.
+    /// </summary>
+    /// <param name="cmd">The file check that needs to be reviewed</param>
+    internal CheckReviewForm(FileCheckUI cmd)
     {
-        #region Class data
+        InitializeComponent();
 
-        /// <summary>
-        /// The object running the overall check.
-        /// </summary>
-        readonly FileCheckUI m_Cmd;
+        m_Cmd = cmd;
+        m_nTotal = 0;
+        m_nCurrent = -1;
+        m_IsEdited = false;
+    }
 
-        /// <summary>
-        /// The index of the current item (-1 prior to first item).
-        /// Should always be less than <c>m_nTotal</c>.
-        /// </summary>
-        int m_nCurrent;
+    #endregion
 
-        /// <summary>
-        /// The total number of items.
-        /// </summary>
-        int m_nTotal;
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        // If the index of the next item is beyond the last one, that's us done.
+        m_nCurrent++;
+        if (AtFinish())
+            return;
 
-        /// <summary>
-        /// Have edits been made?
-        /// </summary>
-	    bool m_IsEdited;
+        // Get the next item to check.
+        int nShow = ShowCheck(m_nCurrent, true);
 
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>CheckReviewForm</c> for the specified file checker.
-        /// </summary>
-        /// <param name="cmd">The file check that needs to be reviewed</param>
-        internal CheckReviewForm(FileCheckUI cmd)
+        // If we auto-advanced, repeat what we did above.
+        if (nShow != m_nCurrent)
         {
-            InitializeComponent();
-
-            m_Cmd = cmd;
-            m_nTotal = 0;
-            m_nCurrent = -1;
-            m_IsEdited = false;
+            m_nCurrent = nShow;
+            AtFinish();
         }
+    }
 
-        #endregion
-
-        private void okButton_Click(object sender, EventArgs e)
+    bool AtFinish()
+    {
+        // If the next item to show is beyond the last item
+        if (m_nCurrent >= m_nTotal)
         {
-            // If the index of the next item is beyond the last one, that's us done.
-            m_nCurrent++;
-            if (AtFinish())
-                return;
+            // If anything was edited during the review, get the command to recheck.
+            // Otherwise get the command to wrap things up.
 
-            // Get the next item to check.
-            int nShow = ShowCheck(m_nCurrent, true);
-
-            // If we auto-advanced, repeat what we did above.
-            if (nShow != m_nCurrent)
-            {
-                m_nCurrent = nShow;
-                AtFinish();
-            }
-        }
-
-        bool AtFinish()
-        {
-            // If the next item to show is beyond the last item
-	        if (m_nCurrent >= m_nTotal)
-            {
-		        // If anything was edited during the review, get the command to recheck.
-                // Otherwise get the command to wrap things up.
-
-		        if (m_IsEdited)
-                    m_Cmd.ReCheck();
-		        else
-                {
-			        OnResetCheck();
-			        m_Cmd.Finish();
-			        return true;
-		        }
-	        }
-
-	        return false;
-        }
-
-        int ShowCheck(int index, bool advanceOnFix)
-        {
-            // Get the check object.
-            CheckItem check = m_Cmd.GetResult(index);
-            if (check==null)
-                return -1;
-
-            // If auto-advance is allowed, and the check has been fixed, keep going until
-            // we find something that hasn't been fixed.
-            int nShow = index;
-            if (advanceOnFix)
-            {
-                while (check.Types==CheckType.Null)
-                {
-                    nShow++;
-                    if (nShow >= m_nTotal)
-                        return nShow;
-
-                    check = m_Cmd.GetResult(nShow);
-                    if (check==null)
-                        return -1;
-                }
-            }
-
-            // If there is even more, ensure the OK button says "Next".
-            // Otherwise display "Finish" or "ReCheck" depending on
-            // whether any edits have been performed.
-            if ((nShow+1) == m_nTotal)
-            {
-                if (m_IsEdited)
-                    okButton.Text = "Re-Chec&k";
-                else
-                    okButton.Text = "&Finish";
-            }
+            if (m_IsEdited)
+                m_Cmd.ReCheck();
             else
-                okButton.Text = "&Next";
-
-            // Enable the "Back" button if we're now beyond the 1st item.
-            previousButton.Enabled = (nShow>0);
-
-            // Display current sequence
-            statusGroupBox.Text = String.Format("{0} of {1}", nShow+1, m_nTotal);
-
-            // Get the check to provide an explanation.
-            string msg = (check==null ? "sync lost" : check.Explanation);
-
-            // Get a position for the check. If we can't get one, append a note to the explanation.
-            IPosition pos = check.Position;
-            if (pos==null)
-                msg += " (cannot re-locate the problem)";
-
-            explanationLabel.Text = msg;
-
-            // Return if we did not get a position for the check, ensuring that this
-            // focus is with THIS dialog.
-            if (pos==null)
             {
-                this.Focus();
-                return nShow;
+                OnResetCheck();
+                m_Cmd.Finish();
+                return true;
             }
+        }
 
-            // Get the current draw window, and shrink it by 10% all the way round.
-            ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-            Window win = new Window(display.Extent);
-            win.Expand(-0.1);
+        return false;
+    }
 
-            // If necessary, re-center the draw on the position we've got.
-            if (!win.IsOverlap(pos))
-                display.Center = pos;
+    int ShowCheck(int index, bool advanceOnFix)
+    {
+        // Get the check object.
+        CheckItem check = m_Cmd.GetResult(index);
+        if (check==null)
+            return -1;
 
-            // Select the object involved, so long as it hasn't been de-activated (selecting
-            // the object will highlight it and shift the focus to the main map window).
-            if (check.Types != CheckType.Null)
-                check.Select();
+        // If auto-advance is allowed, and the check has been fixed, keep going until
+        // we find something that hasn't been fixed.
+        int nShow = index;
+        if (advanceOnFix)
+        {
+            while (check.Types==CheckType.Null)
+            {
+                nShow++;
+                if (nShow >= m_nTotal)
+                    return nShow;
 
-            // Return the index of the check that was actually shown.
+                check = m_Cmd.GetResult(nShow);
+                if (check==null)
+                    return -1;
+            }
+        }
+
+        // If there is even more, ensure the OK button says "Next".
+        // Otherwise display "Finish" or "ReCheck" depending on
+        // whether any edits have been performed.
+        if ((nShow+1) == m_nTotal)
+        {
+            if (m_IsEdited)
+                okButton.Text = "Re-Chec&k";
+            else
+                okButton.Text = "&Finish";
+        }
+        else
+            okButton.Text = "&Next";
+
+        // Enable the "Back" button if we're now beyond the 1st item.
+        previousButton.Enabled = (nShow>0);
+
+        // Display current sequence
+        statusGroupBox.Text = String.Format("{0} of {1}", nShow+1, m_nTotal);
+
+        // Get the check to provide an explanation.
+        string msg = (check==null ? "sync lost" : check.Explanation);
+
+        // Get a position for the check. If we can't get one, append a note to the explanation.
+        IPosition pos = check.Position;
+        if (pos==null)
+            msg += " (cannot re-locate the problem)";
+
+        explanationLabel.Text = msg;
+
+        // Return if we did not get a position for the check, ensuring that this
+        // focus is with THIS dialog.
+        if (pos==null)
+        {
+            this.Focus();
             return nShow;
         }
 
-        private void CheckReviewForm_FormClosing(object sender, FormClosingEventArgs e)
+        // Get the current draw window, and shrink it by 10% all the way round.
+        ISpatialDisplay display = EditingController.Current.ActiveDisplay;
+        Window win = new Window(display.Extent);
+        win.Expand(-0.1);
+
+        // If necessary, re-center the draw on the position we've got.
+        if (!win.IsOverlap(pos))
+            display.Center = pos;
+
+        // Select the object involved, so long as it hasn't been de-activated (selecting
+        // the object will highlight it and shift the focus to the main map window).
+        if (check.Types != CheckType.Null)
+            check.Select();
+
+        // Return the index of the check that was actually shown.
+        return nShow;
+    }
+
+    private void CheckReviewForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        m_Cmd.Finish();        
+    }
+
+    private void previousButton_Click(object sender, EventArgs e)
+    {
+        if (m_nCurrent>0)
         {
-            m_Cmd.Finish();        
+            m_nCurrent--;
+            ShowCheck(m_nCurrent, false);
+        }
+    }
+
+    internal void ShowProgress (int nDone)
+    {
+        // Only display status every 1000 done.
+        if ((nDone%1000) == 0)
+        {
+            explanationLabel.Text = String.Format("{0} features checked", nDone);
+            explanationLabel.Refresh();
+        }
+    }
+
+    internal void OnFinishCheck(int nCheck, int nProblem)
+    {
+        // Display summary message.
+        if (nProblem > 0)
+        {
+            statusGroupBox.Text = String.Format("0 of {0}", nProblem);
+
+            string msg = String.Empty;
+            msg += String.Format("{0} features checked.", nCheck);
+            msg += System.Environment.NewLine;
+            msg += String.Format("{0} possible problem", nProblem);
+            if (nProblem > 1)
+                msg += "s";
+            explanationLabel.Text = msg;
+
+            okButton.Text = "&First";
+        }
+        else
+        {
+            statusGroupBox.Text = String.Empty;
+            explanationLabel.Text = "No problems found.";
+            okButton.Text = "OK";
         }
 
-        private void previousButton_Click(object sender, EventArgs e)
+        // Reveal the buttons.
+        previousButton.Visible = okButton.Visible = true;
+
+        // Disable the Back button (you have to click
+        // on OK to initially proceed to the first problem).
+        previousButton.Enabled = false;
+
+        // Remember where we are.
+        m_nTotal = nProblem;
+        m_nCurrent = -1;
+
+        // Move focus to this dialog (user is likely to hit return to move to first problem)
+        this.Focus();
+    }
+
+    internal void OnResetCheck()
+    {
+        this.Text = "File Check Review";
+        m_nTotal = 0;
+        m_nCurrent = -1;
+        m_IsEdited = false;
+        previousButton.Visible = okButton.Visible = false;
+    }
+
+    internal void Render(ISpatialDisplay display, IDrawStyle style)
+    {
+        if (m_nCurrent >= 0 && m_nCurrent < m_nTotal)
         {
-            if (m_nCurrent>0)
+            CheckItem checkResult = m_Cmd.GetResult(m_nCurrent);
+            if (checkResult != null)
             {
-            	m_nCurrent--;
-	            ShowCheck(m_nCurrent, false);
+                checkResult.Render(display, style);
+                checkResult.HighlightCheckedItem(display);
             }
         }
+    }
 
-        internal void ShowProgress (int nDone)
+    /// <summary>
+    /// Do stuff when a user has just completed an edit.
+    /// </summary>
+    internal void OnFinishOp()
+    {
+        // Remember that an edit has occurred.
+        if (!m_IsEdited)
         {
-	        // Only display status every 1000 done.
-	        if ((nDone%1000) == 0)
-            {
-                explanationLabel.Text = String.Format("{0} features checked", nDone);
-                explanationLabel.Refresh();
-            }
+            this.Text = "File Check Review (edits made)";
+            m_IsEdited = true;
         }
 
-        internal void OnFinishCheck(int nCheck, int nProblem)
-        {
-            // Display summary message.
-            if (nProblem > 0)
-            {
-                statusGroupBox.Text = String.Format("0 of {0}", nProblem);
+        // Redisplay the info for the current edit (if any).
+        if (m_nCurrent < m_nTotal)
+            ShowCheck(m_nCurrent, false);
 
-                string msg = String.Empty;
-                msg += String.Format("{0} features checked.", nCheck);
-                msg += System.Environment.NewLine;
-                msg += String.Format("{0} possible problem", nProblem);
-                if (nProblem > 1)
-                    msg += "s";
-                explanationLabel.Text = msg;
-
-                okButton.Text = "&First";
-            }
-            else
-            {
-                statusGroupBox.Text = String.Empty;
-                explanationLabel.Text = "No problems found.";
-                okButton.Text = "OK";
-            }
-
-            // Reveal the buttons.
-            previousButton.Visible = okButton.Visible = true;
-
-            // Disable the Back button (you have to click
-            // on OK to initially proceed to the first problem).
-            previousButton.Enabled = false;
-
-            // Remember where we are.
-            m_nTotal = nProblem;
-            m_nCurrent = -1;
-
-            // Move focus to this dialog (user is likely to hit return to move to first problem)
-            this.Focus();
-        }
-
-        internal void OnResetCheck()
-        {
-            this.Text = "File Check Review";
-            m_nTotal = 0;
-            m_nCurrent = -1;
-            m_IsEdited = false;
-            previousButton.Visible = okButton.Visible = false;
-        }
-
-        internal void Render(ISpatialDisplay display, IDrawStyle style)
-        {
-            if (m_nCurrent >= 0 && m_nCurrent < m_nTotal)
-            {
-                CheckItem checkResult = m_Cmd.GetResult(m_nCurrent);
-                if (checkResult != null)
-                {
-                    checkResult.Render(display, style);
-                    checkResult.HighlightCheckedItem(display);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Do stuff when a user has just completed an edit.
-        /// </summary>
-        internal void OnFinishOp()
-        {
-            // Remember that an edit has occurred.
-            if (!m_IsEdited)
-            {
-                this.Text = "File Check Review (edits made)";
-                m_IsEdited = true;
-            }
-
-            // Redisplay the info for the current edit (if any).
-            if (m_nCurrent < m_nTotal)
-                ShowCheck(m_nCurrent, false);
-
-            okButton.Focus();
-        }
+        okButton.Focus();
     }
 }

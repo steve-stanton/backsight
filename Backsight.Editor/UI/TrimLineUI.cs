@@ -13,89 +13,85 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
-
 using Backsight.Forms;
 using Backsight.Editor.Operations;
 
-namespace Backsight.Editor.UI
+namespace Backsight.Editor.UI;
+
+/// <written by="Steve Stanton" on="03-JAN-2008" />
+/// <summary>
+/// User interface for trimming dangling line features.
+/// </summary>
+class TrimLineUI : SimpleCommandUI
 {
-    /// <written by="Steve Stanton" on="03-JAN-2008" />
+    #region Class data
+
+    // none
+
+    #endregion
+
+    #region Constructors
+
     /// <summary>
-    /// User interface for trimming dangling line features.
+    /// Creates a new <c>TrimLineUI</c>
     /// </summary>
-    class TrimLineUI : SimpleCommandUI
+    /// <param name="action">The action that initiated this command</param>
+    internal TrimLineUI(IUserAction action)
+        : base(action)
     {
-        #region Class data
+    }
 
-        // none
+    #endregion
 
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>TrimLineUI</c>
-        /// </summary>
-        /// <param name="action">The action that initiated this command</param>
-        internal TrimLineUI(IUserAction action)
-            : base(action)
+    /// <summary>
+    /// Runs a trim dangles command by creating the editing operation (using the current feature
+    /// selection) & executing it. The controller is then told to clear the selection before
+    /// completing the command.
+    /// </summary>
+    /// <returns>True if the command ran to completion. False if any exception arose (in that
+    /// case, the controller would be told to abort the command).</returns>
+    internal override bool Run()
+    {
+        // Grab the current selection & filter out stuff that can't be trimmed
+        EditingController c = Controller;
+        ISpatialSelection ss = c.SpatialSelection;
+        LineFeature[] lines = TrimLineOperation.PreCheck(ss.Items);
+        if (lines.Length==0)
         {
+            StringBuilder sb = new StringBuilder(200);
+            sb.Append("Nothing can be trimmed. Possible reasons:");
+            sb.Append(System.Environment.NewLine);
+            sb.Append(System.Environment.NewLine);
+            sb.Append("1. Lines have to be dangling.");
+            sb.Append(System.Environment.NewLine);
+            sb.Append("2. Only lines that are polygon boundaries can be trimmed.");
+            sb.Append(System.Environment.NewLine);
+            sb.Append("3. There has to be something left after trimming a line.");
+
+            MessageBox.Show(sb.ToString());
+            c.AbortCommand(this);
+            return false;
         }
 
-        #endregion
+        TrimLineOperation op = null;
 
-        /// <summary>
-        /// Runs a trim dangles command by creating the editing operation (using the current feature
-        /// selection) & executing it. The controller is then told to clear the selection before
-        /// completing the command.
-        /// </summary>
-        /// <returns>True if the command ran to completion. False if any exception arose (in that
-        /// case, the controller would be told to abort the command).</returns>
-        internal override bool Run()
+        try
         {
-            // Grab the current selection & filter out stuff that can't be trimmed
-            EditingController c = Controller;
-            ISpatialSelection ss = c.SpatialSelection;
-            LineFeature[] lines = TrimLineOperation.PreCheck(ss.Items);
-            if (lines.Length==0)
-            {
-                StringBuilder sb = new StringBuilder(200);
-                sb.Append("Nothing can be trimmed. Possible reasons:");
-                sb.Append(System.Environment.NewLine);
-                sb.Append(System.Environment.NewLine);
-                sb.Append("1. Lines have to be dangling.");
-                sb.Append(System.Environment.NewLine);
-                sb.Append("2. Only lines that are polygon boundaries can be trimmed.");
-                sb.Append(System.Environment.NewLine);
-                sb.Append("3. There has to be something left after trimming a line.");
+            op = new TrimLineOperation();
+            op.Execute(lines);
 
-                MessageBox.Show(sb.ToString());
-                c.AbortCommand(this);
-                return false;
-            }
+            c.ClearSelection();
+            c.FinishCommand(this);
+            return true;
+        }
 
-            TrimLineOperation op = null;
-
-            try
-            {
-                op = new TrimLineOperation();
-                op.Execute(lines);
-
-                c.ClearSelection();
-                c.FinishCommand(this);
-                return true;
-            }
-
-            catch (Exception e)
-            {
-                MessageBox.Show(e.StackTrace, e.Message);
-                c.AbortCommand(this);
-                return false;
-            }
+        catch (Exception e)
+        {
+            MessageBox.Show(e.StackTrace, e.Message);
+            c.AbortCommand(this);
+            return false;
         }
     }
 }

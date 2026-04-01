@@ -13,134 +13,132 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <summary>
+/// Dialog for selecting the things that should be listed during a
+/// file check.
+/// </summary>
+public partial class FileCheckForm : Form
 {
     /// <summary>
-    /// Dialog for selecting the things that should be listed during a
-    /// file check.
+    /// The selected check options
     /// </summary>
-    public partial class FileCheckForm : Form
+    CheckType m_Options;
+
+    public FileCheckForm()
     {
-        /// <summary>
-        /// The selected check options
-        /// </summary>
-        CheckType m_Options;
+        InitializeComponent();
+        m_Options = CheckType.Null;
+    }
 
-        public FileCheckForm()
+    /// <summary>
+    /// The selected check options
+    /// </summary>
+    internal CheckType Options
+    {
+        get { return m_Options; }
+    }
+
+    private void FileCheckForm_Shown(object sender, EventArgs e)
+    {
+        // Get default options from the registry.
+        string regstr = GlobalUserSetting.Read("FileCheck");
+        if (String.IsNullOrEmpty(regstr))
+            regstr = CheckItem.GetAllCheckLetters();
+
+        // Convert to option flags
+        m_Options = CheckItem.GetOptions(regstr);
+
+        // Set check marks beside all the selected options.
+        foreach (char c in regstr)
         {
-            InitializeComponent();
-            m_Options = CheckType.Null;
+            CheckType check = CheckItem.GetOption(c);
+            CheckBox cb = null;
+
+            if (check == CheckType.SmallLine)
+                cb = smallLineCheckBox;
+            else if (check == CheckType.Dangle)
+                cb = danglingCheckBox;
+            else if (check == CheckType.Overlap)
+                cb = overlapCheckBox;
+            else if (check == CheckType.Floating)
+                cb = floatingCheckBox;
+            else if (check == CheckType.Bridge)
+                cb = bridgeCheckBox;
+            else if (check == CheckType.SmallPolygon)
+                cb = smallPolygonCheckBox;
+            else if (check == CheckType.NotEnclosed)
+                cb = notEnclosedCheckBox;
+            else if (check == CheckType.NoLabel)
+                cb = noLabelCheckBox;
+            else if (check == CheckType.NoPolygonForLabel)
+                cb = noPolygonForLabelCheckBox;
+            else if (check == CheckType.NoAttributes)
+                cb = noAttributesCheckBox;
+            else if (check == CheckType.MultiLabel)
+                cb = multiLabelCheckBox;
+
+            if (cb != null)
+                cb.Checked = true;
         }
+    }
 
-        /// <summary>
-        /// The selected check options
-        /// </summary>
-        internal CheckType Options
-        {
-            get { return m_Options; }
-        }
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        this.DialogResult = DialogResult.Cancel;
+        Close();
+    }
 
-        private void FileCheckForm_Shown(object sender, EventArgs e)
-        {
-            // Get default options from the registry.
-            string regstr = GlobalUserSetting.Read("FileCheck");
-            if (String.IsNullOrEmpty(regstr))
-                regstr = CheckItem.GetAllCheckLetters();
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        // Pick up the checked items.
 
-            // Convert to option flags
-            m_Options = CheckItem.GetOptions(regstr);
+        CheckType checks = CheckType.Null;
 
-            // Set check marks beside all the selected options.
-            foreach (char c in regstr)
-            {
-                CheckType check = CheckItem.GetOption(c);
-                CheckBox cb = null;
+        if (smallLineCheckBox.Checked)
+            checks |= CheckType.SmallLine;
 
-                if (check == CheckType.SmallLine)
-                    cb = smallLineCheckBox;
-                else if (check == CheckType.Dangle)
-                    cb = danglingCheckBox;
-                else if (check == CheckType.Overlap)
-                    cb = overlapCheckBox;
-                else if (check == CheckType.Floating)
-                    cb = floatingCheckBox;
-                else if (check == CheckType.Bridge)
-                    cb = bridgeCheckBox;
-                else if (check == CheckType.SmallPolygon)
-                    cb = smallPolygonCheckBox;
-                else if (check == CheckType.NotEnclosed)
-                    cb = notEnclosedCheckBox;
-                else if (check == CheckType.NoLabel)
-                    cb = noLabelCheckBox;
-                else if (check == CheckType.NoPolygonForLabel)
-                    cb = noPolygonForLabelCheckBox;
-                else if (check == CheckType.NoAttributes)
-                    cb = noAttributesCheckBox;
-                else if (check == CheckType.MultiLabel)
-                    cb = multiLabelCheckBox;
+        if (danglingCheckBox.Checked)
+            checks |= CheckType.Dangle;
 
-                if (cb != null)
-                    cb.Checked = true;
-            }
-        }
+        if (overlapCheckBox.Checked)
+            checks |= CheckType.Overlap;
 
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-        }
+        if (floatingCheckBox.Checked)
+            checks |= CheckType.Floating;
 
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            // Pick up the checked items.
+        if (bridgeCheckBox.Checked)
+            checks |= CheckType.Bridge;
 
-            CheckType checks = CheckType.Null;
+        if (smallPolygonCheckBox.Checked)
+            checks |= CheckType.SmallPolygon;
 
-            if (smallLineCheckBox.Checked)
-                checks |= CheckType.SmallLine;
+        if (notEnclosedCheckBox.Checked)
+            checks |= CheckType.NotEnclosed;
 
-            if (danglingCheckBox.Checked)
-                checks |= CheckType.Dangle;
+        if (noLabelCheckBox.Checked)
+            checks |= CheckType.NoLabel;
 
-            if (overlapCheckBox.Checked)
-                checks |= CheckType.Overlap;
+        if (noPolygonForLabelCheckBox.Checked)
+            checks |= CheckType.NoPolygonForLabel;
 
-            if (floatingCheckBox.Checked)
-                checks |= CheckType.Floating;
+        if (noAttributesCheckBox.Checked)
+            checks |= CheckType.NoAttributes;
 
-            if (bridgeCheckBox.Checked)
-                checks |= CheckType.Bridge;
+        if (multiLabelCheckBox.Checked)
+            checks |= CheckType.MultiLabel;
 
-            if (smallPolygonCheckBox.Checked)
-                checks |= CheckType.SmallPolygon;
+        // Hold options in the registry.
+        string regstr = CheckItem.GetCheckLetters(checks);
+        GlobalUserSetting.Write("FileCheck", regstr);
 
-            if (notEnclosedCheckBox.Checked)
-                checks |= CheckType.NotEnclosed;
+        // Remember the selected options
+        m_Options = checks;
 
-            if (noLabelCheckBox.Checked)
-                checks |= CheckType.NoLabel;
-
-            if (noPolygonForLabelCheckBox.Checked)
-                checks |= CheckType.NoPolygonForLabel;
-
-            if (noAttributesCheckBox.Checked)
-                checks |= CheckType.NoAttributes;
-
-            if (multiLabelCheckBox.Checked)
-                checks |= CheckType.MultiLabel;
-
-            // Hold options in the registry.
-            string regstr = CheckItem.GetCheckLetters(checks);
-            GlobalUserSetting.Write("FileCheck", regstr);
-
-            // Remember the selected options
-            m_Options = checks;
-
-            this.DialogResult = DialogResult.OK;
-            Close();
-        }
+        this.DialogResult = DialogResult.OK;
+        Close();
     }
 }

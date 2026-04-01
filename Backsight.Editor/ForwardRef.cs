@@ -13,42 +13,41 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <summary>
+/// A reference to something that has not yet been created. This is utilized by code
+/// that handles the forward-references that might be encountered when loading data
+/// originating from the old CEdit system.
+/// </summary>
+/// <remarks>This is the base class for <see cref="ForwardFeatureRef"/> and <see cref="ForwardFeatureRefArray"/></remarks>
+abstract class ForwardRef
 {
+    #region Class data
+
     /// <summary>
-    /// A reference to something that has not yet been created. This is utilized by code
-    /// that handles the forward-references that might be encountered when loading data
-    /// originating from the old CEdit system.
+    /// The ID of the persistent field.
     /// </summary>
-    /// <remarks>This is the base class for <see cref="ForwardFeatureRef"/> and <see cref="ForwardFeatureRefArray"/></remarks>
-    abstract class ForwardRef
+    internal DataField Field { get; private set; }
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ForwardFeatureRef"/> class.
+    /// </summary>
+    /// <param name="field">The ID of the persistent field.</param>
+    internal ForwardRef(DataField field)
     {
-        #region Class data
-
-        /// <summary>
-        /// The ID of the persistent field.
-        /// </summary>
-        internal DataField Field { get; private set; }
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ForwardFeatureRef"/> class.
-        /// </summary>
-        /// <param name="field">The ID of the persistent field.</param>
-        internal ForwardRef(DataField field)
-        {
-            Field = field;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Attempts to resolves this forward reference.
-        /// </summary>
-        /// <param name="mapModel">The map model that should now contain the relevant features.</param>
-        abstract internal void Resolve(CadastralMapModel mapModel);
+        Field = field;
     }
+
+    #endregion
+
+    /// <summary>
+    /// Attempts to resolves this forward reference.
+    /// </summary>
+    /// <param name="mapModel">The map model that should now contain the relevant features.</param>
+    abstract internal void Resolve(CadastralMapModel mapModel);
 }

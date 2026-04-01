@@ -13,88 +13,84 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Backsight.Environment;
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+class IdHelper
 {
-    class IdHelper
+    /// <summary>
+    /// Load an ID combo box with all the available IDs for a specific entity type.
+    /// </summary>
+    /// <param name="box">The combo box (not null)</param>
+    /// <param name="ent">The entity type that the combo is for (if null, the combo will
+    /// be empty)</param>
+    /// <param name="handle">The ID handle that should be defined to correspond with the
+    /// first available ID (may be null). If there are no available IDs for the specified
+    /// entity type, any ID previously reserved will be released.</param>
+    /// <returns>The number of IDs that were loaded into the combo (if any)</returns>
+    internal static int LoadIdCombo(ComboBox box, IEntity ent, IdHandle handle)
     {
-        /// <summary>
-        /// Load an ID combo box with all the available IDs for a specific entity type.
-        /// </summary>
-        /// <param name="box">The combo box (not null)</param>
-        /// <param name="ent">The entity type that the combo is for (if null, the combo will
-        /// be empty)</param>
-        /// <param name="handle">The ID handle that should be defined to correspond with the
-        /// first available ID (may be null). If there are no available IDs for the specified
-        /// entity type, any ID previously reserved will be released.</param>
-        /// <returns>The number of IDs that were loaded into the combo (if any)</returns>
-        internal static int LoadIdCombo(ComboBox box, IEntity ent, IdHandle handle)
+        if (box==null)
+            throw new ArgumentNullException();
+
+        // Clear out anything that was in the combo before.
+        box.Items.Clear();
+
+        if (ent==null)
+            return 0;
+
+        // Get a list of all the available IDs for the specified entity type...
+
+        IdManager idMan = CadastralMapModel.Current.IdManager;
+        if (idMan == null)
+            return 0;
+
+        IdGroup group = idMan.GetGroup(ent);
+        if (group==null)
+            return 0;
+
+        // Get the available IDs for the group
+        uint[] avail = group.GetAvailIds();
+
+        // If we didn't find any, obtain an extra allocation
+        if (avail.Length == 0)
         {
-            if (box==null)
-                throw new ArgumentNullException();
-
-            // Clear out anything that was in the combo before.
-            box.Items.Clear();
-
-            if (ent==null)
-                return 0;
-
-            // Get a list of all the available IDs for the specified entity type...
-
-            IdManager idMan = CadastralMapModel.Current.IdManager;
-            if (idMan == null)
-                return 0;
-
-            IdGroup group = idMan.GetGroup(ent);
-            if (group==null)
-                return 0;
-
-            // Get the available IDs for the group
-            uint[] avail = group.GetAvailIds();
-
-            // If we didn't find any, obtain an extra allocation
+            IdPacket newPacket = group.GetAllocation(true); // with announcement
+            avail = group.GetAvailIds();
             if (avail.Length == 0)
-            {
-                IdPacket newPacket = group.GetAllocation(true); // with announcement
-                avail = group.GetAvailIds();
-                if (avail.Length == 0)
-                    throw new ApplicationException("Cannot obtain ID allocation");
-            }
-
-            // Load the combo
-            DisplayId[] ids = new DisplayId[avail.Length];
-            for (int i = 0; i < ids.Length; i++)
-                ids[i] = new DisplayId(group, avail[i]);
-
-            box.Items.AddRange(ids);
-
-            // Reserve the first available ID if a handle was supplied (and select it)
-            if (handle != null)
-            {
-                IdPacket p = group.FindPacket(avail[0]);
-                handle.ReserveId(p, ent, avail[0]);
-                box.SelectedItem = ids[0];
-            } 
-
-            return avail.Length;
+                throw new ApplicationException("Cannot obtain ID allocation");
         }
 
-        /// <summary>
-        /// Handles a selection change made to an ID combo. This reserves the ID
-        /// by associating it with the supplied ID handle (and discards any previous
-        /// reserve).
-        /// </summary>
-        /// <param name="comboBox">The combo box where the selection has changed.</param>
-        /// <param name="handle">The handle for the selected ID</param>
-        internal static void OnChangeSelectedId(ComboBox comboBox, IdHandle handle)
+        // Load the combo
+        DisplayId[] ids = new DisplayId[avail.Length];
+        for (int i = 0; i < ids.Length; i++)
+            ids[i] = new DisplayId(group, avail[i]);
+
+        box.Items.AddRange(ids);
+
+        // Reserve the first available ID if a handle was supplied (and select it)
+        if (handle != null)
         {
-            DisplayId id = (DisplayId)comboBox.SelectedItem;
-            handle.ReserveId(handle.Entity, id.RawId);
-        }
+            IdPacket p = group.FindPacket(avail[0]);
+            handle.ReserveId(p, ent, avail[0]);
+            box.SelectedItem = ids[0];
+        } 
+
+        return avail.Length;
+    }
+
+    /// <summary>
+    /// Handles a selection change made to an ID combo. This reserves the ID
+    /// by associating it with the supplied ID handle (and discards any previous
+    /// reserve).
+    /// </summary>
+    /// <param name="comboBox">The combo box where the selection has changed.</param>
+    /// <param name="handle">The handle for the selected ID</param>
+    internal static void OnChangeSelectedId(ComboBox comboBox, IdHandle handle)
+    {
+        DisplayId id = (DisplayId)comboBox.SelectedItem;
+        handle.ReserveId(handle.Entity, id.RawId);
     }
 }

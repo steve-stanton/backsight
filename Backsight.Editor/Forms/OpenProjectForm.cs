@@ -13,86 +13,84 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <summary>
+/// Dialog that lets the user specify an an existing project.
+/// </summary>
+public partial class OpenProjectForm : Form
 {
+    #region Class data
+
     /// <summary>
-    /// Dialog that lets the user specify an an existing project.
+    /// The name of the selected project (null if nothing was selected)
     /// </summary>
-    public partial class OpenProjectForm : Form
+    string m_ProjectName;
+
+    /// <summary>
+    /// The names of all defined projects
+    /// </summary>
+    string[] m_AllNames;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenProjectForm"/> class.
+    /// </summary>
+    public OpenProjectForm()
     {
-        #region Class data
+        InitializeComponent();
+        m_ProjectName = null;
+        m_AllNames = null;
+    }
 
-        /// <summary>
-        /// The name of the selected project (null if nothing was selected)
-        /// </summary>
-        string m_ProjectName;
+    #endregion
 
-        /// <summary>
-        /// The names of all defined projects
-        /// </summary>
-        string[] m_AllNames;
+    private void OpenProjectForm_Shown(object sender, EventArgs e)
+    {
+        m_AllNames = new ProjectDatabase().FindAllProjectNames();
+        listBox.DataSource = m_AllNames;
+    }
 
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OpenProjectForm"/> class.
-        /// </summary>
-        public OpenProjectForm()
+    private void listBox_DoubleClick(object sender, EventArgs e)
+    {
+        if (listBox.SelectedItem != null)
         {
-            InitializeComponent();
-            m_ProjectName = null;
-            m_AllNames = null;
-        }
-
-        #endregion
-
-        private void OpenProjectForm_Shown(object sender, EventArgs e)
-        {
-            m_AllNames = new ProjectDatabase().FindAllProjectNames();
-            listBox.DataSource = m_AllNames;
-        }
-
-        private void listBox_DoubleClick(object sender, EventArgs e)
-        {
-            if (listBox.SelectedItem != null)
-            {
-                m_ProjectName = listBox.SelectedItem.ToString();
-                this.DialogResult = DialogResult.OK;
-                Close();
-            }
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Cancel;
+            m_ProjectName = listBox.SelectedItem.ToString();
+            this.DialogResult = DialogResult.OK;
             Close();
         }
+    }
 
-        /// <summary>
-        /// The name of the selected project (null if nothing was selected)
-        /// </summary>
-        internal string ProjectName
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        DialogResult = DialogResult.Cancel;
+        Close();
+    }
+
+    /// <summary>
+    /// The name of the selected project (null if nothing was selected)
+    /// </summary>
+    internal string ProjectName
+    {
+        get { return m_ProjectName; }
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        if (listBox.SelectedItem == null)
         {
-            get { return m_ProjectName; }
+            MessageBox.Show("You must first select an existing project");
         }
-
-        private void okButton_Click(object sender, EventArgs e)
+        else
         {
-            if (listBox.SelectedItem == null)
-            {
-                MessageBox.Show("You must first select an existing project");
-            }
-            else
-            {
-                m_ProjectName = listBox.SelectedItem.ToString();
-                this.DialogResult = DialogResult.OK;
-                Close();
-            }
+            m_ProjectName = listBox.SelectedItem.ToString();
+            this.DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

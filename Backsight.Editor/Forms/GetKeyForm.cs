@@ -13,79 +13,77 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+/// <written by="Steve Stanton" />
+/// <summary>
+/// Dialog for obtaining a feature ID from the user.
+/// </summary>
+/// <seealso cref="GetIdForm"/>
+partial class GetKeyForm : Form
 {
-    /// <written by="Steve Stanton" />
+    #region Class data
+
     /// <summary>
-    /// Dialog for obtaining a feature ID from the user.
+    /// The key entered by the user (may be null)
     /// </summary>
-    /// <seealso cref="GetIdForm"/>
-    partial class GetKeyForm : Form
+    string m_Key;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Creates a new <c>GetKeyForm</c> with the usual title bar.
+    /// </summary>
+    internal GetKeyForm()
     {
-        #region Class data
+        InitializeComponent();
 
-        /// <summary>
-        /// The key entered by the user (may be null)
-        /// </summary>
-        string m_Key;
+        m_Key = null;
+    }
 
-        #endregion
+    /// <summary>
+    /// Creates a new <c>GetKeyForm</c> with the specified title bar.
+    /// </summary>
+    /// <param name="title">The text for the title bar</param>
+    internal GetKeyForm(string title)
+        : this()
+    {
+        this.Text = title;
+    }
 
-        #region Constructors
 
-        /// <summary>
-        /// Creates a new <c>GetKeyForm</c> with the usual title bar.
-        /// </summary>
-        internal GetKeyForm()
+    #endregion
+
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        this.DialogResult = DialogResult.Cancel;
+        Close();
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        string k = keyTextBox.Text.Trim();
+        if (k.Length==0)
         {
-            InitializeComponent();
-
-            m_Key = null;
+            MessageBox.Show("You have not specified anything.");
+            keyTextBox.Focus();
+            return;
         }
 
-        /// <summary>
-        /// Creates a new <c>GetKeyForm</c> with the specified title bar.
-        /// </summary>
-        /// <param name="title">The text for the title bar</param>
-        internal GetKeyForm(string title)
-            : this()
-        {
-            this.Text = title;
-        }
+        m_Key = k;
+        this.DialogResult = DialogResult.OK;
+        Close();
+    }
 
-
-        #endregion
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            string k = keyTextBox.Text.Trim();
-            if (k.Length==0)
-            {
-                MessageBox.Show("You have not specified anything.");
-                keyTextBox.Focus();
-                return;
-            }
-
-            m_Key = k;
-            this.DialogResult = DialogResult.OK;
-            Close();
-        }
-
-        /// <summary>
-        /// The key entered by the user (may be null)
-        /// </summary>
-        internal string Key
-        {
-            get { return m_Key; }
-        }
+    /// <summary>
+    /// The key entered by the user (may be null)
+    /// </summary>
+    internal string Key
+    {
+        get { return m_Key; }
     }
 }

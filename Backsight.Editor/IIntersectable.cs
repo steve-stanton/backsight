@@ -13,19 +13,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="25-OCT-2007" />
+/// <summary>
+/// Something that can be intersected.
+/// </summary>
+interface IIntersectable
 {
-    /// <written by="Steve Stanton" on="25-OCT-2007" />
     /// <summary>
-    /// Something that can be intersected.
+    /// The geometry involved in the intersection calculation
     /// </summary>
-    interface IIntersectable
-    {
-        /// <summary>
-        /// The geometry involved in the intersection calculation
-        /// </summary>
-        LineGeometry LineGeometry { get; }
-    }
+    LineGeometry LineGeometry { get; }
 }

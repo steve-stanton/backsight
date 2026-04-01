@@ -13,178 +13,175 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Environment;
 
-namespace Backsight.Editor.Forms
+namespace Backsight.Editor.Forms;
+
+partial class GetEntityForm : Form
 {
-    partial class GetEntityForm : Form
+    private readonly ILayer m_Layer;
+    private readonly SpatialType m_Type;
+    private readonly int m_DefaultEntityId;
+    private IEntity m_SelectedEntity;
+
+    internal GetEntityForm(ILayer layer, SpatialType t, int defaultEntityId)
     {
-        private readonly ILayer m_Layer;
-        private readonly SpatialType m_Type;
-        private readonly int m_DefaultEntityId;
-        private IEntity m_SelectedEntity;
+        if (layer==null)
+            throw new ArgumentNullException("Map layer must be specified");
 
-        internal GetEntityForm(ILayer layer, SpatialType t, int defaultEntityId)
+        InitializeComponent();
+
+        m_Layer = layer;
+        m_Type = t;
+        m_SelectedEntity = null;
+        m_DefaultEntityId = defaultEntityId;
+    }
+
+    internal GetEntityForm(ILayer layer, SpatialType t)
+        : this(layer, t, 0)
+    {
+    }
+
+    internal IEntity SelectedEntity
+    {
+        get { return m_SelectedEntity; }
+    }
+
+    private void GetEntityForm_Shown(object sender, EventArgs e)
+    {
+        // Display appropriate form title
+        if (m_Type == SpatialType.Point)
+            this.Text = "Entity type for points";
+        else if (m_Type == SpatialType.Line)
+            this.Text = "Entity type for lines";
+        else if (m_Type == SpatialType.Polygon)
+            this.Text = "Entity type for area labels";
+        else if (m_Type == SpatialType.Text)
+            this.Text = "Entity type for text";
+        else
+            this.Text = "Specify entity type";
+
+        // Load the entity types for the spatial data type
+        IEntity[] ents = EnvironmentContainer.EntityTypes(m_Type, m_Layer);
+        listBox.Items.AddRange(ents);
+
+        // Remove first item if it's blank
+        if (listBox.Items.Count > 0 && listBox.Items[0].ToString().Length==0)
+            listBox.Items.RemoveAt(0);
+
+        // Select the current default for the layer
+        IEntity defEnt = GetListDefault();
+        listBox.SelectedItem = defEnt;
+
+        // The polygon boundary checkbox should only be visible for lines
+        // (and should be checked if the default entity type is topological).
+        polBoundaryCheckBox.Visible = (m_Type == SpatialType.Line);
+        if (polBoundaryCheckBox.Visible && defEnt!=null)
+            polBoundaryCheckBox.Checked = defEnt.IsPolygonBoundaryValid;
+    }
+
+    /// <summary>
+    /// Returns the list item that corresponds to the entity type that is the
+    /// default for the layer of interest.
+    /// </summary>
+    /// <returns></returns>
+    IEntity GetListDefault()
+    {
+        // If the ID of a default entity type was supplied to the constructor,
+        // first try to locate the list item using that.
+        IEntity e = null;
+        if (m_DefaultEntityId > 0)
         {
-            if (layer==null)
-                throw new ArgumentNullException("Map layer must be specified");
-
-            InitializeComponent();
-
-            m_Layer = layer;
-            m_Type = t;
-            m_SelectedEntity = null;
-            m_DefaultEntityId = defaultEntityId;
+            e = FindListItemByEntityId(m_DefaultEntityId);
+            if (e!=null)
+                return e;
         }
 
-        internal GetEntityForm(ILayer layer, SpatialType t)
-            : this(layer, t, 0)
+        // Get the object from the layer
+        e = GetLayerDefault();
+
+        // The object the layer knows about should only be a facade. What we
+        // want is the corresponding object from the env container (since that's
+        // what's displayed in the list).
+        return FindListItemByEntityId(e.Id);
+    }
+
+    IEntity FindListItemByEntityId(int entId)
+    {
+        foreach (object o in listBox.Items)
         {
+            IEntity listEnt = (IEntity)o;
+            if (listEnt.Id == entId)
+                return listEnt;
         }
 
-        internal IEntity SelectedEntity
-        {
-            get { return m_SelectedEntity; }
-        }
+        return null;
+    }
 
-        private void GetEntityForm_Shown(object sender, EventArgs e)
-        {
-            // Display appropriate form title
-            if (m_Type == SpatialType.Point)
-                this.Text = "Entity type for points";
-            else if (m_Type == SpatialType.Line)
-                this.Text = "Entity type for lines";
-            else if (m_Type == SpatialType.Polygon)
-                this.Text = "Entity type for area labels";
-            else if (m_Type == SpatialType.Text)
-                this.Text = "Entity type for text";
-            else
-                this.Text = "Specify entity type";
-
-            // Load the entity types for the spatial data type
-            IEntity[] ents = EnvironmentContainer.EntityTypes(m_Type, m_Layer);
-            listBox.Items.AddRange(ents);
-
-            // Remove first item if it's blank
-            if (listBox.Items.Count > 0 && listBox.Items[0].ToString().Length==0)
-                listBox.Items.RemoveAt(0);
-
-            // Select the current default for the layer
-            IEntity defEnt = GetListDefault();
-            listBox.SelectedItem = defEnt;
-
-            // The polygon boundary checkbox should only be visible for lines
-            // (and should be checked if the default entity type is topological).
-            polBoundaryCheckBox.Visible = (m_Type == SpatialType.Line);
-            if (polBoundaryCheckBox.Visible && defEnt!=null)
-                polBoundaryCheckBox.Checked = defEnt.IsPolygonBoundaryValid;
-        }
-
-        /// <summary>
-        /// Returns the list item that corresponds to the entity type that is the
-        /// default for the layer of interest.
-        /// </summary>
-        /// <returns></returns>
-        IEntity GetListDefault()
-        {
-            // If the ID of a default entity type was supplied to the constructor,
-            // first try to locate the list item using that.
-            IEntity e = null;
-            if (m_DefaultEntityId > 0)
-            {
-                e = FindListItemByEntityId(m_DefaultEntityId);
-                if (e!=null)
-                    return e;
-            }
-
-            // Get the object from the layer
-            e = GetLayerDefault();
-
-            // The object the layer knows about should only be a facade. What we
-            // want is the corresponding object from the env container (since that's
-            // what's displayed in the list).
-            return FindListItemByEntityId(e.Id);
-        }
-
-        IEntity FindListItemByEntityId(int entId)
-        {
-            foreach (object o in listBox.Items)
-            {
-                IEntity listEnt = (IEntity)o;
-                if (listEnt.Id == entId)
-                    return listEnt;
-            }
-
+    /// <summary>
+    /// Returns the default entity type for the layer of interest.
+    /// </summary>
+    /// <returns></returns>
+    IEntity GetLayerDefault()
+    {
+        if (m_Layer==null)
             return null;
+
+        if (m_Type == SpatialType.Point)
+            return m_Layer.DefaultPointType;
+
+        if (m_Type == SpatialType.Line)
+            return m_Layer.DefaultLineType;
+
+        if (m_Type == SpatialType.Text)
+            return m_Layer.DefaultTextType;
+
+        if (m_Type == SpatialType.Polygon)
+            return m_Layer.DefaultPolygonType;
+
+        return null;
+    }
+
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        this.DialogResult = DialogResult.Cancel;
+        Close();
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        m_SelectedEntity = (IEntity)listBox.SelectedItem;
+        if (m_SelectedEntity==null)
+        {
+            MessageBox.Show("You must first select the entity type you want");
+            listBox.Focus();
+            return;
         }
 
-        /// <summary>
-        /// Returns the default entity type for the layer of interest.
-        /// </summary>
-        /// <returns></returns>
-        IEntity GetLayerDefault()
+        this.DialogResult = DialogResult.OK;
+        Close();
+    }
+
+    private void listBox_DoubleClick(object sender, EventArgs e)
+    {
+        m_SelectedEntity = (IEntity)listBox.SelectedItem;
+        if (m_SelectedEntity!=null)
         {
-            if (m_Layer==null)
-                return null;
-
-            if (m_Type == SpatialType.Point)
-                return m_Layer.DefaultPointType;
-
-            if (m_Type == SpatialType.Line)
-                return m_Layer.DefaultLineType;
-
-            if (m_Type == SpatialType.Text)
-                return m_Layer.DefaultTextType;
-
-            if (m_Type == SpatialType.Polygon)
-                return m_Layer.DefaultPolygonType;
-
-            return null;
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            m_SelectedEntity = (IEntity)listBox.SelectedItem;
-            if (m_SelectedEntity==null)
-            {
-                MessageBox.Show("You must first select the entity type you want");
-                listBox.Focus();
-                return;
-            }
-
             this.DialogResult = DialogResult.OK;
             Close();
         }
+    }
 
-        private void listBox_DoubleClick(object sender, EventArgs e)
+    private void listBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (polBoundaryCheckBox.Visible)
         {
-            m_SelectedEntity = (IEntity)listBox.SelectedItem;
-            if (m_SelectedEntity!=null)
-            {
-                this.DialogResult = DialogResult.OK;
-                Close();
-            }
-        }
+            IEntity ent = (IEntity)listBox.SelectedItem;
+            if (ent==null)
+                return;
 
-        private void listBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (polBoundaryCheckBox.Visible)
-            {
-                IEntity ent = (IEntity)listBox.SelectedItem;
-                if (ent==null)
-                    return;
-
-                polBoundaryCheckBox.Checked = ent.IsPolygonBoundaryValid;
-            }
+            polBoundaryCheckBox.Checked = ent.IsPolygonBoundaryValid;
         }
     }
 }

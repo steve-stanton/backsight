@@ -13,77 +13,74 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="29-OCT-2007" />
+/// <summary>
+/// Topology for a line section that seperates a pair of polygons.
+/// </summary>
+/// <seealso cref="LineDivider"/>
+class SectionDivider : SectionTopology
 {
-    /// <written by="Steve Stanton" on="29-OCT-2007" />
+    #region Class data
+
     /// <summary>
-    /// Topology for a line section that seperates a pair of polygons.
+    /// The polygon ring to the left of this divider.
     /// </summary>
-    /// <seealso cref="LineDivider"/>
-    class SectionDivider : SectionTopology
+    Ring m_Left;
+
+    /// <summary>
+    /// The polygon ring to the right of this divider.
+    /// </summary>
+    Ring m_Right;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Creates a new <c>SectionDivider</c> that relates to the specified section of line,
+    /// with undefined polygon rings on left and right.
+    /// </summary>
+    /// <param name="line">The line this topological section partially coincides with.</param>
+    /// <param name="from">The start position for the topological section.</param>
+    /// <param name="to">The end position for the topological section.</param>
+    internal SectionDivider(LineFeature line, ITerminal from, ITerminal to)
+        : base(line, from, to)
     {
-        #region Class data
+        m_Left = m_Right = null;
 
-        /// <summary>
-        /// The polygon ring to the left of this divider.
-        /// </summary>
-        Ring m_Left;
+        if (from is Intersection)
+            (from as Intersection).Add(line);
+        else if (from is PointFeature)
+            (from as PointFeature).AddReference(line);
 
-        /// <summary>
-        /// The polygon ring to the right of this divider.
-        /// </summary>
-        Ring m_Right;
+        if (to is Intersection)
+            (to as Intersection).Add(line);
+        else if (to is PointFeature)
+            (to as PointFeature).AddReference(line);
+    }
 
-        #endregion
+    #endregion
 
-        #region Constructors
+    public override Ring Left // IDivider
+    {
+        get { return m_Left; }
+        set { m_Left = value; }
+    }
 
-        /// <summary>
-        /// Creates a new <c>SectionDivider</c> that relates to the specified section of line,
-        /// with undefined polygon rings on left and right.
-        /// </summary>
-        /// <param name="line">The line this topological section partially coincides with.</param>
-        /// <param name="from">The start position for the topological section.</param>
-        /// <param name="to">The end position for the topological section.</param>
-        internal SectionDivider(LineFeature line, ITerminal from, ITerminal to)
-            : base(line, from, to)
-        {
-            m_Left = m_Right = null;
+    public override Ring Right // IDivider
+    {
+        get { return m_Right; }
+        set { m_Right = value; }
+    }
 
-            if (from is Intersection)
-                (from as Intersection).Add(line);
-            else if (from is PointFeature)
-                (from as PointFeature).AddReference(line);
-
-            if (to is Intersection)
-                (to as Intersection).Add(line);
-            else if (to is PointFeature)
-                (to as PointFeature).AddReference(line);
-        }
-
-        #endregion
-
-        public override Ring Left // IDivider
-        {
-            get { return m_Left; }
-            set { m_Left = value; }
-        }
-
-        public override Ring Right // IDivider
-        {
-            get { return m_Right; }
-            set { m_Right = value; }
-        }
-
-        /// <summary>
-        /// Implements <see cref="IDivider"/> method by returning <c>false</c> if this divider
-        /// coincides with the trimmed portion of a line.
-        /// </summary>
-        public override bool IsVisible
-        {
-            get { return Line.IsVisible(this); }
-        }
+    /// <summary>
+    /// Implements <see cref="IDivider"/> method by returning <c>false</c> if this divider
+    /// coincides with the trimmed portion of a line.
+    /// </summary>
+    public override bool IsVisible
+    {
+        get { return Line.IsVisible(this); }
     }
 }

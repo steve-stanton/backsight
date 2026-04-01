@@ -13,381 +13,378 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
-
 using Backsight.Environment;
 using Backsight.Editor.Forms;
 using Backsight.Forms;
 using Backsight.Editor.Operations;
 using Backsight.Editor.Observations;
 
-namespace Backsight.Editor.UI
+namespace Backsight.Editor.UI;
+
+/// <written by="Steve Stanton" on="06-DEC-1998" was="CuiArcExtend" />
+/// <summary>
+/// User interface for extending a line.
+/// </summary>
+class LineExtensionUI : SimpleCommandUI, IDisposable
 {
-    /// <written by="Steve Stanton" on="06-DEC-1998" was="CuiArcExtend" />
+    #region Class data
+
     /// <summary>
-    /// User interface for extending a line.
+    /// The line being extended.
     /// </summary>
-    class LineExtensionUI : SimpleCommandUI, IDisposable
+    LineFeature m_ExtendLine;
+
+    /// <summary>
+    /// The dialog for the command.
+    /// </summary>
+    LineExtensionControl m_Dialog;
+
+    /// <summary>
+    /// The length of the extension.
+    /// </summary>
+    Distance m_Length;
+
+    /// <summary>
+    /// True if extending from the end of m_ExtendLine. False if from the start.
+    /// </summary>
+    bool m_IsExtendFromEnd;	// 
+
+    /// <summary>
+    /// The entity type for the extension line (if any).
+    /// </summary>
+    IEntity m_LineType;
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Constructor to extend the currently selected line.
+    /// </summary>
+    /// <param name="cc">The container for any dialogs</param>
+    /// <param name="action">The action that initiated this command</param>
+    /// <exception cref="InvalidOperationException">If a line is not currently selected</exception>
+    internal LineExtensionUI(IControlContainer cc, IUserAction action)
+        : base(cc, action)
     {
-        #region Class data
+        LineFeature line = EditingController.SelectedLine;
+        if (line == null)
+            throw new InvalidOperationException("You must initially select the line you want to extend.");
 
-        /// <summary>
-        /// The line being extended.
-        /// </summary>
-        LineFeature m_ExtendLine;
+        // The dialog will be created by Run().
+        m_Dialog = null;
 
-        /// <summary>
-        /// The dialog for the command.
-        /// </summary>
-        LineExtensionControl m_Dialog;
+        // Remember the line that is being extended.
+        m_ExtendLine = line;
 
-        /// <summary>
-        /// The length of the extension.
-        /// </summary>
-        Distance m_Length;
+        // And initialize the parameters for the operation's Execute() call.
+        m_Length = null;
+        m_IsExtendFromEnd = true;
+        m_LineType = null;
+    }
 
-        /// <summary>
-        /// True if extending from the end of m_ExtendLine. False if from the start.
-        /// </summary>
-        bool m_IsExtendFromEnd;	// 
+    /// <summary>
+    /// Constructor for doing an update.
+    /// </summary>
+    /// <param name="editId">The ID of the edit this command deals with.</param>
+    /// <param name="updcmd">The update command.</param>
+    internal LineExtensionUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
+        : base(cc, editId, updcmd)
+    {
+        // The dialog will be created by Run().
+        m_Dialog = null;
 
-        /// <summary>
-        /// The entity type for the extension line (if any).
-        /// </summary>
-        IEntity m_LineType;
+        // The line we extended is known via the update.
+        m_ExtendLine = null;
 
-        #endregion
+        // And initialize the parameters for the operation's Execute() call.
+        m_Length = null;
+        m_IsExtendFromEnd = true;
+        m_LineType = null;
+    }
 
-        #region Constructors
+    #endregion
 
-        /// <summary>
-        /// Constructor to extend the currently selected line.
-        /// </summary>
-        /// <param name="cc">The container for any dialogs</param>
-        /// <param name="action">The action that initiated this command</param>
-        /// <exception cref="InvalidOperationException">If a line is not currently selected</exception>
-        internal LineExtensionUI(IControlContainer cc, IUserAction action)
-            : base(cc, action)
+    public override void Dispose()
+    {
+        base.Dispose(); // removes any controls from container
+
+        if (m_Dialog!=null)
         {
-            LineFeature line = EditingController.SelectedLine;
-            if (line == null)
-                throw new InvalidOperationException("You must initially select the line you want to extend.");
-
-            // The dialog will be created by Run().
+            m_Dialog.Dispose();
             m_Dialog = null;
-
-            // Remember the line that is being extended.
-            m_ExtendLine = line;
-
-            // And initialize the parameters for the operation's Execute() call.
-            m_Length = null;
-            m_IsExtendFromEnd = true;
-            m_LineType = null;
         }
+    }
 
-        /// <summary>
-        /// Constructor for doing an update.
-        /// </summary>
-        /// <param name="editId">The ID of the edit this command deals with.</param>
-        /// <param name="updcmd">The update command.</param>
-        internal LineExtensionUI(IControlContainer cc, EditingActionId editId, UpdateUI updcmd)
-            : base(cc, editId, updcmd)
+    /// <summary>
+    /// Starts the user interface (if any) for this command.
+    /// </summary>
+    /// <returns>True if command started ok.</returns>
+    internal override bool Run()
+    {
+        // Don't run more than once.
+        if (m_Dialog!=null)
+            throw new InvalidOperationException("LineExtensionUI.Run - Command is already running.");
+
+        // Are we doing an update?
+        UpdateUI pup = this.Update;
+
+        if (pup!=null)
+            m_Dialog = new LineExtensionControl(pup);
+        else
+            m_Dialog = new LineExtensionControl(this, m_ExtendLine, this.Recall);
+
+        this.Container.Display(m_Dialog);
+        return true;
+    }
+
+    /// <summary>
+    /// Does any command-specific drawing.
+    /// </summary>
+    /// <param name="point">The specific point (if any) that the parent window has drawn. Not used.</param>
+    internal override void Paint(PointFeature point)
+    {
+        if (m_Dialog!=null)
+            m_Dialog.Draw();
+    }
+
+    /// <summary>
+    /// Reacts to selection of the Cancel button in the dialog.
+    /// </summary>
+    /// <param name="wnd">The dialog window. If this matches the dialog that
+    /// this command knows about, the dialog will be destroyed and the command
+    /// terminates. If it's some other window, it must be a sub-dialog created
+    /// by our guy, so let it handle the request.</param>
+    internal override void DialAbort(Control wnd)
+    {
+        KillDialogs();
+        AbortCommand();
+    }
+
+    /// <summary>
+    /// Destroys any dialogs that are currently displayed.
+    /// </summary>
+    void KillDialogs()
+    {
+        this.Container.Clear();
+
+        if (m_Dialog!=null)
         {
-            // The dialog will be created by Run().
+            m_Dialog.Dispose();
             m_Dialog = null;
+        }
+    }
 
-            // The line we extended is known via the update.
-            m_ExtendLine = null;
+    /// <summary>
+    /// Override indicates that this command performs painting. This means that the
+    /// controller will periodically call the <see cref="Paint"/> method (probably during
+    /// idle time).
+    /// </summary>
+    internal override bool PerformsPainting
+    {
+        get { return (m_Dialog!=null); }
+    }
 
-            // And initialize the parameters for the operation's Execute() call.
-            m_Length = null;
-            m_IsExtendFromEnd = true;
-            m_LineType = null;
+    /// <summary>
+    /// Reacts to selection of the OK button in the dialog.
+    /// </summary>
+    /// <param name="wnd">The dialog window. If this matches the dialog that
+    /// this command knows about, the command will be executed (and, on success,
+    /// the dialog will be destroyed). If it's some other window, it must
+    /// be a sub-dialog created by our guy, so let it handle the request.</param>
+    /// <returns></returns>
+    internal override bool DialFinish(Control wnd)
+    {
+        if (m_Dialog==null)
+        {
+            MessageBox.Show("LineExtensionUI.DialFinish - No dialog!");
+            return false;
         }
 
-        #endregion
+        // If we are doing an update, alter the original operation.
+        UpdateUI up = this.Update;
 
-        public override void Dispose()
+        if (up!=null)
         {
-            base.Dispose(); // removes any controls from container
-
-            if (m_Dialog!=null)
+            // Get the original operation.
+            LineExtensionOperation pop = (up.GetOp() as LineExtensionOperation);
+            if (pop==null)
             {
-                m_Dialog.Dispose();
-                m_Dialog = null;
-            }
-        }
-
-        /// <summary>
-        /// Starts the user interface (if any) for this command.
-        /// </summary>
-        /// <returns>True if command started ok.</returns>
-        internal override bool Run()
-        {
-            // Don't run more than once.
-            if (m_Dialog!=null)
-                throw new InvalidOperationException("LineExtensionUI.Run - Command is already running.");
-
-            // Are we doing an update?
-            UpdateUI pup = this.Update;
-
-            if (pup!=null)
-                m_Dialog = new LineExtensionControl(pup);
-            else
-                m_Dialog = new LineExtensionControl(this, m_ExtendLine, this.Recall);
-
-            this.Container.Display(m_Dialog);
-            return true;
-        }
-
-        /// <summary>
-        /// Does any command-specific drawing.
-        /// </summary>
-        /// <param name="point">The specific point (if any) that the parent window has drawn. Not used.</param>
-        internal override void Paint(PointFeature point)
-        {
-            if (m_Dialog!=null)
-                m_Dialog.Draw();
-        }
-
-        /// <summary>
-        /// Reacts to selection of the Cancel button in the dialog.
-        /// </summary>
-        /// <param name="wnd">The dialog window. If this matches the dialog that
-        /// this command knows about, the dialog will be destroyed and the command
-        /// terminates. If it's some other window, it must be a sub-dialog created
-        /// by our guy, so let it handle the request.</param>
-        internal override void DialAbort(Control wnd)
-        {
-            KillDialogs();
-            AbortCommand();
-        }
-
-        /// <summary>
-        /// Destroys any dialogs that are currently displayed.
-        /// </summary>
-        void KillDialogs()
-        {
-            this.Container.Clear();
-
-            if (m_Dialog!=null)
-            {
-                m_Dialog.Dispose();
-                m_Dialog = null;
-            }
-        }
-
-        /// <summary>
-        /// Override indicates that this command performs painting. This means that the
-        /// controller will periodically call the <see cref="Paint"/> method (probably during
-        /// idle time).
-        /// </summary>
-        internal override bool PerformsPainting
-        {
-            get { return (m_Dialog!=null); }
-        }
-
-        /// <summary>
-        /// Reacts to selection of the OK button in the dialog.
-        /// </summary>
-        /// <param name="wnd">The dialog window. If this matches the dialog that
-        /// this command knows about, the command will be executed (and, on success,
-        /// the dialog will be destroyed). If it's some other window, it must
-        /// be a sub-dialog created by our guy, so let it handle the request.</param>
-        /// <returns></returns>
-        internal override bool DialFinish(Control wnd)
-        {
-            if (m_Dialog==null)
-            {
-                MessageBox.Show("LineExtensionUI.DialFinish - No dialog!");
+                MessageBox.Show("LineExtensionUI.DialFinish - Unexpected edit type.");
                 return false;
             }
 
-            // If we are doing an update, alter the original operation.
-            UpdateUI up = this.Update;
+            // Remember the changes as part of the UI object (the original edit remains
+            // unchanged for now)
+            UpdateItemCollection changes = pop.GetUpdateItems(m_Dialog.IsExtendFromEnd, m_Dialog.Length);
+            if (!up.AddUpdate(pop, changes))
+                return false;
+        }
+        else
+        {
+            // Get info from the dialog
+            m_IsExtendFromEnd = m_Dialog.IsExtendFromEnd;
+            m_Length = m_Dialog.Length;
+            IdHandle idh = m_Dialog.PointId;
+            CadastralMapModel map = CadastralMapModel.Current;
+            m_LineType = (m_Dialog.WantLine ? map.DefaultLineType : null);
 
-            if (up!=null)
+            // Execute the edit
+            LineExtensionOperation op = null;
+
+            try
             {
-                // Get the original operation.
-                LineExtensionOperation pop = (up.GetOp() as LineExtensionOperation);
-                if (pop==null)
-                {
-                    MessageBox.Show("LineExtensionUI.DialFinish - Unexpected edit type.");
-                    return false;
-                }
-
-                // Remember the changes as part of the UI object (the original edit remains
-                // unchanged for now)
-                UpdateItemCollection changes = pop.GetUpdateItems(m_Dialog.IsExtendFromEnd, m_Dialog.Length);
-                if (!up.AddUpdate(pop, changes))
-                    return false;
-            }
-            else
-            {
-        		// Get info from the dialog
-                m_IsExtendFromEnd = m_Dialog.IsExtendFromEnd;
-                m_Length = m_Dialog.Length;
-                IdHandle idh = m_Dialog.PointId;
-                CadastralMapModel map = CadastralMapModel.Current;
-                m_LineType = (m_Dialog.WantLine ? map.DefaultLineType : null);
-
-                // Execute the edit
-                LineExtensionOperation op = null;
-
-                try
-                {
-                    op = new LineExtensionOperation(m_ExtendLine, m_IsExtendFromEnd, m_Length);
-                    op.Execute(idh, m_LineType);
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.StackTrace, ex.Message);
-                    return false;
-                }
+                op = new LineExtensionOperation(m_ExtendLine, m_IsExtendFromEnd, m_Length);
+                op.Execute(idh, m_LineType);
             }
 
-            // Destroy the dialog(s).
-            KillDialogs();
-
-            // Get the base class to finish up.
-            return FinishCommand();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace, ex.Message);
+                return false;
+            }
         }
 
-        /// <summary>
-        /// Calculates the start and end positions of a straight line extension.
-        /// </summary>
-        /// <param name="extendLine">The line being extended.</param>
-        /// <param name="isFromEnd">True if extending from the end of the line.</param>
-        /// <param name="dist">The length of the extension.</param>
-        /// <param name="start">The position of the start of the extension.</param>
-        /// <param name="end">The position of the end of the extension.</param>
-        /// <returns>True if position have been worked out. False if there is insufficient data,
-        /// or the extension is not straight (in that case, the start and end positions come
-        /// back as nulls)</returns>
-        internal static bool Calculate(LineFeature extendLine, bool isFromEnd, Distance dist,
-                                        out IPosition start, out IPosition end)
-        {
-            start = end = null;
+        // Destroy the dialog(s).
+        KillDialogs();
 
-            // Can't calculate if there is insufficient data.
-            if (extendLine==null || dist==null)
-                return false;
+        // Get the base class to finish up.
+        return FinishCommand();
+    }
 
-            // The length must be defined.
-            if (!dist.IsDefined)
-                return false;
+    /// <summary>
+    /// Calculates the start and end positions of a straight line extension.
+    /// </summary>
+    /// <param name="extendLine">The line being extended.</param>
+    /// <param name="isFromEnd">True if extending from the end of the line.</param>
+    /// <param name="dist">The length of the extension.</param>
+    /// <param name="start">The position of the start of the extension.</param>
+    /// <param name="end">The position of the end of the extension.</param>
+    /// <returns>True if position have been worked out. False if there is insufficient data,
+    /// or the extension is not straight (in that case, the start and end positions come
+    /// back as nulls)</returns>
+    internal static bool Calculate(LineFeature extendLine, bool isFromEnd, Distance dist,
+        out IPosition start, out IPosition end)
+    {
+        start = end = null;
 
-            // The line that's being extended can't be a circular arc.
-            if (extendLine is ArcFeature)
-                return false;
+        // Can't calculate if there is insufficient data.
+        if (extendLine==null || dist==null)
+            return false;
 
-            // Get the point we're extending from.
-            start = (isFromEnd ? extendLine.EndPoint : extendLine.StartPoint);
+        // The length must be defined.
+        if (!dist.IsDefined)
+            return false;
 
-            // Get the point we're extending to ...
+        // The line that's being extended can't be a circular arc.
+        if (extendLine is ArcFeature)
+            return false;
 
-            // Get the orientation point. For multi-segments, we use the
-            // point prior to the appropriate end point.
-            IPosition orient = extendLine.LineGeometry.GetOrient(!isFromEnd, 0.0);
+        // Get the point we're extending from.
+        start = (isFromEnd ? extendLine.EndPoint : extendLine.StartPoint);
 
-            // Get the bearing from the orientation point to the start of the extension.
-            Turn turn = new Turn(orient, start);
-            double bearing = turn.BearingInRadians;
+        // Get the point we're extending to ...
 
-            // Get the distance on the mapping plane.
-            double plandist = dist.GetPlanarMetric(start, bearing, extendLine.SpatialSystem);
+        // Get the orientation point. For multi-segments, we use the
+        // point prior to the appropriate end point.
+        IPosition orient = extendLine.LineGeometry.GetOrient(!isFromEnd, 0.0);
 
-            // Figure out the end of the extension.
-            end = Geom.Polar(start, bearing, plandist);
-            return true;
-        }
+        // Get the bearing from the orientation point to the start of the extension.
+        Turn turn = new Turn(orient, start);
+        double bearing = turn.BearingInRadians;
 
-        /// <summary>
-        /// Calculates the start and end positions of an extension to a circular arc.
-        /// </summary>
-        /// <param name="extendLine">The line being extended.</param>
-        /// <param name="isFromEnd">True if extending from the end of the line.</param>
-        /// <param name="dist">The length of the extension.</param>
-        /// <param name="start">The position of the start of the extension.</param>
-        /// <param name="end">The position of the end of the extension.</param>
-        /// <param name="center">The center of the circle on which the arc lies.</param>
-        /// <param name="iscw">Is the circular arc directed clockwise?</param>
-        /// <returns>True if position have been worked out. False if there is insufficient data,
-        /// or the extension is not on a circular arc, or the length is more than the circumference
-        /// of the circle (in those cases, the start and end positions come back as nulls)</returns>
-        internal static bool Calculate(LineFeature extendLine, bool isFromEnd, Distance dist,
-                                        out IPosition start, out IPosition end, out IPosition center, out bool iscw)
-        {
-            start = end = null;
-            center = null;
-            iscw = true;
+        // Get the distance on the mapping plane.
+        double plandist = dist.GetPlanarMetric(start, bearing, extendLine.SpatialSystem);
 
-            // Can't calculate if there is insufficient data.
-            if (extendLine==null || dist==null)
-                return false;
+        // Figure out the end of the extension.
+        end = Geom.Polar(start, bearing, plandist);
+        return true;
+    }
 
-            // The length must be defined.
-            if (!dist.IsDefined)
-                return false;
+    /// <summary>
+    /// Calculates the start and end positions of an extension to a circular arc.
+    /// </summary>
+    /// <param name="extendLine">The line being extended.</param>
+    /// <param name="isFromEnd">True if extending from the end of the line.</param>
+    /// <param name="dist">The length of the extension.</param>
+    /// <param name="start">The position of the start of the extension.</param>
+    /// <param name="end">The position of the end of the extension.</param>
+    /// <param name="center">The center of the circle on which the arc lies.</param>
+    /// <param name="iscw">Is the circular arc directed clockwise?</param>
+    /// <returns>True if position have been worked out. False if there is insufficient data,
+    /// or the extension is not on a circular arc, or the length is more than the circumference
+    /// of the circle (in those cases, the start and end positions come back as nulls)</returns>
+    internal static bool Calculate(LineFeature extendLine, bool isFromEnd, Distance dist,
+        out IPosition start, out IPosition end, out IPosition center, out bool iscw)
+    {
+        start = end = null;
+        center = null;
+        iscw = true;
 
-            // The line that's being extended must be a circular arc.
-            ArcFeature arc = (extendLine as ArcFeature);
-            if (arc==null)
-                return false;
+        // Can't calculate if there is insufficient data.
+        if (extendLine==null || dist==null)
+            return false;
 
-            center = arc.Circle.Center;
-            double radius = arc.Circle.Radius;
-            iscw = arc.IsClockwise;
+        // The length must be defined.
+        if (!dist.IsDefined)
+            return false;
 
-            // Get the length of the arc extension, in meters on the ground.
-            double arclen = dist.Meters;
+        // The line that's being extended must be a circular arc.
+        ArcFeature arc = (extendLine as ArcFeature);
+        if (arc==null)
+            return false;
 
-            // If the arc length exceeds the length of the circumference,
-            // the end point can't be calculated.
-            double circumf = Constants.PIMUL2 * radius;
-            if (arclen > circumf)
-                return false;
+        center = arc.Circle.Center;
+        double radius = arc.Circle.Radius;
+        iscw = arc.IsClockwise;
 
-            // If we're extending from the start of the arc, the curve direction has
-            // to be reversed too.
-            if (!isFromEnd)
-                iscw = !iscw;
+        // Get the length of the arc extension, in meters on the ground.
+        double arclen = dist.Meters;
 
-            // Get the point we're extending from.
-            start = (isFromEnd ? extendLine.EndPoint : extendLine.StartPoint);
+        // If the arc length exceeds the length of the circumference,
+        // the end point can't be calculated.
+        double circumf = Constants.PIMUL2 * radius;
+        if (arclen > circumf)
+            return false;
 
-            // Get the point we're extending to ...
+        // If we're extending from the start of the arc, the curve direction has
+        // to be reversed too.
+        if (!isFromEnd)
+            iscw = !iscw;
 
-            // Get the bearing from the center of the circle to the start of the arc.
-            Turn turn = new Turn(center, start);
-            double sbearing = turn.BearingInRadians;
+        // Get the point we're extending from.
+        start = (isFromEnd ? extendLine.EndPoint : extendLine.StartPoint);
 
-            // Get the sector angle (in radians).
-            double sector = arclen / radius;
+        // Get the point we're extending to ...
 
-            double ebearing = sbearing;
-            if (iscw)
-                ebearing += sector;
-            else
-                ebearing -= sector;
+        // Get the bearing from the center of the circle to the start of the arc.
+        Turn turn = new Turn(center, start);
+        double sbearing = turn.BearingInRadians;
 
-            end = Geom.Polar(center, ebearing, radius);
+        // Get the sector angle (in radians).
+        double sector = arclen / radius;
 
-            // Re-calculate the arc length on the mapping plane,
-            arclen = dist.GetPlanarMetric(start, end, extendLine.SpatialSystem);
+        double ebearing = sbearing;
+        if (iscw)
+            ebearing += sector;
+        else
+            ebearing -= sector;
 
-            // And adjust the end position accordingly.
-            sector = arclen / radius;
+        end = Geom.Polar(center, ebearing, radius);
 
-            if (iscw)
-                ebearing = sbearing + sector;
-            else
-                ebearing = sbearing - sector;
+        // Re-calculate the arc length on the mapping plane,
+        arclen = dist.GetPlanarMetric(start, end, extendLine.SpatialSystem);
 
-            end = Geom.Polar(center, ebearing, radius);
-            return true;
-        }
+        // And adjust the end position accordingly.
+        sector = arclen / radius;
+
+        if (iscw)
+            ebearing = sbearing + sector;
+        else
+            ebearing = sbearing - sector;
+
+        end = Geom.Polar(center, ebearing, radius);
+        return true;
     }
 }

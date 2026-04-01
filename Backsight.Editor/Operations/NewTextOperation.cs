@@ -13,134 +13,130 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor.Operations;
 
-using Backsight.Editor.Observations;
-
-namespace Backsight.Editor.Operations
+/// <written by="Steve Stanton" on="11-DEC-1997" was="CeNewLabel"/>
+/// <summary>
+/// Edit to add an item of text (perhaps a polygon label).
+/// </summary>
+abstract class NewTextOperation : Operation //, IRevisable
 {
-    /// <written by="Steve Stanton" on="11-DEC-1997" was="CeNewLabel"/>
-    /// <summary>
-    /// Edit to add an item of text (perhaps a polygon label).
-    /// </summary>
-    abstract class NewTextOperation : Operation //, IRevisable
-    {
-        #region Class data
+	#region Class data
 
-        /// <summary>
-        /// The text label that was created
-        /// </summary>
-        TextFeature m_NewText;
+	/// <summary>
+	/// The text label that was created
+	/// </summary>
+	TextFeature m_NewText;
 
-        #endregion
+	#endregion
 
-        #region Constructors
+	#region Constructors
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewTextOperation"/> class.
-        /// </summary>
-        protected NewTextOperation()
-            : base()
-        {
-            m_NewText = null;
-        }
+	/// <summary>
+	/// Initializes a new instance of the <see cref="NewTextOperation"/> class.
+	/// </summary>
+	protected NewTextOperation()
+		: base()
+	{
+		m_NewText = null;
+	}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewTextOperation"/> class
-        /// using the data read from persistent storage.
-        /// </summary>
-        /// <param name="editDeserializer">The mechanism for reading back content.</param>
-        protected NewTextOperation(EditDeserializer editDeserializer)
-            : base(editDeserializer)
-        {
-            m_NewText = editDeserializer.ReadPersistent<TextFeature>(DataField.Text);
-        }
+	/// <summary>
+	/// Initializes a new instance of the <see cref="NewTextOperation"/> class
+	/// using the data read from persistent storage.
+	/// </summary>
+	/// <param name="editDeserializer">The mechanism for reading back content.</param>
+	protected NewTextOperation(EditDeserializer editDeserializer)
+		: base(editDeserializer)
+	{
+		m_NewText = editDeserializer.ReadPersistent<TextFeature>(DataField.Text);
+	}
 
-        #endregion
+	#endregion
 
-        /// <summary>
-        /// The text label that was created
-        /// </summary>
-        internal TextFeature Text // was GetpLabel
-        {
-            get { return m_NewText; }
-        }
+	/// <summary>
+	/// The text label that was created
+	/// </summary>
+	internal TextFeature Text // was GetpLabel
+	{
+		get { return m_NewText; }
+	}
 
-        /// <summary>
-        /// Defines the text created by this edit
-        /// </summary>
-        /// <param name="label">The created text (not null)</param>
-        internal void SetText(TextFeature label)
-        {
-            m_NewText = label;
-        }
+	/// <summary>
+	/// Defines the text created by this edit
+	/// </summary>
+	/// <param name="label">The created text (not null)</param>
+	internal void SetText(TextFeature label)
+	{
+		m_NewText = label;
+	}
 
-        /// <summary>
-        /// A user-perceived title for this operation.
-        /// </summary>
-        public override string Name
-        {
-            get { return "Add new text"; }
-        }
+	/// <summary>
+	/// A user-perceived title for this operation.
+	/// </summary>
+	public override string Name
+	{
+		get { return "Add new text"; }
+	}
 
-        /// <summary>
-        /// The features created by this editing operation.
-        /// </summary>
-        internal override Feature[] Features
-        {
-            get { return new Feature[] { m_NewText }; }
-        }
+	/// <summary>
+	/// The features created by this editing operation.
+	/// </summary>
+	internal override Feature[] Features
+	{
+		get { return new Feature[] { m_NewText }; }
+	}
 
-        /// <summary>
-        /// The unique identifier for this edit.
-        /// </summary>
-        internal override EditingActionId EditId
-        {
-            get { return EditingActionId.NewText; }
-        }
+	/// <summary>
+	/// The unique identifier for this edit.
+	/// </summary>
+	internal override EditingActionId EditId
+	{
+		get { return EditingActionId.NewText; }
+	}
 
-        /// <summary>
-        /// Rollback this operation (occurs when a user undoes the last edit).
-        /// </summary>
-        internal override void Undo()
-        {
-            base.OnRollback();
+	/// <summary>
+	/// Rollback this operation (occurs when a user undoes the last edit).
+	/// </summary>
+	internal override void Undo()
+	{
+		base.OnRollback();
 
-            // Mark all created features
-            if (m_NewText!=null)
-                m_NewText.Undo();
-        }
+		// Mark all created features
+		if (m_NewText!=null)
+			m_NewText.Undo();
+	}
 
-        /// <summary>
-        /// Attempts to locate a superseded (inactive) line that was the parent of
-        /// a specific line.
-        /// </summary>
-        /// <param name="line">The line of interest</param>
-        /// <returns>Null (always), since this operation doesn't create any lines.</returns>
-        internal override LineFeature GetPredecessor(LineFeature line)
-        {
-            return null;
-        }
+	/// <summary>
+	/// Attempts to locate a superseded (inactive) line that was the parent of
+	/// a specific line.
+	/// </summary>
+	/// <param name="line">The line of interest</param>
+	/// <returns>Null (always), since this operation doesn't create any lines.</returns>
+	internal override LineFeature GetPredecessor(LineFeature line)
+	{
+		return null;
+	}
 
-        /// <summary>
-        /// Checks whether this operation makes reference to a specific feature.
-        /// </summary>
-        /// <param name="feat">The feature to check for.</param>
-        /// <returns>False (always), since this edit doesn't depend on anything</returns>
-        bool HasReference(Feature feat)
-        {
-            return false;
-        }
+	/// <summary>
+	/// Checks whether this operation makes reference to a specific feature.
+	/// </summary>
+	/// <param name="feat">The feature to check for.</param>
+	/// <returns>False (always), since this edit doesn't depend on anything</returns>
+	bool HasReference(Feature feat)
+	{
+		return false;
+	}
 
-        /// <summary>
-        /// Writes the content of this instance to a persistent storage area.
-        /// </summary>
-        /// <param name="editSerializer">The mechanism for storing content.</param>
-        public override void WriteData(EditSerializer editSerializer)
-        {
-            base.WriteData(editSerializer);
-            editSerializer.WritePersistent<TextFeature>(DataField.Text, m_NewText);
-        }
+	/// <summary>
+	/// Writes the content of this instance to a persistent storage area.
+	/// </summary>
+	/// <param name="editSerializer">The mechanism for storing content.</param>
+	public override void WriteData(EditSerializer editSerializer)
+	{
+		base.WriteData(editSerializer);
+		editSerializer.WritePersistent<TextFeature>(DataField.Text, m_NewText);
+	}
 
 /*
 #ifdef _CEDIT
@@ -202,7 +198,7 @@ LOGICAL CeNewLabel::Execute ( const FTX type
 
 LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
 							, const FLOAT8 ght
- 							, const CeEntity& ent
+						    , const CeEntity& ent
 							, CePolygon& pol
 							, CeLabel& oldlabel ) {
 
@@ -270,7 +266,7 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
 
 LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
 							, const FLOAT8 ght
- 							, const CeEntity& ent
+						    , const CeEntity& ent
 							, CeRow& row
 							, const CeTemplate& atemplate
 							, CePolygon& pol
@@ -319,5 +315,4 @@ LOGICAL CeNewLabel::Execute ( const CeVertex& vtx
 
 } // end of Execute
          */
-    }
 }

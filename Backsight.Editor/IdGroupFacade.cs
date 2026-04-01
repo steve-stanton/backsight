@@ -13,65 +13,61 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Runtime.Serialization;
-
 using Backsight.Environment;
 
-namespace Backsight.Editor
+namespace Backsight.Editor;
+
+/// <summary>
+/// Fronts an instance of some object that implements <c>IIdGroup</c>.
+/// </summary>
+class IdGroupFacade : EnvironmentItemFacade<IIdGroup>, IIdGroup
 {
-    /// <summary>
-    /// Fronts an instance of some object that implements <c>IIdGroup</c>.
-    /// </summary>
-    class IdGroupFacade : EnvironmentItemFacade<IIdGroup>, IIdGroup
+    internal IdGroupFacade(IIdGroup data) : base(data)
     {
-        internal IdGroupFacade(IIdGroup data) : base(data)
-        {
-        }
+    }
 
-        public override string ToString()
-        {
-            return Name;
-        }
+    public override string ToString()
+    {
+        return Name;
+    }
 
-        public string Name
-        {
-            get { return (this.Data==null ? String.Empty : this.Data.Name); }
-        }
+    public string Name
+    {
+        get { return (this.Data==null ? String.Empty : this.Data.Name); }
+    }
 
-        public int LowestId
-        {
-            get { return (this.Data==null ? 0 : this.Data.LowestId); }
-        }
+    public int LowestId
+    {
+        get { return (this.Data==null ? 0 : this.Data.LowestId); }
+    }
 
-        public int HighestId
-        {
-            get { return (this.Data==null ? 0 : this.Data.HighestId); }
-        }
+    public int HighestId
+    {
+        get { return (this.Data==null ? 0 : this.Data.HighestId); }
+    }
 
-        public int MaxUsedId
-        {
-            get { return (this.Data == null ? 0 : this.Data.MaxUsedId); }
-        }
+    public int MaxUsedId
+    {
+        get { return (this.Data == null ? 0 : this.Data.MaxUsedId); }
+    }
 
-        public int PacketSize
-        {
-            get { return (this.Data==null ? 0 : this.Data.PacketSize); }
-        }
+    public int PacketSize
+    {
+        get { return (this.Data==null ? 0 : this.Data.PacketSize); }
+    }
 
-        public string KeyFormat
-        {
-            get { return (this.Data==null ? String.Empty : this.Data.KeyFormat); }
-        }
+    public string KeyFormat
+    {
+        get { return (this.Data==null ? String.Empty : this.Data.KeyFormat); }
+    }
 
-        public bool HasCheckDigit
-        {
-            get { return (this.Data==null ? false : this.Data.HasCheckDigit); }
-        }
+    public bool HasCheckDigit
+    {
+        get { return (this.Data==null ? false : this.Data.HasCheckDigit); }
+    }
 
-        public IEntity[] EntityTypes
-        {
-            get { return (this.Data==null ? null : this.Data.EntityTypes); }
-        }
+    public IEntity[] EntityTypes
+    {
+        get { return (this.Data==null ? null : this.Data.EntityTypes); }
     }
 }

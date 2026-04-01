@@ -13,44 +13,41 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Editor;
 
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="11-OCT-2007" />
+/// <summary>
+/// The different types of inverse calculation that can be performed.
+/// </summary>
+enum InverseType
 {
-    /// <written by="Steve Stanton" on="11-OCT-2007" />
     /// <summary>
-    /// The different types of inverse calculation that can be performed.
+    /// No selection made
     /// </summary>
-    enum InverseType
-    {
-        /// <summary>
-        /// No selection made
-        /// </summary>
-        None,
+    None,
 
-        /// <summary>
-        /// Distance
-        /// </summary>
-        Distance,
+    /// <summary>
+    /// Distance
+    /// </summary>
+    Distance,
 
-        /// <summary>
-        /// Distance-Bearing
-        /// </summary>
-        DistanceBearing,
+    /// <summary>
+    /// Distance-Bearing
+    /// </summary>
+    DistanceBearing,
 
-        /// <summary>
-        /// Distance-Angle
-        /// </summary>
-        DistanceAngle,
+    /// <summary>
+    /// Distance-Angle
+    /// </summary>
+    DistanceAngle,
 
-        /// <summary>
-        /// Arc distance
-        /// </summary>
-        ArcDistance,
+    /// <summary>
+    /// Arc distance
+    /// </summary>
+    ArcDistance,
 
-        /// <summary>
-        /// Arc distance-centre bearing
-        /// </summary>
-        ArcDistanceBearing,
-    }
+    /// <summary>
+    /// Arc distance-centre bearing
+    /// </summary>
+    ArcDistanceBearing,
 }

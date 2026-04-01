@@ -13,65 +13,59 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
+namespace Backsight.Editor;
 
-using Backsight.Geometry;
-
-namespace Backsight.Editor
+/// <written by="Steve Stanton" on="23-OCT-2007" />
+/// <summary>
+/// Dumb implementation of <see cref="ITerminal"/> that has no incident polygon dividers
+/// (i.e. it always floats in space).
+/// </summary>
+/// <remarks>This class exists only because I need to detect intersections while a
+/// new line is in the process of getting added. To do that using the <c>IntersectionFinder</c>
+/// class, I need to pass in an instance of <c>LineGeometry</c>, and to create that, I need
+/// two instances of <c>ITerminal</c>.</remarks>
+class FloatingTerminal : PointGeometry, ITerminal
 {
-    /// <written by="Steve Stanton" on="23-OCT-2007" />
+    #region Class data
+
+    // none
+
+    #endregion
+
+    #region Constructors
+
     /// <summary>
-    /// Dumb implementation of <see cref="ITerminal"/> that has no incident polygon dividers
-    /// (i.e. it always floats in space).
+    /// Creates a new <c>FloatingTerminal</c> at the specified position (rounded off to
+    /// the nearest micron)
     /// </summary>
-    /// <remarks>This class exists only because I need to detect intersections while a
-    /// new line is in the process of getting added. To do that using the <c>IntersectionFinder</c>
-    /// class, I need to pass in an instance of <c>LineGeometry</c>, and to create that, I need
-    /// two instances of <c>ITerminal</c>.</remarks>
-    class FloatingTerminal : PointGeometry, ITerminal
+    /// <param name="p">The position of the terminal</param>
+    internal FloatingTerminal(IPosition p)
+        : base(p)
     {
-        #region Class data
-
-        // none
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>FloatingTerminal</c> at the specified position (rounded off to
-        /// the nearest micron)
-        /// </summary>
-        /// <param name="p">The position of the terminal</param>
-        internal FloatingTerminal(IPosition p)
-            : base(p)
-        {
-        }
-
-        /// <summary>
-        /// Creates a new <c>FloatingTerminal</c> at the specified position (rounded off to
-        /// the nearest micron)
-        /// </summary>
-        /// <param name="x">The easting of the terminal, in meters on the ground.</param>
-        /// <param name="y">The northing of the terminal, in meters on the ground.</param>
-        internal FloatingTerminal(double x, double y)
-            : base(x, y)
-        {
-        }
-
-        #endregion
-
-        #region ITerminal Members
-
-        /// <summary>
-        /// Returns null, indicating that no polygon dividers start or end at this terminal.
-        /// </summary>
-        public IDivider[] IncidentDividers()
-        {
-            return null;
-        }
-
-        #endregion
     }
+
+    /// <summary>
+    /// Creates a new <c>FloatingTerminal</c> at the specified position (rounded off to
+    /// the nearest micron)
+    /// </summary>
+    /// <param name="x">The easting of the terminal, in meters on the ground.</param>
+    /// <param name="y">The northing of the terminal, in meters on the ground.</param>
+    internal FloatingTerminal(double x, double y)
+        : base(x, y)
+    {
+    }
+
+    #endregion
+
+    #region ITerminal Members
+
+    /// <summary>
+    /// Returns null, indicating that no polygon dividers start or end at this terminal.
+    /// </summary>
+    public IDivider[] IncidentDividers()
+    {
+        return null;
+    }
+
+    #endregion
 }
