@@ -1231,9 +1231,12 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private void DataImportMap(IUserAction action)
     {
+        throw new NotImplementedException();
+        /*
         NtxImportForm dial = new NtxImportForm();
         dial.ShowDialog();
         dial.Dispose();
+        */
     }
 
     private bool IsDataImportAttributesEnabled()
