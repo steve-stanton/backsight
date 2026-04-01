@@ -32,5 +32,6 @@ bld/
 *.nuget.targets
 
 /*.user
+.vs/
 CEdit/.vs/
 *.user
