@@ -13,96 +13,93 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Drawing;
 using System.Text;
-
 using Backsight.Environment;
 
-namespace Backsight.Data
+namespace Backsight.Data;
+
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    partial class FontRow : IEditFont
     {
-        partial class FontRow : IEditFont
+        /// <summary>
+        /// A user-perceived title for this font.
+        /// </summary>
+        /// <returns>The type face (font family name), its points size, and
+        /// any modifiers.</returns>
+        public override string ToString()
         {
-            /// <summary>
-            /// A user-perceived title for this font.
-            /// </summary>
-            /// <returns>The type face (font family name), its points size, and
-            /// any modifiers.</returns>
-            public override string ToString()
+            if (String.IsNullOrEmpty(TypeFace))
+                return String.Empty;
+
+            StringBuilder sb = new StringBuilder(100);
+
+            sb.AppendFormat("{0} - {1}", TypeFace, PointSize);
+
+            if (IsBold==YES)
+                sb.Append(" Bold");
+            if (IsItalic == YES)
+                sb.Append(" Italic");
+            if (IsUnderline==YES)
+                sb.Append(" Underlined");
+
+            return sb.ToString();
+        }
+
+        public void FinishEdit()
+        {
+            if (IsAdded(this))
+                this.EndEdit();
+            else
+                this.tableFont.AddFontRow(this);
+        }
+
+        public static FontRow CreateFontRow(BacksightDataSet ds)
+        {
+            FontRow result = ds.Font.NewFontRow();
+            result.SetDefaultValues();
+            return result;
+        }
+
+        internal void SetDefaultValues()
+        {
+            FontId = 0;
+            TypeFace = String.Empty;
+            PointSize = 0.0F;
+            IsBold = NO;
+            IsItalic = NO;
+            IsUnderline = NO;
+            FontFile = String.Empty;
+        }
+
+        public int Id
+        {
+            get { return FontId; }
+        }
+
+        public FontStyle Modifiers
+        {
+            get
             {
-                if (String.IsNullOrEmpty(TypeFace))
-                    return String.Empty;
-
-                StringBuilder sb = new StringBuilder(100);
-
-                sb.AppendFormat("{0} - {1}", TypeFace, PointSize);
-
+                FontStyle result = 0;
                 if (IsBold==YES)
-                    sb.Append(" Bold");
-                if (IsItalic == YES)
-                    sb.Append(" Italic");
+                    result |= FontStyle.Bold;
+
+                if (IsItalic==YES)
+                    result |= FontStyle.Italic;
+
                 if (IsUnderline==YES)
-                    sb.Append(" Underlined");
+                    result |= FontStyle.Underline;
 
-                return sb.ToString();
-            }
-
-            public void FinishEdit()
-            {
-                if (IsAdded(this))
-                    this.EndEdit();
-                else
-                    this.tableFont.AddFontRow(this);
-            }
-
-            public static FontRow CreateFontRow(BacksightDataSet ds)
-            {
-                FontRow result = ds.Font.NewFontRow();
-                result.SetDefaultValues();
                 return result;
             }
 
-            internal void SetDefaultValues()
+            set
             {
-                FontId = 0;
-                TypeFace = String.Empty;
-                PointSize = 0.0F;
-                IsBold = NO;
-                IsItalic = NO;
-                IsUnderline = NO;
-                FontFile = String.Empty;
-            }
-
-            public int Id
-            {
-                get { return FontId; }
-            }
-
-            public FontStyle Modifiers
-            {
-                get
-                {
-                    FontStyle result = 0;
-                    if (IsBold==YES)
-                        result |= FontStyle.Bold;
-
-                    if (IsItalic==YES)
-                        result |= FontStyle.Italic;
-
-                    if (IsUnderline==YES)
-                        result |= FontStyle.Underline;
-
-                    return result;
-                }
-
-                set
-                {
-                    IsBold = ((value & FontStyle.Bold)==0 ? NO : YES);
-                    IsItalic = ((value & FontStyle.Italic)==0 ? NO : YES);
-                    IsUnderline = ((value & FontStyle.Underline)==0 ? NO : YES);
-                }
+                IsBold = ((value & FontStyle.Bold)==0 ? NO : YES);
+                IsItalic = ((value & FontStyle.Italic)==0 ? NO : YES);
+                IsUnderline = ((value & FontStyle.Underline)==0 ? NO : YES);
             }
         }
     }

@@ -33,3 +33,4 @@ bld/
 
 /*.user
 CEdit/.vs/
+*.user

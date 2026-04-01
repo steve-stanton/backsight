@@ -13,23 +13,20 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Data;
 
-namespace Backsight.Data
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    partial class TemplateDataTable
     {
-        partial class TemplateDataTable
+        /// <summary>
+        /// Any simple check constraints relating to columns in this table.
+        /// </summary>
+        public string[] Checks
         {
-            /// <summary>
-            /// Any simple check constraints relating to columns in this table.
-            /// </summary>
-            public string[] Checks
+            get
             {
-                get
-                {
-                    return new string[] { columnTemplateId.ColumnName + ">=0" };
-                }
+                return new string[] { columnTemplateId.ColumnName + ">=0" };
             }
         }
     }

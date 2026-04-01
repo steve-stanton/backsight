@@ -13,61 +13,57 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-
 using Backsight.Environment;
-using System.Diagnostics;
 
-namespace Backsight.Data
+namespace Backsight.Data;
+
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    partial class ThemeRow : IEditTheme
     {
-        partial class ThemeRow : IEditTheme
+        public override string ToString()
         {
-            public override string ToString()
-            {
-                return Name;
-            }
+            return Name;
+        }
 
-            public void FinishEdit()
-            {
-                if (IsAdded(this))
-                    this.EndEdit();
-                else
-                    this.tableTheme.AddThemeRow(this);
-            }
+        public void FinishEdit()
+        {
+            if (IsAdded(this))
+                this.EndEdit();
+            else
+                this.tableTheme.AddThemeRow(this);
+        }
 
-            public static BacksightDataSet.ThemeRow CreateThemeRow(BacksightDataSet ds)
+        public static BacksightDataSet.ThemeRow CreateThemeRow(BacksightDataSet ds)
+        {
+            ThemeRow result = ds.Theme.NewThemeRow();
+            result.SetDefaultValues();
+            return result;
+        }
+
+        internal void SetDefaultValues()
+        {
+            ThemeId = 0;
+            Name = String.Empty;
+        }
+
+        public int Id
+        {
+            get { return ThemeId; }
+        }
+
+        /// <summary>
+        /// The layers associated with the theme, ordered so that the base layer
+        /// comes first.
+        /// </summary>
+        public ILayer[] Layers
+        {
+            get
             {
-                ThemeRow result = ds.Theme.NewThemeRow();
-                result.SetDefaultValues();
+                LayerRow[] result = this.GetLayersRows();
+                Array.Sort<LayerRow>(result, delegate(LayerRow a, LayerRow b)
+                    { return a.ThemeSequence.CompareTo(b.ThemeSequence); });
                 return result;
-            }
-
-            internal void SetDefaultValues()
-            {
-                ThemeId = 0;
-                Name = String.Empty;
-            }
-
-            public int Id
-            {
-                get { return ThemeId; }
-            }
-
-            /// <summary>
-            /// The layers associated with the theme, ordered so that the base layer
-            /// comes first.
-            /// </summary>
-            public ILayer[] Layers
-            {
-                get
-                {
-                    LayerRow[] result = this.GetLayersRows();
-                    Array.Sort<LayerRow>(result, delegate(LayerRow a, LayerRow b)
-                                { return a.ThemeSequence.CompareTo(b.ThemeSequence); });
-                    return result;
-                }
             }
         }
     }

@@ -13,47 +13,44 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Data;
 
-namespace Backsight.Data
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    partial class FontDataTable
     {
-        partial class FontDataTable
+        /*
+        internal FontRow AddEmptyRow()
         {
-            /*
-            internal FontRow AddEmptyRow()
+            FontRow result = NewFontRow();
+
+            result.FontId = 0;
+            result.TypeFace = String.Empty;
+            result.PointSize = 0.0F;
+            result.IsBold = result.IsItalic = result.IsItalic = result.IsUnderline = NO;
+            result.FontFile = String.Empty;
+
+            AddFontRow(result);
+            return result;
+        }
+        */
+
+        /// <summary>
+        /// Any simple check constraints relating to columns in this table.
+        /// </summary>
+        public string[] Checks
+        {
+            get
             {
-                FontRow result = NewFontRow();
+                const string YES_NO = " IN ('y', 'n')";
 
-                result.FontId = 0;
-                result.TypeFace = String.Empty;
-                result.PointSize = 0.0F;
-                result.IsBold = result.IsItalic = result.IsItalic = result.IsUnderline = NO;
-                result.FontFile = String.Empty;
-
-                AddFontRow(result);
-                return result;
-            }
-            */
-
-            /// <summary>
-            /// Any simple check constraints relating to columns in this table.
-            /// </summary>
-            public string[] Checks
-            {
-                get
+                return new string[]
                 {
-                    const string YES_NO = " IN ('y', 'n')";
-
-                    return new string[]
-                    {
-                        columnFontId.ColumnName + ">=0"
+                    columnFontId.ColumnName + ">=0"
                     ,   columnIsBold.ColumnName + YES_NO
                     ,   columnIsItalic.ColumnName + YES_NO
                     ,   columnIsUnderline.ColumnName + YES_NO
-                    };
-                }
+                };
             }
         }
     }

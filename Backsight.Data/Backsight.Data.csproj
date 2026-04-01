@@ -1,180 +1,47 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Backsight.Data</RootNamespace>
-    <AssemblyName>Backsight.Data</AssemblyName>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>ExportedAssemblies\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;_ALLOW_POINTERS</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\Backsight\ExportedAssemblies\</OutputPath>
-    <DefineConstants>TRACE;_ALLOW_POINTERS</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;_ALLOW_POINTERS</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;_ALLOW_POINTERS</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BacksightDataSet.Designer.cs">
-      <DependentUpon>BacksightDataSet.xsd</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ColumnDomainDataTable.cs" />
-    <Compile Include="ColumnDomainRow.cs" />
-    <Compile Include="ConnectionWrapper.cs" />
-    <Compile Include="DataServer.cs" />
-    <Compile Include="DomainTableRow.cs" />
-    <Compile Include="EntityTypeRow.cs" />
-    <Compile Include="EntityTypeSchemaDataTable.cs" />
-    <Compile Include="EntityTypeSchemaRow.cs" />
-    <Compile Include="EnvironmentData.cs" />
-    <Compile Include="EnvironmentFile.cs" />
-    <Compile Include="FontDataTable.cs" />
-    <Compile Include="FontRow.cs" />
-    <Compile Include="BacksightDataSet.cs" />
-    <Compile Include="IConnection.cs" />
-    <Compile Include="IDataServer.cs" />
-    <Compile Include="IdGroupDataTable.cs" />
-    <Compile Include="IdGroupRow.cs" />
-    <Compile Include="LastDatabase.cs" />
-    <Compile Include="LayerRow.cs" />
-    <Compile Include="ZoneRow.cs" />
-    <Compile Include="PropertyNaming.cs" />
-    <Compile Include="PropertyRow.cs" />
-    <Compile Include="SchemaDataTable.cs" />
-    <Compile Include="SchemaRow.cs" />
-    <Compile Include="SchemaTemplateDataTable.cs" />
-    <Compile Include="SysIdRow.cs" />
-    <Compile Include="SysIdTableAdapter.cs" />
-    <Compile Include="TemplateDataTable.cs" />
-    <Compile Include="TemplateRow.cs" />
-    <Compile Include="ThemeRow.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="BacksightDataSet.xsc">
-      <DependentUpon>BacksightDataSet.xsd</DependentUpon>
-    </None>
-    <None Include="BacksightDataSet.xsd">
-      <SubType>Designer</SubType>
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>BacksightDataSet.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="BacksightDataSet.xss">
-      <DependentUpon>BacksightDataSet.xsd</DependentUpon>
-    </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Package.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Backsight\Backsight.csproj">
-      <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
-      <Name>Backsight</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Backsight\Backsight.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="BacksightDataSet.xsd">
+        <SubType>Designer</SubType>
+        <Generator>MSDataSetGenerator</Generator>
+        <LastGenOutput>BacksightDataSet.Designer.cs</LastGenOutput>
+      </None>
+      <None Update="Properties\Settings.settings">
+        <Generator>SettingsSingleFileGenerator</Generator>
+        <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="BacksightDataSet.Designer.cs">
+        <DependentUpon>BacksightDataSet.xsd</DependentUpon>
+        <AutoGen>True</AutoGen>
+        <DesignTime>True</DesignTime>
+      </Compile>
+      <Compile Update="Properties\Settings.Designer.cs">
+        <AutoGen>True</AutoGen>
+        <DesignTimeSharedInput>True</DesignTimeSharedInput>
+        <DependentUpon>Settings.settings</DependentUpon>
+      </Compile>
+      <Compile Update="Properties\Settings.Designer.cs">
+        <AutoGen>True</AutoGen>
+        <DesignTimeSharedInput>True</DesignTimeSharedInput>
+        <DependentUpon>Settings.settings</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
+    </ItemGroup>
+
 </Project>

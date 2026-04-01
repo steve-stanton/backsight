@@ -13,89 +13,86 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-
 using Backsight.Environment;
 
-namespace Backsight.Data
+namespace Backsight.Data;
+
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    partial class LayerRow : IEditLayer
     {
-        partial class LayerRow : IEditLayer
+        public override string ToString()
         {
-            public override string ToString()
-            {
-                return Name;
-            }
+            return Name;
+        }
 
-            public void FinishEdit()
-            {
-                if (IsAdded(this))
-                    this.EndEdit();
-                else
-                    this.tableLayer.AddLayerRow(this);
-            }
+        public void FinishEdit()
+        {
+            if (IsAdded(this))
+                this.EndEdit();
+            else
+                this.tableLayer.AddLayerRow(this);
+        }
 
-            public static BacksightDataSet.LayerRow CreateLayerRow(BacksightDataSet ds)
-            {
-                LayerRow result = ds.Layer.NewLayerRow();
-                result.SetDefaultValues();
-                return result;
-            }
+        public static BacksightDataSet.LayerRow CreateLayerRow(BacksightDataSet ds)
+        {
+            LayerRow result = ds.Layer.NewLayerRow();
+            result.SetDefaultValues();
+            return result;
+        }
 
-            internal void SetDefaultValues()
-            {
-                LayerId = 0;
-                Name = String.Empty;
-                ThemeId = 0;
-                ThemeSequence = 0;
-                DefaultPointId = 0;
-                DefaultLineId = 0;
-                DefaultPolygonId = 0;
-                DefaultTextId = 0;
-            }
+        internal void SetDefaultValues()
+        {
+            LayerId = 0;
+            Name = String.Empty;
+            ThemeId = 0;
+            ThemeSequence = 0;
+            DefaultPointId = 0;
+            DefaultLineId = 0;
+            DefaultPolygonId = 0;
+            DefaultTextId = 0;
+        }
 
-            public int Id
-            {
-                get { return LayerId; }
-            }
+        public int Id
+        {
+            get { return LayerId; }
+        }
 
-            public IEntity DefaultPointType
-            {
-                get { return this.EntityTypesRowByFK_Layer_EntityType1; }
-                set { DefaultPointId = (value==null ? 0 : value.Id); }
-            }
+        public IEntity DefaultPointType
+        {
+            get { return this.EntityTypesRowByFK_Layer_EntityType1; }
+            set { DefaultPointId = (value==null ? 0 : value.Id); }
+        }
 
-            public IEntity DefaultLineType
-            {
-                get { return this.EntityTypesRowByFK_Layer_EntityType2; }
-                set { DefaultLineId = (value==null ? 0 : value.Id); }
-            }
+        public IEntity DefaultLineType
+        {
+            get { return this.EntityTypesRowByFK_Layer_EntityType2; }
+            set { DefaultLineId = (value==null ? 0 : value.Id); }
+        }
 
-            public IEntity DefaultTextType
-            {
-                get { return this.EntityTypesRowByFK_Layer_EntityType4; }
-                set { DefaultTextId = (value==null ? 0 : value.Id); }
-            }
+        public IEntity DefaultTextType
+        {
+            get { return this.EntityTypesRowByFK_Layer_EntityType4; }
+            set { DefaultTextId = (value==null ? 0 : value.Id); }
+        }
 
-            public IEntity DefaultPolygonType
-            {
-                get { return this.EntityTypesRowByFK_Layer_EntityType3; }
-                set { DefaultPolygonId = (value==null ? 0 : value.Id); }
-            }
+        public IEntity DefaultPolygonType
+        {
+            get { return this.EntityTypesRowByFK_Layer_EntityType3; }
+            set { DefaultPolygonId = (value==null ? 0 : value.Id); }
+        }
 
-            /// <summary>
-            /// Any theme associated with this layer (may be null).
-            /// </summary>
-            public ITheme Theme
+        /// <summary>
+        /// Any theme associated with this layer (may be null).
+        /// </summary>
+        public ITheme Theme
+        {
+            get { return this.ThemeRow; }
+            set
             {
-                get { return this.ThemeRow; }
-                set
-                {
-                    ThemeId = (value==null ? 0 : value.Id);
-                    if (ThemeId==0)
-                        ThemeSequence = 0;
-                }
+                ThemeId = (value==null ? 0 : value.Id);
+                if (ThemeId==0)
+                    ThemeSequence = 0;
             }
         }
     }

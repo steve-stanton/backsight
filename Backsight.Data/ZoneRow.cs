@@ -13,47 +13,43 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Data;
-
 using Backsight.Environment;
 
-namespace Backsight.Data
+namespace Backsight.Data;
+
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    public partial class ZoneRow : IEditZone
     {
-        public partial class ZoneRow : IEditZone
+        public override string ToString()
         {
-            public override string ToString()
-            {
-                return Name;
-            }
+            return Name;
+        }
 
-            public void FinishEdit()
-            {
-                if (IsAdded(this))
-                    this.EndEdit();
-                else
-                    this.tableZone.AddZoneRow(this);
-            }
+        public void FinishEdit()
+        {
+            if (IsAdded(this))
+                this.EndEdit();
+            else
+                this.tableZone.AddZoneRow(this);
+        }
 
-            public static ZoneRow CreateZoneRow(BacksightDataSet ds)
-            {
-                ZoneRow result = ds.Zone.NewZoneRow();
-                result.SetDefaultValues();
-                return result;
-            }
+        public static ZoneRow CreateZoneRow(BacksightDataSet ds)
+        {
+            ZoneRow result = ds.Zone.NewZoneRow();
+            result.SetDefaultValues();
+            return result;
+        }
 
-            internal void SetDefaultValues()
-            {
-                ZoneId = 0;
-                Name = String.Empty;
-            }
+        internal void SetDefaultValues()
+        {
+            ZoneId = 0;
+            Name = String.Empty;
+        }
 
-            public int Id
-            {
-                get { return ZoneId; }
-            }
+        public int Id
+        {
+            get { return ZoneId; }
         }
     }
 }

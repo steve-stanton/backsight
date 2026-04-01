@@ -13,40 +13,37 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Data;
 
-namespace Backsight.Data
+/// <written by="Steve Stanton" on="22-FEB-2008" />
+/// <summary>
+/// The names of standard Backsight properties (stored in the database <c>Property</c> table).
+/// </summary>
+public static class PropertyNaming
 {
-    /// <written by="Steve Stanton" on="22-FEB-2008" />
     /// <summary>
-    /// The names of standard Backsight properties (stored in the database <c>Property</c> table).
+    /// The name of the property that identifies the default style file
     /// </summary>
-    public static class PropertyNaming
+    /// <remarks>This was historically accessed through the environment variable called CED_STYLE_FILE</remarks>
+    public static string StyleFile
     {
-        /// <summary>
-        /// The name of the property that identifies the default style file
-        /// </summary>
-        /// <remarks>This was historically accessed through the environment variable called CED_STYLE_FILE</remarks>
-        public static string StyleFile
-        {
-            get { return "StyleFile"; }
-        }
+        get { return "StyleFile"; }
+    }
 
-        /// <summary>
-        /// The name of the property that identifies the entity translation file
-        /// </summary>
-        /// <remarks>This was historically accessed through the environment variable called CED_ENTITY_FILE</remarks>
-        public static string EntityFile
-        {
-            get { return "EntityFile"; }
-        }
+    /// <summary>
+    /// The name of the property that identifies the entity translation file
+    /// </summary>
+    /// <remarks>This was historically accessed through the environment variable called CED_ENTITY_FILE</remarks>
+    public static string EntityFile
+    {
+        get { return "EntityFile"; }
+    }
 
-        /// <summary>
-        /// The names of properties that should be defined in the database
-        /// </summary>
-        public static string[] MandatoryProperties
-        {
-            get { return new string[] { StyleFile, EntityFile }; }
-        }
+    /// <summary>
+    /// The names of properties that should be defined in the database
+    /// </summary>
+    public static string[] MandatoryProperties
+    {
+        get { return new string[] { StyleFile, EntityFile }; }
     }
 }

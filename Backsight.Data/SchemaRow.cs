@@ -13,97 +13,94 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
-
 using Backsight.Environment;
 
-namespace Backsight.Data
+namespace Backsight.Data;
+
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    partial class SchemaRow : IEditTable
     {
-        partial class SchemaRow : IEditTable
+        public override string ToString()
         {
-            public override string ToString()
-            {
-                return TableName;
-            }
+            return TableName;
+        }
 
-            public int Id
-            {
-                get { return SchemaId; }
-            }
+        public int Id
+        {
+            get { return SchemaId; }
+        }
 
-            public void FinishEdit()
-            {
-                if (IsAdded(this))
-                    this.EndEdit();
-                else
-                    this.tableSchema.AddSchemaRow(this);
-            }
+        public void FinishEdit()
+        {
+            if (IsAdded(this))
+                this.EndEdit();
+            else
+                this.tableSchema.AddSchemaRow(this);
+        }
 
-            public static SchemaRow CreateSchemaRow(BacksightDataSet ds)
-            {
-                SchemaRow result = ds.Schema.NewSchemaRow();
-                result.SetDefaultValues();
-                return result;
-            }
+        public static SchemaRow CreateSchemaRow(BacksightDataSet ds)
+        {
+            SchemaRow result = ds.Schema.NewSchemaRow();
+            result.SetDefaultValues();
+            return result;
+        }
 
-            internal void SetDefaultValues()
-            {
-                SchemaId = 0;
-                TableName = String.Empty;
-                IdColumnName = String.Empty;
-            }
+        internal void SetDefaultValues()
+        {
+            SchemaId = 0;
+            TableName = String.Empty;
+            IdColumnName = String.Empty;
+        }
 
-            /// <summary>
-            /// Any text formatting templates associated with this table (may be an empty array)
-            /// </summary>
-            public ITemplate[] Templates
+        /// <summary>
+        /// Any text formatting templates associated with this table (may be an empty array)
+        /// </summary>
+        public ITemplate[] Templates
+        {
+            get
             {
-                get
+                SchemaTemplateRow[] temps = GetSchemaTemplateRows();
+                List<ITemplate> result = new List<ITemplate>(temps.Length);
+
+                foreach (SchemaTemplateRow t in temps)
+                    result.Add(t.TemplateRow);
+
+                return result.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Any domains associated with columns in the table
+        /// </summary>
+        public IColumnDomain[] ColumnDomains
+        {
+            get { return GetColumnDomainRows(); }
+            set
+            {
+                if (value==null)
+                    throw new ArgumentNullException();
+
+                // Grab the current table -> domain associations
+                BacksightDataSet ds = GetDataSet(this);
+                ColumnDomainDataTable tab = ds.ColumnDomain;
+                ColumnDomainRow[] cds = tab.FindByTableId(this.Id);
+
+                // Insert new associations
+                foreach (IColumnDomain cd in value)
                 {
-                    SchemaTemplateRow[] temps = GetSchemaTemplateRows();
-                    List<ITemplate> result = new List<ITemplate>(temps.Length);
-
-                    foreach (SchemaTemplateRow t in temps)
-                        result.Add(t.TemplateRow);
-
-                    return result.ToArray();
+                    if (!ColumnDomainRow.HasMatchInArray(cd, cds))
+                        tab.AddColumnDomainRow(cd);
                 }
-            }
 
-            /// <summary>
-            /// Any domains associated with columns in the table
-            /// </summary>
-            public IColumnDomain[] ColumnDomains
-            {
-                get { return GetColumnDomainRows(); }
-                set
+                // Remove any associations that no longer apply
+                foreach (ColumnDomainRow row in cds)
                 {
-                    if (value==null)
-                        throw new ArgumentNullException();
+                    int tableId = row.TableId;
+                    int domainTableId = row.DomainId;
+                    string columnName = row.ColumnName;
 
-                    // Grab the current table -> domain associations
-                    BacksightDataSet ds = GetDataSet(this);
-                    ColumnDomainDataTable tab = ds.ColumnDomain;
-                    ColumnDomainRow[] cds = tab.FindByTableId(this.Id);
-
-                    // Insert new associations
-                    foreach (IColumnDomain cd in value)
-                    {
-                        if (!ColumnDomainRow.HasMatchInArray(cd, cds))
-                            tab.AddColumnDomainRow(cd);
-                    }
-
-                    // Remove any associations that no longer apply
-                    foreach (ColumnDomainRow row in cds)
-                    {
-                        int tableId = row.TableId;
-                        int domainTableId = row.DomainId;
-                        string columnName = row.ColumnName;
-
-                        if (!Array.Exists<IColumnDomain>(value, delegate(IColumnDomain t)
+                    if (!Array.Exists<IColumnDomain>(value, delegate(IColumnDomain t)
                         {
                             int tt = (t.ParentTable == null ? 0 : t.ParentTable.Id);
                             if (tt != tableId)
@@ -115,8 +112,7 @@ namespace Backsight.Data
 
                             return (columnName == t.ColumnName);
                         }))
-                            row.Delete();
-                    }
+                        row.Delete();
                 }
             }
         }

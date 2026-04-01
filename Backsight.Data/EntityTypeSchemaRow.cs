@@ -13,36 +13,34 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using Backsight.Environment;
 
-namespace Backsight.Data
+namespace Backsight.Data;
+
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    partial class EntityTypeSchemaRow
     {
-        partial class EntityTypeSchemaRow
+        /// <summary>
+        /// Checks an array of <c>EntityTypeSchemaRow</c> to see if any element refers
+        /// to a specific table.
+        /// </summary>
+        /// <param name="t">The table to look for</param>
+        /// <param name="rows">The rows to check</param>
+        /// <returns>True if any row refers to the table</returns>
+        /// <remarks>This helps to avoid the clumsy syntax of Array.Find, making
+        /// calling code a bit more readable.</remarks>
+        internal static bool IsTableInArray(ITable t, EntityTypeSchemaRow[] rows)
         {
-            /// <summary>
-            /// Checks an array of <c>EntityTypeSchemaRow</c> to see if any element refers
-            /// to a specific table.
-            /// </summary>
-            /// <param name="t">The table to look for</param>
-            /// <param name="rows">The rows to check</param>
-            /// <returns>True if any row refers to the table</returns>
-            /// <remarks>This helps to avoid the clumsy syntax of Array.Find, making
-            /// calling code a bit more readable.</remarks>
-            internal static bool IsTableInArray(ITable t, EntityTypeSchemaRow[] rows)
+            int tableId = t.Id;
+
+            foreach (EntityTypeSchemaRow row in rows)
             {
-                int tableId = t.Id;
-
-                foreach (EntityTypeSchemaRow row in rows)
-                {
-                    if (row.SchemaId == tableId)
-                        return true;
-                }
-
-                return false;
+                if (row.SchemaId == tableId)
+                    return true;
             }
+
+            return false;
         }
     }
 }

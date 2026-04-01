@@ -13,42 +13,39 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Data;
 
-namespace Backsight.Data
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    partial class IdGroupDataTable
     {
-        partial class IdGroupDataTable
+        /*
+        internal IdGroupRow AddEmptyRow()
         {
-            /*
-            internal IdGroupRow AddEmptyRow()
-            {
-                IdGroupRow result = NewIdGroupRow();
-                result.SetDefaultValues();
-                AddIdGroupRow(result);
-                return result;
-            }
-            */
+            IdGroupRow result = NewIdGroupRow();
+            result.SetDefaultValues();
+            AddIdGroupRow(result);
+            return result;
+        }
+        */
 
-            /// <summary>
-            /// Any simple check constraints relating to columns in this table.
-            /// </summary>
-            public string[] Checks
+        /// <summary>
+        /// Any simple check constraints relating to columns in this table.
+        /// </summary>
+        public string[] Checks
+        {
+            get
             {
-                get
+                const string YES_NO = " IN ('y', 'n')";
+
+                return new string[]
                 {
-                    const string YES_NO = " IN ('y', 'n')";
-
-                    return new string[]
-                    {
-                        columnGroupId.ColumnName + ">=0"
+                    columnGroupId.ColumnName + ">=0"
                     ,   columnLowestId.ColumnName + ">=0"
                     ,   columnHighestId.ColumnName + ">=0"
                     ,   columnPacketSize.ColumnName + ">=0"
                     ,   columnCheckDigit.ColumnName + YES_NO
-                    };
-                }
+                };
             }
         }
     }

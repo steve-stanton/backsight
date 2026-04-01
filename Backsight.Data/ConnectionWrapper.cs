@@ -13,101 +13,85 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Data.SqlClient;
 
-namespace Backsight.Data
+namespace Backsight.Data;
+
+/// <summary>
+/// Wrapper on a database connection.
+/// </summary>
+/// <remarks>This class is utilized by <see cref="DataServer.GetConnection"/> to help avoid
+/// premature disposal of the connection. If you call <c>GetConnection</c> while a transaction
+/// is running, you get back a wrapper on a non-disposable connection. If there's no transaction,
+/// you get back a disposable wrapper. Consider the following:
+/// <code>
+/// 
+///   IDataServer ds = new DataServer(connectionString);
+///   
+///   using (IConnection conn = ds.GetConnection())
+///   {
+///     SqlCommand cmd = new SqlCommand("UPDATE STUFF SET THING=123", conn.Value);
+///     cmd.ExecuteNonQuery();
+///   }
+/// 
+/// </code>
+/// If we worked with a plain <c>SqlConnection</c>, it's <c>Dispose</c> method would get
+/// called when the application hits the end of the <c>using</c> block. By using the wrapper,
+/// we can control whether the connection will be disposed of or not.
+/// </remarks>
+public class ConnectionWrapper : IConnection
 {
     /// <summary>
-    /// Wrapper on a database connection.
+    /// The data server that created the connection (not null).
     /// </summary>
-    /// <remarks>This class is utilized by <see cref="DataServer.GetConnection"/> to help avoid
-    /// premature disposal of the connection. If you call <c>GetConnection</c> while a transaction
-    /// is running, you get back a wrapper on a non-disposable connection. If there's no transaction,
-    /// you get back a disposable wrapper. Consider the following:
-    /// <code>
-    /// 
-    ///   IDataServer ds = new DataServer(connectionString);
-    ///   
-    ///   using (IConnection conn = ds.GetConnection())
-    ///   {
-    ///     SqlCommand cmd = new SqlCommand("UPDATE STUFF SET THING=123", conn.Value);
-    ///     cmd.ExecuteNonQuery();
-    ///   }
-    /// 
-    /// </code>
-    /// If we worked with a plain <c>SqlConnection</c>, it's <c>Dispose</c> method would get
-    /// called when the application hits the end of the <c>using</c> block. By using the wrapper,
-    /// we can control whether the connection will be disposed of or not.
-    /// </remarks>
-    public class ConnectionWrapper : IConnection
+    readonly IDataServer m_DataServer;
+
+    /// <summary>
+    /// The database connection
+    /// </summary>
+    readonly SqlConnection m_Connection;
+
+    /// <summary>
+    /// Should the connection be disposed of by the <see cref="Dispose"/> method?
+    /// </summary>
+    readonly bool m_IsDisposable;
+
+    /// <summary>
+    /// Creates a new <c>ConnectionWrapper</c> that wraps the supplied connection.
+    /// </summary>
+    /// <param name="ds">The data server creating this wrapper (not null).</param>
+    /// <param name="c">The connection to wrap (not null).</param>
+    /// <param name="isDisposable">Should the connection be disposed of by the
+    /// <see cref="Dispose"/> method? Specify <c>false</c> if the connection is being
+    /// used by an enclosing transaction.</param>
+    /// <exception cref="ArgumentNullException">If a null data server or null connection was supplied</exception>
+    internal ConnectionWrapper(IDataServer ds, SqlConnection c, bool isDisposable)
     {
-        #region Class data
+        if (ds==null || c==null)
+            throw new ArgumentNullException();
 
-        /// <summary>
-        /// The data server that created the connection (not null).
-        /// </summary>
-        readonly IDataServer m_DataServer;
+        m_DataServer = ds;
+        m_Connection = c;
+        m_IsDisposable = isDisposable;
+    }
 
-        /// <summary>
-        /// The database connection
-        /// </summary>
-        readonly SqlConnection m_Connection;
+    /// <summary>
+    /// The wrapped connection.
+    /// </summary>
+    public SqlConnection Value => m_Connection;
 
-        /// <summary>
-        /// Should the connection be disposed of by the <see cref="Dispose"/> method?
-        /// </summary>
-        readonly bool m_IsDisposable;
+    /// <summary>
+    /// The data server that created the connection (not null).
+    /// </summary>
+    public IDataServer DataServer => m_DataServer;
 
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>ConnectionWrapper</c> that wraps the supplied connection.
-        /// </summary>
-        /// <param name="ds">The data server creating this wrapper (not null).</param>
-        /// <param name="c">The connection to wrap (not null).</param>
-        /// <param name="isDisposable">Should the connection be disposed of by the
-        /// <see cref="Dispose"/> method? Specify <c>false</c> if the connection is being
-        /// used by an enclosing transaction.</param>
-        /// <exception cref="ArgumentNullException">If a null data server or null connection was supplied</exception>
-        internal ConnectionWrapper(IDataServer ds, SqlConnection c, bool isDisposable)
-        {
-            if (ds==null || c==null)
-                throw new ArgumentNullException();
-
-            m_DataServer = ds;
-            m_Connection = c;
-            m_IsDisposable = isDisposable;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// The wrapped connection.
-        /// </summary>
-        public SqlConnection Value
-        {
-            get { return m_Connection; }
-        }
-
-        /// <summary>
-        /// The data server that created the connection (not null).
-        /// </summary>
-        public IDataServer DataServer
-        {
-            get { return m_DataServer; }
-        }
-
-        /// <summary>
-        /// Disposes of the connection, so long as it was tagged as disposable when this
-        /// wrapper was instantiated.
-        /// </summary>
-        public void Dispose()
-        {
-            if (m_IsDisposable)
-                m_Connection.Dispose();
-        }
+    /// <summary>
+    /// Disposes of the connection, so long as it was tagged as disposable when this
+    /// wrapper was instantiated.
+    /// </summary>
+    public void Dispose()
+    {
+        if (m_IsDisposable)
+            m_Connection.Dispose();
     }
 }

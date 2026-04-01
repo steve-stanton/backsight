@@ -13,165 +13,160 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Diagnostics;
-using System.Data;
-
 using Backsight.Environment;
 
-namespace Backsight.Data
+namespace Backsight.Data;
+
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    public partial class EntityTypeRow : IEditEntity
     {
-        public partial class EntityTypeRow : IEditEntity
+        public override string ToString()
         {
-            public override string ToString()
-            {
-                return Name;
-            }
+            return Name;
+        }
 
-            public void FinishEdit()
-            {
-                if (IsAdded(this))
-                    this.EndEdit();
-                else
-                    this.tableEntityType.AddEntityTypeRow(this);
-            }
+        public void FinishEdit()
+        {
+            if (IsAdded(this))
+                this.EndEdit();
+            else
+                this.tableEntityType.AddEntityTypeRow(this);
+        }
 
-            public static EntityTypeRow CreateEntityTypeRow(BacksightDataSet ds)
-            {
-                EntityTypeRow result = ds.EntityType.NewEntityTypeRow();
-                result.SetDefaultValues();
-                return result;
-            }
+        public static EntityTypeRow CreateEntityTypeRow(BacksightDataSet ds)
+        {
+            EntityTypeRow result = ds.EntityType.NewEntityTypeRow();
+            result.SetDefaultValues();
+            return result;
+        }
 
-            internal void SetDefaultValues()
-            {
-                EntityId = 0;
-                Name = String.Empty;
-                IsPoint = NO;
-                IsLine = NO;
-                IsLineTopological = NO;
-                IsLineTrimmed = NO;
-                IsPolygon = NO;
-                IsText = NO;
-                FontId = 0;
-                LayerId = 0;
-                GroupId = 0;
-            }
+        internal void SetDefaultValues()
+        {
+            EntityId = 0;
+            Name = String.Empty;
+            IsPoint = NO;
+            IsLine = NO;
+            IsLineTopological = NO;
+            IsLineTrimmed = NO;
+            IsPolygon = NO;
+            IsText = NO;
+            FontId = 0;
+            LayerId = 0;
+            GroupId = 0;
+        }
 
-            public int Id
-            {
-                get { return EntityId; }
-            }
+        public int Id
+        {
+            get { return EntityId; }
+        }
 
-            public bool IsPointValid
-            {
-                get { return (IsPoint==YES); }
-                set { IsPoint = AsString(value); }
-            }
+        public bool IsPointValid
+        {
+            get { return (IsPoint==YES); }
+            set { IsPoint = AsString(value); }
+        }
 
-            public bool IsLineValid
-            {
-                get { return (IsLine==YES); }
-                set { IsLine = AsString(value); }
-            }
+        public bool IsLineValid
+        {
+            get { return (IsLine==YES); }
+            set { IsLine = AsString(value); }
+        }
 
-            public bool IsPolygonValid
-            {
-                get { return (IsPolygon==YES); }
-                set { IsPolygon = AsString(value); }
-            }
+        public bool IsPolygonValid
+        {
+            get { return (IsPolygon==YES); }
+            set { IsPolygon = AsString(value); }
+        }
 
-            public bool IsLineAutoTrimmed
-            {
-                get { return (IsLineTrimmed == YES); }
-                set { IsLineTrimmed = AsString(value); }
-            }
+        public bool IsLineAutoTrimmed
+        {
+            get { return (IsLineTrimmed == YES); }
+            set { IsLineTrimmed = AsString(value); }
+        }
 
-            public bool IsPolygonBoundaryValid
-            {
-                get { return (IsLineTopological==YES); }
-                set { IsLineTopological = AsString(value); }
-            }
+        public bool IsPolygonBoundaryValid
+        {
+            get { return (IsLineTopological==YES); }
+            set { IsLineTopological = AsString(value); }
+        }
 
-            public bool IsTextValid
-            {
-                get { return (IsText==YES && IsPolygon==NO); }
-                set { IsText = AsString(value); }
-            }
+        public bool IsTextValid
+        {
+            get { return (IsText==YES && IsPolygon==NO); }
+            set { IsText = AsString(value); }
+        }
 
-            public bool IsValid(SpatialType t)
-            {
-                return (((t & SpatialType.Point)!=0 && IsPointValid) ||
-                        ((t & SpatialType.Line) !=0 && IsLineValid) ||
-                        ((t & SpatialType.Text) !=0 && IsTextValid) ||
-                        ((t & SpatialType.Polygon)!=0 && IsPolygonValid));
-            }
+        public bool IsValid(SpatialType t)
+        {
+            return (((t & SpatialType.Point)!=0 && IsPointValid) ||
+                    ((t & SpatialType.Line) !=0 && IsLineValid) ||
+                    ((t & SpatialType.Text) !=0 && IsTextValid) ||
+                    ((t & SpatialType.Polygon)!=0 && IsPolygonValid));
+        }
 
-            /// <summary>
-            /// The table(s) that are usually associated with this entity type.
-            /// </summary>
-            public ITable[] DefaultTables
+        /// <summary>
+        /// The table(s) that are usually associated with this entity type.
+        /// </summary>
+        public ITable[] DefaultTables
+        {
+            get
             {
-                get
+                // Grab the rows that associate this entity type with schemas (tables)
+                BacksightDataSet ds = GetDataSet(this);
+                EntityTypeSchemaRow[] entSchemas = ds.EntityTypeSchema.FindByEntityId(this.EntityId);
+
+                // Cover easy case where there isn't anything
+                if (entSchemas.Length == 0)
+                    return new ITable[0];
+
+                // Pick out those tables that are part of the association
+                ITable[] tables = (ITable[])ds.Schema.Select();
+                return Array.FindAll<ITable>(tables, delegate(ITable t)
                 {
-                    // Grab the rows that associate this entity type with schemas (tables)
-                    BacksightDataSet ds = GetDataSet(this);
-                    EntityTypeSchemaRow[] entSchemas = ds.EntityTypeSchema.FindByEntityId(this.EntityId);
+                    return EntityTypeSchemaRow.IsTableInArray(t, entSchemas);
+                });
+            }
 
-                    // Cover easy case where there isn't anything
-                    if (entSchemas.Length == 0)
-                        return new ITable[0];
+            set
+            {
+                // Grab the current entity type -> schema (table) associations
+                BacksightDataSet ds = GetDataSet(this);
+                EntityTypeSchemaDataTable tab = ds.EntityTypeSchema;
+                EntityTypeSchemaRow[] entSchemas = tab.FindByEntityId(this.EntityId);
 
-                    // Pick out those tables that are part of the association
-                    ITable[] tables = (ITable[])ds.Schema.Select();
-                    return Array.FindAll<ITable>(tables, delegate(ITable t)
-                    {
-                        return EntityTypeSchemaRow.IsTableInArray(t, entSchemas);
-                    });
+                // Insert new associations
+                foreach (ITable t in value)
+                {
+                    if (!EntityTypeSchemaRow.IsTableInArray(t, entSchemas))
+                        tab.AddEntityTypeSchemaRow(this.EntityId, t.Id);
                 }
 
-                set
+                // Remove any associations that no longer apply
+                foreach (EntityTypeSchemaRow row in entSchemas)
                 {
-                    // Grab the current entity type -> schema (table) associations
-                    BacksightDataSet ds = GetDataSet(this);
-                    EntityTypeSchemaDataTable tab = ds.EntityTypeSchema;
-                    EntityTypeSchemaRow[] entSchemas = tab.FindByEntityId(this.EntityId);
-
-                    // Insert new associations
-                    foreach (ITable t in value)
-                    {
-                        if (!EntityTypeSchemaRow.IsTableInArray(t, entSchemas))
-                            tab.AddEntityTypeSchemaRow(this.EntityId, t.Id);
-                    }
-
-                    // Remove any associations that no longer apply
-                    foreach (EntityTypeSchemaRow row in entSchemas)
-                    {
-                        if (!Array.Exists<ITable>(value, delegate(ITable t) { return t.Id==row.SchemaId; }))
-                            row.Delete();
-                    }
+                    if (!Array.Exists<ITable>(value, delegate(ITable t) { return t.Id==row.SchemaId; }))
+                        row.Delete();
                 }
             }
+        }
 
-            public IIdGroup IdGroup
-            {
-                get { return (GroupId==0 ? null : this.IdGroupRow); }
-                set { GroupId = (value==null ? 0 : value.Id); }
-            }
+        public IIdGroup IdGroup
+        {
+            get { return (GroupId==0 ? null : this.IdGroupRow); }
+            set { GroupId = (value==null ? 0 : value.Id); }
+        }
 
-            public ILayer Layer
-            {
-                get { return (LayerId==0 ? null : this.LayerRow); }
-                set { LayerId = (value==null ? 0 : value.Id); }
-            }
+        public ILayer Layer
+        {
+            get { return (LayerId==0 ? null : this.LayerRow); }
+            set { LayerId = (value==null ? 0 : value.Id); }
+        }
 
-            public IFont Font
-            {
-                get { return (FontId == 0 ? null : this.FontRow); }
-                set { FontId = (value == null ? 0 : value.Id); }
-            }
+        public IFont Font
+        {
+            get { return (FontId == 0 ? null : this.FontRow); }
+            set { FontId = (value == null ? 0 : value.Id); }
         }
     }
 }

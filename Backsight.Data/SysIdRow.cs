@@ -13,14 +13,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
+namespace Backsight.Data;
 
-namespace Backsight.Data
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    partial class SysIdRow
     {
-        partial class SysIdRow
-        {
-        }
     }
 }

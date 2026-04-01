@@ -13,126 +13,117 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
 using System.Data;
-
 using Backsight.Environment;
 
-namespace Backsight.Data
+namespace Backsight.Data;
+
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    /// <summary>
+    /// The content of a domain table.
+    /// </summary>
+    /// <remarks>The class name is consistent with the naming conventions used throughout this project,
+    /// but may be confusing here, since <c>DomainTableRow</c> suggests a single row in a domain table.
+    /// What it actually represents is the complete table.</remarks>
+    public partial class DomainTableRow : IEditDomainTable
     {
         /// <summary>
-        /// The content of a domain table.
+        /// The data for the domain table. The key is the lookup value, the
+        /// value is the expanded value. Lazy loaded on the first call to the
+        /// <see cref="Lookup"/> method.
         /// </summary>
-        /// <remarks>The class name is consistent with the naming conventions used throughout this project,
-        /// but may be confusing here, since <c>DomainTableRow</c> suggests a single row in a domain table.
-        /// What it actually represents is the complete table.</remarks>
-        public partial class DomainTableRow : IEditDomainTable
+        Dictionary<string, string> m_Data;
+
+        public override string ToString()
         {
-            #region Class data
+            return TableName;
+        }
 
-            /// <summary>
-            /// The data for the domain table. The key is the lookup value, the
-            /// value is the expanded value. Lazy loaded on the first call to the
-            /// <see cref="Lookup"/> method.
-            /// </summary>
-            Dictionary<string, string> m_Data;
+        public void FinishEdit()
+        {
+            if (IsAdded(this))
+                this.EndEdit();
+            else
+                this.tableDomainTable.AddDomainTableRow(this);
+        }
 
-            #endregion
+        public static DomainTableRow CreateDomainTableRow(BacksightDataSet ds)
+        {
+            DomainTableRow result = ds.DomainTable.NewDomainTableRow();
+            result.SetDefaultValues();
+            return result;
+        }
 
-            public override string ToString()
-            {
-                return TableName;
-            }
+        internal void SetDefaultValues()
+        {
+            DomainId = 0;
+            TableName = String.Empty;
+        }
 
-            public void FinishEdit()
-            {
-                if (IsAdded(this))
-                    this.EndEdit();
-                else
-                    this.tableDomainTable.AddDomainTableRow(this);
-            }
+        public int Id
+        {
+            get { return DomainId; }
+        }
 
-            public static DomainTableRow CreateDomainTableRow(BacksightDataSet ds)
-            {
-                DomainTableRow result = ds.DomainTable.NewDomainTableRow();
-                result.SetDefaultValues();
+        /// <summary>
+        /// Performs a lookup on the domain table
+        /// </summary>
+        /// <param name="connectionString">The connection string for the database holding domain data.</param>
+        /// <param name="shortValue">The abbreviated code to lookup</param>
+        /// <returns>The expanded value for the lookup (blank if not found)</returns>
+        public string Lookup(string connectionString, string shortValue)
+        {
+            if (m_Data == null)
+                m_Data = LoadDomainTable(connectionString);
+
+            string result;
+
+            if (m_Data.TryGetValue(shortValue, out result))
                 return result;
-            }
+            else
+                return String.Empty;
+        }
 
-            internal void SetDefaultValues()
+        /// <summary>
+        /// Loads the domain table from the database
+        /// </summary>
+        /// <param name="connectionString">The connection string for the database holding domain data.</param>
+        /// <returns>A index of the domain table, keyed by the short value</returns>
+        Dictionary<string, string> LoadDomainTable(string connectionString)
+        {
+            IDataServer ds = new DataServer(connectionString);
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            DataTable table = ds.ExecuteSelect("SELECT [ShortValue], [LongValue] FROM " + TableName);
+
+            foreach (DataRow row in table.Select())
             {
-                DomainId = 0;
-                TableName = String.Empty;
+                string key = row[0].ToString();
+                string val = row[1].ToString();
+                result.Add(key, val);
             }
 
-            public int Id
+            return result;
+        }
+
+        /// <summary>
+        /// The lookup values in the domain table
+        /// </summary>
+        public string[] GetLookupValues(string connectionString)
+        {
+            if (m_Data == null)
+                m_Data = LoadDomainTable(connectionString);
+
+            string[] result = new string[m_Data.Count];
+
+            int i = 0;
+            foreach (string s in m_Data.Keys)
             {
-                get { return DomainId; }
+                result[i] = s;
+                i++;
             }
 
-            /// <summary>
-            /// Performs a lookup on the domain table
-            /// </summary>
-            /// <param name="connectionString">The connection string for the database holding domain data.</param>
-            /// <param name="shortValue">The abbreviated code to lookup</param>
-            /// <returns>The expanded value for the lookup (blank if not found)</returns>
-            public string Lookup(string connectionString, string shortValue)
-            {
-                if (m_Data == null)
-                    m_Data = LoadDomainTable(connectionString);
-
-                string result;
-
-                if (m_Data.TryGetValue(shortValue, out result))
-                    return result;
-                else
-                    return String.Empty;
-            }
-
-            /// <summary>
-            /// Loads the domain table from the database
-            /// </summary>
-            /// <param name="connectionString">The connection string for the database holding domain data.</param>
-            /// <returns>A index of the domain table, keyed by the short value</returns>
-            Dictionary<string, string> LoadDomainTable(string connectionString)
-            {
-                IDataServer ds = new DataServer(connectionString);
-                Dictionary<string, string> result = new Dictionary<string, string>();
-                DataTable table = ds.ExecuteSelect("SELECT [ShortValue], [LongValue] FROM " + TableName);
-
-                foreach (DataRow row in table.Select())
-                {
-                    string key = row[0].ToString();
-                    string val = row[1].ToString();
-                    result.Add(key, val);
-                }
-
-                return result;
-            }
-
-            /// <summary>
-            /// The lookup values in the domain table
-            /// </summary>
-            public string[] GetLookupValues(string connectionString)
-            {
-                if (m_Data == null)
-                    m_Data = LoadDomainTable(connectionString);
-
-                string[] result = new string[m_Data.Count];
-
-                int i = 0;
-                foreach (string s in m_Data.Keys)
-                {
-                    result[i] = s;
-                    i++;
-                }
-
-                return result;
-            }
+            return result;
         }
     }
 }
-

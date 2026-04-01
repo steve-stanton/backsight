@@ -13,62 +13,59 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-
 using Backsight.Environment;
 
-namespace Backsight.Data
+namespace Backsight.Data;
+
+public partial class BacksightDataSet
 {
-    public partial class BacksightDataSet
+    partial class IdGroupRow : IEditIdGroup
     {
-        partial class IdGroupRow : IEditIdGroup
+        public override string ToString()
         {
-            public override string ToString()
-            {
-                return Name;
-            }
+            return Name;
+        }
 
-            public void FinishEdit()
-            {
-                if (IsAdded(this))
-                    this.EndEdit();
-                else
-                    this.tableIdGroup.AddIdGroupRow(this);
-            }
+        public void FinishEdit()
+        {
+            if (IsAdded(this))
+                this.EndEdit();
+            else
+                this.tableIdGroup.AddIdGroupRow(this);
+        }
 
-            public static BacksightDataSet.IdGroupRow CreateIdGroupRow(BacksightDataSet ds)
-            {
-                IdGroupRow result = ds.IdGroup.NewIdGroupRow();
-                result.SetDefaultValues();
-                return result;
-            }
+        public static BacksightDataSet.IdGroupRow CreateIdGroupRow(BacksightDataSet ds)
+        {
+            IdGroupRow result = ds.IdGroup.NewIdGroupRow();
+            result.SetDefaultValues();
+            return result;
+        }
 
-            internal void SetDefaultValues()
-            {
-                GroupId = 0;
-                Name = String.Empty;
-                LowestId = 0;
-                HighestId = 0;
-                PacketSize = 0;
-                CheckDigit = NO;
-                KeyFormat = "{0}";
-            }
+        internal void SetDefaultValues()
+        {
+            GroupId = 0;
+            Name = String.Empty;
+            LowestId = 0;
+            HighestId = 0;
+            PacketSize = 0;
+            CheckDigit = NO;
+            KeyFormat = "{0}";
+        }
 
-            public int Id
-            {
-                get { return GroupId; }
-            }
+        public int Id
+        {
+            get { return GroupId; }
+        }
 
-            public bool HasCheckDigit
-            {
-                get { return CheckDigit==YES; }
-                set { CheckDigit = AsString(value); }
-            }
+        public bool HasCheckDigit
+        {
+            get { return CheckDigit==YES; }
+            set { CheckDigit = AsString(value); }
+        }
 
-            public IEntity[] EntityTypes
-            {
-                get { return (IEntity[])this.GetEntityTypesRows(); }
-            }
+        public IEntity[] EntityTypes
+        {
+            get { return (IEntity[])this.GetEntityTypesRows(); }
         }
     }
 }
