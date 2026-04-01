@@ -13,84 +13,81 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Data;
 using System.Windows.Forms;
-
 using Microsoft.SqlServer.Management.Smo;
 
-namespace Backsight.SqlServer
+namespace Backsight.SqlServer;
+
+public partial class PickServerForm : Form
 {
-    public partial class PickServerForm : Form
+    private string m_ServerName;
+
+    public PickServerForm()
     {
-        private string m_ServerName;
+        InitializeComponent();
+        m_ServerName = String.Empty;
+    }
 
-        public PickServerForm()
-        {
-            InitializeComponent();
-            m_ServerName = String.Empty;
-        }
+    internal string ServerName
+    {
+        get { return m_ServerName; }
+    }
 
-        internal string ServerName
+    private void PickServerForm_Shown(object sender, EventArgs e)
+    {
+        try
         {
-            get { return m_ServerName; }
-        }
+            listBox.Items.Add("Loading server list...");
+            listBox.Enabled = false;
+            listBox.Refresh();
 
-        private void PickServerForm_Shown(object sender, EventArgs e)
-        {
-            try
+            this.Cursor = Cursors.WaitCursor;
+            DataTable dt = SmoApplication.EnumAvailableSqlServers(false);
+            listBox.Items.Clear();
+
+            foreach (DataRow r in dt.Rows)
             {
-                listBox.Items.Add("Loading server list...");
-                listBox.Enabled = false;
-                listBox.Refresh();
-
-                this.Cursor = Cursors.WaitCursor;
-                DataTable dt = SmoApplication.EnumAvailableSqlServers(false);
-                listBox.Items.Clear();
-
-                foreach (DataRow r in dt.Rows)
-                {
-                    string name = r["Name"].ToString();
-                    listBox.Items.Add(name);
-                }
-            }
-
-            finally
-            {
-                this.Cursor = Cursors.Default;
-                listBox.Enabled = true;
+                string name = r["Name"].ToString();
+                listBox.Items.Add(name);
             }
         }
 
-        private void listBox_DoubleClick(object sender, EventArgs e)
+        finally
         {
-            object sel = listBox.SelectedItem;
-            if (sel!=null)
-            {
-                m_ServerName = sel.ToString();
-                this.DialogResult = DialogResult.OK;
-                Close();
-            }            
+            this.Cursor = Cursors.Default;
+            listBox.Enabled = true;
         }
+    }
 
-        private void okButton_Click(object sender, EventArgs e)
+    private void listBox_DoubleClick(object sender, EventArgs e)
+    {
+        object sel = listBox.SelectedItem;
+        if (sel!=null)
         {
-            object sel = listBox.SelectedItem;
-            if (sel==null)
-            {
-                MessageBox.Show("You must first select a server");
-                return;
-            }
-
             m_ServerName = sel.ToString();
             this.DialogResult = DialogResult.OK;
             Close();
+        }            
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        object sel = listBox.SelectedItem;
+        if (sel==null)
+        {
+            MessageBox.Show("You must first select a server");
+            return;
         }
 
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-        }
+        m_ServerName = sel.ToString();
+        this.DialogResult = DialogResult.OK;
+        Close();
+    }
+
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        this.DialogResult = DialogResult.Cancel;
+        Close();
     }
 }

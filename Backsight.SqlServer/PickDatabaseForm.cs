@@ -13,94 +13,90 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
-using System.Data;
 using System.Windows.Forms;
-
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 
-namespace Backsight.SqlServer
+namespace Backsight.SqlServer;
+
+public partial class PickDatabaseForm : Form
 {
-    public partial class PickDatabaseForm : Form
+    private readonly ServerConnection m_Server;
+    private Database m_Database;
+
+    public PickDatabaseForm(ServerConnection sc)
     {
-        private readonly ServerConnection m_Server;
-        private Database m_Database;
+        InitializeComponent();
+        m_Server = sc;
+        m_Database = null;
+    }
 
-        public PickDatabaseForm(ServerConnection sc)
+    internal Database Database
+    {
+        get { return m_Database; }
+    }
+
+    private void PickDatabaseForm_Shown(object sender, EventArgs e)
+    {
+        try
         {
-            InitializeComponent();
-            m_Server = sc;
-            m_Database = null;
+            this.Cursor = Cursors.WaitCursor;
+
+            if (!m_Server.IsOpen)
+                m_Server.Connect();
+
+            listBox.Items.Add("Loading database list...");
+            listBox.Enabled = false;
+            listBox.Refresh();
+
+            Server s = new Server(m_Server);
+            DatabaseCollection dc = s.Databases;
+            listBox.Items.Clear();
+
+            foreach (Database d in dc)
+                listBox.Items.Add(d);
         }
 
-        internal Database Database
+        catch (Exception ex)
         {
-            get { return m_Database; }
+            MessageBox.Show(ex.Message);
         }
 
-        private void PickDatabaseForm_Shown(object sender, EventArgs e)
+        finally
         {
-            try
-            {
-                this.Cursor = Cursors.WaitCursor;
-
-                if (!m_Server.IsOpen)
-                    m_Server.Connect();
-
-                listBox.Items.Add("Loading database list...");
-                listBox.Enabled = false;
-                listBox.Refresh();
-
-                Server s = new Server(m_Server);
-                DatabaseCollection dc = s.Databases;
-                listBox.Items.Clear();
-
-                foreach (Database d in dc)
-                    listBox.Items.Add(d);
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-            finally
-            {
-                this.Cursor = Cursors.Default;
-                listBox.Enabled = true;
-            }
+            this.Cursor = Cursors.Default;
+            listBox.Enabled = true;
         }
+    }
 
-        private void listBox_DoubleClick(object sender, EventArgs e)
+    private void listBox_DoubleClick(object sender, EventArgs e)
+    {
+        object sel = listBox.SelectedItem;
+        if (sel!=null)
         {
-            object sel = listBox.SelectedItem;
-            if (sel!=null)
-            {
-                m_Database = (Database)sel;
-                this.DialogResult = DialogResult.OK;
-                Close();
-            }            
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            object sel = listBox.SelectedItem;
-            if (sel==null)
-            {
-                MessageBox.Show("You must first select a database");
-                return;
-            }
-
             m_Database = (Database)sel;
             this.DialogResult = DialogResult.OK;
             Close();
+        }            
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        object sel = listBox.SelectedItem;
+        if (sel==null)
+        {
+            MessageBox.Show("You must first select a database");
+            return;
         }
 
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-        }
+        m_Database = (Database)sel;
+        this.DialogResult = DialogResult.OK;
+        Close();
+    }
+
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        this.DialogResult = DialogResult.Cancel;
+        Close();
     }
 }
