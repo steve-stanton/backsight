@@ -74,7 +74,7 @@ is running.
 The current system will only run on Windows platforms running NET4, and makes use of a local SQLExpress database that holds ancillary details.
 Setting things up is a bit complicated, so I am looking to  rework the codebase to make it more accessible. I expect to do this in 3 phases:
 
-1. Re-target the system to net10.0-windows (work in progress)
-2. Replace the SQLExpress database with SQLite (making use of [RepoDB](https://repodb.net/))
+1. Re-target the system to net10.0-windows (**done**)
+2. Replace the SQLExpress database with SQLite (making use of [RepoDB](https://repodb.net/))  (**work in progress**)
 3. Eliminate dependencies on Windows by moving to MAUI, and target net10.0
 
