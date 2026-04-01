@@ -101,6 +101,16 @@
         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
         <SubType>Designer</SubType>
       </EmbeddedResource>
+      <None Remove="Resources\CarCursor.cur" />
+      <EmbeddedResource Include="Resources\CarCursor.cur" />
+      <None Remove="Resources\HollowSquareCursor.cur" />
+      <EmbeddedResource Include="Resources\HollowSquareCursor.cur" />
+      <None Remove="Resources\MagnifyingGlass.cur" />
+      <EmbeddedResource Include="Resources\MagnifyingGlass.cur" />
+      <None Remove="Resources\MovingCarCursor.cur" />
+      <EmbeddedResource Include="Resources\MovingCarCursor.cur" />
+      <None Remove="Resources\NewCenterCursor.cur" />
+      <EmbeddedResource Include="Resources\NewCenterCursor.cur" />
     </ItemGroup>
 
     <ItemGroup>
