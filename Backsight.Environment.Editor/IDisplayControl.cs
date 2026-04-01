@@ -13,31 +13,30 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Environment.Editor
+namespace Backsight.Environment.Editor;
+
+/// <summary>
+/// Something that displays some type of environment item.
+/// </summary>
+public interface IDisplayControl
 {
     /// <summary>
-    /// Something that displays some type of environment item.
+    /// Prompts the user for information for a new environment item.
     /// </summary>
-    public interface IDisplayControl
-    {
-        /// <summary>
-        /// Prompts the user for information for a new environment item.
-        /// </summary>
-        void NewItem();
+    void NewItem();
 
-        /// <summary>
-        /// Updates the currently selected environment item.
-        /// </summary>
-        void UpdateSelectedItem();
+    /// <summary>
+    /// Updates the currently selected environment item.
+    /// </summary>
+    void UpdateSelectedItem();
 
-        /// <summary>
-        /// Removes the currently selected environment item.
-        /// </summary>
-        void DeleteSelectedItem();
+    /// <summary>
+    /// Removes the currently selected environment item.
+    /// </summary>
+    void DeleteSelectedItem();
 
-        /// <summary>
-        /// Refresh the list
-        /// </summary>
-        void RefreshList();
-    }
+    /// <summary>
+    /// Refresh the list
+    /// </summary>
+    void RefreshList();
 }

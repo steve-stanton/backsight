@@ -15,30 +15,29 @@
 
 using System.Windows.Forms;
 
-namespace Backsight.Environment.Editor
+namespace Backsight.Environment.Editor;
+
+/// <summary>
+/// Information about layers that is used in conjunction with
+/// the <see cref="SimpleListControl"/>
+/// </summary>
+class LayerListData : ISimpleListData
 {
     /// <summary>
-    /// Information about layers that is used in conjunction with
-    /// the <see cref="SimpleListControl"/>
+    /// Obtains the environment items that should be displayed.
     /// </summary>
-    class LayerListData : ISimpleListData
+    /// <returns>The active set of environment items</returns>
+    public IEnvironmentItem[] GetEnvironmentItems()
     {
-        /// <summary>
-        /// Obtains the environment items that should be displayed.
-        /// </summary>
-        /// <returns>The active set of environment items</returns>
-        public IEnvironmentItem[] GetEnvironmentItems()
-        {
-            return EnvironmentContainer.Current.Layers;
-        }
+        return EnvironmentContainer.Current.Layers;
+    }
 
-        /// <summary>
-        /// Creates a dialog that is suitable for entering a new environment item.
-        /// </summary>
-        /// <returns>The dialog to display</returns>
-        public Form GetEntryDialog(IEnvironmentItem item)
-        {
-            return new LayerForm(item as IEditLayer);
-        }
+    /// <summary>
+    /// Creates a dialog that is suitable for entering a new environment item.
+    /// </summary>
+    /// <returns>The dialog to display</returns>
+    public Form GetEntryDialog(IEnvironmentItem item)
+    {
+        return new LayerForm(item as IEditLayer);
     }
 }

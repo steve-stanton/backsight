@@ -13,125 +13,111 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-namespace Backsight.Environment.Editor
+namespace Backsight.Environment.Editor;
+
+/// <summary>
+/// A display that contains a <c>ListBox</c> that displays the
+/// names of environment items.
+/// </summary>
+partial class SimpleListControl : UserControl, IDisplayControl
 {
     /// <summary>
-    /// A display that contains a <c>ListBox</c> that displays the
-    /// names of environment items.
+    /// The object that provides data for this display.
     /// </summary>
-    partial class SimpleListControl : UserControl, IDisplayControl
+    readonly ISimpleListData m_DataProvider;
+
+    //public SimpleListControl()
+    //{
+    //    InitializeComponent();
+    //}
+
+    internal SimpleListControl(ISimpleListData dataProvider)
     {
-        #region Class data
+        InitializeComponent();
+        m_DataProvider = dataProvider;
+    }
 
-        /// <summary>
-        /// The object that provides data for this display.
-        /// </summary>
-        readonly ISimpleListData m_DataProvider;
+    /// <summary>
+    /// Prompts the user for information for a new environment item.
+    /// </summary>
+    public virtual void NewItem()
+    {
+        UpdateItem(null);
+    }
 
-        #endregion
+    /// <summary>
+    /// Updates the currently selected environment item.
+    /// </summary>
+    public virtual void UpdateSelectedItem()
+    {
+        IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
+        if (item == null)
+            MessageBox.Show("You must first select an item from the list");
+        else
+            UpdateItem(item);
+    }
 
-        #region Constructors
+    private void listBox_DoubleClick(object sender, EventArgs e)
+    {
+        IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
+        if (item != null)
+            UpdateItem(item);
+    }
 
-        //public SimpleListControl()
-        //{
-        //    InitializeComponent();
-        //}
+    void UpdateItem(IEnvironmentItem item)
+    {
+        // Some pages don't support the update function
 
-        internal SimpleListControl(ISimpleListData dataProvider)
+        try
         {
-            InitializeComponent();
-            m_DataProvider = dataProvider;
-        }
-
-        #endregion
-
-        #region IDisplayControl Members
-
-        /// <summary>
-        /// Prompts the user for information for a new environment item.
-        /// </summary>
-        public virtual void NewItem()
-        {
-            UpdateItem(null);
-        }
-
-        /// <summary>
-        /// Updates the currently selected environment item.
-        /// </summary>
-        public virtual void UpdateSelectedItem()
-        {
-            IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
-            if (item == null)
-                MessageBox.Show("You must first select an item from the list");
-            else
-                UpdateItem(item);
-        }
-
-        private void listBox_DoubleClick(object sender, EventArgs e)
-        {
-            IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
-            if (item != null)
-                UpdateItem(item);
-        }
-
-        void UpdateItem(IEnvironmentItem item)
-        {
-            // Some pages don't support the update function
-
-            try
+            using (Form dial = m_DataProvider.GetEntryDialog(item))
             {
-                using (Form dial = m_DataProvider.GetEntryDialog(item))
-                {
-                    if (dial.ShowDialog() == DialogResult.OK)
-                        RefreshList();
-                }
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
+                if (dial.ShowDialog() == DialogResult.OK)
+                    RefreshList();
             }
         }
 
-        /// <summary>
-        /// Removes the currently selected environment item.
-        /// </summary>
-        public virtual void DeleteSelectedItem()
+        catch (Exception ex)
         {
-            IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
-            if (item == null)
-            {
-                MessageBox.Show("You must first select an item from the list");
-                return;
-            }
+            MessageBox.Show(ex.Message);
+        }
+    }
 
-            // Deletions should be disallowed if the environment has been "published"
-
-            if (item is IEditControl)
-            {
-                (item as IEditControl).Delete();
-                RefreshList();
-            }
-            else
-                throw new NotSupportedException();
+    /// <summary>
+    /// Removes the currently selected environment item.
+    /// </summary>
+    public virtual void DeleteSelectedItem()
+    {
+        IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
+        if (item == null)
+        {
+            MessageBox.Show("You must first select an item from the list");
+            return;
         }
 
-        public virtual void RefreshList()
+        // Deletions should be disallowed if the environment has been "published"
+
+        if (item is IEditControl)
         {
-            IEnvironmentItem[] items = m_DataProvider.GetEnvironmentItems();
-            listBox.Items.Clear();
-            listBox.Items.AddRange(items);
-
-            // If the first item is blank, remove it (all "real" items should have
-            // a defined name, blanks refer to rows that exist only to accommodate
-            // foreign key constraints)
-            if (items.Length > 0 && listBox.Items[0].ToString().Length == 0)
-                listBox.Items.RemoveAt(0);
+            (item as IEditControl).Delete();
+            RefreshList();
         }
+        else
+            throw new NotSupportedException();
+    }
 
-        #endregion
+    public virtual void RefreshList()
+    {
+        IEnvironmentItem[] items = m_DataProvider.GetEnvironmentItems();
+        listBox.Items.Clear();
+        listBox.Items.AddRange(items);
+
+        // If the first item is blank, remove it (all "real" items should have
+        // a defined name, blanks refer to rows that exist only to accommodate
+        // foreign key constraints)
+        if (items.Length > 0 && listBox.Items[0].ToString().Length == 0)
+            listBox.Items.RemoveAt(0);
     }
 }

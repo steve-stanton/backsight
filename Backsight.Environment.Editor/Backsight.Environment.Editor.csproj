@@ -1,386 +1,176 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A515AC80-FDDE-4790-BB45-E319AFFB7D6F}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Backsight.Environment.Editor</RootNamespace>
-    <AssemblyName>Backsight.Environment.Editor</AssemblyName>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetZone>Custom</TargetZone>
-    <GenerateManifests>true</GenerateManifests>
-    <ExcludedPermissions>
-    </ExcludedPermissions>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>ExportedAssemblies\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\Backsight\ExportedAssemblies\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.ConnectionInfoExtended, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.ConnectionInfoExtended.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Smo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.Smo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.SmoExtended, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.SmoExtended.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WizardLib, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ThirdParty\WizardLib\ExportedAssemblies\WizardLib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AddLayerToThemeForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AddLayerToThemeForm.Designer.cs">
-      <DependentUpon>AddLayerToThemeForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChecklistForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChecklistForm.designer.cs">
-      <DependentUpon>ChecklistForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CreateTablesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CreateTablesForm.Designer.cs">
-      <DependentUpon>CreateTablesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DomainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DomainForm.Designer.cs">
-      <DependentUpon>DomainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DomainListData.cs" />
-    <Compile Include="EntityForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EntityForm.Designer.cs">
-      <DependentUpon>EntityForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EntityListData.cs" />
-    <Compile Include="FontForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FontForm.Designer.cs">
-      <DependentUpon>FontForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FontListData.cs" />
-    <Compile Include="IdFormatForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="IdFormatForm.designer.cs">
-      <DependentUpon>IdFormatForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="IdGroupForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="IdGroupForm.designer.cs">
-      <DependentUpon>IdGroupForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="IdGroupListData.cs" />
-    <Compile Include="IDisplayControl.cs" />
-    <Compile Include="ISimpleListData.cs" />
-    <Compile Include="LayerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LayerForm.Designer.cs">
-      <DependentUpon>LayerForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LayerListData.cs" />
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="AddLayerToThemeForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>AddLayerToThemeForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChecklistForm.resx">
-      <DependentUpon>ChecklistForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CreateTablesForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>CreateTablesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EntityForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>EntityForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FontForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>FontForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="IdFormatForm.resx">
-      <DependentUpon>IdFormatForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="IdGroupForm.resx">
-      <DependentUpon>IdGroupForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LayerForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>LayerForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PropertyForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PropertyForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TableForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>TableForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TemplateForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>TemplateForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ThemeForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ThemeForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ZoneForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ZoneForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="PropertyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PropertyForm.Designer.cs">
-      <DependentUpon>PropertyForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PropertyGridControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyGridControl.Designer.cs">
-      <DependentUpon>PropertyGridControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SimpleListControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="SimpleListControl.Designer.cs">
-      <DependentUpon>SimpleListControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TableForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TableForm.Designer.cs">
-      <DependentUpon>TableForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TableListData.cs" />
-    <Compile Include="TemplateForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TemplateForm.Designer.cs">
-      <DependentUpon>TemplateForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TemplateListData.cs" />
-    <Compile Include="ThemeForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ThemeForm.Designer.cs">
-      <DependentUpon>ThemeForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ThemeListData.cs" />
-    <Compile Include="ZoneForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ZoneForm.Designer.cs">
-      <DependentUpon>ZoneForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ZoneListData.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ArrowUp.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ArrowDown.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Plus.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <EmbeddedResource Include="DomainForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>DomainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PropertyGridControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PropertyGridControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\CreateTables.sql" />
-    <EmbeddedResource Include="SimpleListControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>SimpleListControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="Resources\Delete.bmp" />
-    <None Include="Resources\Minus.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj">
-      <Project>{7EC14854-8FB8-415F-9CC5-E1B52BAD8B3A}</Project>
-      <Name>Backsight.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj">
-      <Project>{97BC1364-B469-4AF2-BD4F-B13AB981A4B1}</Project>
-      <Name>Backsight.SqlServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Backsight\Backsight.csproj">
-      <Project>{2D80BA27-714A-4851-903F-DF512063C237}</Project>
-      <Name>Backsight</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Update.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Properties\app.manifest" />
-    <EmbeddedResource Include="Resources\CreateTables.sqlce" />
-    <None Include="Resources\New.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>   
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\CreateTables.sql" />
+      <EmbeddedResource Include="Resources\CreateTables.sqlce" />
+      <EmbeddedResource Update="AddLayerToThemeForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>AddLayerToThemeForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="ChecklistForm.resx">
+        <DependentUpon>ChecklistForm.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="CreateTablesForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>CreateTablesForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="DomainForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>DomainForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="EntityForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>EntityForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="FontForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>FontForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="IdFormatForm.resx">
+        <DependentUpon>IdFormatForm.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="IdGroupForm.resx">
+        <DependentUpon>IdGroupForm.cs</DependentUpon>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <EmbeddedResource Update="LayerForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>LayerForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="MainForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>MainForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PropertyForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PropertyForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PropertyGridControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>PropertyGridControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="SimpleListControl.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>SimpleListControl.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="TableForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>TableForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="TemplateForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>TemplateForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="ThemeForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>ThemeForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="ZoneForm.resx">
+        <SubType>Designer</SubType>
+        <DependentUpon>ZoneForm.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Properties\Resources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        <SubType>Designer</SubType>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="AddLayerToThemeForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="ChecklistForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="CreateTablesForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="DomainForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="EntityForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="FontForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="IdFormatForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="IdGroupForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="LayerForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="MainForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="PropertyForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="PropertyGridControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="SimpleListControl.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="TableForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="TemplateForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="ThemeForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="ZoneForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Properties\Resources.Designer.cs">
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Resources.resx</DependentUpon>
+        <DesignTime>True</DesignTime>
+      </Compile>
+      <Compile Update="Properties\Resources.Designer.cs">
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Resources.resx</DependentUpon>
+        <DesignTime>True</DesignTime>
+      </Compile>
+      <Compile Update="Properties\Settings.Designer.cs">
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Settings.settings</DependentUpon>
+        <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      </Compile>
+      <Compile Update="Properties\Settings.Designer.cs">
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Settings.settings</DependentUpon>
+        <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj" />
+      <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj" />
+      <ProjectReference Include="..\Backsight\Backsight.csproj" />
+      <ProjectReference Include="..\Gui.Wizard\Gui.Wizard.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Properties\Settings.settings">
+        <Generator>SettingsSingleFileGenerator</Generator>
+        <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
 </Project>

@@ -13,99 +13,97 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-namespace Backsight.Environment.Editor
+namespace Backsight.Environment.Editor;
+
+public partial class LayerForm : Form
 {
-    public partial class LayerForm : Form
+    private readonly IEditLayer m_Edit;
+
+    internal LayerForm() : this(null)
     {
-        private readonly IEditLayer m_Edit;
+    }
 
-        internal LayerForm() : this(null)
+    internal LayerForm(IEditLayer edit)
+    {
+        InitializeComponent();
+
+        m_Edit = edit;
+        if (m_Edit==null)
         {
+            IEnvironmentFactory f = EnvironmentContainer.Factory;
+            m_Edit = f.CreateLayer();
         }
 
-        internal LayerForm(IEditLayer edit)
+        m_Edit.BeginEdit();
+    }
+
+    private void LayerForm_Shown(object sender, EventArgs e)
+    {
+        nameTextBox.Text = m_Edit.Name;
+
+        IEnvironmentContainer ec = EnvironmentContainer.Current;
+        IEntity[] all = ec.EntityTypes;
+        pointComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Point));
+        lineComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Line));
+        textComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Text));
+        polygonComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Polygon));
+
+        if (m_Edit.DefaultPointType!=null)
+            pointComboBox.SelectedItem = m_Edit.DefaultPointType;
+
+        if (m_Edit.DefaultLineType!=null)
+            lineComboBox.SelectedItem = m_Edit.DefaultLineType;
+
+        if (m_Edit.DefaultTextType!=null)
+            textComboBox.SelectedItem = m_Edit.DefaultTextType;
+
+        if (m_Edit.DefaultPolygonType!=null)
+            polygonComboBox.SelectedItem = m_Edit.DefaultPolygonType;
+
+        ITheme theme = m_Edit.Theme;
+        if (theme!=null)
         {
-            InitializeComponent();
-
-            m_Edit = edit;
-            if (m_Edit==null)
-            {
-                IEnvironmentFactory f = EnvironmentContainer.Factory;
-                m_Edit = f.CreateLayer();
-            }
-
-            m_Edit.BeginEdit();
+            themeLabel.Visible = true;
+            themeTextBox.Visible = true;
+            themeTextBox.Text = theme.Name;
         }
+    }
 
-        private void LayerForm_Shown(object sender, EventArgs e)
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        if (ValidateEdit())
         {
-            nameTextBox.Text = m_Edit.Name;
-
-            IEnvironmentContainer ec = EnvironmentContainer.Current;
-            IEntity[] all = ec.EntityTypes;
-            pointComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Point));
-            lineComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Line));
-            textComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Text));
-            polygonComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Polygon));
-
-            if (m_Edit.DefaultPointType!=null)
-                pointComboBox.SelectedItem = m_Edit.DefaultPointType;
-
-            if (m_Edit.DefaultLineType!=null)
-                lineComboBox.SelectedItem = m_Edit.DefaultLineType;
-
-            if (m_Edit.DefaultTextType!=null)
-                textComboBox.SelectedItem = m_Edit.DefaultTextType;
-
-            if (m_Edit.DefaultPolygonType!=null)
-                polygonComboBox.SelectedItem = m_Edit.DefaultPolygonType;
-
-            ITheme theme = m_Edit.Theme;
-            if (theme!=null)
-            {
-                themeLabel.Visible = true;
-                themeTextBox.Visible = true;
-                themeTextBox.Text = theme.Name;
-            }
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            if (ValidateEdit())
-            {
-                m_Edit.FinishEdit();
-                this.DialogResult = DialogResult.OK;
-                Close();
-            }
-        }
-
-        bool ValidateEdit()
-        {
-            string name = nameTextBox.Text.Trim();
-            if (name.Length==0)
-            {
-                MessageBox.Show("A name must be supplied for the layer");
-                nameTextBox.Focus();
-                return false;
-            }
-
-            m_Edit.Name = name;
-            m_Edit.DefaultPointType = (IEntity)pointComboBox.SelectedItem;
-            m_Edit.DefaultLineType = (IEntity)lineComboBox.SelectedItem;
-            m_Edit.DefaultTextType = (IEntity)textComboBox.SelectedItem;
-            m_Edit.DefaultPolygonType = (IEntity)polygonComboBox.SelectedItem;
-
-            return true;
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            m_Edit.CancelEdit();
-            this.DialogResult = DialogResult.Cancel;
+            m_Edit.FinishEdit();
+            this.DialogResult = DialogResult.OK;
             Close();
         }
+    }
+
+    bool ValidateEdit()
+    {
+        string name = nameTextBox.Text.Trim();
+        if (name.Length==0)
+        {
+            MessageBox.Show("A name must be supplied for the layer");
+            nameTextBox.Focus();
+            return false;
+        }
+
+        m_Edit.Name = name;
+        m_Edit.DefaultPointType = (IEntity)pointComboBox.SelectedItem;
+        m_Edit.DefaultLineType = (IEntity)lineComboBox.SelectedItem;
+        m_Edit.DefaultTextType = (IEntity)textComboBox.SelectedItem;
+        m_Edit.DefaultPolygonType = (IEntity)polygonComboBox.SelectedItem;
+
+        return true;
+    }
+
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        m_Edit.CancelEdit();
+        this.DialogResult = DialogResult.Cancel;
+        Close();
     }
 }

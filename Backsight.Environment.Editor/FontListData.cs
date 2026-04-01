@@ -15,30 +15,29 @@
 
 using System.Windows.Forms;
 
-namespace Backsight.Environment.Editor
+namespace Backsight.Environment.Editor;
+
+/// <summary>
+/// Information about fonts that is used in conjunction with
+/// the <see cref="SimpleListControl"/>
+/// </summary>
+class FontListData : ISimpleListData
 {
     /// <summary>
-    /// Information about fonts that is used in conjunction with
-    /// the <see cref="SimpleListControl"/>
+    /// Obtains the environment items that should be displayed.
     /// </summary>
-    class FontListData : ISimpleListData
+    /// <returns>The active set of environment items</returns>
+    public IEnvironmentItem[] GetEnvironmentItems()
     {
-        /// <summary>
-        /// Obtains the environment items that should be displayed.
-        /// </summary>
-        /// <returns>The active set of environment items</returns>
-        public IEnvironmentItem[] GetEnvironmentItems()
-        {
-            return EnvironmentContainer.Current.Fonts;
-        }
+        return EnvironmentContainer.Current.Fonts;
+    }
 
-        /// <summary>
-        /// Creates a dialog that is suitable for entering a new environment item.
-        /// </summary>
-        /// <returns>The dialog to display</returns>
-        public Form GetEntryDialog(IEnvironmentItem item)
-        {
-            return new FontForm(item as IEditFont);
-        }
+    /// <summary>
+    /// Creates a dialog that is suitable for entering a new environment item.
+    /// </summary>
+    /// <returns>The dialog to display</returns>
+    public Form GetEntryDialog(IEnvironmentItem item)
+    {
+        return new FontForm(item as IEditFont);
     }
 }

@@ -13,151 +13,134 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 using System.Reflection;
-using System.IO;
 using System.Data.SqlClient;
-
 using Backsight.SqlServer;
-using Backsight.Data;
 using Backsight.Forms;
 
-namespace Backsight.Environment.Editor
+namespace Backsight.Environment.Editor;
+
+/// <written by="Steve Stanton" on="20-SEP-2007" ticket="1"/>
+/// <summary>
+/// Dialog that gets displayed when the Environment Editor determines that Backsight
+/// system tables do not exist in a database.
+/// </summary>
+public partial class CreateTablesForm : Form, ILog, IBatchRunner
 {
-    /// <written by="Steve Stanton" on="20-SEP-2007" ticket="1"/>
     /// <summary>
-    /// Dialog that gets displayed when the Environment Editor determines that Backsight
-    /// system tables do not exist in a database.
+    /// The factory for creating database tables.
     /// </summary>
-    public partial class CreateTablesForm : Form, ILog, IBatchRunner
+    readonly TableFactory m_Factory;
+
+    /// <summary>
+    /// Have tables been successfully created?
+    /// </summary>
+    bool m_IsCreated;
+
+    /// <summary>
+    /// Creates a new <c>CreateTablesForm</c> using the the supplied factory.
+    /// </summary>
+    /// <param name="tf">The factory that can be used to create database tables.
+    /// This should be an instance where its <see cref="DoTablesExist"/> method
+    /// returns <c>false</c>.
+    /// </param>
+    public CreateTablesForm(TableFactory tf)
     {
-        #region Class data
+        InitializeComponent();
+        m_Factory = tf;
+        m_IsCreated = false;
+    }
 
-        /// <summary>
-        /// The factory for creating database tables.
-        /// </summary>
-        readonly TableFactory m_Factory;
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
 
-        /// <summary>
-        /// Have tables been successfully created?
-        /// </summary>
-        bool m_IsCreated;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Creates a new <c>CreateTablesForm</c> using the the supplied factory.
-        /// </summary>
-        /// <param name="tf">The factory that can be used to create database tables.
-        /// This should be an instance where its <see cref="DoTablesExist"/> method
-        /// returns <c>false</c>.
-        /// </param>
-        public CreateTablesForm(TableFactory tf)
-        {
-            InitializeComponent();
-            m_Factory = tf;
-            m_IsCreated = false;
-        }
-
-        #endregion
-
-        private void cancelButton_Click(object sender, EventArgs e)
+    private void createButton_Click(object sender, EventArgs e)
+    {
+        // The create button becomes the OK button if tables have been created successfully
+        // (see finally block).
+        if (m_IsCreated)
         {
             Close();
+            return;
         }
 
-        private void createButton_Click(object sender, EventArgs e)
+        try
         {
-            // The create button becomes the OK button if tables have been created successfully
-            // (see finally block).
-            if (m_IsCreated)
-            {
-                Close();
-                return;
-            }
+            createButton.Enabled = false;
+            cancelButton.Enabled = false;
 
-            try
-            {
-                createButton.Enabled = false;
-                cancelButton.Enabled = false;
+            // Ensure relevant file is in the working directory
+            string tabFile = GetResourceFile("CreateTables.sql");
 
-                // Ensure relevant file is in the working directory
-                string tabFile = GetResourceFile("CreateTables.sql");
+            // Form command line arguments
+            string cs = m_Factory.ConnectionString;
+            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(cs);
+            string serverName = csb.DataSource;
+            string dbName = csb.InitialCatalog;
 
-                // Form command line arguments
-                string cs = m_Factory.ConnectionString;
-                SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(cs);
-                string serverName = csb.DataSource;
-                string dbName = csb.InitialCatalog;
-
-                // Run the command to create database tables
-                string args = String.Format("-S {0} -d {1} -i \"{2}\"", serverName, dbName, tabFile);
-                batchRunnerControl.RunCommand(this, "sqlcmd", args);
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            // Run the command to create database tables
+            string args = String.Format("-S {0} -d {1} -i \"{2}\"", serverName, dbName, tabFile);
+            batchRunnerControl.RunCommand(this, "sqlcmd", args);
         }
 
-        string GetResourceFile(string resourceName)
+        catch (Exception ex)
         {
-            Assembly a = Assembly.GetExecutingAssembly();
-            Stream fs = a.GetManifestResourceStream("Backsight.Environment.Editor.Resources." + resourceName);
-            byte[] data = new byte[fs.Length];
-            fs.Read(data, 0, data.Length);
-            string tmpDir = Path.GetTempPath();
-            string fileName = Path.Combine(tmpDir, resourceName);
-            File.WriteAllBytes(fileName, data);
-            return fileName;
+            MessageBox.Show(ex.Message);
         }
+    }
 
-        private void CreateTablesForm_FormClosing(object sender, FormClosingEventArgs e)
+    string GetResourceFile(string resourceName)
+    {
+        Assembly a = Assembly.GetExecutingAssembly();
+        Stream fs = a.GetManifestResourceStream("Backsight.Environment.Editor.Resources." + resourceName);
+        byte[] data = new byte[fs.Length];
+        fs.Read(data, 0, data.Length);
+        string tmpDir = Path.GetTempPath();
+        string fileName = Path.Combine(tmpDir, resourceName);
+        File.WriteAllBytes(fileName, data);
+        return fileName;
+    }
+
+    private void CreateTablesForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        DialogResult = (m_IsCreated ? DialogResult.OK : DialogResult.Cancel);
+    }
+
+    /// <summary>
+    /// Logs the specified message
+    /// </summary>
+    /// <param name="message">The message to log</param>
+    public void LogMessage(string message) // ILog
+    {
+        batchRunnerControl.ReportMessage(message);
+    }
+
+    /// <summary>
+    /// Handler that will be called upon completion of batch command (initiated
+    /// via a call to <see cref="BatchRunnerControl.RunCommand"/>)
+    /// </summary>
+    /// <param name="e">Any exception denoting a failure (null if the command
+    /// completed successfully)</param>
+    public void RunCompleted(Exception e)
+    {
+        if (e == null)
         {
-            DialogResult = (m_IsCreated ? DialogResult.OK : DialogResult.Cancel);
-        }
+            m_IsCreated = true;
 
-        /// <summary>
-        /// Logs the specified message
-        /// </summary>
-        /// <param name="message">The message to log</param>
-        public void LogMessage(string message) // ILog
+            // For some reason, the "Done" doesn't getting scrolled into view, so try logging
+            // a further empty line.
+            LogMessage("Done");
+            LogMessage(String.Empty); 
+
+            createButton.Text = "OK";
+            createButton.Enabled = true;
+        }
+        else
         {
-            batchRunnerControl.ReportMessage(message);
+            cancelButton.Enabled = true;
         }
-
-        #region IBatchRunner Members
-
-        /// <summary>
-        /// Handler that will be called upon completion of batch command (initiated
-        /// via a call to <see cref="BatchRunnerControl.RunCommand"/>)
-        /// </summary>
-        /// <param name="e">Any exception denoting a failure (null if the command
-        /// completed successfully)</param>
-        public void RunCompleted(Exception e)
-        {
-            if (e == null)
-            {
-                m_IsCreated = true;
-
-                // For some reason, the "Done" doesn't getting scrolled into view, so try logging
-                // a further empty line.
-                LogMessage("Done");
-                LogMessage(String.Empty); 
-
-                createButton.Text = "OK";
-                createButton.Enabled = true;
-            }
-            else
-            {
-                cancelButton.Enabled = true;
-            }
-        }
-
-        #endregion
     }
 }

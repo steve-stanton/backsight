@@ -13,65 +13,63 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Windows.Forms;
 
-namespace Backsight.Environment.Editor
+namespace Backsight.Environment.Editor;
+
+public partial class AddLayerToThemeForm : Form
 {
-    public partial class AddLayerToThemeForm : Form
+    /// <summary>
+    /// The selected layer (null if user cancelled)
+    /// </summary>
+    private ILayer m_Layer;
+
+    public AddLayerToThemeForm()
     {
-        /// <summary>
-        /// The selected layer (null if user cancelled)
-        /// </summary>
-        private ILayer m_Layer;
+        InitializeComponent();
+        m_Layer = null;
+    }
 
-        public AddLayerToThemeForm()
+    internal ILayer SelectedLayer
+    {
+        get { return m_Layer; }
+    }
+
+    private void AddLayerToThemeForm_Shown(object sender, EventArgs e)
+    {
+        IEnvironmentContainer ec = EnvironmentContainer.Current;
+        ILayer[] layers = ec.Layers;
+        listBox.Items.AddRange(layers);
+    }
+
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        this.DialogResult = DialogResult.Cancel;
+        Close();
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        ILayer sel = (ILayer)listBox.SelectedItem;
+        if (sel==null)
         {
-            InitializeComponent();
-            m_Layer = null;
+            MessageBox.Show("You must first select the layer you want to use");
+            return;
         }
 
-        internal ILayer SelectedLayer
-        {
-            get { return m_Layer; }
-        }
+        m_Layer = sel;
+        this.DialogResult = DialogResult.OK;
+        Close();
+    }
 
-        private void AddLayerToThemeForm_Shown(object sender, EventArgs e)
+    private void listBox_DoubleClick(object sender, EventArgs e)
+    {
+        ILayer sel = (ILayer)listBox.SelectedItem;
+        if (sel!=null)
         {
-            IEnvironmentContainer ec = EnvironmentContainer.Current;
-            ILayer[] layers = ec.Layers;
-            listBox.Items.AddRange(layers);
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            Close();
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            ILayer sel = (ILayer)listBox.SelectedItem;
-            if (sel==null)
-            {
-                MessageBox.Show("You must first select the layer you want to use");
-                return;
-            }
-
             m_Layer = sel;
             this.DialogResult = DialogResult.OK;
             Close();
-        }
-
-        private void listBox_DoubleClick(object sender, EventArgs e)
-        {
-            ILayer sel = (ILayer)listBox.SelectedItem;
-            if (sel!=null)
-            {
-                m_Layer = sel;
-                this.DialogResult = DialogResult.OK;
-                Close();
-            }
         }
     }
 }
