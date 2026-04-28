@@ -16,7 +16,6 @@
 using System.Diagnostics;
 using Backsight.Index.Point;
 using Backsight.Index.Rectangle;
-using Backsight.Forms;
 
 namespace Backsight.Index;
 
@@ -229,6 +228,7 @@ public class SpatialIndex : IEditSpatialIndex
             m_Polygons.Query(w, itemHandler);
     }
 
+    /*
     /// <summary>
     /// Draws a representation of the internal structure of this index, for
     /// use in experimentation.
@@ -242,7 +242,7 @@ public class SpatialIndex : IEditSpatialIndex
         //m_Lines.Render(display, style, 0);
         m_Polygons.Render(display, style);
     }
-
+*/
     /// <summary>
     /// Is the index empty (containing nothing)?
     /// </summary>

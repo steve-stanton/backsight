@@ -13,8 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using Backsight.Forms;
-
 namespace Backsight;
 
 public class SpatialController : ISpatialController
@@ -191,14 +189,14 @@ public class SpatialController : ISpatialController
         return true;
     }
 
-    public virtual IDrawStyle DrawStyle
+    public virtual void InitializeDrawStyle(IDrawStyle style)
     {
-        get { return new DrawStyle(); }
+        // Do nothing
     }
 
-    public virtual IDrawStyle HighlightStyle
+    public virtual void InitializeHighlightStyle(IDrawStyle style)
     {
-        get { return new HighlightStyle(); }
+        // Do nothing
     }
 
     public virtual void RefreshAllDisplays()

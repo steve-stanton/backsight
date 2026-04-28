@@ -96,15 +96,16 @@ public interface ISpatialController
     void KeyUp(ISpatialDisplay sender, KeyEventArgs k);
 
     /// <summary>
-    /// Returns the default drawing style
+    /// Performs any initialization for the default map rendering style. 
     /// </summary>
-    /// <returns></returns>
-    IDrawStyle DrawStyle { get; }
+    /// <param name="style">The style to initialize.</param>
+    void InitializeDrawStyle(IDrawStyle style);
 
     /// <summary>
-    /// Returns the drawing style used for highlighting selected features.
+    /// Performs any initialization for the highlighting style. 
     /// </summary>
-    IDrawStyle HighlightStyle { get; }
+    /// <param name="style">The style to initialize.</param>
+    void InitializeHighlightStyle(IDrawStyle style);
 
     /// <summary>
     /// Perform any processing whenever a display has changed the drawn extent

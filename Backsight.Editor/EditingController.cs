@@ -498,14 +498,20 @@ class EditingController : SpatialController
             where.ShowContextMenu(p, menu);
     }
 
-    public override IDrawStyle DrawStyle
+    internal IDrawStyle DrawStyle
     {
-        get { return InitializeDrawStyle(base.DrawStyle); }
+        get
+        {
+            var result = new DrawStyle();
+            InitializeDrawStyle(result);
+            return result;
+        }
     }
 
     internal IDrawStyle Style(Color c)
     {
-        IDrawStyle result = InitializeDrawStyle(base.DrawStyle);
+        var result = new DrawStyle();
+        InitializeDrawStyle(result);
         result.LineColor = result.FillColor = c;
         return result;
     }
@@ -518,20 +524,24 @@ class EditingController : SpatialController
         return result;
     }
 
-    public override IDrawStyle HighlightStyle
+    internal IDrawStyle HighlightStyle
     {
         get
         {
-            HighlightStyle style = (HighlightStyle)base.HighlightStyle;
+            HighlightStyle style = new HighlightStyle();
             style.ShowLineEndPoints = (SelectionCount==1 && m_Sel==null);
-            return InitializeDrawStyle(style);
+            InitializeDrawStyle(style);
+            return style;
         }
     }
-
-    private IDrawStyle InitializeDrawStyle(IDrawStyle style)
+    public override void InitializeDrawStyle(IDrawStyle style)
     {
         style.PointHeight = new Length(m_Project.Settings.PointHeight);
-        return style;
+    }
+
+    public virtual void InitializeHighlightStyle(IDrawStyle style)
+    {
+        style.PointHeight = new Length(m_Project.Settings.PointHeight);
     }
 
     private ISpatialObject SelectObject(ISpatialDisplay display, IPosition p, SpatialType spatialType)

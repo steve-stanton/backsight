@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Backsight.Forms\Backsight.Forms.csproj" />
       <ProjectReference Include="..\Backsight\Backsight.csproj" />
     </ItemGroup>
 

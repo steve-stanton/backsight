@@ -328,7 +328,7 @@ public class Window : IEditWindow, IEquatable<Window>
     /// </summary>
     /// <param name="dx">X-shift to add</param>
     /// <param name="dy">Y-shift to add</param>
-    internal void Shift(double dx, double dy)
+    public void Shift(double dx, double dy)
     {
         m_Min.X += dx;
         m_Min.Y += dy;
