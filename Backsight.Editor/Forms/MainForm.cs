@@ -545,7 +545,7 @@ public partial class MainForm : Form, IControlContainer
     }
 
     // Called by EditingController
-    new internal void MouseMove(ISpatialDisplay sender, IPosition p, System.Windows.Forms.MouseButtons b)
+    new internal void MouseMove(ISpatialDisplay sender, IPosition p, MouseButton b)
     {
         if (positionLabel.Visible)
             positionLabel.Text = String.Format("{0:0.000}N, {1:0.000}E", p.Y, p.X);

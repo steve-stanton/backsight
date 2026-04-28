@@ -228,9 +228,9 @@ class EditingController : SpatialController
         }
     }
 
-    public override void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b)
+    public override void MouseDown(ISpatialDisplay sender, IPosition p, MouseButton b)
     {
-        if (b == MouseButtons.Right)
+        if (b == MouseButton.Right)
             ShowContextMenu(sender, p);
 
         // If there's no command, or it doesn't handle left clicks...
@@ -380,7 +380,7 @@ class EditingController : SpatialController
         SetSelection(sel);
     }
 
-    public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
+    public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButton b)
     {
         if (m_Sel != null) // means the CTRL key is pressed
         {

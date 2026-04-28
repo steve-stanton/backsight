@@ -36,20 +36,20 @@ class PanTool : SpatialDisplayTool
         return true;
     }
 
-    public override void MouseDown(IPosition p, MouseButtons b)
+    public override void MouseDown(IPosition p, MouseButton b)
     {
         // If doing a pan, remember the current position and switch to the moving
         // car (the pan will be cancelled with a left button up event).
-        if (b == MouseButtons.Left)
+        if (b == MouseButton.Left)
         {
             m_LastPanPosition = p;
             this.MapControl.SetCursor(MapResources.PanCursor);
         }
     }
 
-    public override void MouseUp(IPosition p, MouseButtons b)
+    public override void MouseUp(IPosition p, MouseButton b)
     {
-        if (b == MouseButtons.Left)
+        if (b == MouseButton.Left)
         {
             m_LastPanPosition = null;
             this.MapControl.SetCursor(MapResources.StartPanCursor);
@@ -59,9 +59,9 @@ class PanTool : SpatialDisplayTool
             Finish();
     }
 
-    public override void MouseMove(IPosition p, MouseButtons b)
+    public override void MouseMove(IPosition p, MouseButton b)
     {
-        if (b == MouseButtons.Left && m_LastPanPosition!=null)
+        if (b == MouseButton.Left && m_LastPanPosition!=null)
         {
             double dx = p.X - m_LastPanPosition.X;
             double dy = p.Y - m_LastPanPosition.Y;

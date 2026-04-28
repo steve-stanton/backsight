@@ -70,7 +70,7 @@ class ViewController : SpatialController
     /// <param name="sender"></param>
     /// <param name="p"></param>
     /// <param name="b"></param>
-    public override void MouseMove(ISpatialDisplay sender, IPosition p, System.Windows.Forms.MouseButtons b)
+    public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButton b)
     {
         m_Main.OnMouseMove(sender, p, b);
         base.MouseMove(sender, p, b);

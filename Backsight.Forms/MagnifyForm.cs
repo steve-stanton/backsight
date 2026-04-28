@@ -100,21 +100,21 @@ partial class MagnifyForm : Form
     private void ctxZoomInMenuItem_Click(object sender, EventArgs e)
     {
         IPosition p = m_Tool.RightClickPosition;
-        m_Tool.MouseMove(p, MouseButtons.Left);
+        m_Tool.MouseMove(p, MouseButton.Left);
         m_Tool.ZoomIn(0.1);
     }
 
     private void ctxZoomOutMenuItem_Click(object sender, EventArgs e)
     {
         IPosition p = m_Tool.RightClickPosition;
-        m_Tool.MouseMove(p, MouseButtons.Left);
+        m_Tool.MouseMove(p, MouseButton.Left);
         m_Tool.ZoomOut(0.1);
     }
 
     private void ctxDrawHereMenuItem_Click(object sender, EventArgs e)
     {
         IPosition p = this.magnifyMapControl.Center;
-        m_Tool.MouseDown(p, MouseButtons.Left);
+        m_Tool.MouseDown(p, MouseButton.Left);
     }
 
     private void ctxCancelMenuItem_Click(object sender, EventArgs e)

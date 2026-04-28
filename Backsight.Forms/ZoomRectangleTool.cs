@@ -50,7 +50,7 @@ class ZoomRectangleTool : SpatialDisplayTool
         return true;
     }
 
-    public override void MouseDown(IPosition p, MouseButtons b)
+    public override void MouseDown(IPosition p, MouseButton b)
     {
         RectBegin(p);
     }
@@ -64,9 +64,9 @@ class ZoomRectangleTool : SpatialDisplayTool
         m_FirstCorner = p;
     }
 
-    public override void MouseMove(IPosition p, MouseButtons b)
+    public override void MouseMove(IPosition p, MouseButton b)
     {
-        if (b == MouseButtons.Left)
+        if (b == MouseButton.Left)
         {
             RectUpdate(p);
         }
@@ -98,9 +98,9 @@ class ZoomRectangleTool : SpatialDisplayTool
         m_Rect = display.DrawReversibleFrame(x);
     }
 
-    public override void MouseUp(IPosition p, MouseButtons b)
+    public override void MouseUp(IPosition p, MouseButton b)
     {
-        if (b == MouseButtons.Left)
+        if (b == MouseButton.Left)
         {
             RectFinish();
         }

@@ -45,19 +45,19 @@ public interface ISpatialDisplayTool
     /// Handles a mouse down event
     /// </summary>
     /// <param name="p">The position where the mouse click occurred</param>
-    void MouseDown(IPosition p, MouseButtons b);
+    void MouseDown(IPosition p, MouseButton b);
 
     /// <summary>
     /// Handles a mouse up event
     /// </summary>
     /// <param name="p">The position where the mouse up occurred</param>
-    void MouseUp(IPosition p, MouseButtons b);
+    void MouseUp(IPosition p, MouseButton b);
 
     /// <summary>
     /// Handles a mouse move event
     /// </summary>
     /// <param name="p">The position the mouse has moved to</param>
-    void MouseMove(IPosition p, MouseButtons b);
+    void MouseMove(IPosition p, MouseButton b);
 
     /// <summary>
     /// Handles a mouse wheel event

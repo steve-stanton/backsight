@@ -106,7 +106,7 @@ class MagnifyTool : SpatialDisplayTool
     }
     */
 
-    public override void MouseMove(IPosition p, MouseButtons b)
+    public override void MouseMove(IPosition p, MouseButton b)
     {
         if (!m_IsStarted)
             return;
@@ -129,9 +129,9 @@ class MagnifyTool : SpatialDisplayTool
         screenPos.Y -= (m_Window.Height + 35); // above
     }
 
-    public override void MouseDown(IPosition p, MouseButtons b)
+    public override void MouseDown(IPosition p, MouseButton b)
     {
-        if (b == MouseButtons.Right)
+        if (b == MouseButton.Right)
         {
             // Remember the position where the right click occurred so that
             // it can be used when reacting to menu events (as things stand,

@@ -38,15 +38,15 @@ abstract class SpatialDisplayTool : ISpatialDisplayTool
         return true;
     }
 
-    public virtual void MouseDown(IPosition p, MouseButtons b)
+    public virtual void MouseDown(IPosition p, MouseButton b)
     {
     }
 
-    public virtual void MouseUp(IPosition p, MouseButtons b)
+    public virtual void MouseUp(IPosition p, MouseButton b)
     {
     }
 
-    public virtual void MouseMove(IPosition p, MouseButtons b)
+    public virtual void MouseMove(IPosition p, MouseButton b)
     {
     }
 

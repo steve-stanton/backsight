@@ -31,9 +31,9 @@ public class DesignTimeController : ISpatialController
     public void Register(ISpatialDisplay display) { }
     public void Unregister(ISpatialDisplay display) { }
     public void MouseDoubleClick(ISpatialDisplay sender, IPosition p) { }
-    public void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
-    public void MouseUp(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
-    public void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b) { }
+    public void MouseDown(ISpatialDisplay sender, IPosition p, MouseButton b) { }
+    public void MouseUp(ISpatialDisplay sender, IPosition p, MouseButton b) { }
+    public void MouseMove(ISpatialDisplay sender, IPosition p, MouseButton b) { }
     public ISpatialSelection SpatialSelection { get { return null; } }
 
     public void InitializeDrawStyle(IDrawStyle style) { }

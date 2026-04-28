@@ -170,7 +170,7 @@ public partial class MainForm : Form
     #endregion
 
     // Called by ViewController.MouseMove
-    internal void OnMouseMove(ISpatialDisplay sender, IPosition p, System.Windows.Forms.MouseButtons b)
+    internal void OnMouseMove(ISpatialDisplay sender, IPosition p, MouseButton b)
     {
         positionLabel.Text = String.Format("{0:0.000}E, {1:0.000}N", p.X, p.Y);
 

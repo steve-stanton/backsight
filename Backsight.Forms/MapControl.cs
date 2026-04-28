@@ -651,9 +651,9 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
             Position p = DisplayToGround(e.Location);
 
             if (m_Tool==null)
-                SpatialController.Current.MouseDown(this, p, e.Button);
+                SpatialController.Current.MouseDown(this, p, e.ToMouseButton());
             else
-                m_Tool.MouseDown(p, e.Button);
+                m_Tool.MouseDown(p, e.ToMouseButton());
         }
     }
 
@@ -696,9 +696,9 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
             Position p = DisplayToGround(e.Location);
 
             if (m_Tool==null)
-                SpatialController.Current.MouseMove(this, p, e.Button);
+                SpatialController.Current.MouseMove(this, p, e.ToMouseButton());
             else
-                m_Tool.MouseMove(p, e.Button);
+                m_Tool.MouseMove(p, e.ToMouseButton());
         }
     }
 
@@ -707,7 +707,7 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
         if (m_Tool!=null && this.IsInitialized)
         {
             Position p = DisplayToGround(e.Location);
-            m_Tool.MouseUp(p, e.Button);
+            m_Tool.MouseUp(p, e.ToMouseButton());
         }
     }
 

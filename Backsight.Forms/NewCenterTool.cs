@@ -35,7 +35,7 @@ class NewCenterTool : SpatialDisplayTool
         return true;
     }
 
-    public override void MouseDown(IPosition p, MouseButtons b)
+    public override void MouseDown(IPosition p, MouseButton b)
     {
         this.MapControl.SetCenter(p);
         Finish();

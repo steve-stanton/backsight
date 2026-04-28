@@ -112,9 +112,9 @@ public class SpatialController : ISpatialController
     {
     }
 
-    public virtual void MouseDown(ISpatialDisplay sender, IPosition p, MouseButtons b)
+    public virtual void MouseDown(ISpatialDisplay sender, IPosition p, MouseButton b)
     {
-        if (b==MouseButtons.Right)
+        if (b==MouseButton.Right)
             ShowContextMenu(sender, p);
         else
             Select(sender, p, SpatialType.All);
@@ -133,11 +133,11 @@ public class SpatialController : ISpatialController
     {
     }
 
-    public virtual void MouseUp(ISpatialDisplay sender, IPosition p, MouseButtons b)
+    public virtual void MouseUp(ISpatialDisplay sender, IPosition p, MouseButton b)
     {
     }
 
-    public virtual void MouseMove(ISpatialDisplay sender, IPosition p, MouseButtons b)
+    public virtual void MouseMove(ISpatialDisplay sender, IPosition p, MouseButton b)
     {
     }
 
