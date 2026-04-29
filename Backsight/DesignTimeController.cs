@@ -40,6 +40,6 @@ public class DesignTimeController : ISpatialController
     public void InitializeHighlightStyle(IDrawStyle style) { }
     public ISpatialDisplay ActiveDisplay { get { return null; } }
     public void OnSetExtent(ISpatialDisplay sender) { }
-    public void KeyDown(ISpatialDisplay sender, KeyEventArgs k) {}
-    public void KeyUp(ISpatialDisplay sender, KeyEventArgs k) { }
+    public void KeyDown(ISpatialDisplay sender, KeySelection k) {}
+    public void KeyUp(ISpatialDisplay sender, KeySelection k) { }
 }

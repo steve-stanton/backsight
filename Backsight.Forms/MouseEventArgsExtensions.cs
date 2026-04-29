@@ -4,16 +4,13 @@ public static class MouseEventArgsExtensions
 {
     extension(MouseEventArgs e)
     {
-        public MouseButton ToMouseButton()
+        public MouseButton MouseButton => e.Button switch
         {
-            return e.Button switch
-            {
-                MouseButtons.Left => MouseButton.Left,
-                MouseButtons.Middle => MouseButton.Middle,
-                MouseButtons.Right => MouseButton.Right,
-                _ => MouseButton.None
-            };
-        }
+            MouseButtons.Left => MouseButton.Left,
+            MouseButtons.Middle => MouseButton.Middle,
+            MouseButtons.Right => MouseButton.Right,
+            _ => MouseButton.None
+        };
     }
     
 }

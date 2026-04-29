@@ -85,15 +85,15 @@ public interface ISpatialController
     /// Handles a key down event
     /// </summary>
     /// <param name="sender">The display where the key event originated</param>
-    /// <param name="k">Information about the event</param>
-    void KeyDown(ISpatialDisplay sender, KeyEventArgs k);
+    /// <param name="k">Information about the selected key press.</param>
+    void KeyDown(ISpatialDisplay sender, KeySelection k);
 
     /// <summary>
     /// Handles a key up event
     /// </summary>
     /// <param name="sender">The display where the key event originated</param>
-    /// <param name="k">Information about the event</param>
-    void KeyUp(ISpatialDisplay sender, KeyEventArgs k);
+    /// <param name="k">Information about the selected key press.</param>
+    void KeyUp(ISpatialDisplay sender, KeySelection k);
 
     /// <summary>
     /// Performs any initialization for the default map rendering style. 

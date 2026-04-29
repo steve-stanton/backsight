@@ -876,7 +876,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
     /// Handles the KeyDown event of the MainForm control.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
+    /// <param name="e">Details for the key press..</param>
     /// <remarks>The form only reacts to <c>KeyDown</c> events if the <see cref="Form.KeyPreview"/> property
     /// is set to true.</remarks>
     private void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -887,7 +887,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
         // Keys.Enter (as I originally did in the constructor) leads to a runtime error that
         // talks about a bad enum value.
 
-        if (e.KeyValue == (int)Keys.Enter)
+        if (e.KeyCode == Keys.Enter)
         {
             if (e.Alt && IsEditRecallEnabled())
             {
@@ -904,7 +904,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
         // Ensure KeyDown handler gets called if user hasn't clicked on the map (not
         // really sure why this is needed here)
         if (e.Control && e.KeyValue == (int)Keys.F)
-            m_Controller.KeyDown(m_Controller.ActiveDisplay, e);
+            m_Controller.KeyDown(m_Controller.ActiveDisplay, e.KeySelection);
     }
 
     /// <summary>

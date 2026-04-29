@@ -623,12 +623,12 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
 
     void mapPanel_KeyDown(object sender, KeyEventArgs e)
     {
-        SpatialController.Current.KeyDown(this, e);
+        SpatialController.Current.KeyDown(this, e.KeySelection);
     }
 
     void mapPanel_KeyUp(object sender, KeyEventArgs e)
     {
-        SpatialController.Current.KeyUp(this, e);
+        SpatialController.Current.KeyUp(this, e.KeySelection);
     }
 
     private void mapPanel_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -651,9 +651,9 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
             Position p = DisplayToGround(e.Location);
 
             if (m_Tool==null)
-                SpatialController.Current.MouseDown(this, p, e.ToMouseButton());
+                SpatialController.Current.MouseDown(this, p, e.MouseButton);
             else
-                m_Tool.MouseDown(p, e.ToMouseButton());
+                m_Tool.MouseDown(p, e.MouseButton);
         }
     }
 
@@ -696,9 +696,9 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
             Position p = DisplayToGround(e.Location);
 
             if (m_Tool==null)
-                SpatialController.Current.MouseMove(this, p, e.ToMouseButton());
+                SpatialController.Current.MouseMove(this, p, e.MouseButton);
             else
-                m_Tool.MouseMove(p, e.ToMouseButton());
+                m_Tool.MouseMove(p, e.MouseButton);
         }
     }
 
@@ -707,7 +707,7 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
         if (m_Tool!=null && this.IsInitialized)
         {
             Position p = DisplayToGround(e.Location);
-            m_Tool.MouseUp(p, e.ToMouseButton());
+            m_Tool.MouseUp(p, e.MouseButton);
         }
     }
 

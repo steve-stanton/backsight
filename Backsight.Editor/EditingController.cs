@@ -406,13 +406,13 @@ class EditingController : SpatialController
     /// currently running).
     /// </summary>
     /// <param name="sender">The display where the key event originated</param>
-    /// <param name="k">Information about the event</param>
-    public override void KeyDown(ISpatialDisplay sender, KeyEventArgs k)
+    /// <param name="k">Information about the selected key.</param>
+    public override void KeyDown(ISpatialDisplay sender, KeySelection k)
     {
-        if (k.KeyCode == Keys.Delete && !IsCommandRunning && SpatialSelection.Count>0)
+        if (k.KeyValue == (int)Keys.Delete && !IsCommandRunning && SpatialSelection.Count>0)
             StartCommand(new DeletionUI(null)); // and finishes!
 
-        if (k.KeyCode == Keys.Escape && m_Command!=null && m_Command.ActiveDisplay==sender)
+        if (k.KeyValue == (int)Keys.Escape && m_Command!=null && m_Command.ActiveDisplay==sender)
             m_Command.Escape();
 
         if (!IsCommandRunning && k.Control)
@@ -443,10 +443,10 @@ class EditingController : SpatialController
     /// </summary>
     /// <param name="sender">The display where the key event originated</param>
     /// <param name="k">Information about the event</param>
-    public override void KeyUp(ISpatialDisplay sender, KeyEventArgs k)
+    public override void KeyUp(ISpatialDisplay sender, KeySelection k)
     {
         // Whereas Control.ModifierKeys sees Keys.Control, the KeyUp event passes Keys.ControlKey
-        if (k.KeyCode == Keys.ControlKey && m_Sel!=null)
+        if (k.KeyValue == (int)Keys.ControlKey && m_Sel!=null)
         {
             // Grab the selected items (if any) and merge any currently selected features.
             Selection s = m_Sel.Selection;

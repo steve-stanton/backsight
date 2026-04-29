@@ -141,11 +141,11 @@ public class SpatialController : ISpatialController
     {
     }
 
-    public virtual void KeyDown(ISpatialDisplay sender, KeyEventArgs k)
+    public virtual void KeyDown(ISpatialDisplay sender, KeySelection k)
     {
     }
 
-    public virtual void KeyUp(ISpatialDisplay sender, KeyEventArgs k)
+    public virtual void KeyUp(ISpatialDisplay sender, KeySelection k)
     {
     }
 
