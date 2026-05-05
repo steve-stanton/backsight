@@ -53,7 +53,7 @@ public partial class PreferencesForm : Form
     {
         InitializeComponent();
 
-        CadastralMapModel cmm = (CadastralMapModel)SpatialController.Current.MapModel;
+        CadastralMapModel cmm = EditingController.Current.CadastralMapModel;
 
         ShowPointsPage(cmm);
         ShowLabelsPage(cmm);
@@ -151,7 +151,7 @@ if ( dial.DoModal()==IDOK ) {
 
     private void okButton_Click(object sender, EventArgs e)
     {
-        CadastralMapModel cmm = (CadastralMapModel)SpatialController.Current.MapModel;
+        CadastralMapModel cmm = EditingController.Current.CadastralMapModel;
 
         if (SavePointsPage(cmm) &&
             SaveLabelsPage(cmm) &&

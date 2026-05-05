@@ -69,7 +69,7 @@ partial class UpdatePathForm : Form
     internal UpdatePathForm(UpdateUI update)
     {
         InitializeComponent();
-        Owner = EditingController.Current.MainForm;
+        Owner = EditingController.Current.MainForm ?? throw new InvalidOperationException("Cannot access main form");
 
         if (update == null)
             throw new ArgumentNullException();

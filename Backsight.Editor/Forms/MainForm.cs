@@ -41,7 +41,8 @@ public partial class MainForm : Form, IControlContainer
         InitializeComponent();
 
         // Define the controller for the application
-        m_Controller = new EditingController(this);
+        m_Controller = EditingController.Current;
+        m_Controller.SetMainForm(this);
 
         string regkey = @"Software\Backsight\Editor\MRU";
         m_MruMenu = new MruStripMenuInline(mnuFile, mnuFileRecent, new MruStripMenu.ClickedHandler(OnMruFile), regkey, 10);

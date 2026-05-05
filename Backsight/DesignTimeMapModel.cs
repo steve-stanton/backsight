@@ -24,19 +24,19 @@ public class DesignTimeMapModel : ISpatialModel
     /// A user-perceived name for the model.
     /// </summary>
     /// <value>String.Empty</value>
-    public string Name { get { return String.Empty; } }
+    public string Name => "";
 
     /// <summary>
     /// Is this model currently empty?
     /// </summary>
     /// <value>True</value>
-    public bool IsEmpty { get { return true; } }
+    public bool IsEmpty => true;
 
     /// <summary>
     /// The ground extent of the data in the model (null if the model is empty)
     /// </summary>
     /// <value>null</value>
-    public IWindow Extent { get { return null; } }
+    public IWindow Extent => null;
 
     /// <summary>
     /// Locates the object closest to a specific position.

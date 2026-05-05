@@ -27,25 +27,22 @@ using Backsight.Data;
 namespace Backsight.Editor;
 
 /// <summary>
-/// The controller for the Cadastral Editor application. The controller is a singleton.
+/// The controller for the Cadastral Editor application.
 /// </summary>
-class EditingController : SpatialController
+class EditingController : SpatialController, ISpatialController
 {
     #region Statics
 
     /// <summary>
-    /// The one and only controller (to be defined as soon as the Cadastral Editor
-    /// starts up).
+    /// The one (and only) controller.
     /// </summary>
-    new public static EditingController Current
-    {
-        get { return (SpatialController.Current as EditingController); }
-    }
+    private static EditingController s_Controller = new ();
+    internal static EditingController Current => s_Controller;
 
-    static readonly DistanceUnit s_Meters = new DistanceUnit(DistanceUnitType.Meters);
-    static readonly DistanceUnit s_Feet = new DistanceUnit(DistanceUnitType.Feet);
-    static readonly DistanceUnit s_Chains = new DistanceUnit(DistanceUnitType.Chains);
-    static readonly DistanceUnit s_AsEntered = new DistanceUnit(DistanceUnitType.AsEntered);
+    static readonly DistanceUnit s_Meters = new (DistanceUnitType.Meters);
+    static readonly DistanceUnit s_Feet = new (DistanceUnitType.Feet);
+    static readonly DistanceUnit s_Chains = new (DistanceUnitType.Chains);
+    static readonly DistanceUnit s_AsEntered = new (DistanceUnitType.AsEntered);
 
     #endregion
 
@@ -63,10 +60,9 @@ class EditingController : SpatialController
     ILayer m_ActiveLayer;
 
     /// <summary>
-    /// The main screen (largely comprised of a control for displaying the current
-    /// map model).
+    /// The main screen (largely comprised of a control for displaying the current map model).
     /// </summary>
-    private readonly MainForm m_Main;
+    private MainForm? m_Main;
 
     /// <summary>
     /// Is auto-highlight enabled? (0=false, 1=true, -1=true(but currently disabled)
@@ -76,19 +72,19 @@ class EditingController : SpatialController
     /// <summary>
     /// User interface for the command that is currently active (if any).
     /// </summary>
-    private CommandUI m_Command;
+    private CommandUI? m_Command;
 
     /// <summary>
     /// Modeless dialog used to perform inverse calculations (null if dialog
     /// is not currently displayed).
     /// </summary>
-    InverseForm m_Inverse;
+    InverseForm? m_Inverse;
 
     /// <summary>
     /// Modeless dialog used during file checks (null if a check is not
     /// currently underway).
     /// </summary>
-    FileCheckUI m_Check;
+    FileCheckUI? m_Check;
 
     /// <summary>
     /// Helper for performing complex selections. This gets created when the user
@@ -96,7 +92,7 @@ class EditingController : SpatialController
     /// when the CTRL key is released (at that time, any selected features will be
     /// merged with the current selection).
     /// </summary>
-    SelectionTool m_Sel;
+    SelectionTool? m_Sel;
 
     /// <summary>
     /// Has the selection been changed?
@@ -115,20 +111,11 @@ class EditingController : SpatialController
     /// <summary>
     /// Initializes a new instance of the <see cref="EditingController"/> class.
     /// </summary>
-    /// <param name="main">The main dialog for the Cadastral Editor application</param>
-    internal EditingController(MainForm main)
-        : base()
+    private EditingController()
     {
-        if (main==null)
-            throw new ArgumentNullException();
-
         m_Project = null;
         m_ActiveLayer = null;
-        m_Main = main;
         m_IsAutoSelect = 0;
-        m_Inverse = null;
-        m_Check = null;
-        m_Sel = null;
         m_HasSelectionChanged = false;
         m_DataServer = null;
 
@@ -151,11 +138,8 @@ class EditingController : SpatialController
     public override void Close()
     {
         // Shut down any inverse calculator
-        if (m_Inverse!=null)
-        {
-            m_Inverse.Dispose();
-            m_Inverse = null;
-        }
+        m_Inverse?.Dispose();
+        m_Inverse = null;
 
         // Write out the project settings
         if (m_Project != null)
@@ -179,7 +163,7 @@ class EditingController : SpatialController
     /// </summary>
     /// <param name="sender">The display where the mouse event originated</param>
     /// <param name="p">The position where the mouse click occurred</param>
-    public override void MouseDoubleClick(ISpatialDisplay sender, IPosition p)
+    public void MouseDoubleClick(ISpatialDisplay sender, IPosition p)
     {
         // Attempt to select something
         OnSelect(sender, p, false);
@@ -198,11 +182,14 @@ class EditingController : SpatialController
     /// <param name="so">The item selected for update</param>
     internal void RunUpdate(IUserAction action, ISpatialObject so)
     {
+        if (m_Main is null)
+            return;
+        
         if (so==null)
             return;
 
         // There can't be any command currently running.
-        if (m_Command != null)
+        if (m_Command is not null)
             return;
 
         // If we're currently auto-highlighting, get rid of it.
@@ -217,26 +204,29 @@ class EditingController : SpatialController
         else
         {
             ClearSelection();
-            UpdateUI upui = new UpdateUI(action);
+            var upui = new UpdateUI(action);
             m_Command = upui;
 
             // We will have a DividerObject if the user selected a line
             // that has been intersected against other lines. In that case,
             // run the update using the underlying line.
-            if (so is DividerObject)
-                upui.Run((so as DividerObject).Divider.Line);
+            if (so is DividerObject d)
+                upui.Run(d.Divider.Line);
             else
                 upui.Run((Feature)so);
         }
     }
 
-    public override void MouseDown(ISpatialDisplay sender, IPosition p, MouseButton b)
+    public void MouseDown(ISpatialGraphics sender, IPosition p, MouseButton b)
     {
+        if (m_Main is null)
+            return;
+
         if (b == MouseButton.Right)
             ShowContextMenu(sender, p);
 
         // If there's no command, or it doesn't handle left clicks...
-        else if (m_Command == null || !m_Command.LButtonDown(p))
+        else if (m_Command is null || !m_Command.LButtonDown(p))
         {
             bool isMultiSelect = (Control.ModifierKeys & Keys.Shift) != 0;
 
@@ -255,7 +245,7 @@ class EditingController : SpatialController
                 m_Main.ClosePropertiesWindow();
             }
 
-            if (m_Sel==null)
+            if (m_Sel is null)
                 OnSelect(sender, p, isMultiSelect);
             else
                 m_Sel.CtrlMouseDown(p);
@@ -273,6 +263,9 @@ class EditingController : SpatialController
     /// </remarks>
     SelectionTool GetAreaSelectionTool()
     {
+        if (m_Main is null)
+            throw new InvalidOperationException("Cannot access main window");
+
         // If we're currently auto-highlighting, get rid of it altogether (confuses things).
         if (m_IsAutoSelect != 0)
             AutoSelect = false;
@@ -280,7 +273,7 @@ class EditingController : SpatialController
         // Ensure any property window has been removed
         m_Main.ClosePropertiesWindow();
 
-        if (m_Sel==null)
+        if (m_Sel is null)
         {
             m_Sel = new SelectionTool(this);
             ActiveMap.MapPanel.Cursor = SelectionTool.Cursor;
@@ -294,7 +287,7 @@ class EditingController : SpatialController
     /// </summary>
     void FreeAreaSelectionTool()
     {
-        if (m_Sel!=null)
+        if (m_Sel is not null)
         {
             m_Sel = null;
             ActiveMap.MapPanel.Cursor = Cursors.Default;
@@ -360,8 +353,7 @@ class EditingController : SpatialController
 
         // If we are doing an inverse dialog, make sure its point
         // coloring remains regardless of what is currently selected.
-        if (m_Inverse!=null)
-            m_Inverse.Draw();
+        m_Inverse?.Draw();
     }
 
     public override void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
@@ -382,9 +374,12 @@ class EditingController : SpatialController
         SetSelection(sel);
     }
 
-    public override void MouseMove(ISpatialDisplay sender, IPosition p, MouseButton b)
+    public void MouseMove(ISpatialDisplay sender, IPosition p, MouseButton b)
     {
-        if (m_Sel != null) // means the CTRL key is pressed
+        if (m_Main is null)
+            return;
+        
+        if (m_Sel is not null) // means the CTRL key is pressed
         {
             m_Sel.CtrlMouseMoveTo(p);
         }
@@ -398,8 +393,7 @@ class EditingController : SpatialController
             if (m_IsAutoSelect > 0)
                 Select(sender, p, SpatialType.All);
 
-            if (m_Command != null)
-                m_Command.MouseMove(p);
+            m_Command?.MouseMove(p);
         }
     }
 
@@ -409,12 +403,15 @@ class EditingController : SpatialController
     /// </summary>
     /// <param name="sender">The display where the key event originated</param>
     /// <param name="k">Information about the selected key.</param>
-    public override void KeyDown(ISpatialDisplay sender, KeySelection k)
+    public void KeyDown(ISpatialDisplay sender, KeySelection k)
     {
+        if (m_Main is null)
+            return;
+        
         if (k.KeyValue == (int)Keys.Delete && !IsCommandRunning && SpatialSelection.Count>0)
             StartCommand(new DeletionUI(null)); // and finishes!
 
-        if (k.KeyValue == (int)Keys.Escape && m_Command!=null && m_Command.ActiveMap==sender)
+        if (k.KeyValue == (int)Keys.Escape && m_Command?.ActiveMap == sender)
             m_Command.Escape();
 
         if (!IsCommandRunning && k.Control)
@@ -433,7 +430,7 @@ class EditingController : SpatialController
                     dial.ShowDialog();
                 }
             }
-            else if (m_Sel == null)
+            else if (m_Sel is null)
             {
                 GetAreaSelectionTool();
             }
@@ -445,10 +442,10 @@ class EditingController : SpatialController
     /// </summary>
     /// <param name="sender">The display where the key event originated</param>
     /// <param name="k">Information about the event</param>
-    public override void KeyUp(ISpatialDisplay sender, KeySelection k)
+    public void KeyUp(ISpatialDisplay sender, KeySelection k)
     {
         // Whereas Control.ModifierKeys sees Keys.Control, the KeyUp event passes Keys.ControlKey
-        if (k.KeyValue == (int)Keys.ControlKey && m_Sel!=null)
+        if (k.KeyValue == (int)Keys.ControlKey && m_Sel is not null)
         {
             // Grab the selected items (if any) and merge any currently selected features.
             Selection s = m_Sel.Selection;
@@ -487,11 +484,18 @@ class EditingController : SpatialController
         set { m_IsAutoSelect = (value==false ? 0 : 1); }
     }
 
-    private void ShowContextMenu(ISpatialGraphics where, IPosition p)
+    /// <summary>
+    /// Displays a context menu.
+    /// </summary>
+    /// <param name="where">The display where the context menu should appear</param>
+    /// <param name="p">The preferred position for the menu (may not be honoured if
+    /// the context menu would be obscured)</param>
+    public void ShowContextMenu(ISpatialGraphics where, IPosition p)
     {
-        ContextMenuStrip menu = null;
-        if (m_Command != null)
-            menu = m_Command.CreateContextMenu();
+        if (m_Main is null)
+            return;
+        
+        ContextMenuStrip menu = m_Command?.CreateContextMenu();
 
         if (menu==null)
             menu = m_Main.CreateContextMenu(this.SpatialSelection);
@@ -502,7 +506,7 @@ class EditingController : SpatialController
 
     internal IDrawStyle DrawStyle => new DrawStyle(PointHeight);
     
-    internal ILength PointHeight => new Length(m_Project.Settings.PointHeight);
+    public ILength PointHeight => new Length(m_Project.Settings.PointHeight);
 
     internal IDrawStyle Style(Color c) => new DrawStyle(c, PointHeight);
 
@@ -595,7 +599,7 @@ class EditingController : SpatialController
         // do want to select pols...
         // For updates, allow polygon selection
 
-        if (IsCommandRunning && !(m_Command is UpdateUI))
+        if (IsCommandRunning && m_Command is not UpdateUI)
             return null;
 
         if ((spatialType & SpatialType.Polygon)!=0)
@@ -627,7 +631,7 @@ class EditingController : SpatialController
         if (cmd==null)
             throw new ArgumentNullException();
 
-        if (m_Command!=null)
+        if (m_Command is not null)
             throw new InvalidOperationException();
 
         // Disable auto-highlight for the duration of the command
@@ -644,7 +648,7 @@ class EditingController : SpatialController
 
     internal void AbortCommand(CommandUI cmd)
     {
-        if (!Object.ReferenceEquals(cmd, m_Command))
+        if (!ReferenceEquals(cmd, m_Command))
             throw new InvalidOperationException();
 
         // Make sure the normal cursor is on screen.
@@ -664,7 +668,7 @@ class EditingController : SpatialController
 
     internal void FinishCommand(CommandUI cmd)
     {
-        if (!Object.ReferenceEquals(cmd, m_Command))
+        if (!ReferenceEquals(cmd, m_Command))
             throw new InvalidOperationException();
 
         /*
@@ -693,7 +697,7 @@ class EditingController : SpatialController
         // Notify any check dialog (re-check all potential problems).
         // And repaint immediately to avoid flicker (icons wouldn't otherwise be repainted
         // until the idle handler gets called)
-        if (m_Check!=null)
+        if (m_Check is not null)
         {
             m_Check.OnFinishOp();
             ActiveDisplay.PaintNow();
@@ -768,7 +772,7 @@ class EditingController : SpatialController
     /// <summary>
     /// Is a file check underway?
     /// </summary>
-    internal bool IsChecking => (m_Check!=null);
+    internal bool IsChecking => m_Check is not null;
 
     /// <summary>
     /// Starts a new file check. Prior to call, you should ensure that a check is not already
@@ -779,7 +783,7 @@ class EditingController : SpatialController
     /// returned false.</returns>
     internal bool StartCheck()
     {
-        if (m_Check != null)
+        if (m_Check is not null)
             throw new InvalidOperationException("File check is already running");
 
         m_Check = new FileCheckUI();
@@ -832,14 +836,16 @@ class EditingController : SpatialController
 
     public override bool SetSelection(ISpatialSelection newSel)
     {
+        if (m_Main is null)
+            return false;
+        
         ISpatialSelection ss = (newSel==null ? new Selection() : newSel);
         bool isChanged = base.SetSelection(ss);
         if (!isChanged)
             return false;
 
         ISpatialObject item = ss.Item;
-        if (m_Main!=null)
-            m_Main.SetSelection(item);
+        m_Main.SetSelection(item);
 
         // If a single item has been selected
         if (item!=null)
@@ -853,16 +859,13 @@ class EditingController : SpatialController
                 {
                     PointFeature selPoint = (item as PointFeature);
 
-                    if (m_Inverse!=null)
-                        m_Inverse.OnSelectPoint(selPoint);
-
-                    if (m_Command!=null)
-                        m_Command.OnSelectPoint(selPoint);
+                    m_Inverse?.OnSelectPoint(selPoint);
+                    m_Command?.OnSelectPoint(selPoint);
                 }
             }
             else if (item is LineFeature)
             {
-                if (m_Command!=null)
+                if (m_Command is not null)
                 {
                     LineFeature selLine = (item as LineFeature);
                     m_Command.OnSelectLine(selLine);
@@ -874,13 +877,13 @@ class EditingController : SpatialController
             // selected means the 2nd pointing won't get passed down (we tested
             // for a change above).
 
-            if (m_Command != null)
+            if (m_Command is not null)
             {
                 // 20101005 -- Allow highlighting of polygons, since their selection
                 // should not interfere with command dialogs (and in things like the
                 // update UI, it can be useful to confirm that topology is ok).
 
-                if (!(item is Polygon))
+                if (item is not Polygon)
                     ClearSelection();
             }
         }
@@ -927,8 +930,8 @@ class EditingController : SpatialController
     /// <returns>True if the scale of the active display is such that the items would be drawn</returns>
     bool IsVisible(double thresholdScale)
     {
-        var display = (m_Command==null ? ActiveMap : m_Command.ActiveMap);
-        if (display==null)
+        var display = m_Command?.ActiveMap ?? ActiveMap;
+        if (display is null)
             return false;
 
         double displayScale = display.MapScale;
@@ -1041,25 +1044,25 @@ class EditingController : SpatialController
         bool repaint = false;
         ISpatialGraphics display = ActiveMap;
 
-        if (m_Inverse!=null)
+        if (m_Inverse is not null)
         {
             m_Inverse.Draw();
             repaint = true;
         }
 
-        if (m_Check!=null)
+        if (m_Check is not null)
         {
             m_Check.Render(display, DrawStyle);
             repaint = true;
         }
 
-        if (m_Sel!=null)
+        if (m_Sel is not null)
         {
             m_Sel.Render(ActiveMap);
             repaint = true;
         }
 
-        if (m_Sel!=null || m_HasSelectionChanged)
+        if (m_Sel is not null || m_HasSelectionChanged)
         {
             var mapDisplay = new MapDisplay(ActiveMap, CreateHighlightStyle());
             SpatialSelection.Draw(mapDisplay);
@@ -1077,7 +1080,7 @@ class EditingController : SpatialController
             m_HasSelectionChanged = false;
         }
 
-        if (m_Command!=null && m_Command.PerformsPainting)
+        if (m_Command?.PerformsPainting == true)
         {
             // Restoring the last draw here can cause flickering of the command-specific
             // stuff, so make it the responsibility of the command to call erase stuff.
@@ -1210,7 +1213,7 @@ class EditingController : SpatialController
     {
         // If a check is running, confirm that we can really rollback (you can only undo
         // edits that you made since the check was started)
-        if (m_Check != null)
+        if (m_Check is not null)
         {
             CadastralMapModel map = CadastralMapModel.Current;
             uint lastop = map.LastOpSequence;
@@ -1318,8 +1321,13 @@ class EditingController : SpatialController
     /// <summary>
     /// The main screen (largely comprised of a control for displaying the current map model).
     /// </summary>
-    internal Form MainForm => m_Main;
+    internal MainForm? MainForm => m_Main;
 
+    internal void SetMainForm(MainForm mainForm)
+    {
+        m_Main = mainForm;
+    }
+    
     // TODO: Should tighten this up (should ActiveDisplay even be part of the SpatialController xlass)
     internal MapControl ActiveMap => (ActiveDisplay as MapControl)!;
 }

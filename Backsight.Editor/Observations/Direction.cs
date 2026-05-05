@@ -518,7 +518,7 @@ return gotone;
 
 		// Define the length of the direction line as the length
 		// of a diagonal that crosses the map's extent.
-		IWindow mapWin = SpatialController.Current.MapModel.Extent;
+		IWindow mapWin = EditingController.Current.MapModel.Extent;
 		Debug.Assert(mapWin!=null);
 
 		// If the window is currently undefined (e.g. during deserialization),

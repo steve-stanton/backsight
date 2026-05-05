@@ -58,22 +58,6 @@ public interface ISpatialController
     void MouseDoubleClick(ISpatialDisplay sender, IPosition p);
 
     /// <summary>
-    /// Handles a mouse down event
-    /// </summary>
-    /// <param name="sender">The display where the mouse event originated</param>
-    /// <param name="p">The position where the mouse click occurred</param>
-    /// <param name="b">The specific mouse button that was pressed</param>
-    void MouseDown(ISpatialDisplay sender, IPosition p, MouseButton b);
-
-    /// <summary>
-    /// Handles a mouse up event
-    /// </summary>
-    /// <param name="sender">The display where the mouse event originated</param>
-    /// <param name="p">The position where the mouse up occurred</param>
-    /// <param name="b">The specific mouse button that was pressed</param>
-    void MouseUp(ISpatialDisplay sender, IPosition p, MouseButton b);
-
-    /// <summary>
     /// Handles a mouse move event
     /// </summary>
     /// <param name="sender">The display where the mouse event originated</param>

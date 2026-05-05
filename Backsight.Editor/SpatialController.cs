@@ -15,15 +15,8 @@
 
 namespace Backsight.Editor;
 
-public class SpatialController : ISpatialController
+class SpatialController
 {
-    /// <summary>
-    /// The one (and only) controller.
-    /// </summary>
-    private static ISpatialController s_Controller = new DesignTimeController();
-
-    public static ISpatialController Current => s_Controller;
-
     private ISpatialModel m_Data;
 
     /// <summary>
@@ -40,10 +33,8 @@ public class SpatialController : ISpatialController
     /// Creates a <c>SpatialController</c> with a map model that's suitable
     /// for use at design time.
     /// </summary>
-    public SpatialController()
+    protected SpatialController()
     {
-        s_Controller = this;
-
         m_Data = new DesignTimeMapModel();
         m_Selection = new SpatialSelection();
         m_Displays = new List<ISpatialDisplay>();
@@ -59,18 +50,7 @@ public class SpatialController : ISpatialController
         m_Selection = new SpatialSelection();
     }
 
-    public ISpatialModel MapModel
-    {
-        get
-        {
-            if (m_Data==null)
-                m_Data = new DesignTimeMapModel();
-
-            return m_Data;
-        }
-
-        //set { SetMapModel(value, null); }
-    }
+    public ISpatialModel MapModel => m_Data;
 /*
     public void SetMapModel(ISpatialModel model, IWindow initialDrawExtent)
     {
@@ -109,54 +89,6 @@ public class SpatialController : ISpatialController
     {
         m_Displays.Remove(display);
     }
-
-    /// <summary>
-    /// Handles a mouse double click event. This implementation does nothing.
-    /// </summary>
-    /// <param name="sender">The display where the mouse event originated</param>
-    /// <param name="p">The position where the mouse click occurred</param>
-    public virtual void MouseDoubleClick(ISpatialDisplay sender, IPosition p)
-    {
-    }
-
-    public virtual void MouseDown(ISpatialDisplay sender, IPosition p, MouseButton b)
-    {
-        if (b==MouseButton.Right)
-            ShowContextMenu(sender, p);
-        else
-            Select(sender, p, SpatialType.All);
-    }
-
-    /// <summary>
-    /// Placeholder that displays a context menu. This implementation does nothing, since
-    /// the relevant context menu depends on the functionality provided by the application
-    /// that utilizes this controller. Derived classes (ones that know something about the
-    /// application) are expected to override.
-    /// </summary>
-    /// <param name="where">The display where the context menu should appear</param>
-    /// <param name="p">The preferred position for the menu (may not be honoured if
-    /// the context menu would be obscured)</param>
-    public virtual void ShowContextMenu(ISpatialDisplay where, IPosition p)
-    {
-    }
-
-    public virtual void MouseUp(ISpatialDisplay sender, IPosition p, MouseButton b)
-    {
-    }
-
-    public virtual void MouseMove(ISpatialDisplay sender, IPosition p, MouseButton b)
-    {
-    }
-
-    public virtual void KeyDown(ISpatialDisplay sender, KeySelection k)
-    {
-    }
-
-    public virtual void KeyUp(ISpatialDisplay sender, KeySelection k)
-    {
-    }
-
-    public ILength PointHeight { get; }
 
     public virtual void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
     {

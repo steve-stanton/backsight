@@ -215,7 +215,8 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         //m_Display.Graphics.FillRectangle(Brushes.AntiqueWhite, rect);
         m_Display.Graphics.FillRectangle(b, rect);
 
-        var mapModel = EditingController.Current.CadastralMapModel;
+        var controller = EditingController.Current;
+        var mapModel = controller.CadastralMapModel;
 
         SetScrollBars();
         mapModel.Render(this);
@@ -230,7 +231,6 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
             //CopyMapPanelToSavedDisplay();
 
             // Any selection needs to be drawn too, but after the above
-            ISpatialController controller = SpatialController.Current;
             ISpatialSelection ss = controller.SpatialSelection;
             if (ss.Count > 0)
             {
@@ -248,10 +248,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
             AddExtent();
     }
 
-    private ISpatialModel MapModel
-    {
-        get { return SpatialController.Current.MapModel; }
-    }
+    private ISpatialModel? MapModel => EditingController.Current.MapModel;
 
     /// <summary>
     /// Sets the extent covered by an overview display, based on the extent of
@@ -422,7 +419,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     new public void Dispose()
     {
         //MessageBox.Show("un-registering map control");
-        SpatialController.Current.Unregister(this);
+        EditingController.Current.Unregister(this);
         DropBufferedGraphics();
         base.Dispose();
     }
@@ -621,12 +618,12 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     void mapPanel_KeyDown(object sender, KeyEventArgs e)
     {
-        SpatialController.Current.KeyDown(this, e.KeySelection);
+        EditingController.Current.KeyDown(this, e.KeySelection);
     }
 
     void mapPanel_KeyUp(object sender, KeyEventArgs e)
     {
-        SpatialController.Current.KeyUp(this, e.KeySelection);
+        EditingController.Current.KeyUp(this, e.KeySelection);
     }
 
     private void mapPanel_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -634,7 +631,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         if (this.IsInitialized)
         {
             Position p = DisplayToGround(e.Location);
-            SpatialController.Current.MouseDoubleClick(this, p);
+            EditingController.Current.MouseDoubleClick(this, p);
         }
     }
 
@@ -649,7 +646,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
             Position p = DisplayToGround(e.Location);
 
             if (m_Tool==null)
-                SpatialController.Current.MouseDown(this, p, e.MouseButton);
+                EditingController.Current.MouseDown(this, p, e.MouseButton);
             else
                 m_Tool.MouseDown(p, e.MouseButton);
         }
@@ -670,7 +667,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
                 m_SavedDisplay.Render(m_Display.Graphics);
 
                 // Highlight the new selection
-                var pointHeight = SpatialController.Current.PointHeight;
+                var pointHeight = EditingController.Current.PointHeight;
                 var style = new HighlightStyle(pointHeight);
                 var mapDisplay = new MapDisplay(this, style);
                 newSelection.Draw(mapDisplay);
@@ -694,7 +691,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
             Position p = DisplayToGround(e.Location);
 
             if (m_Tool==null)
-                SpatialController.Current.MouseMove(this, p, e.MouseButton);
+                EditingController.Current.MouseMove(this, p, e.MouseButton);
             else
                 m_Tool.MouseMove(p, e.MouseButton);
         }
@@ -1144,7 +1141,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         m_CurrentExtentIndex = m_Extents.Count-1;
 
         // Notify the controller (may want to remember the extent elsewhere)
-        SpatialController.Current.OnSetExtent(this);            
+        EditingController.Current.OnSetExtent(this);            
     }
 
     /// <summary>
@@ -1277,7 +1274,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
             //if (this.Text=="MagnifyForm")
             //    MessageBox.Show("registering map control");
 
-            SpatialController.Current.Register(this);
+            EditingController.Current.Register(this);
             InitializeBufferedGraphics();
             SetParentResizeHandlers();
 
