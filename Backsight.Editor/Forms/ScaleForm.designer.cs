@@ -13,7 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Forms
+namespace Backsight.Editor.Forms
 {
     partial class ScaleForm
     {

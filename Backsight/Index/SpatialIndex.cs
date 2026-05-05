@@ -123,27 +123,6 @@ public class SpatialIndex : IEditSpatialIndex
         throw new NotSupportedException("Unexpected object type: "+o.SpatialType);
     }
 
-    // <summary>
-    // Dumps out debug information relating to this index, creating
-    // a file called <c>C:\Temp\index.txt</c>
-    // </summary>
-    //public void Dump()
-    //{
-    //    using (StreamWriter w = File.CreateText(@"C:\Temp\index.txt"))
-    //    {
-    //        w.WriteLine("Lines");
-    //        m_Lines.Dump(w, 0);
-
-    //        w.WriteLine();
-    //        w.WriteLine("Text");
-    //        m_Text.Dump(w, 0);
-
-    //        w.WriteLine();
-    //        w.WriteLine("Polygons");
-    //        m_Polygons.Dump(w, 0);
-    //    }
-    //}
-
     /// <summary>
     /// Obtains the number of points in this index
     /// </summary>
@@ -228,21 +207,6 @@ public class SpatialIndex : IEditSpatialIndex
             m_Polygons.Query(w, itemHandler);
     }
 
-    /*
-    /// <summary>
-    /// Draws a representation of the internal structure of this index, for
-    /// use in experimentation.
-    /// </summary>
-    /// <param name="display">The display to draw to</param>
-    public void Draw(ISpatialDisplay display)
-    {
-        DrawStyle style = new DrawStyle();
-        style.Pen.Color = System.Drawing.Color.Crimson;
-        //m_Points.Render(display, style);
-        //m_Lines.Render(display, style, 0);
-        m_Polygons.Render(display, style);
-    }
-*/
     /// <summary>
     /// Is the index empty (containing nothing)?
     /// </summary>

@@ -16,6 +16,7 @@
 using System.Windows.Forms;
 using System.Diagnostics;
 using Backsight.Editor.Forms;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -145,7 +146,7 @@ class FileCheckUI : IDisposable
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
-    internal void Render(ISpatialDisplay display, IDrawStyle style)
+    internal void Render(ISpatialGraphics display, IDrawStyle style)
     {
         if (m_Results==null)
             return;
@@ -178,7 +179,7 @@ class FileCheckUI : IDisposable
             return -1;
         }
 
-        ISpatialDisplay display = EditingController.Current.ActiveDisplay;
+        var display = EditingController.Current.ActiveMap;
         Control c = display.MapPanel;
 
         try
@@ -250,8 +251,8 @@ class FileCheckUI : IDisposable
     /// </summary>
     internal void OnFinishOp()
     {
-        ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-        IDrawStyle style = EditingController.Current.DrawStyle;
+        var display = EditingController.Current.ActiveMap;
+        var style = EditingController.Current.DrawStyle;
         bool doPost = false;    // Need to post-process the list?
 
         foreach (CheckItem check in m_Results)

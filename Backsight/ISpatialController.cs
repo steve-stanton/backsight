@@ -96,16 +96,9 @@ public interface ISpatialController
     void KeyUp(ISpatialDisplay sender, KeySelection k);
 
     /// <summary>
-    /// Performs any initialization for the default map rendering style. 
+    /// The height of point on the map (in ground units).
     /// </summary>
-    /// <param name="style">The style to initialize.</param>
-    void InitializeDrawStyle(IDrawStyle style);
-
-    /// <summary>
-    /// Performs any initialization for the highlighting style. 
-    /// </summary>
-    /// <param name="style">The style to initialize.</param>
-    void InitializeHighlightStyle(IDrawStyle style);
+    ILength PointHeight { get; }
 
     /// <summary>
     /// Perform any processing whenever a display has changed the drawn extent

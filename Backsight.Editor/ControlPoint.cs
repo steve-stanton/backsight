@@ -13,6 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using Backsight.Forms;
+
 namespace Backsight.Editor;
 
 /// <written by="Steve Stanton" on="10-FEB-1998" was="CeControl" />
@@ -160,7 +162,7 @@ class ControlPoint : Position3D, IEquatable<ControlPoint>
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
-    internal void Render(ISpatialDisplay display, IDrawStyle style)
+    internal void Render(ISpatialGraphics display, IDrawStyle style)
     {
         if (IsDefined)
             style.RenderTriangle(display, this);

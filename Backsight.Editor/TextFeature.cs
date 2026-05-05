@@ -120,19 +120,16 @@ class TextFeature : Feature
 
     #endregion
 
-    public override SpatialType SpatialType
-    {
-        get { return SpatialType.Text; }
-    }
+    public override SpatialType SpatialType => SpatialType.Text;
 
     /// <summary>
     /// Draws this object on the specified display
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    public override void Render(ISpatialDisplay display, IDrawStyle style)
+    public override void Render(ISpatialGraphics display, IDrawStyle style)
     {
-        m_Geom.Render(display, style);
+        style.Render(display, m_Geom);
 
         if (s_DrawReferencePoints || style is HighlightStyle)
         {

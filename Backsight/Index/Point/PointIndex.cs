@@ -80,17 +80,6 @@ class PointIndex
     }
 
     /// <summary>
-    /// Draws the extent of the nodes in this index (excluding the higher level nodes).
-    /// For experimentation. 
-    /// </summary>
-    /// <param name="display">The display to draw to</param>
-    /// <param name="style">The drawing tools to use</param>
-    internal void Render(ISpatialDisplay display, IDrawStyle style)
-    {
-        m_Root.Render(display, style);
-    }
-
-    /// <summary>
     /// Collects statistical information about this index. For experimentation.
     /// </summary>
     /// <param name="stats">The stats to fill in.</param>

@@ -202,6 +202,6 @@ partial class IntersectForm : Form
     /// </summary>
     internal void ErasePainting()
     {
-        m_Cmd.ActiveDisplay.RestoreLastDraw();
+        m_Cmd.ActiveMap.RestoreLastDraw();
     }
 }

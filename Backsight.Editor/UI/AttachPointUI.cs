@@ -129,7 +129,7 @@ class AttachPointUI : SimpleCommandUI
         // cover auto-select...
 
         // The ground tolerance is 1mm at the draw scale.
-        ISpatialDisplay draw = ActiveDisplay;
+        var draw = ActiveMap;
         ILength tol = new Length(0.001 * draw.MapScale);
 
         // Just return if we previously selected something, and the
@@ -162,7 +162,7 @@ class AttachPointUI : SimpleCommandUI
 
         // Get the position on the selected line that is closest
         // to the supplied position.
-        ISpatialDisplay draw = ActiveDisplay;
+        var draw = ActiveMap;
         ILength tol = new Length(0.001 * draw.MapScale);
         IPointGeometry pg = PointGeometry.Create(p);
         IPosition pos = m_Line.LineGeometry.GetClosest(pg, tol);
@@ -211,7 +211,7 @@ class AttachPointUI : SimpleCommandUI
 
     internal override void SetCommandCursor()
     {
-        ActiveDisplay.MapPanel.Cursor = EditorResources.AttachPointCursor;
+        ActiveMap.MapPanel.Cursor = EditorResources.AttachPointCursor;
     }
 
     /// <summary>

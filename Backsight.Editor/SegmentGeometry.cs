@@ -15,6 +15,7 @@
 
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -109,17 +110,16 @@ class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
             return new Length(Geom.Distance(Start, asFarAs));
     }
 
-    internal override IPosition GetOrient(bool fromStart, double crvDist)
+    internal override IPosition GetOrient(bool fromStart, double crvDist) => fromStart ? End : Start;
+
+    internal override void Render(ISpatialGraphics display, IDrawStyle style)
     {
-        if (fromStart)
-            return End;
-        else
-            return Start;
+        style.Render(display, Start, End);
     }
 
-    internal override void Render(ISpatialDisplay display, IDrawStyle style)
+    internal override void Draw(IMapDisplay display)
     {
-        LineSegmentGeometry.Render(this, display, style);
+        display.DrawSegment(Start, End);
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
     /// <param name="dist">The observed distance (if any).</param>
     /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
     /// actual distance.</param>
-    internal override void RenderDistance(ISpatialDisplay display, IDrawStyle style,
+    internal override void RenderDistance(ISpatialGraphics display, IDrawStyle style,
         Distance dist, bool drawObserved)
     {
         Annotation a = GetAnnotation(dist, drawObserved);

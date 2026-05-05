@@ -13,7 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Forms
+namespace Backsight.Editor.Forms
 {
     partial class MagnifyForm
     {
@@ -52,7 +52,7 @@ namespace Backsight.Forms
             this.ctxDrawHereMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxCancelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.magnifyMapControl = new Backsight.Forms.MagnifyMapControl();
+            this.magnifyMapControl = new Backsight.Editor.Forms.MagnifyMapControl();
             this.ctxScaleMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();

@@ -127,7 +127,7 @@ class PathInfo
     /// Draws the path on the specified display
     /// </summary>
     /// <param name="display">The display to draw to</param>
-    internal void Render(ISpatialDisplay display)
+    internal void Render(ISpatialGraphics display)
     {
         EnsureAdjusted();
 
@@ -184,16 +184,16 @@ class PathInfo
     /// <param name="display">The display to draw to</param>
     /// <param name="spans">Information about each observed span</param>
     /// <param name="sections">The geometry that corresponds to each span</param>
-    void DrawSpans(ISpatialDisplay display, SpanInfo[] spans, ILineGeometry[] sections)
+    void DrawSpans(ISpatialGraphics display, SpanInfo[] spans, ILineGeometry[] sections)
     {
         Debug.Assert(spans.Length == sections.Length);
-        IDrawStyle solidStyle = EditingController.Current.Style(Color.Magenta);
-        IDrawStyle dottedStyle = new DottedStyle(Color.Magenta);
+        var solidStyle = EditingController.Current.Style(Color.Magenta);
+        var dottedStyle = new DottedStyle(Color.Magenta);
 
         for (int i = 0; i < spans.Length; i++)
         {
             ILineGeometry geom = sections[i];
-            IDrawStyle style = (spans[i].HasLine ? solidStyle : dottedStyle);
+            var style = (spans[i].HasLine ? solidStyle : dottedStyle);
 
             if (geom is IClockwiseCircularArcGeometry)
                 style.Render(display, (IClockwiseCircularArcGeometry)geom);
@@ -209,7 +209,7 @@ class PathInfo
     /// Draws the end points for this path.
     /// </summary>
     /// <param name="display">The display to draw to</param>
-    void DrawEnds(ISpatialDisplay display)
+    void DrawEnds(ISpatialGraphics display)
     {
         if (m_From!=null)
             m_From.Draw(display, Color.DarkBlue);

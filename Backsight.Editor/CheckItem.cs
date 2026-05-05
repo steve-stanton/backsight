@@ -16,6 +16,7 @@
 using System.Text;
 using System.Drawing;
 using Backsight.Editor.Forms;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -290,7 +291,7 @@ abstract class CheckItem
     /// <param name="style">The style for the drawing</param>
     /// <remarks>Implementations of this method should always call <see cref="RenderPaintOuts"/>
     /// up front.</remarks>
-    abstract internal void Render(ISpatialDisplay display, IDrawStyle style);
+    abstract internal void Render(ISpatialGraphics display, IDrawStyle style);
 
     /// <summary>
     /// Draws the checked item in a way that highlights it during a check review.
@@ -298,7 +299,7 @@ abstract class CheckItem
     /// overrides.
     /// </summary>
     /// <param name="display">The display to draw to</param>
-    internal virtual void HighlightCheckedItem(ISpatialDisplay display)
+    internal virtual void HighlightCheckedItem(ISpatialGraphics display)
     {
     }
 
@@ -310,7 +311,7 @@ abstract class CheckItem
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
     /// <param name="newTypes">The new results</param>
-    abstract internal void PaintOut(ISpatialDisplay display, IDrawStyle style, CheckType newTypes);
+    abstract internal void PaintOut(ISpatialGraphics display, IDrawStyle style, CheckType newTypes);
 
     /// <summary>
     /// The overlay icon drawn on top of any painted out icons.
@@ -337,7 +338,7 @@ abstract class CheckItem
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
-    protected void RenderPaintOuts(ISpatialDisplay display, IDrawStyle style)
+    protected void RenderPaintOuts(ISpatialGraphics display, IDrawStyle style)
     {
         if (m_PaintOuts!=null)
         {

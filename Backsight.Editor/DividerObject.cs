@@ -13,6 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using Backsight.Forms;
+
 namespace Backsight.Editor;
 
 /// <written by="Steve Stanton" on="22-NOV-2007" />
@@ -72,9 +74,9 @@ class DividerObject : ISpatialObject
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    public void Render(ISpatialDisplay display, IDrawStyle style)
+    public void Draw(IMapDisplay mapDisplay)
     {
-        m_Geom.Render(display, style);
+        m_Geom.Draw(mapDisplay);
     }
 
     /// <summary>

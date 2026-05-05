@@ -103,10 +103,10 @@ class NewCircularArcUI : NewLineUI
         // If applicable circles are defined, ensure they show
         if (m_Circles != null)
         {
-            ISpatialDisplay display = ActiveDisplay;
-            IDrawStyle style = new DottedStyle(Color.Magenta);
+            var display = ActiveMap;
+            var style = new DottedStyle(Color.Magenta);
             foreach (Circle c in m_Circles)
-                c.Render(display, style);
+                style.Render(display, c.Center, c.Radius);
         }
 
         base.Paint(point);
@@ -118,16 +118,16 @@ class NewCircularArcUI : NewLineUI
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    internal override void RenderGeometry(ISpatialDisplay display, IDrawStyle style)
+    internal override void RenderGeometry(ISpatialGraphics display, IDrawStyle style)
     {
         // The supplied style is a solid magenta line, which doesn't show up well
         // on top of a dotted magenta circle. So make it a bit thicker.
 
         if (m_Geom!=null)
         {
-            DrawStyle thickStyle = new DrawStyle(style.LineColor);
+            var thickStyle = new DrawStyle(style.LineColor);
             thickStyle.Pen.Width = 3.0f;
-            m_Geom.Render(display, thickStyle);
+            style.Render(display, m_Geom);
         }
     }
 

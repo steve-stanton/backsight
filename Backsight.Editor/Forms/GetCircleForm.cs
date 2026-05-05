@@ -127,7 +127,7 @@ m_pSelect->DrawCurves(curlayer);
 	private void listBox_SelectedValueChanged(object sender, EventArgs e)
 	{
 		// If we previously had a selected circle, erase it.
-		ISpatialDisplay display = EditingController.Current.ActiveDisplay;
+		var display = EditingController.Current.ActiveMap;
 		if (m_Select!=null)
 			display.PaintNow();
 		/*
@@ -148,7 +148,7 @@ if ( m_pSelect ) {
 			return;
 
 		// ... and highlight it.
-		DottedStyle style = new DottedStyle();
-		m_Select.Render(display, style);
+		var style = new DottedStyle();
+		style.Render(display, m_Select.Center, m_Select.Radius);
 	}
 }

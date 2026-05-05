@@ -13,7 +13,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Forms;
+using System.Drawing;
+
+namespace Backsight.Editor.Forms;
 
 /// <written by="Steve Stanton" on="16-FEB-2007" />
 /// <summary>

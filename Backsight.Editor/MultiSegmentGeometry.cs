@@ -15,6 +15,7 @@
 
 using System.Diagnostics;
 using System.Text;
+using Backsight.Forms;
 using Backsight.Geometry;
 
 namespace Backsight.Editor;
@@ -112,9 +113,14 @@ class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeometry
         get { return m_Extent; }
     }
 
-    internal override void Render(ISpatialDisplay display, IDrawStyle style)
+    internal override void Render(ISpatialGraphics display, IDrawStyle style)
     {
-        LineStringGeometry.Render(this, display, style);
+        style.Render(display, Data);
+    }
+
+    internal override void Draw(IMapDisplay display)
+    {
+        display.DrawMultiSegment(Data);
     }
 
     public override ILength Length

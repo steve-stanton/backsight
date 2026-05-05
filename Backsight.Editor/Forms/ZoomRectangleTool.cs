@@ -13,7 +13,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Forms;
+using System.Drawing;
+using Backsight.Forms;
+
+namespace Backsight.Editor.Forms;
 
 class ZoomRectangleTool : SpatialDisplayTool
 {
@@ -46,7 +49,7 @@ class ZoomRectangleTool : SpatialDisplayTool
 
     public override bool Start()
     {
-        this.MapControl.SetCursor(MapResources.MagnifyingGlassCursor);
+        this.MapControl.SetCursor(EditorResources.MagnifyingGlassCursor);
         return true;
     }
 

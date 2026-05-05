@@ -164,21 +164,6 @@ class Node
     }
 
     /// <summary>
-    /// Draws the outline of this indexing node to a specific display (so
-    /// long as the extent of the node isn't too big)
-    /// </summary>
-    /// <param name="display">The display to draw to.</param>
-    /// <param name="style">The style for the draw.</param>
-    internal virtual void Render(ISpatialDisplay display, IDrawStyle style)
-    {
-        if (m_Window.Width < 0x0000010000000000)
-        {
-            IPosition[] outline = m_Window.Outline;
-            style.Render(display, outline);
-        }
-    }
-
-    /// <summary>
     /// Does this indexing node contain any items (checks whether
     /// the <see cref="ItemCount"/> property has a value of 0).
     /// </summary>

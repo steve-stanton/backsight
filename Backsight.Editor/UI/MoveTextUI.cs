@@ -99,7 +99,7 @@ class MoveTextUI : SimpleCommandUI
         if (m_LastPosition != null)
         {
             // Draw gray text in the original position
-            ISpatialDisplay display = ActiveDisplay;
+            var display = ActiveMap;
             m_Text.Draw(display, Color.Gray);
 
             // Draw the text at the last mouse position

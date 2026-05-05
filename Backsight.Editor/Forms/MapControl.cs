@@ -15,14 +15,17 @@
 
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+using Backsight.Forms;
 
-namespace Backsight.Forms;
+namespace Backsight.Editor.Forms;
 
 /// <written by="Steve Stanton" on="14-SEP-2006" />
 /// <summary>
 /// Control for displaying a map.
 /// </summary>
-public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
+public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 {
     /// <summary>
     /// Buffer for drawing of the map
@@ -212,16 +215,10 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
         //m_Display.Graphics.FillRectangle(Brushes.AntiqueWhite, rect);
         m_Display.Graphics.FillRectangle(b, rect);
 
-        ISpatialController controller = SpatialController.Current;
-        ISpatialModel mapModel = controller.MapModel;
-        if (mapModel==null)
-            return;
+        var mapModel = EditingController.Current.CadastralMapModel;
 
         SetScrollBars();
-        var drawStyle = new DrawStyle();
-        controller.InitializeDrawStyle(drawStyle);
-
-        mapModel.Render(this, drawStyle);
+        mapModel.Render(this);
 
         // Paint the map panel
         using (Graphics g = mapPanel.CreateGraphics())
@@ -233,14 +230,15 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
             //CopyMapPanelToSavedDisplay();
 
             // Any selection needs to be drawn too, but after the above
+            ISpatialController controller = SpatialController.Current;
             ISpatialSelection ss = controller.SpatialSelection;
             if (ss.Count > 0)
             {
-                IDrawStyle style = new HighlightStyle();
-                controller.InitializeHighlightStyle(style);
+                var style = new HighlightStyle(controller.PointHeight);
+                var mapDisplay = new MapDisplay(this, style);
                 
                 foreach(ISpatialObject item in ss.Items)
-                    item.Render(this, style);
+                    item.Draw(mapDisplay);
 
                 m_Display.Render(g);
             }
@@ -672,10 +670,10 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
                 m_SavedDisplay.Render(m_Display.Graphics);
 
                 // Highlight the new selection
-                IDrawStyle style = new HighlightStyle();
-                SpatialController.Current.InitializeHighlightStyle(style);
-
-                newSelection.Render(this, style);
+                var pointHeight = SpatialController.Current.PointHeight;
+                var style = new HighlightStyle(pointHeight);
+                var mapDisplay = new MapDisplay(this, style);
+                newSelection.Draw(mapDisplay);
 
                 m_Display.Render(g);
             }
@@ -760,15 +758,9 @@ public partial class MapControl : UserControl, ISpatialDisplay, IDisposable
         }
     }
 
-    public IWindow Extent
-    {
-        get { return m_MapPanelExtent; }
-    }
+    public IWindow Extent => m_MapPanelExtent;
 
-    public IWindow MaxExtent
-    {
-        get { return m_OverviewExtent; }
-    }
+    public IWindow MaxExtent => m_OverviewExtent;
 
     public Graphics Graphics
     {

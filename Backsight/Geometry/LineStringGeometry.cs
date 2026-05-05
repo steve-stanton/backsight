@@ -60,16 +60,6 @@ public class LineStringGeometry : ILineGeometry, IMultiSegmentGeometry
         get { return m_Data; }
     }
 
-    public void Render(ISpatialDisplay display, IDrawStyle style)
-    {
-        LineStringGeometry.Render(this, display, style);
-    }
-
-    public static void Render(IMultiSegmentGeometry g, ISpatialDisplay display, IDrawStyle style)
-    {
-        style.Render(display, g.Data);
-    }
-
     public virtual IWindow Extent
     {
        get { return GetExtent(this); }

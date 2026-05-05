@@ -13,6 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 
 namespace Backsight.Forms;
@@ -52,10 +54,7 @@ public class Fill : IFill
     /// <summary>
     /// The brush to use for the fill.
     /// </summary>
-    public Brush Brush
-    {
-        get { return m_Brush; }
-    }
+    public Brush Brush => m_Brush;
 
     /// <summary>
     /// The color for this fill. If the fill is a hatch-style, this relates to the

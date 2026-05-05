@@ -14,7 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
-using Backsight.Forms;
+using Backsight.Editor.Forms;
 using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.UI;
@@ -50,7 +50,7 @@ class PolygonSubdivisionUI : SimpleCommandUI
 
     internal override void SetCommandCursor()
     {
-        ActiveDisplay.MapPanel.Cursor = EditorResources.PolygonSubdivisionCursor;
+        ActiveMap.MapPanel.Cursor = EditorResources.PolygonSubdivisionCursor;
     }
 
     /// <summary>

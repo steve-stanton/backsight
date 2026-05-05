@@ -17,6 +17,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using Backsight.Editor.Operations;
 using Backsight.Editor.UI;
+using Backsight.Forms;
 
 namespace Backsight.Editor.Forms;
 
@@ -289,7 +290,7 @@ partial class PathForm : Form
         if (point==null)
             return;
 
-        ISpatialDisplay display = m_Command.ActiveDisplay;
+        var display = m_Command.ActiveMap;
         Control field = (c == null ? m_Focus : c);
 
         if (Object.ReferenceEquals(field, fromTextBox))
@@ -302,7 +303,7 @@ partial class PathForm : Form
     /// Does any painting that this dialog does.
     /// </summary>
     /// <param name="display">The display to draw to</param>
-    internal void Render(ISpatialDisplay display)
+    internal void Render(ISpatialGraphics display)
     {
         // Draw any currently selected points & any direction.
         SetColor(m_From, fromTextBox);

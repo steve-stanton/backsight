@@ -155,10 +155,9 @@ public class SpatialSelection : ISpatialSelection
     /// Draws the content of this selection
     /// </summary>
     /// <param name="display">The display to draw to</param>
-    /// <param name="style">The drawing style to use</param>
-    public virtual void Render(ISpatialDisplay display, IDrawStyle style)
+    public void Draw(IMapDisplay mapDisplay)
     {
         foreach (ISpatialObject item in m_Items)
-            item.Render(display, style);
+            item.Draw(mapDisplay);
     }
 }

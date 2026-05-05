@@ -17,6 +17,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using Backsight.Editor.Forms;
+using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Forms;
 
@@ -590,12 +592,18 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
         get { return (m_References==null ? 0 : m_References.Count); }
     }
 
-    /// <summary>
-    /// Draws this object on the specified display
-    /// </summary>
-    /// <param name="display">The display to draw to</param>
-    /// <param name="style">The drawing style</param>
-    abstract public void Render(ISpatialDisplay display, IDrawStyle style);
+    /// <inheritdoc cref="ISpatialObject.Draw"/>
+    public virtual void Draw(IMapDisplay mapDisplay)
+    {
+        // TODO: Fix hack (should ISpatialObject even specify a Draw method)
+        var display = mapDisplay as MapDisplay;
+        if (display is null)
+            throw new NotSupportedException();
+        
+        Render(display.Display, display.Style);
+    }
+    
+    abstract public void Render(ISpatialGraphics display, IDrawStyle style);
 
     /// <summary>
     /// The covering rectangle that encloses this feature.
@@ -657,16 +665,16 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="col">The colour to use for the draw</param>
-    public void Draw(ISpatialDisplay display, Color col)
+    public void Draw(ISpatialGraphics display, Color col)
     {
-        IDrawStyle style = EditingController.Current.DrawStyle;
+        var style = EditingController.Current.DrawStyle;
         style.LineColor = style.FillColor = col;
         Render(display, style);
     }
 
-    public void Draw(ISpatialDisplay display, HatchStyle hs, Color foreColor)
+    public void Draw(ISpatialGraphics display, HatchStyle hs, Color foreColor)
     {
-        IDrawStyle style = EditingController.Current.DrawStyle;
+        var style = EditingController.Current.DrawStyle;
         style.Fill = new Fill(hs, foreColor, display.MapPanel.BackColor);
         Render(display, style);
     }

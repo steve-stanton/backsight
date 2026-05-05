@@ -90,7 +90,7 @@ public partial class TerminalControl : UserControl
         // If we previously had a terminal line, erase the terminal
         // position and unhighlight the arc.
 
-        ISpatialDisplay draw = m_Cmd.ActiveDisplay;
+        var draw = m_Cmd.ActiveMap;
 
         if (m_Line!=null)
             m_Cmd.ErasePainting();
@@ -119,7 +119,7 @@ public partial class TerminalControl : UserControl
 
     private void TerminalControl_Load(object sender, EventArgs e)
     {
-        ISpatialDisplay view = m_Cmd.ActiveDisplay;
+        var view = m_Cmd.ActiveMap;
 
         // Get the "real" command that's running this dialog (not any update).
         ParallelLineUI cmd = Command;
@@ -208,7 +208,7 @@ public partial class TerminalControl : UserControl
 
         // Figure out a search radius (the smaller of half the offset,
         // or half a centimetre at the current draw scale).
-        double scale = cmd.ActiveDisplay.MapScale;
+        double scale = cmd.ActiveMap.MapScale;
         ILength tol = new Length(Math.Min(offset*0.5, scale*0.005));
 
         // Search for the line closest to the parallel point, and
@@ -242,7 +242,7 @@ public partial class TerminalControl : UserControl
     /// <param name="line">The line (if any) that has been selected.</param>
     internal void SelectLine(LineFeature line)
     {
-        ISpatialDisplay view = m_Cmd.ActiveDisplay;
+        var view = m_Cmd.ActiveMap;
         IPosition xsect = null;
         ParallelLineUI cmd = Command;
 
@@ -302,7 +302,7 @@ public partial class TerminalControl : UserControl
     internal void Draw() // was Paint
     {
         // Ensure nothing else is currently selected/highlighted.
-        ISpatialDisplay view = m_Cmd.ActiveDisplay;
+        var view = m_Cmd.ActiveMap;
         //m_Cmd.ErasePainting();
 
         // If we've got a terminal line, highlight it.
@@ -328,7 +328,7 @@ public partial class TerminalControl : UserControl
         if (op==null)
             return 0;
 
-        ISpatialDisplay view = m_Cmd.ActiveDisplay;
+        var view = m_Cmd.ActiveMap;
         ParallelLineUI cmd = Command;
 
         // The originally produced parallel may have been

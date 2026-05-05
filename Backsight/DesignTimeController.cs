@@ -36,10 +36,9 @@ public class DesignTimeController : ISpatialController
     public void MouseMove(ISpatialDisplay sender, IPosition p, MouseButton b) { }
     public ISpatialSelection SpatialSelection { get { return null; } }
 
-    public void InitializeDrawStyle(IDrawStyle style) { }
-    public void InitializeHighlightStyle(IDrawStyle style) { }
     public ISpatialDisplay ActiveDisplay { get { return null; } }
     public void OnSetExtent(ISpatialDisplay sender) { }
     public void KeyDown(ISpatialDisplay sender, KeySelection k) {}
     public void KeyUp(ISpatialDisplay sender, KeySelection k) { }
+    public ILength PointHeight => Length.Zero;
 }

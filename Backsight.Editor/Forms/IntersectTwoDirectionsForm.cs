@@ -61,19 +61,19 @@ partial class IntersectTwoDirectionsForm : IntersectForm
             IPosition x = intersectInfo.Intersection;
             if (x!=null)
             {
-                ISpatialDisplay display = GetCommand().ActiveDisplay;
-                IDrawStyle style = EditingController.Current.Style(Color.Magenta);
+                var display = GetCommand().ActiveMap;
+                var style = EditingController.Current.Style(Color.Magenta);
 
                 if (getDirection1.LineType!=null)
                 {
                     Direction d = getDirection1.Direction;
-                    style.Render(display, new IPosition[] { d.StartPosition, x });
+                    style.Render(display, d.StartPosition, x);
                 }
 
                 if (getDirection2.LineType!=null)
                 {
                     Direction d = getDirection2.Direction;
-                    style.Render(display, new IPosition[] { d.StartPosition, x });
+                    style.Render(display, d.StartPosition, x);
                 }
             }
         }

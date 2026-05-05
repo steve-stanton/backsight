@@ -271,10 +271,10 @@ class SectionTopologyList : Topology
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    internal void RenderTrimmed(ISpatialDisplay display, IDrawStyle style)
+    internal void RenderTrimmed(ISpatialGraphics display, IDrawStyle style)
     {
         // If we're highlighting, dangling portions should be drawn dotted
-        IDrawStyle dangleStyle = (style is HighlightStyle ? new DottedStyle(Color.Red) : null);
+        var dangleStyle = (style is HighlightStyle ? new DottedStyle(Color.Red) : null);
 
         bool sDangle = Line.IsStartDangle();
         bool eDangle = Line.IsEndDangle();

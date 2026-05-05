@@ -17,6 +17,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Drawing;
 using Backsight.Editor.Properties;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -126,7 +127,7 @@ class DividerCheck : CheckItem
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
-    internal override void Render(ISpatialDisplay display, IDrawStyle style)
+    internal override void Render(ISpatialGraphics display, IDrawStyle style)
     {
         // Draw stuff that's now irrelevant
         RenderPaintOuts(display, style);
@@ -144,7 +145,7 @@ class DividerCheck : CheckItem
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="gpos">The position for the draw</param>
-    void PaintAt(ISpatialDisplay display, IDrawStyle style, IPosition gpos)
+    void PaintAt(ISpatialGraphics display, IDrawStyle style, IPosition gpos)
     {
         // Remember the reference position.
         Place = gpos;
@@ -204,7 +205,7 @@ class DividerCheck : CheckItem
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
     /// <param name="newTypes">The new results</param>
-    internal override void PaintOut(ISpatialDisplay display, IDrawStyle style, CheckType newTypes)
+    internal override void PaintOut(ISpatialGraphics display, IDrawStyle style, CheckType newTypes)
     {
         IPosition p = this.Place;
         double shift = IconSize(display);
@@ -341,6 +342,6 @@ class DividerCheck : CheckItem
             ss.Add(m_Divider.Left);
 
         EditingController.Current.SetSelection(ss);
-        EditingController.Current.ActiveDisplay.MapPanel.Focus();
+        EditingController.Current.ActiveMap.MapPanel.Focus();
     }
 }

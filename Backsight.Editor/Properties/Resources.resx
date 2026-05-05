@@ -286,4 +286,19 @@
   <data name="NoEntryIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\NoEntryIcon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="HollowSquareCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\HollowSquareCursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MagnifyingGlass" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MagnifyingGlass.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MovingCarCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MovingCarCursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="NewCenterCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NewCenterCursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="CarCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CarCursor.cur;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

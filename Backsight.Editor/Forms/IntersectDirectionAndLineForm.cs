@@ -71,10 +71,10 @@ internal partial class IntersectDirectionAndLineForm : IntersectForm
             IPosition x = intersectInfo.Intersection;
             if (x!=null && getDirection.LineType!=null)
             {
-                ISpatialDisplay display = GetCommand().ActiveDisplay;
-                IDrawStyle style = EditingController.Current.Style(Color.Magenta);
+                var display = GetCommand().ActiveMap;
+                var style = EditingController.Current.Style(Color.Magenta);
                 Direction d = getDirection.Direction;
-                style.Render(display, new IPosition[] { d.StartPosition, x });
+                style.Render(display, d.StartPosition, x);
             }
         }
     }

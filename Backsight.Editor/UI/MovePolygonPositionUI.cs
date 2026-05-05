@@ -75,7 +75,7 @@ class MovePolygonPositionUI : SimpleCommandUI
     /// </summary>
     internal override void SetCommandCursor()
     {
-        ActiveDisplay.MapPanel.Cursor = EditorResources.AttachPointCursor;
+        ActiveMap.MapPanel.Cursor = EditorResources.AttachPointCursor;
     }
 
     /// <summary>
@@ -105,8 +105,8 @@ class MovePolygonPositionUI : SimpleCommandUI
     /// Not used.</param>
     internal override void Paint(PointFeature point)
     {
-        ISpatialDisplay display = ActiveDisplay;
-        IDrawStyle highlighter = Controller.HighlightStyle;
+        var display = ActiveMap;
+        var highlighter = Controller.HighlightStyle;
         m_Text.Render(display, highlighter);
 
         if (m_LastPolygon != null)

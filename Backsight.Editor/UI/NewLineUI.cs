@@ -78,7 +78,7 @@ class NewLineUI : SimpleCommandUI
 
     internal override void SetCommandCursor()
     {
-        ActiveDisplay.MapPanel.Cursor = EditorResources.PenCursor;
+        ActiveMap.MapPanel.Cursor = EditorResources.PenCursor;
     }
 
     /// <summary>
@@ -93,8 +93,8 @@ class NewLineUI : SimpleCommandUI
 
     internal override void Paint(PointFeature point)
     {
-        ISpatialDisplay display = ActiveDisplay;
-        IDrawStyle style = Controller.DrawStyle;
+        var display = ActiveMap;
+        var style = Controller.DrawStyle;
         style.FillColor = style.LineColor = Color.Magenta;
 
         if (m_CurrentPoint!=null)
@@ -112,7 +112,7 @@ class NewLineUI : SimpleCommandUI
                 LineGeometry line = GetIntersectGeometry();
                 if (line!=null)
                 {
-                    IntersectionFinder xf = new IntersectionFinder(line, false);
+                    var xf = new IntersectionFinder(line, false);
                     style.FillColor = Color.Transparent;
                     xf.Render(display, style);
                 }
@@ -125,7 +125,7 @@ class NewLineUI : SimpleCommandUI
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    internal virtual void RenderGeometry(ISpatialDisplay display, IDrawStyle style)
+    internal virtual void RenderGeometry(ISpatialGraphics display, IDrawStyle style)
     {
         if (m_Start!=null && m_End!=null)
             style.Render(display, new IPosition[] { m_Start, m_End });

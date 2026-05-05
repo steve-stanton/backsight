@@ -88,8 +88,8 @@ class GetControlUI : SimpleCommandUI, IDisposable
     {
         if (m_Dialog!=null)
         {
-            ISpatialDisplay display = ActiveDisplay;
-            IDrawStyle style = Controller.Style(Color.Magenta);
+            var display = ActiveMap;
+            var style = Controller.Style(Color.Magenta);
             m_Dialog.Render(display, style);
         }
     }

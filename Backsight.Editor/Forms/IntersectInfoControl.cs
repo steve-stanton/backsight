@@ -281,30 +281,27 @@ partial class IntersectInfoControl : UserControl
             MessageBox.Show(ex.Message);
         }
     }
-
-    ISpatialDisplay ActiveDisplay
-    {
-        get { return EditingController.Current.ActiveDisplay; }
-    }
+    
+    MapControl ActiveMap => EditingController.Current.ActiveMap;
 
     /// <summary>
     /// Handles any redrawing.
     /// </summary>
     internal void OnDraw()
     {
-        ISpatialDisplay display = ActiveDisplay;
+        var display = ActiveMap;
 
         // If the point the intersection needs to be close to is defined, draw it.
         if (m_CloseTo!=null)
         {
-            IDrawStyle style = EditingController.Current.Style(Color.Red);
+            var style = EditingController.Current.Style(Color.Red);
             m_CloseTo.Render(display, style);
         }
 
         // Draw the intersection point in magenta
         if (m_Intersect!=null)
         {
-            IDrawStyle style = EditingController.Current.Style(Color.Magenta);
+            var style = EditingController.Current.Style(Color.Magenta);
             style.Render(display, m_Intersect);
         }
     }

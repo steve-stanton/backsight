@@ -57,7 +57,6 @@ public interface ISpatialSelection
     /// <summary>
     /// Draws the content of this selection
     /// </summary>
-    /// <param name="display">The display to draw to</param>
-    /// <param name="style">The drawing style to use</param>
-    void Render(ISpatialDisplay display, IDrawStyle style);
+    /// <param name="mapDisplay">The display to draw to</param>
+    void Draw(IMapDisplay mapDisplay);
 }

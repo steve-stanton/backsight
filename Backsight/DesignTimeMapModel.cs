@@ -27,13 +27,6 @@ public class DesignTimeMapModel : ISpatialModel
     public string Name { get { return String.Empty; } }
 
     /// <summary>
-    /// Draws this model on the specified display (does nothing).
-    /// </summary>
-    /// <param name="display">The display to render to</param>
-    /// <param name="style">The display style to use</param>
-    public void Render(ISpatialDisplay display, IDrawStyle style) { }
-
-    /// <summary>
     /// Is this model currently empty?
     /// </summary>
     /// <value>True</value>
@@ -61,4 +54,7 @@ public class DesignTimeMapModel : ISpatialModel
     /// </summary>
     /// <value>null</value>
     public ISpatialSystem SpatialSystem { get { return null; } }
+    
+    /// <inheritdoc cref="ISpatialModel.Draw"/>
+    public void Draw(IMapDisplay mapDisplay) { }
 }

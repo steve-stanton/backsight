@@ -14,6 +14,7 @@
 // </remarks>
 
 using Backsight.Editor.Observations;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -69,15 +70,9 @@ abstract class LineGeometry : ILineGeometry, IIntersectable, IPersistent
 
     #endregion
 
-    public IPointGeometry Start
-    {
-        get { return m_Start; }
-    }
+    public IPointGeometry Start => m_Start;
 
-    public IPointGeometry End
-    {
-        get { return m_End; }
-    }
+    public IPointGeometry End => m_End;
 
     internal ITerminal StartTerminal
     {
@@ -130,13 +125,19 @@ abstract class LineGeometry : ILineGeometry, IIntersectable, IPersistent
     /// the line isn't a circular arc). Default=0.0</param>
     /// <returns>The orientation point.</returns>
     abstract internal IPosition GetOrient(bool fromStart, double crvDist);
-
+    
     /// <summary>
     /// Draws this object on the specified display
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    abstract internal void Render(ISpatialDisplay display, IDrawStyle style);
+    internal abstract void Render(ISpatialGraphics display, IDrawStyle style);
+
+    /// <summary>
+    /// Draws this object on the specified display
+    /// </summary>
+    /// <param name="display">The display to draw to</param>
+    internal abstract void Draw(IMapDisplay display);
 
     /// <summary>
     /// Draws a distance alongside this line.
@@ -146,7 +147,7 @@ abstract class LineGeometry : ILineGeometry, IIntersectable, IPersistent
     /// <param name="dist">The observed distance (if any).</param>
     /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
     /// actual distance.</param>
-    internal virtual void RenderDistance(ISpatialDisplay display, IDrawStyle style,
+    internal virtual void RenderDistance(ISpatialGraphics display, IDrawStyle style,
         Distance dist, bool drawObserved)
     {
     }

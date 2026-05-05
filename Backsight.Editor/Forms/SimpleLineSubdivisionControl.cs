@@ -183,7 +183,7 @@ public partial class SimpleLineSubdivisionControl : UserControl
 
     internal void Draw()
     {
-        ISpatialDisplay display = m_Cmd.ActiveDisplay;
+        var display = m_Cmd.ActiveMap;
 
         // If we're doing an update, draw the original split point in grey.
         SimpleLineSubdivisionOperation pop = UpdateOp;
@@ -195,7 +195,7 @@ public partial class SimpleLineSubdivisionControl : UserControl
         }
 
         // Ensure the line that's being subdivided is still highlighted
-        IDrawStyle style = EditingController.Current.HighlightStyle;
+        var style = EditingController.Current.HighlightStyle;
         m_Line.Render(display, style);
 
         // Calculate the position of the split point.

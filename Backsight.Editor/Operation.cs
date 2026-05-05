@@ -14,8 +14,10 @@
 // </remarks>
 
 using System.Diagnostics;
+using Backsight.Editor.Forms;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -462,7 +464,7 @@ abstract class Operation : Change, IFeatureDependent
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
     /// <param name="drawInactive">Should features that are currently inactive be drawn too?</param>
-    internal void Render(ISpatialDisplay display, IDrawStyle style, bool drawInactive)
+    internal void Render(ISpatialGraphics display, IDrawStyle style, bool drawInactive)
     {
         foreach (Feature f in this.Features)
         {

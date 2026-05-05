@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Diagnostics;
+using Backsight.Forms;
 using Backsight.Geometry;
 
 namespace Backsight.Editor;
@@ -608,7 +609,7 @@ class IntersectionResult
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    internal void Render(ISpatialDisplay display, IDrawStyle style)
+    internal void Render(ISpatialGraphics display, IDrawStyle style)
     {
         foreach (IntersectionData d in m_Data)
             d.Render(display, style);

@@ -372,7 +372,7 @@ partial class NewCircleForm : Form
             m_Center = point;
 
             // Draw the point in appropriate color.
-            m_Center.Draw(ActiveDisplay, Color.Cyan);
+            m_Center.Draw(ActiveMap, Color.Cyan);
 
             // Display its key (causes a call to OnChangeCentre).
             centerTextBox.Text = String.Format("+{0}", m_Center.FormattedKey);
@@ -392,7 +392,7 @@ partial class NewCircleForm : Form
             m_RadiusPoint = point;
 
             // Draw the point in appropriate colour.
-            m_RadiusPoint.Draw(ActiveDisplay, Color.Yellow);
+            m_RadiusPoint.Draw(ActiveMap, Color.Yellow);
 
             // Display the point number.
             radiusTextBox.Text = String.Format("+{0}", m_RadiusPoint.FormattedKey);
@@ -404,11 +404,8 @@ partial class NewCircleForm : Form
             okButton.Focus();
         }
     }
-
-    ISpatialDisplay ActiveDisplay
-    {
-        get { return EditingController.Current.ActiveDisplay; }
-    }
+    
+    MapControl ActiveMap => EditingController.Current.ActiveMap;
 
     internal void Draw(PointFeature point)
     {
@@ -417,9 +414,9 @@ partial class NewCircleForm : Form
         else
         {
             if (Object.ReferenceEquals(point, m_Center))
-                point.Draw(ActiveDisplay, Color.Cyan);
+                point.Draw(ActiveMap, Color.Cyan);
             else if (Object.ReferenceEquals(point, m_RadiusPoint))
-                point.Draw(ActiveDisplay, Color.Yellow);
+                point.Draw(ActiveMap, Color.Yellow);
         }
     }
 
@@ -429,10 +426,10 @@ partial class NewCircleForm : Form
     /// </summary>
     void PaintAll()
     {
-        ISpatialDisplay display = ActiveDisplay;
+        var display = ActiveMap;
 
         if (m_Circle!=null)
-            m_Circle.Render(display, new DottedStyle());
+            new DottedStyle().Render(display, m_Circle.Center, m_Circle.Radius);
 
         if (m_Center!=null)
             m_Center.Draw(display, Color.Cyan);

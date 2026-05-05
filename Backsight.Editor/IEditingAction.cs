@@ -13,7 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using Backsight.Forms;
+using Backsight.Editor.Forms;
 
 namespace Backsight.Editor;
 

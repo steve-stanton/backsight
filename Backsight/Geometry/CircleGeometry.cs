@@ -53,16 +53,6 @@ public class CircleGeometry : ILineGeometry, ICircleGeometry
         get { return m_Radius; }
     }
 
-    public void Render(ISpatialDisplay display, IDrawStyle style)
-    {
-        CircleGeometry.Render(this, display, style);
-    }
-
-    public static void Render(ICircleGeometry g, ISpatialDisplay display, IDrawStyle style)
-    {
-        style.Render(display, g.Center, g.Radius);
-    }
-
     public IWindow Extent
     {
         get { return CircleGeometry.GetExtent(this); }

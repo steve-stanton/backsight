@@ -58,55 +58,5 @@ namespace Backsight.Forms.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] CarCursor {
-            get {
-                object obj = ResourceManager.GetObject("CarCursor", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] HollowSquareCursor {
-            get {
-                object obj = ResourceManager.GetObject("HollowSquareCursor", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] MagnifyingGlass {
-            get {
-                object obj = ResourceManager.GetObject("MagnifyingGlass", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] MovingCarCursor {
-            get {
-                object obj = ResourceManager.GetObject("MovingCarCursor", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] NewCenterCursor {
-            get {
-                object obj = ResourceManager.GetObject("NewCenterCursor", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

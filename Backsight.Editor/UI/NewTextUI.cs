@@ -184,7 +184,7 @@ class NewTextUI : AddLabelUI
 
         // Draw it.
         if (label!=null)
-            label.Draw(ActiveDisplay, Color.Black);
+            label.Draw(ActiveMap, Color.Black);
 
         // Tell the base class.
         OnLabelAdd();
@@ -254,7 +254,7 @@ class NewTextUI : AddLabelUI
     /// </summary>
     internal override void SetCommandCursor()
     {
-        ActiveDisplay.MapPanel.Cursor = EditorResources.ReverseArrowCursor;
+        ActiveMap.MapPanel.Cursor = EditorResources.ReverseArrowCursor;
     }
 
     /// <summary>

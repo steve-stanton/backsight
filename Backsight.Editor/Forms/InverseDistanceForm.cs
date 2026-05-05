@@ -106,7 +106,7 @@ partial class InverseDistanceForm : InverseForm
 
     internal override void Draw()
     {
-        ISpatialDisplay display = EditingController.Current.ActiveDisplay;
+        var display = EditingController.Current.ActiveMap;
 
         if (m_Point1!=null)
             m_Point1.Draw(display, InverseColors[0]);

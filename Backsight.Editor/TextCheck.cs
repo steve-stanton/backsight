@@ -16,6 +16,7 @@
 using System.Text;
 using System.Drawing;
 using Backsight.Editor.Properties;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -99,7 +100,7 @@ class TextCheck : CheckItem
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
-    internal override void Render(ISpatialDisplay display, IDrawStyle style)
+    internal override void Render(ISpatialGraphics display, IDrawStyle style)
     {
         // Draw stuff that's now irrelevant
         RenderPaintOuts(display, style);
@@ -151,7 +152,7 @@ class TextCheck : CheckItem
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
     /// <param name="newTypes">The new results</param>
-    internal override void PaintOut(ISpatialDisplay display, IDrawStyle style, CheckType newTypes)
+    internal override void PaintOut(ISpatialGraphics display, IDrawStyle style, CheckType newTypes)
     {
         // Get the reference position last used to paint stuff
         IPosition p = this.Place;
@@ -271,6 +272,6 @@ class TextCheck : CheckItem
         EditingController.Current.SetSelection(ss);
 
         // Leave the focus with the view (to allow label deletion).
-        EditingController.Current.ActiveDisplay.MapPanel.Focus();
+        EditingController.Current.ActiveMap.MapPanel.Focus();
     }
 }

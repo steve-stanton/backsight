@@ -13,23 +13,17 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System.Drawing;
+
 namespace Backsight.Forms;
 
-/// <written by="Steve Stanton" on="14-SEP-2006" />
+/// <written by="Steve Stanton" on="28-SEP-2007" />
 /// <summary>
-/// IDs corresponding to the draw navigation tools supported by <c>MapControl</c>
+/// Something that represents fill colors & patterns. For
+/// use with the <see cref="IDrawStyle"/> interface.
 /// </summary>
-public enum DisplayToolId
+public interface IFill
 {
-    Overview,
-    ZoomIn,
-    ZoomOut,
-    ZoomRectangle,
-    DrawScale,
-    NewCentre,
-    Pan,
-    MapRefresh,
-    Previous,
-    Next,
-    Magnify,
+    Brush Brush { get; }
+    Color Color { get; set; }
 }

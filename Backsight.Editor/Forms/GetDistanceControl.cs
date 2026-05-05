@@ -478,7 +478,7 @@ partial class GetDistanceControl : UserControl
             return;
 
         // Draw the point in the proper color.
-        point.Draw(ActiveDisplay, col);
+        point.Draw(ActiveMap, col);
     }
 
     /// <summary>
@@ -518,13 +518,10 @@ partial class GetDistanceControl : UserControl
 
         // Draw any current circle
         if (m_Circle!=null)
-            m_Circle.Render(ActiveDisplay, new DottedStyle());
+            new DottedStyle().Render(ActiveMap, m_Circle.Center, m_Circle.Radius);
     }
-
-    ISpatialDisplay ActiveDisplay
-    {
-        get { return EditingController.Current.ActiveDisplay; }
-    }
+    
+    MapControl ActiveMap => EditingController.Current.ActiveMap;
 
     /// <summary>
     /// Initialize for an update (or recall)

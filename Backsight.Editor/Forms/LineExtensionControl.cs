@@ -236,7 +236,7 @@ public partial class LineExtensionControl : UserControl
 
     internal void Draw()
     {
-        ISpatialDisplay display = m_Cmd.ActiveDisplay;
+        var display = m_Cmd.ActiveMap;
 
         // Draw the line we're extending in a special colour (any highlighting it
         // originally had should have been removed during LineExtensionControl_Load)
@@ -262,9 +262,8 @@ public partial class LineExtensionControl : UserControl
         if (LineExtensionUI.Calculate(m_ExtendLine, m_IsExtendFromEnd, m_Length, out start, out end))
         {
             // Draw the straight extension line
-            IDrawStyle style = (m_WantLine ? new DrawStyle(Color.Magenta) : new DottedStyle(Color.Magenta));
-            LineSegmentGeometry seg = new LineSegmentGeometry(start, end);
-            seg.Render(display, style);
+            var style = (m_WantLine ? new DrawStyle(Color.Magenta) : new DottedStyle(Color.Magenta));
+            style.Render(display, start, end);
         }
         else
         {
@@ -277,10 +276,10 @@ public partial class LineExtensionControl : UserControl
                     out start, out end, out center, out iscw))
             {
                 // And draw the curve.
-                IDrawStyle style = (m_WantLine ? new DrawStyle(Color.Magenta) : new DottedStyle(Color.Magenta));
-                IPointGeometry c = PointGeometry.Create(center);
-                CircularArcGeometry arc = new CircularArcGeometry(c, start, end, iscw);
-                arc.Render(display, style);
+                var style = (m_WantLine ? new DrawStyle(Color.Magenta) : new DottedStyle(Color.Magenta));
+                var c = PointGeometry.Create(center);
+                var arc = new CircularArcGeometry(c, start, end, iscw);
+                style.Render(display, arc);
             }
             else if (m_ExtendLine!=null)
             {
@@ -292,7 +291,7 @@ public partial class LineExtensionControl : UserControl
         // If we actually got something, draw the end point.
         if (end!=null)
         {
-            IDrawStyle style = m_Cmd.Controller.DrawStyle;
+            var style = m_Cmd.Controller.DrawStyle;
             style.FillColor = Color.Magenta;
             style.Render(display, end);
         }

@@ -140,6 +140,14 @@ class EditingController : SpatialController
 
     #endregion
 
+    internal void SetMapModel(ISpatialModel model, IWindow initialDrawExtent)
+    {
+        InitializeMapModel(model, initialDrawExtent);
+
+        // Ensure the active display has focus (so that it reacts to any mouse-wheel events)
+        ActiveMap?.MapPanel?.Focus();
+    }
+
     public override void Close()
     {
         // Shut down any inverse calculator
@@ -157,18 +165,12 @@ class EditingController : SpatialController
         }
     }
 
-    public CadastralMapModel CadastralMapModel
-    {
-        get { return (this.MapModel as CadastralMapModel); }
-    }
+    public CadastralMapModel CadastralMapModel => MapModel as CadastralMapModel;
 
     /// <summary>
     /// Information about the current project
     /// </summary>
-    internal Project Project
-    {
-        get { return m_Project; }
-    }
+    internal Project Project => m_Project;
 
     /// <summary>
     /// Handles a mouse double click event by attempting to select a spatial object
@@ -281,7 +283,7 @@ class EditingController : SpatialController
         if (m_Sel==null)
         {
             m_Sel = new SelectionTool(this);
-            ActiveDisplay.MapPanel.Cursor = SelectionTool.Cursor;
+            ActiveMap.MapPanel.Cursor = SelectionTool.Cursor;
         }
 
         return m_Sel;
@@ -295,7 +297,7 @@ class EditingController : SpatialController
         if (m_Sel!=null)
         {
             m_Sel = null;
-            ActiveDisplay.MapPanel.Cursor = Cursors.Default;
+            ActiveMap.MapPanel.Cursor = Cursors.Default;
         }
     }
 
@@ -412,7 +414,7 @@ class EditingController : SpatialController
         if (k.KeyValue == (int)Keys.Delete && !IsCommandRunning && SpatialSelection.Count>0)
             StartCommand(new DeletionUI(null)); // and finishes!
 
-        if (k.KeyValue == (int)Keys.Escape && m_Command!=null && m_Command.ActiveDisplay==sender)
+        if (k.KeyValue == (int)Keys.Escape && m_Command!=null && m_Command.ActiveMap==sender)
             m_Command.Escape();
 
         if (!IsCommandRunning && k.Control)
@@ -485,7 +487,7 @@ class EditingController : SpatialController
         set { m_IsAutoSelect = (value==false ? 0 : 1); }
     }
 
-    public override void ShowContextMenu(ISpatialDisplay where, IPosition p)
+    private void ShowContextMenu(ISpatialGraphics where, IPosition p)
     {
         ContextMenuStrip menu = null;
         if (m_Command != null)
@@ -498,29 +500,16 @@ class EditingController : SpatialController
             where.ShowContextMenu(p, menu);
     }
 
-    internal IDrawStyle DrawStyle
-    {
-        get
-        {
-            var result = new DrawStyle();
-            InitializeDrawStyle(result);
-            return result;
-        }
-    }
+    internal IDrawStyle DrawStyle => new DrawStyle(PointHeight);
+    
+    internal ILength PointHeight => new Length(m_Project.Settings.PointHeight);
 
-    internal IDrawStyle Style(Color c)
-    {
-        var result = new DrawStyle();
-        InitializeDrawStyle(result);
-        result.LineColor = result.FillColor = c;
-        return result;
-    }
+    internal IDrawStyle Style(Color c) => new DrawStyle(c, PointHeight);
 
     internal IDrawStyle Style(HatchStyle hs, Color foreColor, Color backColor)
     {
-        DrawStyle result = new DrawStyle();
+        var result = new DrawStyle(PointHeight);
         result.Fill = new Fill(hs, foreColor, backColor);
-        InitializeDrawStyle(result);
         return result;
     }
 
@@ -528,20 +517,18 @@ class EditingController : SpatialController
     {
         get
         {
-            HighlightStyle style = new HighlightStyle();
-            style.ShowLineEndPoints = (SelectionCount==1 && m_Sel==null);
-            InitializeDrawStyle(style);
+            var style = new HighlightStyle(PointHeight);
+            style.ShowLineEndPoints = SelectionCount == 1 && m_Sel is null;
             return style;
         }
     }
-    public override void InitializeDrawStyle(IDrawStyle style)
-    {
-        style.PointHeight = new Length(m_Project.Settings.PointHeight);
-    }
 
-    public virtual void InitializeHighlightStyle(IDrawStyle style)
+    internal HighlightStyle CreateHighlightStyle()
     {
-        style.PointHeight = new Length(m_Project.Settings.PointHeight);
+        return new HighlightStyle(PointHeight)
+        {
+            ShowLineEndPoints = SelectionCount == 1 && m_Sel is null
+        };
     }
 
     private ISpatialObject SelectObject(ISpatialDisplay display, IPosition p, SpatialType spatialType)
@@ -633,10 +620,7 @@ class EditingController : SpatialController
         return null;
     }
 
-    internal ILayer ActiveLayer
-    {
-        get { return m_ActiveLayer; }
-    }
+    internal ILayer ActiveLayer => m_ActiveLayer;
 
     internal void StartCommand(CommandUI cmd)
     {
@@ -666,14 +650,14 @@ class EditingController : SpatialController
         // Make sure the normal cursor is on screen.
         SetNormalCursor();
 
-        cmd.ActiveDisplay.RestoreLastDraw();
+        cmd.ActiveMap.RestoreLastDraw();
         RedrawSelection();
 
         // Re-enable auto-highlighting if it was on before.
         if (m_IsAutoSelect<0)
             m_IsAutoSelect = -m_IsAutoSelect;
 
-        cmd.ActiveDisplay.PaintNow();
+        cmd.ActiveMap.PaintNow();
         m_Command.Dispose();
         m_Command = null;
     }
@@ -736,7 +720,7 @@ class EditingController : SpatialController
     /// </summary>
     void SetNormalCursor()
     {
-        ISpatialDisplay display = ActiveDisplay;
+        var display = ActiveMap;
         if (display!=null)
             display.MapPanel.Cursor = Cursors.Default;
     }
@@ -784,10 +768,7 @@ class EditingController : SpatialController
     /// <summary>
     /// Is a file check underway?
     /// </summary>
-    internal bool IsChecking
-    {
-        get { return (m_Check!=null); }
-    }
+    internal bool IsChecking => (m_Check!=null);
 
     /// <summary>
     /// Starts a new file check. Prior to call, you should ensure that a check is not already
@@ -913,20 +894,14 @@ class EditingController : SpatialController
     /// the display in question is the command display. Otherwise it's the currently
     /// active display.
     /// </summary>
-    internal bool ArePointsDrawn
-    {
-        get { return IsVisible(m_Project.Settings.ShowPointScale); }
-    }
+    internal bool ArePointsDrawn => IsVisible(m_Project.Settings.ShowPointScale);
 
     /// <summary>
     /// Are labels drawn in the display. If an editing command is currently running,
     /// the display in question is the command display. Otherwise it's the currently
     /// active display.
     /// </summary>
-    internal bool AreLabelsDrawn
-    {
-        get { return IsVisible(m_Project.Settings.ShowLabelScale); }
-    }
+    internal bool AreLabelsDrawn => IsVisible(m_Project.Settings.ShowLabelScale);
 
     /// <summary>
     /// Are line annotations drawn in the display. If an editing command is currently running,
@@ -952,7 +927,7 @@ class EditingController : SpatialController
     /// <returns>True if the scale of the active display is such that the items would be drawn</returns>
     bool IsVisible(double thresholdScale)
     {
-        ISpatialDisplay display = (m_Command==null ? ActiveDisplay : m_Command.ActiveDisplay);
+        var display = (m_Command==null ? ActiveMap : m_Command.ActiveMap);
         if (display==null)
             return false;
 
@@ -983,10 +958,7 @@ class EditingController : SpatialController
     /// <summary>
     /// The number of spatial objects that are currently selected
     /// </summary>
-    internal int SelectionCount
-    {
-        get { return SpatialSelection.Count; }
-    }
+    internal int SelectionCount => SpatialSelection.Count;
 
     /// <summary>
     /// Is a single spatial object of a specific type currently selected?
@@ -1017,18 +989,12 @@ class EditingController : SpatialController
     /// <summary>
     /// Is some sort of editing command currently active?
     /// </summary>
-    internal bool IsCommandRunning
-    {
-        get { return (m_Command!=null); }
-    }
+    internal bool IsCommandRunning => m_Command is not null;
 
     /// <summary>
     /// Is an inverse calculator currently active?
     /// </summary>
-    internal bool IsInverseCalculatorRunning
-    {
-        get { return (m_Inverse!=null); }
-    }
+    internal bool IsInverseCalculatorRunning => m_Inverse is not null;
 
     /// <summary>
     /// Starts the specified inverse calculation dialog.
@@ -1073,7 +1039,7 @@ class EditingController : SpatialController
     internal void OnIdle()
     {
         bool repaint = false;
-        ISpatialDisplay display = ActiveDisplay;
+        ISpatialGraphics display = ActiveMap;
 
         if (m_Inverse!=null)
         {
@@ -1089,13 +1055,24 @@ class EditingController : SpatialController
 
         if (m_Sel!=null)
         {
-            m_Sel.Render(display);
+            m_Sel.Render(ActiveMap);
             repaint = true;
         }
 
         if (m_Sel!=null || m_HasSelectionChanged)
         {
-            SpatialSelection.Render(display, HighlightStyle);
+            var mapDisplay = new MapDisplay(ActiveMap, CreateHighlightStyle());
+            SpatialSelection.Draw(mapDisplay);
+            
+            // TODO: The selection interface should be removed (don't pollute the core project with editor-specific stuff)
+            var divider = (SpatialSelection as Selection)?.Divider;
+            if (divider is not null)
+            {
+                var thinYellow = new DrawStyle(Color.Yellow);
+                mapDisplay = new MapDisplay(ActiveMap, thinYellow);
+                divider.Draw(mapDisplay);
+            }
+            
             repaint = true;
             m_HasSelectionChanged = false;
         }
@@ -1287,10 +1264,7 @@ class EditingController : SpatialController
     /// <summary>
     /// Style information for annotating lines.
     /// </summary>
-    internal LineAnnotationStyle LineAnnotationStyle
-    {
-        get { return Project.Settings.LineAnnotation; }
-    }
+    internal LineAnnotationStyle LineAnnotationStyle => Project.Settings.LineAnnotation;
 
     /// <summary>
     /// Gets the well known text for the coordinate system associated with the
@@ -1323,10 +1297,7 @@ class EditingController : SpatialController
     /// <summary>
     /// The database server (null if a database has not been specified).
     /// </summary>
-    internal IDataServer DataServer
-    {
-        get { return m_DataServer; }
-    }
+    internal IDataServer DataServer => m_DataServer;
 
     /// <summary>
     /// Defines (or clears) a database server.
@@ -1347,8 +1318,8 @@ class EditingController : SpatialController
     /// <summary>
     /// The main screen (largely comprised of a control for displaying the current map model).
     /// </summary>
-    internal Form MainForm
-    {
-        get { return m_Main; }
-    }
+    internal Form MainForm => m_Main;
+
+    // TODO: Should tighten this up (should ActiveDisplay even be part of the SpatialController xlass)
+    internal MapControl ActiveMap => (ActiveDisplay as MapControl)!;
 }

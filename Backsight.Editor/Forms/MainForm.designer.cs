@@ -168,7 +168,7 @@ namespace Backsight.Editor.Forms
             this.vSplitContainer = new System.Windows.Forms.SplitContainer();
             this.hSplitContainer = new System.Windows.Forms.SplitContainer();
             this.toolStripContainer = new System.Windows.Forms.ToolStripContainer();
-            this.mapControl = new Backsight.Forms.MapControl();
+            this.mapControl = new Backsight.Editor.Forms.MapControl();
             this.lineToolStrip = new System.Windows.Forms.ToolStrip();
             this.toolLineAddStraightLine = new System.Windows.Forms.ToolStripButton();
             this.toolLineAddCircularArc = new System.Windows.Forms.ToolStripButton();
@@ -2367,7 +2367,7 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem mnuViewPrevious;
         private System.Windows.Forms.ToolStripMenuItem mnuViewNext;
-        private Backsight.Forms.MapControl mapControl;
+        private Backsight.Editor.Forms.MapControl mapControl;
         private System.Windows.Forms.SplitContainer vSplitContainer;
         private System.Windows.Forms.SplitContainer hSplitContainer;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;

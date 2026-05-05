@@ -267,7 +267,7 @@ class ParallelLineUI : SimpleCommandUI, IDisposable
     internal void Draw()
     {
         Debug.Assert(m_Line!=null);
-        ISpatialDisplay view = ActiveDisplay;
+        var view = ActiveMap;
 
         // Figure out the positions for the ends of the parallel line (if any) ...
 
@@ -302,8 +302,8 @@ class ParallelLineUI : SimpleCommandUI, IDisposable
             m_OffsetPoint.Draw(view, Color.Green);
 
         // Everything else should draw in usual command-style colour.
-        IDrawStyle style = EditingController.Current.Style(Color.Magenta);
-        IDrawStyle dottedStyle = new DottedStyle();
+        var style = EditingController.Current.Style(Color.Magenta);
+        var dottedStyle = new DottedStyle();
 
         // If the reference line is a curve, get the curve info.
         ArcFeature arc = m_Line.GetArcBase();
@@ -343,9 +343,9 @@ class ParallelLineUI : SimpleCommandUI, IDisposable
                 IPosition before = Geom.Polar(start, bearing+Constants.PI, maxdiag);
                 IPosition after = Geom.Polar(end, bearing, maxdiag);
 
-                LineSegmentGeometry.Render(before, start, view, dottedStyle);
-                LineSegmentGeometry.Render(start, end, view, style);
-                LineSegmentGeometry.Render(end, after, view, dottedStyle);
+                dottedStyle.Render(view, new[] { before, start });
+                style.Render(view, new[] { start, end });
+                dottedStyle.Render(view, new[] { end, after });
             }
         }
 
@@ -455,7 +455,7 @@ class ParallelLineUI : SimpleCommandUI, IDisposable
         // from it, delete it, and go to the dialog for the first
         // terminal line.
 
-        ISpatialDisplay view = ActiveDisplay;
+        var view = ActiveMap;
         UpdateUI up = this.Update;
 
         if (m_ParDial!=null)

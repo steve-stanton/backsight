@@ -14,7 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
-using Backsight.Forms;
+using Backsight.Editor.Forms;
 using Backsight.Editor.Operations;
 
 namespace Backsight.Editor.UI;

@@ -190,7 +190,7 @@ partial class GetPointForm : Form
     {
         // Draw the point in the correct color.
         if (m_Point!=null)
-            m_Point.Draw(m_Parent.ActiveDisplay, m_Color);
+            m_Point.Draw(m_Parent.ActiveMap, m_Color);
     }
 
     /// <summary>

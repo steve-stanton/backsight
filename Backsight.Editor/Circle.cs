@@ -25,8 +25,6 @@ namespace Backsight.Editor;
 /// <seealso cref="Backsight.Geometry.CircleGeometry"/>
 class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
 {
-    #region Class data
-
     /// <summary>
     /// The radius of the circle, in meters
     /// </summary>
@@ -47,10 +45,6 @@ class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
     /// </summary>
     private bool IsIndexed { get; set; }
 
-    #endregion
-
-    #region Constructors
-
     /// <summary>
     /// Creates a new <c>Circle</c> with the specified center and radius.
     /// </summary>
@@ -64,10 +58,6 @@ class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
         IsIndexed = false;
     }
 
-    #endregion
-
-    #region ISpatialObject Members
-
     /// <summary>
     /// Value denoting the spatial object type.
     /// </summary>
@@ -76,14 +66,16 @@ class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
         get { return SpatialType.Line; }
     }
 
-    /// <summary>
-    /// Draws this object on the specified display
-    /// </summary>
-    /// <param name="display">The display to draw to</param>
-    /// <param name="style">The drawing style</param>
+    /*
     public void Render(ISpatialDisplay display, IDrawStyle style)
     {
         CircleGeometry.Render(this, display, style);
+    }
+*/
+    /// <inheritdoc/>
+    public void Draw(IMapDisplay mapDisplay)
+    {
+        mapDisplay.DrawCircle(Center, Radius);
     }
 
     /// <summary>
@@ -104,10 +96,6 @@ class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
         return CircleGeometry.Distance(this, point);
     }
 
-    #endregion
-
-    #region IFeatureDependent Members
-
     /// <summary>
     /// Performs any processing that needs to be done just before the position of
     /// a referenced feature is changed.
@@ -124,8 +112,6 @@ class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
             this.IsIndexed = false;
         }
     }
-
-    #endregion
 
     /// <summary>
     /// Records this circle as part of the spatial index in the current map model.
@@ -158,8 +144,6 @@ class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
         return new Feature[] { m_Center };
     }
 
-    #region ICircleGeometry Members
-
     /// <summary>
     /// The position of the center of the circle.
     /// </summary>
@@ -176,8 +160,6 @@ class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
         get { return m_Radius; }
         internal set { m_Radius = value; }
     }
-
-    #endregion
 
     /// <summary>
     /// Associates an arc with this circle.
@@ -245,10 +227,7 @@ class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
     /// <summary>
     /// The point at the center of this circle.
     /// </summary>
-    internal PointFeature CenterPoint
-    {
-        get { return m_Center; }
-    }
+    internal PointFeature CenterPoint => m_Center;
 
     /// <summary>
     /// The operation that created this circle is the operation that created
@@ -394,8 +373,5 @@ class Circle : ISpatialObject, ICircleGeometry, IFeatureDependent
     /// The first arc associated with this circle (null if no arcs are currently
     /// associated with this circle).
     /// </summary>
-    internal ArcFeature FirstArc
-    {
-        get { return (m_Arcs.Count > 0 ? m_Arcs[0] : null); }
-    }
+    internal ArcFeature FirstArc => (m_Arcs.Count > 0 ? m_Arcs[0] : null);
 }

@@ -137,24 +137,13 @@ class Selection : ISpatialSelection
     }
 
     /// <summary>
-    /// Draws the content of this selection. This calls the version implemented by
-    /// the base class, and may then draw a thin yellow line on top (if the selection
-    /// refers to a single topological line that has been divided into sections).
+    /// Draws the items in this selection.
     /// </summary>
     /// <param name="display">The display to draw to</param>
-    /// <param name="style">The drawing style to use</param>
-    public void Render(ISpatialDisplay display, IDrawStyle style)
+    public void Draw(IMapDisplay display)
     {
-        // Draw items the normal way
         foreach (ISpatialObject item in m_Items)
-            item.Render(display, style);
-
-        // Highlight any topological section with a thin yellow overlay.
-        if (m_Section!=null)
-        {
-            IDrawStyle thinYellow = new DrawStyle(Color.Yellow);
-            m_Section.Render(display, thinYellow);
-        }
+            display.Draw(item);
     }
 
     /// <summary>
@@ -202,11 +191,12 @@ class Selection : ISpatialSelection
     /// defined only if the selection refers to a single topological line that has
     /// been divided into a series of sections.
     /// </summary>
-    protected IDivider Section
+    public IDivider Section
     {
         get { return m_Section.Divider; }
         set { m_Section = new DividerObject(value); }
     }
+    internal DividerObject Divider => m_Section;
 
     /// <summary>
     /// Adds a spatial object to this selection, given that it is not already

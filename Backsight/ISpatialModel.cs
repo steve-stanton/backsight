@@ -26,13 +26,6 @@ public interface ISpatialModel : IExpandablePropertyItem
     string Name { get; }
 
     /// <summary>
-    /// Draws this model on the specified display
-    /// </summary>
-    /// <param name="display">The display to render to</param>
-    /// <param name="style">The display style to use</param>
-    void Render(ISpatialDisplay display, IDrawStyle style);
-
-    /// <summary>
     /// Is this model currently empty?
     /// </summary>
     bool IsEmpty { get; }
@@ -55,4 +48,10 @@ public interface ISpatialModel : IExpandablePropertyItem
     /// The coordinate system for model positions.
     /// </summary>
     ISpatialSystem SpatialSystem { get; }
+    
+    /// <summary>
+    /// Draws the model on a map display.
+    /// </summary>
+    /// <param name="mapDisplay">The display where the map model should be rendered.</param>
+    void Draw(IMapDisplay mapDisplay);
 }

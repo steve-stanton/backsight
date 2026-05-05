@@ -226,8 +226,8 @@ partial class LineSubdivisionUpdateForm : Form
     internal void Draw()
     {
         // Draw the features originally created by the op in gray.
-        ISpatialDisplay display = m_UpdCmd.ActiveDisplay;
-        IDrawStyle style = m_UpdCmd.Controller.Style(Color.Gray);
+        var display = m_UpdCmd.ActiveMap;
+        var style = m_UpdCmd.Controller.Style(Color.Gray);
         style.IsFixed = true;
         m_pop.Render(display, style, true);
 

@@ -15,6 +15,7 @@
 
 using System.Drawing;
 using System.Windows.Forms;
+using Backsight.Editor.Forms;
 using Backsight.Forms;
 
 namespace Backsight.Editor;
@@ -204,7 +205,7 @@ class SelectionTool
     /// Draws the limit line (if it contains at least 2 positions)
     /// </summary>
     /// <param name="display">The display to draw to</param>
-    internal void Render(ISpatialDisplay display)
+    internal void Render(MapControl display)
     {
         if (m_Limit==null || m_Limit.Count==0 || m_Mouse==null)
             return;
@@ -227,9 +228,9 @@ class SelectionTool
         // Draw any limit line selection
         if (m_LimSel.Count>0)
         {
-            HighlightStyle style = new HighlightStyle();
-            style.ShowLineEndPoints = false;
-            new SpatialSelection(m_LimSel).Render(display, style);
+            var style = new HighlightStyle { ShowLineEndPoints = false };
+            var mapDisplay = new MapDisplay(display, style);
+            new SpatialSelection(m_LimSel).Draw(mapDisplay);
         }
     }
 }

@@ -15,6 +15,7 @@
 
 using System.Diagnostics;
 using Backsight.Environment;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -195,7 +196,7 @@ class Polygon : Ring
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    public override void Render(ISpatialDisplay display, IDrawStyle style)
+    public override void Render(ISpatialGraphics display, IDrawStyle style)
     {
         // For any circular arcs, we will need to determine a suitable
         // arc tolerance, based on the current draw scale. Try 0.1mm at scale.

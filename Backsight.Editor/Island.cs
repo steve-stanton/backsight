@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Diagnostics;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -122,7 +123,7 @@ class Island : Ring
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    public override void Render(ISpatialDisplay display, IDrawStyle style)
+    public override void Render(ISpatialGraphics display, IDrawStyle style)
     {
         RenderOutline(display, style);
     }

@@ -13,6 +13,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using Backsight.Editor.Forms;
+using Backsight.Forms;
+
 namespace Backsight.Editor;
 
 /// <written by="Steve Stanton" on="21-AUG-2007" />
@@ -90,18 +93,12 @@ abstract class Ring : RingMetrics, ISpatialObject
     /// The area of this ring, excluding any islands. This version is suitable only for
     /// rings that are instances of <c>Island</c> (the <c>Polygon</c> class overrides).
     /// </summary>
-    internal virtual double AreaExcludingIslands
-    {
-        get { return Area; }
-    }
+    internal virtual double AreaExcludingIslands => Area;
 
     /// <summary>
     /// The dividers defining the edge of the ring.
     /// </summary>
-    internal IDivider[] Edge
-    {
-        get { return m_Edge; }
-    }
+    internal IDivider[] Edge => m_Edge;
 
     /// <summary>
     /// Returns the user-perceived polygon associated with this ring. For instances of
@@ -116,9 +113,17 @@ abstract class Ring : RingMetrics, ISpatialObject
     /// The spatial type is <c>Polygon</c> for both the <see cref="Polygon"/>
     /// and the <see cref="Island"/> classes.
     /// </summary>
-    public SpatialType SpatialType
+    public SpatialType SpatialType => SpatialType.Polygon;
+
+    /// <inheritdoc cref="ISpatialObject.Draw"/>
+    public void Draw(IMapDisplay mapDisplay)
     {
-        get { return SpatialType.Polygon; }
+        // TODO: Fix hack (should ISpatialObject even specify a Draw method)
+        var display = mapDisplay as MapDisplay;
+        if (display is null)
+            throw new NotSupportedException();
+        
+        Render(display.Display, display.Style);
     }
 
     /// <summary>
@@ -126,14 +131,14 @@ abstract class Ring : RingMetrics, ISpatialObject
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    abstract public void Render(ISpatialDisplay display, IDrawStyle style);
+    public abstract void Render(ISpatialGraphics display, IDrawStyle style);
 
     /// <summary>
     /// Draws the edge of this ring.
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    internal void RenderOutline(ISpatialDisplay display, IDrawStyle style)
+    internal void RenderOutline(ISpatialGraphics display, IDrawStyle style)
     {
         foreach (IDivider d in m_Edge)
         {

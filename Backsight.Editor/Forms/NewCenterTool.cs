@@ -13,7 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Forms;
+namespace Backsight.Editor.Forms;
 
 /// <summary>
 /// Tool to define a new map centre
@@ -31,7 +31,7 @@ class NewCenterTool : SpatialDisplayTool
 
     public override bool Start()
     {
-        this.MapControl.SetCursor(MapResources.NewCenterCursor);
+        this.MapControl.SetCursor(EditorResources.NewCenterCursor);
         return true;
     }
 

@@ -97,7 +97,7 @@ class RingCheck : CheckItem
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
-    internal override void Render(ISpatialDisplay display, IDrawStyle style)
+    internal override void Render(ISpatialGraphics display, IDrawStyle style)
     {
         // Return if the polygon doesn't overlap the draw.
         IWindow win = m_Ring.Extent;
@@ -185,11 +185,11 @@ class RingCheck : CheckItem
     /// to identify polygons that are actually unclosed lines or networks.
     /// </summary>
     /// <param name="display">The display to draw to</param>
-    internal override void HighlightCheckedItem(ISpatialDisplay display)
+    internal override void HighlightCheckedItem(ISpatialGraphics display)
     {
         if ((Types & CheckType.SmallPolygon)!=0)
         {
-            IDrawStyle style = new DrawStyle(Color.Orange);
+            var style = new DrawStyle(Color.Orange);
             m_Ring.RenderOutline(display, style);
         }
     }
@@ -208,7 +208,7 @@ class RingCheck : CheckItem
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
     /// <param name="newTypes">The new results</param>
-    internal override void PaintOut(ISpatialDisplay display, IDrawStyle style, CheckType newTypes)
+    internal override void PaintOut(ISpatialGraphics display, IDrawStyle style, CheckType newTypes)
     {
         IPosition p = this.Place;
         double shift = IconSize(display);

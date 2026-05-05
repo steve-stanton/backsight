@@ -45,7 +45,7 @@ abstract class CommandUI : IDisposable
     /// <summary>
     /// The active display at the time the command was started.
     /// </summary>
-    private readonly ISpatialDisplay m_Draw;
+    private readonly ISpatialGraphics m_Draw;
 
     /// <summary>
     /// The object (if any) that was selected for update (usually an <c>IFeature</c>)
@@ -86,7 +86,7 @@ abstract class CommandUI : IDisposable
     protected CommandUI(IControlContainer cc, IUserAction cmdId, ISpatialObject update, Operation recall)
     {
         m_Container = cc;
-        m_Draw = EditingController.Current.ActiveDisplay;
+        m_Draw = EditingController.Current.ActiveMap;
         //m_Update = update;
         m_UpdCmd = null;
         m_Recall = recall;
@@ -116,7 +116,7 @@ abstract class CommandUI : IDisposable
         m_Container = cc;
         m_EditId = editId;
         m_UpdCmd = updcmd;
-        m_Draw = updcmd.ActiveDisplay;
+        m_Draw = updcmd.ActiveMap;
         //m_Update = updcmd.SelectedObject;
         m_Recall = null;
         /*
@@ -168,11 +168,7 @@ abstract class CommandUI : IDisposable
     /// <returns>The context menu (null if the command does not utilize a context menu).</returns>
     abstract internal ContextMenuStrip CreateContextMenu();
 
-    internal ISpatialDisplay ActiveDisplay
-    {
-        get { return m_Draw; }
-        //protected set { m_Draw = value; }
-    }
+    internal ISpatialGraphics ActiveMap => m_Draw;
 
     internal IControlContainer Container
     {
@@ -428,7 +424,7 @@ abstract class CommandUI : IDisposable
     {
         get
         {
-            ISpatialDisplay display = ActiveDisplay;
+            var display = ActiveMap;
             IWindow x = display.MaxExtent;
             return Geom.Distance(x.Min, x.Max);
         }
@@ -465,7 +461,7 @@ abstract class CommandUI : IDisposable
     /// <returns>The corresponding screen position</returns>
     internal Point GetScreenPoint(IPosition p)
     {
-        ISpatialDisplay d = ActiveDisplay;
+        var d = ActiveMap;
         int x = (int)d.EastingToDisplay(p.X);
         int y = (int)d.NorthingToDisplay(p.Y);
         Control c = d.MapPanel;
@@ -507,8 +503,8 @@ abstract class CommandUI : IDisposable
     {
         if (line!=null)
         {
-            IDrawStyle style = Controller.HighlightStyle;
-            ISpatialDisplay display = ActiveDisplay;
+            var style = Controller.HighlightStyle;
+            var display = ActiveMap;
             line.Render(display, style);
         }
     }

@@ -37,11 +37,6 @@ public interface ISpatialDisplay
     double MapScale { get; set; }
 
     /// <summary>
-    /// The surface on which to draw
-    /// </summary>
-    Graphics Graphics { get; }
-
-    /// <summary>
     /// Converts an easting into display units
     /// </summary>
     /// <param name="x">The easting to convert</param>
@@ -120,17 +115,4 @@ public interface ISpatialDisplay
     /// The position at the center of the display (when set, the display will be redrawn).
     /// </summary>
     IPosition Center { get; set; }
-
-    /// <summary>
-    /// Displays a context menu
-    /// </summary>
-    /// <param name="p">The position where the menu should appear</param>
-    /// <param name="menu">The menu to display</param>
-    void ShowContextMenu(IPosition p, ContextMenuStrip menu);
-
-    /// <summary>
-    /// The panel holding the display. You might need this to do low-level things
-    /// like working out screen positions.
-    /// </summary>
-    Control MapPanel { get; }
 }

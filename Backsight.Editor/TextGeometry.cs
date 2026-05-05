@@ -229,12 +229,6 @@ abstract class TextGeometry : IString, IPersistent
         }
     }
 
-    public void Render(ISpatialDisplay display, IDrawStyle style)
-    {
-        style.Render(display, this);
-        //style.Render(display, this.Outline); // debug
-    }
-
     public Font CreateFont(ISpatialDisplay display)
     {
         double ght = (double)m_Height;

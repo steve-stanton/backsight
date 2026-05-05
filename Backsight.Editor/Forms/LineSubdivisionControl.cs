@@ -258,7 +258,7 @@ public partial class LineSubdivisionControl : UserControl
     internal void Draw()
     {
         // Highlight the line we are subdividing
-        ISpatialDisplay draw = m_Cmd.ActiveDisplay;
+        var draw = m_Cmd.ActiveMap;
         //IDrawStyle style = EditingController.Current.HighlightStyle;
         //m_Line.Render(draw, style);
 
@@ -269,7 +269,7 @@ public partial class LineSubdivisionControl : UserControl
 
         if (pts!=null)
         {
-            IDrawStyle style = EditingController.Current.Style(Color.Magenta);
+            var style = EditingController.Current.Style(Color.Magenta);
 
             for (int i=0; i<pts.Count-1; i++)
                 style.Render(draw, pts[i]);

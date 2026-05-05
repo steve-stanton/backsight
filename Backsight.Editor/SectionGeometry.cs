@@ -14,6 +14,7 @@
 // </remarks>
 
 using Backsight.Editor.Observations;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -113,15 +114,9 @@ class SectionGeometry : LineGeometry, ISection
         return SectionBase.Section(this);
     }
 
-    public override ILength Length
-    {
-        get { return Make().Length; }
-    }
+    public override ILength Length => Make().Length;
 
-    public override IWindow Extent
-    {
-        get { return Make().Extent; }
-    }
+    public override IWindow Extent => Make().Extent;
 
     public override ILength Distance(IPosition point)
     {
@@ -163,9 +158,14 @@ class SectionGeometry : LineGeometry, ISection
         return Make().GetOrient(fromStart, crvDist);
     }
 
-    internal override void Render(ISpatialDisplay display, IDrawStyle style)
+    internal override void Render(ISpatialGraphics display, IDrawStyle style)
     {
         Make().Render(display, style);
+    }
+
+    internal override void Draw(IMapDisplay display)
+    {
+        Make().Draw(display);
     }
 
     /// <summary>
@@ -176,7 +176,7 @@ class SectionGeometry : LineGeometry, ISection
     /// <param name="dist">The observed distance (if any).</param>
     /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
     /// actual distance.</param>
-    internal override void RenderDistance(ISpatialDisplay display, IDrawStyle style,
+    internal override void RenderDistance(ISpatialGraphics display, IDrawStyle style,
         Distance dist, bool drawObserved)
     {
         Make().RenderDistance(display, style, dist, drawObserved);

@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Forms;
 
 namespace Backsight.Editor.Forms;
 
@@ -256,7 +257,7 @@ partial class CheckReviewForm : Form
         previousButton.Visible = okButton.Visible = false;
     }
 
-    internal void Render(ISpatialDisplay display, IDrawStyle style)
+    internal void Render(ISpatialGraphics display, IDrawStyle style)
     {
         if (m_nCurrent >= 0 && m_nCurrent < m_nTotal)
         {

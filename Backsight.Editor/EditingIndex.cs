@@ -15,6 +15,7 @@
 
 using System.Diagnostics;
 using System.Drawing;
+using Backsight.Forms;
 using Backsight.Index;
 
 namespace Backsight.Editor;
@@ -188,12 +189,9 @@ class EditingIndex : SpatialIndex
     /// <summary>
     /// Draws intersection points
     /// </summary>
-    /// <param name="display">The display to draw to</param>
-    internal void DrawIntersections(ISpatialDisplay display)
+    /// <param name="mapDisplay">The display to draw to</param>
+    internal void DrawIntersections(IMapDisplay mapDisplay)
     {
-        IDrawStyle style = EditingController.Current.DrawStyle;
-        style.FillColor = Color.Transparent;
-        new DrawQuery(m_ExtraData, display, style, SpatialType.Point);
+        new DrawQuery(m_ExtraData, mapDisplay, SpatialType.Point);
     }
-
 }

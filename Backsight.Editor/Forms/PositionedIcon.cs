@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Drawing;
+using Backsight.Forms;
 
 namespace Backsight.Editor.Forms;
 
@@ -61,7 +62,7 @@ class PositionedIcon
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for doing the draw</param>
-    internal void Render(ISpatialDisplay display, IDrawStyle style)
+    internal void Render(ISpatialGraphics display, IDrawStyle style)
     {
         style.Render(display, m_Position, m_Icon);
     }

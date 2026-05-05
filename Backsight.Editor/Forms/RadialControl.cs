@@ -19,6 +19,7 @@ using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
 using Backsight.Editor.UI;
 using Backsight.Environment;
+using Backsight.Forms;
 
 namespace Backsight.Editor.Forms;
 
@@ -166,19 +167,19 @@ public partial class RadialControl : UserControl
 
     internal void Draw()
     {
-        ISpatialDisplay view = m_Cmd.ActiveDisplay;
+        var view = m_Cmd.ActiveMap;
         DrawPoints();
 
         if (m_Dir!=null)
             m_Dir.Render(view);
 
-        IDrawStyle style = EditingController.Current.DrawStyle;
+        var style = EditingController.Current.DrawStyle;
         DrawIfDefined(m_To, view, style, Color.Magenta);
 
         if (m_To!=null && m_WantLine)
         {
             style.LineColor = Color.Magenta;
-            style.Render(view, new IPosition[] { m_From, m_To });
+            style.Render(view, m_From, m_To);
         }
     }
 
@@ -551,15 +552,15 @@ public partial class RadialControl : UserControl
             return;
 
         // Get the view to draw the point in its normal color.
-        ISpatialDisplay view = m_Cmd.ActiveDisplay;
-        IDrawStyle style = m_Cmd.Controller.DrawStyle;
+        var view = m_Cmd.ActiveMap;
+        var style = m_Cmd.Controller.DrawStyle;
         point.Render(view, style);
     }
 
     void DrawPoints()
     {            
-        ISpatialDisplay view = m_Cmd.ActiveDisplay;
-        IDrawStyle style = m_Cmd.Controller.DrawStyle;
+        var view = m_Cmd.ActiveMap;
+        var style = m_Cmd.Controller.DrawStyle;
 
         DrawIfDefined(m_From, view, style, Color.Cyan);
         DrawIfDefined(m_Backsight, view, style, Color.DarkBlue);
@@ -573,7 +574,7 @@ public partial class RadialControl : UserControl
             DrawIfDefined(m_Offset.Point, view, style, Color.Gray);
     }
 
-    void DrawIfDefined(IPosition point, ISpatialDisplay display, IDrawStyle style, Color col)
+    void DrawIfDefined(IPosition point, ISpatialGraphics display, IDrawStyle style, Color col)
     {
         if (point!=null)
         {

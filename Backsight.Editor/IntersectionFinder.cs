@@ -13,6 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using Backsight.Forms;
+
 namespace Backsight.Editor;
 
 /// <written by="Steve Stanton" on="13-FEB-1998" was="CeXObject" />
@@ -153,7 +155,7 @@ class IntersectionFinder
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    internal void Render(ISpatialDisplay display, IDrawStyle style)
+    internal void Render(ISpatialGraphics display, IDrawStyle style)
     {
         foreach (IntersectionResult r in m_Intersects)
             r.Render(display, style);

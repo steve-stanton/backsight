@@ -15,6 +15,7 @@
 
 using System.Diagnostics;
 using Backsight.Environment;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -210,11 +211,17 @@ class PointFeature : Feature, IPoint, ITerminal, IPersistent
     {
         m_Geom = value;
     }
-
-    public override void Render(ISpatialDisplay display, IDrawStyle style)
+    
+    public override void Render(ISpatialGraphics display, IDrawStyle style)
+    {
+        style.Render(display, m_Geom);
+    }
+    
+    /// <inheritdoc cref="ISpatialObject.Draw"/>
+    public override void Draw(IMapDisplay mapDisplay)
     {
         if (!IsTrimPoint())
-            m_Geom.Render(display, style);
+            mapDisplay.DrawPoint(m_Geom);
     }
 
     /// <summary>

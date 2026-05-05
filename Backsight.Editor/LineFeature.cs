@@ -234,25 +234,19 @@ class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersistent
     /// <summary>
     /// The point feature at the start of the line.
     /// </summary>
-    internal PointFeature StartPoint
-    {
-        get { return m_From; }
-    }
+    internal PointFeature StartPoint => m_From;
 
     /// <summary>
     /// The point feature at the end of the line.
     /// </summary>
-    internal PointFeature EndPoint
-    {
-        get { return m_To; }
-    }
-
+    internal PointFeature EndPoint => m_To;
+    
     /// <summary>
     /// Draws this object on the specified display
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    public override void Render(ISpatialDisplay display, IDrawStyle style)
+    public override void Render(ISpatialGraphics display, IDrawStyle style)
     {
         EditingController ec = EditingController.Current;
 
@@ -329,7 +323,7 @@ class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersistent
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    void RenderLine(ISpatialDisplay display, IDrawStyle style)
+    void RenderLine(ISpatialGraphics display, IDrawStyle style)
     {
         // If we're dealing with a line that's been divided into at least two sections,
         // and the line is marked as trimmed, ensure we only render the non-dangling
@@ -341,18 +335,18 @@ class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersistent
             m_Geom.Render(display, style);
          */
 
-        if (m_Topology is SectionTopologyList)
+        if (m_Topology is SectionTopologyList sectionList)
         {
             if (IsTrimmed)
-                (m_Topology as SectionTopologyList).RenderTrimmed(display, style);
+                sectionList.RenderTrimmed(display, style);
             else
             {
                 foreach (IDivider d in m_Topology)
                     RenderDivider(d, display, style);
             }
         }
-        else if (m_Topology is IDivider && !style.IsFixed)
-            RenderDivider(m_Topology as IDivider, display, style);
+        else if (m_Topology is IDivider divider && !style.IsFixed)
+            RenderDivider(divider, display, style);
         else
             m_Geom.Render(display, style);
     }
@@ -364,7 +358,7 @@ class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersistent
     /// be the entire line)</param>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    internal void RenderDivider(IDivider d, ISpatialDisplay display, IDrawStyle style)
+    internal void RenderDivider(IDivider d, ISpatialGraphics display, IDrawStyle style)
     {
         // If we're highlightling, don't attempt to pick up any other display color
         if (style is HighlightStyle || style.IsFixed)

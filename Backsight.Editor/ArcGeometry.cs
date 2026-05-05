@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.Drawing;
 using Backsight.Geometry;
 using Backsight.Editor.Observations;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
@@ -285,7 +286,12 @@ class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry, IFeatureRef
         return Geom.Polar(centre, bearing, radius);
     }
 
-    internal override void Render(ISpatialDisplay display, IDrawStyle style)
+    internal override void Render(ISpatialGraphics display, IDrawStyle style)
+    {
+        style.Render(display, this);
+    }
+    
+    internal override void Draw(IMapDisplay display)
     {
         // At scales larger than 1:1000, it may be advisable to draw an approximation (since
         // the drawing methods tend to reveal small non-existent glitches at larger scales)...
@@ -297,9 +303,10 @@ class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry, IFeatureRef
         IPointGeometry[] pts = CircularArcGeometry.GetApproximation(this, tol);
         new LineStringGeometry(pts).Render(display, style);
          */
-        CircularArcGeometry.Render(this, display, style);
+        
+        display.DrawArc(this);
     }
-
+    
     /// <summary>
     /// Draws a distance alongside this line.
     /// </summary>
@@ -308,7 +315,7 @@ class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry, IFeatureRef
     /// <param name="dist">The observed distance (if any).</param>
     /// <param name="drawObserved">Draw observed distance? Specify <c>false</c> for
     /// actual distance.</param>
-    internal override void RenderDistance(ISpatialDisplay display, IDrawStyle style,
+    internal override void RenderDistance(ISpatialGraphics display, IDrawStyle style,
         Distance dist, bool drawObserved)
     {
         Annotation a = GetAnnotation(dist, drawObserved);

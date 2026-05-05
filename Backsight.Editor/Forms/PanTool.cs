@@ -13,7 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Forms;
+namespace Backsight.Editor.Forms;
 
 class PanTool : SpatialDisplayTool
 {
@@ -31,7 +31,7 @@ class PanTool : SpatialDisplayTool
 
     public override bool Start()
     {
-        this.MapControl.SetCursor(MapResources.StartPanCursor);
+        this.MapControl.SetCursor(EditorResources.StartPanCursor);
         m_LastPanPosition = null;
         return true;
     }
@@ -43,7 +43,7 @@ class PanTool : SpatialDisplayTool
         if (b == MouseButton.Left)
         {
             m_LastPanPosition = p;
-            this.MapControl.SetCursor(MapResources.PanCursor);
+            this.MapControl.SetCursor(EditorResources.PanCursor);
         }
     }
 
@@ -52,7 +52,7 @@ class PanTool : SpatialDisplayTool
         if (b == MouseButton.Left)
         {
             m_LastPanPosition = null;
-            this.MapControl.SetCursor(MapResources.StartPanCursor);
+            this.MapControl.SetCursor(EditorResources.StartPanCursor);
             this.MapControl.Draw(true);
         }
         else

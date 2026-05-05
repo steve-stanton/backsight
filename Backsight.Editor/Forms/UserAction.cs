@@ -13,7 +13,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Forms;
+using System.Windows.Forms;
+
+namespace Backsight.Editor.Forms;
 
 /// <written by="Steve Stanton" on="14-SEP-2006" />
 /// <summary>
@@ -27,7 +29,7 @@ namespace Backsight.Forms;
 /// COMMAND and UPDATE_COMMAND_UI handlers). The implementation here provides a bare-bones
 /// replacement.
 /// </summary>
-public class UserAction : IUserAction
+class UserAction : IUserAction
 {
     /// <summary>
     /// Method that will be called to determine whether the action is currently allowed.

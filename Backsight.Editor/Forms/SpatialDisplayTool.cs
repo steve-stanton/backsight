@@ -13,7 +13,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Forms;
+using System.Windows.Forms;
+using Backsight.Forms;
+
+namespace Backsight.Editor.Forms;
 
 abstract class SpatialDisplayTool : ISpatialDisplayTool
 {

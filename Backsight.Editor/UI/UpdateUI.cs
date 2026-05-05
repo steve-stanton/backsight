@@ -160,7 +160,7 @@ class UpdateUI : SimpleCommandUI
 
         // Draw stuff.
         Draw();
-        ActiveDisplay.PaintNow();
+        ActiveMap.PaintNow();
         return true;
     }
 
@@ -179,14 +179,14 @@ class UpdateUI : SimpleCommandUI
         Operation[] deps = pop.MapModel.Touch(pop);
 
         // Draw the features that were created by the dependent edits
-        ISpatialDisplay display = ActiveDisplay;
-        IDrawStyle style = Controller.Style(Color.Magenta);
+        var display = ActiveMap;
+        var style = Controller.Style(Color.Magenta);
         style.IsFixed = true;
         foreach (Operation d in deps)
             d.Render(display, style, true);
 
         // List the dependent operations.
-        using (ListOperationsForm dial = new ListOperationsForm(deps))
+        using (var dial = new ListOperationsForm(deps))
         {
             dial.ShowDialog();
         }
@@ -267,7 +267,7 @@ class UpdateUI : SimpleCommandUI
                 Run(m_SelectedFeature);
 
             m_Info.OnFinishUpdate(null);
-            ActiveDisplay.Redraw();
+            ActiveMap.Redraw();
         }
         else
         {
@@ -343,8 +343,8 @@ class UpdateUI : SimpleCommandUI
 
         // Draw the features that were created by the operation that created the feature
         // selected for update.
-        ISpatialDisplay display = ActiveDisplay;
-        IDrawStyle style = Controller.Style(Color.Magenta);
+        var display = ActiveMap;
+        var style = Controller.Style(Color.Magenta);
         style.IsFixed = true;
         op.Render(display, style, true);
 
@@ -616,7 +616,7 @@ class UpdateUI : SimpleCommandUI
             model.CleanEdit();
 
             // Re-center on the problem edit if it's off-screen
-            ISpatialDisplay display = base.ActiveDisplay;
+            var display = base.ActiveMap;
             IPosition newCenter = m_Problem.GetRecenter(display.Extent);
             if (newCenter != null)
                 display.Center = newCenter;

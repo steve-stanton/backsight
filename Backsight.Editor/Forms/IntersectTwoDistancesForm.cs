@@ -65,19 +65,19 @@ partial class IntersectTwoDistancesForm : IntersectForm
             IPosition x = intersectInfo.Intersection;
             if (x!=null)
             {
-                ISpatialDisplay display = GetCommand().ActiveDisplay;
-                IDrawStyle style = EditingController.Current.Style(Color.Magenta);
+                var display = GetCommand().ActiveMap;
+                var style = EditingController.Current.Style(Color.Magenta);
 
                 if (getDistance1.LineType!=null)
                 {
                     PointFeature p = getDistance1.From;
-                    style.Render(display, new IPosition[] { p, x });
+                    style.Render(display, p, x);
                 }
 
                 if (getDistance2.LineType!=null)
                 {
                     PointFeature p = getDistance2.From;
-                    style.Render(display, new IPosition[] { p, x });
+                    style.Render(display, p, x);
                 }
             }
         }

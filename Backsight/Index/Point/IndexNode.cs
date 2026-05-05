@@ -149,10 +149,7 @@ class IndexNode : Node
     /// <summary>
     /// Is this node empty (containing no child nodes)
     /// </summary>
-    internal override bool IsEmpty
-    {
-        get { return (m_Children.Count==0); }
-    }
+    internal override bool IsEmpty => (m_Children.Count==0);
 
     /// <summary>
     /// Queries the specified search extent. For child nodes that are completely
@@ -190,26 +187,9 @@ class IndexNode : Node
     }
 
     /// <summary>
-    /// Draws the outline of all child nodes (if the child is also an
-    /// instance of <see cref="IndexNode"/>, this will just cause further
-    /// drilldown - something will only get drawn if the child is an
-    /// instance of some other class).
-    /// </summary>
-    /// <param name="display">The display to draw to.</param>
-    /// <param name="style">The style for the draw.</param>
-    internal override void Render(ISpatialDisplay display, IDrawStyle style)
-    {
-        foreach (Node n in m_Children)
-            n.Render(display, style);
-    }
-
-    /// <summary>
     /// The number of child nodes associated with this node.
     /// </summary>
-    internal override uint Count
-    {
-        get { return (uint)m_Children.Count; }
-    }
+    internal override uint Count => (uint)m_Children.Count;
 
     /// <summary>
     /// Collects statistics for this node and all children (for use in experimentation)

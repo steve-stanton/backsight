@@ -202,7 +202,7 @@ partial class InverseArcDistanceForm : InverseForm
 
     internal override void Draw()
     {
-        ISpatialDisplay display = EditingController.Current.ActiveDisplay;
+        var display = EditingController.Current.ActiveMap;
 
         // Redraw the arcs that are suitable for the next pointing operation.
         DrawCurves();
@@ -210,7 +210,7 @@ partial class InverseArcDistanceForm : InverseForm
         // Draw a solid line to represent displayed distance (if any)
         if (m_CurrentDistanceArc!=null)
         {
-            DrawStyle style = new DrawStyle(Color.Magenta);
+            var style = new DrawStyle(Color.Magenta);
             style.Pen.Width = 3.0F;
             style.Render(display, m_CurrentDistanceArc);
         }
@@ -313,9 +313,9 @@ partial class InverseArcDistanceForm : InverseForm
 
         // Highlight the arcs associated with each circle
 
-        ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-        IDrawStyle dottedBlack = new DottedStyle(Color.Black);
-        IDrawStyle white = new DrawStyle(Color.White);
+        var display = EditingController.Current.ActiveMap;
+        var dottedBlack = new DottedStyle(Color.Black);
+        var white = new DrawStyle(Color.White);
 
         foreach(Circle c in circles)
         {

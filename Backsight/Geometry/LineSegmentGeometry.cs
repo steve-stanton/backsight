@@ -68,35 +68,11 @@ public class LineSegmentGeometry : ILineGeometry, ILineSegmentGeometry
         get { return m_End; }
     }
 
-    public void Render(ISpatialDisplay display, IDrawStyle style)
-    {
-        LineSegmentGeometry.Render(this, display, style);
-    }
+    public IWindow Extent => GetExtent(this);
 
-    public static void Render(ILineSegmentGeometry g, ISpatialDisplay display, IDrawStyle style)
-    {
-        style.Render(display, new IPosition[] { g.Start, g.End });
-    }
+    public static IWindow GetExtent(ILineSegmentGeometry g) => new Window(g.Start, g.End);
 
-    public static void Render(IPosition start, IPosition end, ISpatialDisplay display, IDrawStyle style)
-    {
-        style.Render(display, new IPosition[] { start, end });
-    }
-
-    public IWindow Extent
-    {
-        get { return LineSegmentGeometry.GetExtent(this); }
-    }
-
-    public static IWindow GetExtent(ILineSegmentGeometry g)
-    {
-        return new Window(g.Start, g.End);
-    }
-
-    public ILength Distance(IPosition point)
-    {
-        return LineSegmentGeometry.GetDistance(this, point);
-    }
+    public ILength Distance(IPosition point) => GetDistance(this, point);
 
     public static ILength GetDistance(ILineSegmentGeometry g, IPosition point)
     {
@@ -109,10 +85,7 @@ public class LineSegmentGeometry : ILineGeometry, ILineSegmentGeometry
     /// <summary>
     /// The length of the line (on the map projection). (implements ILineGeometry)
     /// </summary>
-    public ILength Length
-    {
-        get { return LineSegmentGeometry.GetLength(this); }
-    }
+    public ILength Length => GetLength(this);
 
     public static ILength GetLength(ILineSegmentGeometry g)
     {

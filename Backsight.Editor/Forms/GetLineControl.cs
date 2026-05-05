@@ -199,7 +199,7 @@ partial class GetLineControl : UserControl
     /// <param name="line">The line to highlight</param>
     void Highlight(LineFeature line)
     {
-        ISpatialDisplay display = ActiveDisplay;
+        var display = ActiveMap;
 
         // Create thick pen (we want a line that is 1mm wide, corresponding
         // to the pick aperture).
@@ -230,13 +230,10 @@ partial class GetLineControl : UserControl
     /// </summary>
     void ErasePainting()
     {
-        ActiveDisplay.RestoreLastDraw();
+        ActiveMap.RestoreLastDraw();
     }
-
-    ISpatialDisplay ActiveDisplay
-    {
-        get { return EditingController.Current.ActiveDisplay; }
-    }
+    
+    MapControl ActiveMap => EditingController.Current.ActiveMap;
 
     /// <summary>
     /// Initialize for an update (or recall)

@@ -176,4 +176,10 @@ class Intersection : PointGeometry, ITerminal, IPoint
             }
         }
     }
+
+    /// <inheritdoc />
+    public void Draw(IMapDisplay mapDisplay)
+    {
+        mapDisplay.DrawPoint(this);
+    }
 }

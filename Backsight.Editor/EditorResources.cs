@@ -77,4 +77,29 @@ static class EditorResources
         result.Tag = tag;
         return result;
     }
+
+    internal static Cursor NewCenterCursor
+    {
+        get { return new Cursor(new MemoryStream(Resources.NewCenterCursor)); }
+    }
+
+    internal static Cursor StartPanCursor
+    {
+        get { return new Cursor(new MemoryStream(Resources.CarCursor)); }
+    }
+
+    internal static Cursor PanCursor
+    {
+        get { return new Cursor(new MemoryStream(Resources.MovingCarCursor)); }
+    }
+
+    internal static Cursor MagnifyingGlassCursor
+    {
+        get { return new Cursor(new MemoryStream(Resources.MagnifyingGlass)); }
+    }
+
+    internal static Cursor HollowSquareCursor
+    {
+        get { return new Cursor(new MemoryStream(Resources.HollowSquareCursor)); }
+    }
 }

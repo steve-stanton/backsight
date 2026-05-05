@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System.Drawing;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Forms;
@@ -210,16 +211,38 @@ class ArcFeature : LineFeature
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The drawing style</param>
-    public override void Render(ISpatialDisplay display, IDrawStyle style)
+    public override void Render(ISpatialGraphics display, IDrawStyle style)
     {
         // If we're dealing with a construction line, it's drawn dotted
         // regardless of the supplied style.
         if (Geometry.IsCircle && Creator.EditId == EditingActionId.NewCircle)
-            CircleGeometry.Render(Geometry.Circle, display, new DottedStyle(style.LineColor));
+            new DottedStyle(style.LineColor).Render(display, Geometry.Circle.Center, Geometry.Circle.Radius);
         else
             base.Render(display, style);
     }
 
+    /*
+    public void DrawDotted(MapControl mapControl, Color background, Color foreground)
+    {
+        var dottedStyle = new DottedStyle(foreground);
+        var backgroundStyle = new DrawStyle(background);
+        var dottedDisplay = new MapDisplay(mapControl, dottedStyle);
+        var backgroundDisplay = new MapDisplay(mapControl, backgroundStyle);
+
+        if (Geometry.IsCircle && Creator.EditId == EditingActionId.NewCircle)
+        {
+            var mapDisplay = new MapDisplay(mapControl, new DottedStyle(style.LineColor))
+            CircleGeometry.Render(Geometry.Circle, display, new DottedStyle(style.LineColor));
+        }
+        else
+        {
+            Draw(backgroundDisplay);
+            Draw(dottedDisplay);
+            
+            base.Render(display, style);
+        }
+    }
+    */
     /// <summary>
     /// Attempts to locate the circular arc (if any) that this line is based on.
     /// </summary>

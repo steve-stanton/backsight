@@ -119,14 +119,14 @@ abstract class AddLabelUI : SimpleCommandUI
 
         // Draw the outline of the label.
         IPosition[] outline = GetOutline(refpos);
-        IDrawStyle style = new DrawStyle(); // black
-        style.Render(ActiveDisplay, outline);
+        var style = new DrawStyle(); // black
+        style.Render(ActiveMap, outline);
 
         // Draw the text
-        PointGeometry p = PointGeometry.Create(refpos);
+        var p = PointGeometry.Create(refpos);
         IFont font = (m_Entity==null ? null : m_Entity.Font);
-        MiscTextGeometry text = new MiscTextGeometry(m_Text, p, font, m_Height, m_Width, (float)m_Rotation);
-        style.Render(ActiveDisplay, text);
+        var text = new MiscTextGeometry(m_Text, p, font, m_Height, m_Width, (float)m_Rotation);
+        style.Render(ActiveMap, text);
 
         // If doing auto-angle stuff, draw an additional line
         // at the position used to search for candidate lines
@@ -250,7 +250,7 @@ abstract class AddLabelUI : SimpleCommandUI
         double ht = (double)fontSize * (double)nominalScale * MathConstants.POINTSIZE_TO_METERS;
 
         // Convert into pixels on the active display
-        float htPixels = ActiveDisplay.LengthToDisplay(ht);
+        float htPixels = ActiveMap.LengthToDisplay(ht);
         Font font = new Font(fontInfo.TypeFace, htPixels, fontInfo.Modifiers, GraphicsUnit.Pixel);
 
         // Get the size of the text
@@ -261,7 +261,7 @@ abstract class AddLabelUI : SimpleCommandUI
         // Remember the width and height of the text, in ground units (if
         // we stored logical units, the meaning of the values might change
         // if the scale changed during label positioning).
-        ISpatialDisplay display = ActiveDisplay;
+        var display = ActiveMap;
         m_Width = display.DisplayToLength((float)size.Width);
         m_Height = display.DisplayToLength((float)size.Height);
 

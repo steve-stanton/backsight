@@ -117,16 +117,6 @@ public class CircularArcGeometry : ILineGeometry, ICircularArcGeometry
         set { m_IsClockwise = value; }
     }
 
-    public void Render(ISpatialDisplay display, IDrawStyle style)
-    {
-        CircularArcGeometry.Render(this, display, style);
-    }
-
-    public static void Render(ICircularArcGeometry g, ISpatialDisplay display, IDrawStyle style)
-    {
-        style.Render(display, (IClockwiseCircularArcGeometry)g);
-    }
-
     public IWindow Extent
     {
         get { return CircularArcGeometry.GetExtent(this); }

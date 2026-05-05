@@ -303,23 +303,6 @@ class RectangleIndex : Node
     }
 
     /// <summary>
-    /// Draws the outline of this indexing node to a specific display, as
-    /// well as any child nodes.
-    /// </summary>
-    /// <param name="display">The display to draw to.</param>
-    /// <param name="style">The style for the draw.</param>
-    internal override void Render(ISpatialDisplay display, IDrawStyle style)
-    {
-        base.Render(display, style);
-
-        if (m_Children!=null)
-        {
-            foreach (Node n in m_Children)
-                n.Render(display, style);
-        }
-    }
-
-    /// <summary>
     /// Does this indexing node contain any items (checks whether
     /// this node refers to any items, and has no child nodes).
     /// </summary>

@@ -15,14 +15,16 @@
 
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using Backsight.Data;
+using Backsight.Editor.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
-using Backsight.Index;
+using Backsight.Forms;
 
 namespace Backsight.Editor;
 
-class CadastralMapModel : ISpatialModel, ISpatialData
+class CadastralMapModel : ISpatialModel
 {
     #region Static Methods
 
@@ -243,9 +245,17 @@ class CadastralMapModel : ISpatialModel, ISpatialData
 
     #endregion
 
-    #region ISpatialData Members
+    /// <inheritdoc cref="ISpatialModel.Draw"/>
+    public void Draw(IMapDisplay mapDisplay)
+    {
+        
+    }
 
-    public void Render(ISpatialDisplay display, IDrawStyle style)
+    /// <summary>
+    /// Draws this model on the specified display
+    /// </summary>
+    /// <param name="display">The display to render to</param>
+    public void Render(MapControl display)
     {
         // Do nothing if the index hasn't been created yet
         if (m_Index==null)
@@ -263,17 +273,18 @@ class CadastralMapModel : ISpatialModel, ISpatialData
         // Suppress points if the display scale is too small
         if (display.MapScale > ps.ShowPointScale)
             types ^= SpatialType.Point;
-
-        new DrawQuery(m_Index, display, style, types);
+        
+        var style = new DrawStyle(ec.PointHeight);
+        var mapDisplay = new MapDisplay(display, style);
+        new DrawQuery(m_Index, mapDisplay, types);
 
         // Draw intersections if necessary
-        if (ps.AreIntersectionsDrawn && (types & SpatialType.Point)!=0)
-            (m_Index as EditingIndex).DrawIntersections(display);
-
-        //(m_Index as SpatialIndex).Draw(display); // for testing
+        if (ps.AreIntersectionsDrawn && (types & SpatialType.Point) != 0)
+        {
+            style.FillColor = Color.Transparent;
+            (m_Index as EditingIndex).DrawIntersections(mapDisplay);
+        }
     }
-
-    #endregion
 
     internal uint MakeBackup()
     {

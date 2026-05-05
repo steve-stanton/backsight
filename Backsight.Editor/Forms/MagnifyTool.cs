@@ -13,7 +13,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Forms;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace Backsight.Editor.Forms;
 
 /// <written by="Steve Stanton" on="15-FEB-2007" />
 /// <summary>
@@ -60,7 +63,7 @@ class MagnifyTool : SpatialDisplayTool
         AdjustLocation(ref screenPos);
         m_Window.Location = screenPos;
         m_Window.Visible = true;
-        this.MapControl.SetCursor(MapResources.HollowSquareCursor);
+        this.MapControl.SetCursor(EditorResources.HollowSquareCursor);
         m_IsStarted = true;
         return true;
     }

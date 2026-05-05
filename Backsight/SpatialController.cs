@@ -22,10 +22,7 @@ public class SpatialController : ISpatialController
     /// </summary>
     private static ISpatialController s_Controller = new DesignTimeController();
 
-    public static ISpatialController Current
-    {
-        get { return s_Controller; }
-    }
+    public static ISpatialController Current => s_Controller;
 
     private ISpatialModel m_Data;
 
@@ -53,7 +50,7 @@ public class SpatialController : ISpatialController
 
         // Initialize map model in case any of the prelim stuff needs it (the
         // running application needs to replace it with something more appropriate).
-        SetMapModel(m_Data, null);
+        //SetMapModel(m_Data, null);
     }
 
     public virtual void Close()
@@ -74,7 +71,7 @@ public class SpatialController : ISpatialController
 
         //set { SetMapModel(value, null); }
     }
-
+/*
     public void SetMapModel(ISpatialModel model, IWindow initialDrawExtent)
     {
         m_Data = model;
@@ -88,7 +85,17 @@ public class SpatialController : ISpatialController
         if (ad!=null)
             ad.MapPanel.Focus();
     }
+*/
 
+    protected void InitializeMapModel(ISpatialModel model, IWindow initialDrawExtent)
+    {
+        m_Data = model;
+        SetSelection(null);
+
+        foreach (ISpatialDisplay display in m_Displays)
+            display.ReplaceMapModel(initialDrawExtent);
+    }
+    
     public void Register(ISpatialDisplay display)
     {
         if (!m_Displays.Contains(display))
@@ -149,6 +156,8 @@ public class SpatialController : ISpatialController
     {
     }
 
+    public ILength PointHeight { get; }
+
     public virtual void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
     {
         if (m_Data==null)
@@ -164,10 +173,7 @@ public class SpatialController : ISpatialController
     /// <summary>
     /// The currently selected elements (may be empty, but never null)
     /// </summary>
-    public ISpatialSelection SpatialSelection
-    {
-        get { return m_Selection; }
-    }
+    public ISpatialSelection SpatialSelection => m_Selection;
 
     /// <summary>
     /// Remembers a new selection
@@ -189,22 +195,13 @@ public class SpatialController : ISpatialController
         return true;
     }
 
-    public virtual void InitializeDrawStyle(IDrawStyle style)
-    {
-        // Do nothing
-    }
-
-    public virtual void InitializeHighlightStyle(IDrawStyle style)
-    {
-        // Do nothing
-    }
-
     public virtual void RefreshAllDisplays()
     {
         foreach (ISpatialDisplay d in m_Displays)
             d.Redraw();
     }
 
+    // TODO: Remove from controller class (replace with ActiveMap property in Backsight.Editor)
     public ISpatialDisplay ActiveDisplay
     {
         get { return (m_Displays.Count==0 ? null : m_Displays[0]); }

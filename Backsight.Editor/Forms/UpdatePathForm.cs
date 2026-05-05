@@ -363,10 +363,10 @@ partial class UpdatePathForm : Form
     /// Does any painting that this dialog does.
     /// </summary>
     /// <param name="display">The display to draw to</param>
-    internal void Render(ISpatialDisplay display)
+    internal void Render(ISpatialGraphics display)
     {
         // Draw the original path (in pale gray)
-        IDrawStyle gray = new DrawStyle(Color.LightGray);
+        var gray = new DrawStyle(Color.LightGray);
         m_pop.Render(display, gray, true);
 
         // Draw the current path (in magenta).
@@ -377,12 +377,12 @@ partial class UpdatePathForm : Form
         int index = distancesListBox.SelectedIndex;
         if (index >= 0 && index < m_FaceSections.Length)
         {
-            IDrawStyle style = new HighlightStyle();
+            var style = new HighlightStyle();
             ILineGeometry geom = m_FaceSections[index];
             if (geom is IClockwiseCircularArcGeometry)
                 style.Render(display, (IClockwiseCircularArcGeometry)geom);
             else
-                style.Render(display, new IPosition[] { geom.Start, geom.End });
+                style.Render(display, geom.Start, geom.End);
         }
     }
 

@@ -60,9 +60,9 @@ class TextRotationUI : SimpleCommandUI
     internal override void SetCommandCursor()
     {
         if (m_Point1==null)
-            ActiveDisplay.MapPanel.Cursor = EditorResources.Point1Cursor;
+            ActiveMap.MapPanel.Cursor = EditorResources.Point1Cursor;
         else
-            ActiveDisplay.MapPanel.Cursor = EditorResources.Point2Cursor;
+            ActiveMap.MapPanel.Cursor = EditorResources.Point2Cursor;
     }
 
     /// <summary>

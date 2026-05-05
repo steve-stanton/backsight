@@ -622,14 +622,14 @@ return gotone;
 	/// Renders this direction as a dotted magenta line.
 	/// </summary>
 	/// <param name="display"></param>
-	internal void Render(ISpatialDisplay display)
+	internal void Render(ISpatialGraphics display)
 	{
 		// Figure out where the direction line is
 		IPosition from = this.StartPosition;
 		double len = GetMaxDiagonal(display);
 		IPosition to = Geom.Polar(from, this.Bearing.Radians, len);
 
-		new DottedStyle().Render(display, new IPosition[] {from, to});
+		new DottedStyle().Render(display, from, to);
 	}
 
 	/// <summary>

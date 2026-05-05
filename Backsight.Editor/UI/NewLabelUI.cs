@@ -459,7 +459,7 @@ class NewLabelUI : AddLabelUI
     /// </summary>
     internal override void SetCommandCursor()
     {
-        ActiveDisplay.MapPanel.Cursor = GetCommandCursor();
+        ActiveMap.MapPanel.Cursor = GetCommandCursor();
     }
 
     Cursor GetCommandCursor()
@@ -500,9 +500,9 @@ class NewLabelUI : AddLabelUI
 
         if (draw)
         {
-            m_Polygon.Render(ActiveDisplay, new DrawStyle());
+            m_Polygon.Render(ActiveMap, new DrawStyle());
             if (m_Orient != null)
-                m_Orient.Render(ActiveDisplay, new HighlightStyle());
+                m_Orient.Render(ActiveMap, new HighlightStyle());
         }
         else
             ErasePainting();
@@ -723,7 +723,7 @@ class NewLabelUI : AddLabelUI
 
         // Locate the closest point on the line (we SHOULD find it,
         // but if we don't, just bail out)
-        ISpatialDisplay display = ActiveDisplay;
+        var display = ActiveMap;
         ILength tol = new Length(0.002 * display.MapScale);
         IPosition closest = orient.LineGeometry.GetClosest(refpos, tol);
         if (closest == null)
@@ -753,7 +753,7 @@ class NewLabelUI : AddLabelUI
     LineFeature GetOrientation(IPointGeometry posn)
     {
         // The ground tolerance is 2mm at the draw scale.
-        ISpatialDisplay display = ActiveDisplay;
+        var display = ActiveMap;
         double tol = 0.002 * display.MapScale;
 
         // If we previously selected something, see if the search point
@@ -782,7 +782,7 @@ class NewLabelUI : AddLabelUI
         if (m_Orient != null)
         {
             style.ShowLineEndPoints = false;
-            m_Orient.Render(ActiveDisplay, style);
+            m_Orient.Render(ActiveMap, style);
         }
 
         if (m_IsAutoPos && m_Polygon!=null)
@@ -797,13 +797,13 @@ class NewLabelUI : AddLabelUI
 
         if (IsValidPolygon())
         {
-            m_Polygon.Render(ActiveDisplay, style);
+            m_Polygon.Render(ActiveMap, style);
 
             // If the polygon actually contains a label that is drawn on the current editing
             // layer, take this opportunity to draw it in gray.
             TextFeature label = m_Polygon.Label;
             if (label!=null)
-                label.Draw(ActiveDisplay, Color.Gray);
+                label.Draw(ActiveMap, Color.Gray);
         }
     }
 

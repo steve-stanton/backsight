@@ -27,7 +27,7 @@ public class HighlightStyle : DrawStyle
     /// </summary>
     bool m_ShowLineEndPoints;
 
-    public HighlightStyle()
+    public HighlightStyle(ILength? pointHeight = null) : base(pointHeight)
     {
         base.Pen.Color = Color.Red;
         base.Pen.Width = 3.0F;

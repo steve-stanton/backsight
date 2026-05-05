@@ -930,13 +930,10 @@ partial class GetDirectionControl : UserControl
             return;
 
         // Draw the point in the proper color.
-        point.Draw(ActiveDisplay, col);
+        point.Draw(ActiveMap, col);
     }
-
-    ISpatialDisplay ActiveDisplay
-    {
-        get { return EditingController.Current.ActiveDisplay; }
-    }
+    
+    MapControl ActiveMap => EditingController.Current.ActiveMap;
 
     /// <summary>
     /// Ensure that a point is drawn with it's "normal" color.
@@ -974,7 +971,7 @@ partial class GetDirectionControl : UserControl
 
         // Draw any current direction
         if (m_Dir!=null)
-            m_Dir.Render(ActiveDisplay);
+            m_Dir.Render(ActiveMap);
     }
 
     /// <summary>

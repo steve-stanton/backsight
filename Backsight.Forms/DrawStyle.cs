@@ -13,7 +13,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 using Backsight.Geometry;
 
 namespace Backsight.Forms;
@@ -40,7 +44,8 @@ public class DrawStyle : IDrawStyle
     /// <summary>
     /// Creates a <c>DrawStyle</c> with black pen & black fill
     /// </summary>
-    public DrawStyle() : this(Color.Black)
+    /// <param name="pointHeight">The height of points (on the ground).</param>
+    public DrawStyle(ILength? pointHeight = null) : this(Color.Black, pointHeight)
     {
         m_IsFixedStyle = false;
     }
@@ -49,12 +54,13 @@ public class DrawStyle : IDrawStyle
     /// Creates a <c>DrawStyle</c> with a specific pen & fill color.
     /// </summary>
     /// <param name="c">The color for the pen & the fill</param>
-    public DrawStyle(Color c)
+    /// <param name="pointHeight">The height of points (on the ground).</param>
+    public DrawStyle(Color c, ILength? pointHeight = null)
     {
         m_Pen = new Pen(c);
         m_Fill = new Fill(c);
         m_Path = new GraphicsPath();
-        m_PointHeight = new Length(1.0);
+        m_PointHeight = pointHeight ?? new Length(1.0);
         m_IsFixedStyle = false;
     }
 
@@ -102,7 +108,7 @@ public class DrawStyle : IDrawStyle
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="position">The position of the center of the point</param>
-    public virtual void Render(ISpatialDisplay display, IPosition position)
+    public virtual void Render(ISpatialGraphics display, IPosition position)
     {
         float size = display.LengthToDisplay(m_PointHeight.Meters);
         if (size>1.0F)
@@ -121,7 +127,7 @@ public class DrawStyle : IDrawStyle
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="position">The position of the center of the point</param>
-    public void RenderPlus(ISpatialDisplay display, IPosition position)
+    public void RenderPlus(ISpatialGraphics display, IPosition position)
     {
         float size = display.LengthToDisplay(m_PointHeight.Meters);
         if (size>1.0F)
@@ -138,7 +144,7 @@ public class DrawStyle : IDrawStyle
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="position">The position of the center of the point</param>
-    public void RenderTriangle(ISpatialDisplay display, IPosition position)
+    public void RenderTriangle(ISpatialGraphics display, IPosition position)
     {
         float size = display.LengthToDisplay(m_PointHeight.Meters);
         if (size>1.0F)
@@ -160,7 +166,7 @@ public class DrawStyle : IDrawStyle
     /// <param name="display">The display to draw to</param>
     /// <param name="position">The position for the center of the icon</param>
     /// <param name="icon">The icon to display</param>
-    public void Render(ISpatialDisplay display, IPosition position, Icon icon)
+    public void Render(ISpatialGraphics display, IPosition position, Icon icon)
     {
         PointF p = CreatePoint(display, position);
         int x = (int)p.X - icon.Width/2;
@@ -182,20 +188,51 @@ public class DrawStyle : IDrawStyle
         return pts;
     }
 
+    PointF[] GetDisplayPoints(ISpatialDisplay display, IEnumerable<IPosition> line)
+    {
+        var result = new List<PointF>();
+
+        foreach (var position in line)
+        {
+            result.Add(
+                new PointF(
+                    display.EastingToDisplay(position.X),
+                    display.NorthingToDisplay(position.Y)));
+        }
+
+        return result.ToArray();
+    }
+
     /// <summary>
-    /// Draws a line
+    /// Draws a line segment.
+    /// </summary>
+    /// <param name="display">The display to draw to</param>
+    /// <param name="start">The start of the line</param>
+    /// <param name="end">The end of the line</param>
+    public void Render(ISpatialGraphics display, IPosition start, IPosition end)
+    {
+        try
+        {
+            var sp = new PointF(display.EastingToDisplay(start.X), display.NorthingToDisplay(start.Y));
+            var ep = new PointF(display.EastingToDisplay(end.X), display.NorthingToDisplay(end.Y));
+            m_Path.AddLine(sp, ep);
+            display.Graphics.DrawPath(m_Pen, m_Path);
+        }
+
+        finally
+        {
+            m_Path.Reset();
+        }
+    }
+    
+    /// <summary>
+    /// Draws a line containing any number of points.
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="line">The positions defining the line (expected to be at
     /// least two positions)</param>
-    public void Render(ISpatialDisplay display, IPosition[] line)
+    public void Render(ISpatialGraphics display, IEnumerable<IPosition> line)
     {
-        if (line.Length==1)
-        {
-            Render(display, line[0]);
-            return;
-        }
-
         try
         {
             PointF[] pts = GetDisplayPoints(display, line);
@@ -207,8 +244,7 @@ public class DrawStyle : IDrawStyle
         {
             m_Path.Reset();
         }
-
-
+        
         /*
         try
         {
@@ -251,7 +287,7 @@ public class DrawStyle : IDrawStyle
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="arc">The circular arc</param>
-    public void Render(ISpatialDisplay display, IClockwiseCircularArcGeometry arc)
+    public void Render(ISpatialGraphics display, IClockwiseCircularArcGeometry arc)
     {
         ICircleGeometry circle = arc.Circle;
         IWindow extent = CircleGeometry.GetExtent(circle);
@@ -268,7 +304,7 @@ public class DrawStyle : IDrawStyle
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="text">The item of text</param>
-    public void Render(ISpatialDisplay display, IString text)
+    public void Render(ISpatialGraphics display, IString text)
     {
         // Draw the outline if it's too small
         Font f = text.CreateFont(display);
@@ -365,7 +401,7 @@ public class DrawStyle : IDrawStyle
     /// <param name="display">The display to draw to</param>
     /// <param name="center">The position of the center of the circle</param>
     /// <param name="radius">The radius of the circle, in meters on the ground</param>
-    public void Render(ISpatialDisplay display, IPosition center, double radius)
+    public void Render(ISpatialGraphics display, IPosition center, double radius)
     {
         float xc = display.EastingToDisplay(center.X);
         float yc = display.NorthingToDisplay(center.Y);
@@ -381,7 +417,7 @@ public class DrawStyle : IDrawStyle
     /// <param name="outlines">The outlines of one or more closed shapes. The first
     /// array corresponds to the outline of the enclosing polygon, while the
     /// remaining arrays correspond to islands.</param>
-    public void Render(ISpatialDisplay display, IPosition[][] outlines)
+    public void Render(ISpatialGraphics display, IPosition[][] outlines)
     {
         try
         {

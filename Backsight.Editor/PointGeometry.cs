@@ -13,6 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using Backsight.Forms;
+
 namespace Backsight.Editor;
 
 /// <written by="Steve Stanton" on="18-OCT-2006" />
@@ -130,7 +132,7 @@ class PointGeometry : IPointGeometry
         get { return new Window(this); }
     }
 
-    public void Render(ISpatialDisplay display, IDrawStyle style)
+    public void Render(ISpatialGraphics display, IDrawStyle style)
     {
         style.Render(display, this);
     }

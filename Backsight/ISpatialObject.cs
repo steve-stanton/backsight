@@ -26,13 +26,12 @@ public interface ISpatialObject
     /// Value denoting the spatial object type.
     /// </summary>
     SpatialType SpatialType { get; }
-
+    
     /// <summary>
-    /// Draws this object on the specified display
+    /// Draws this object on the specified display.
     /// </summary>
-    /// <param name="display">The display to draw to</param>
-    /// <param name="style">The drawing style</param>
-    void Render(ISpatialDisplay display, IDrawStyle style);
+    /// <param name="mapDisplay">The display where this item should be rendered.</param>
+    void Draw(IMapDisplay mapDisplay);
 
     /// <summary>
     /// The spatial extent of this object.

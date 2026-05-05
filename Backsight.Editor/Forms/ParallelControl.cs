@@ -326,15 +326,15 @@ public partial class ParallelControl : UserControl
             return;
 
         Debug.Assert(m_Line!=null);
-        ISpatialDisplay draw = m_Cmd.ActiveDisplay;
-        IDrawStyle solidStyle = EditingController.Current.Style(Color.Magenta);
-        IDrawStyle dottedStyle = new DottedStyle();
+        var draw = m_Cmd.ActiveMap;
+        var solidStyle = EditingController.Current.Style(Color.Magenta);
+        var dottedStyle = new DottedStyle();
 
         ArcFeature arc = m_Line.GetArcBase();
         if (arc != null)
         {
             // The parallel portion is solid, while the remaining portion of the circle is dotted.
-            CircularArcGeometry cg = new CircularArcGeometry(arc.Circle.Center, m_South, m_North, arc.IsClockwise);
+            var cg = new CircularArcGeometry(arc.Circle.Center, m_South, m_North, arc.IsClockwise);
             solidStyle.Render(draw, cg);
             cg.IsClockwise = !cg.IsClockwise;
             dottedStyle.Render(draw, cg);
@@ -352,9 +352,9 @@ public partial class ParallelControl : UserControl
             IPosition below = Geom.Polar(m_South, bearing+Constants.PI, maxdiag);
             IPosition above = Geom.Polar(m_North, bearing, maxdiag);
 
-            LineSegmentGeometry.Render(below, m_South, draw, dottedStyle);
-            LineSegmentGeometry.Render(m_South, m_North, draw, solidStyle);
-            LineSegmentGeometry.Render(m_North, above, draw, dottedStyle);
+            dottedStyle.Render(draw, below, m_South);
+            solidStyle.Render(draw, m_South, m_North);
+            dottedStyle.Render(draw, m_North, above);
 
             // If we have an offset point, draw it in green.
             if (m_Point!=null)

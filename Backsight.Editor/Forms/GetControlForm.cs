@@ -19,6 +19,7 @@ using System.Diagnostics;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Editor.UI;
+using Backsight.Forms;
 
 namespace Backsight.Editor.Forms;
 
@@ -190,7 +191,7 @@ partial class GetControlForm : Form
         // the display with the window we've got
         if (m_NewMap)
         {
-            ISpatialDisplay display = m_Cmd.ActiveDisplay;
+            var display = m_Cmd.ActiveMap;
             display.ReplaceMapModel(win);
 
             // Tell the user the draw scale that has been defined, and ensure points are drawn
@@ -410,7 +411,7 @@ partial class GetControlForm : Form
 
         try
         {
-            m_Cmd.ActiveDisplay.MapPanel.Cursor = Cursors.WaitCursor;
+            m_Cmd.ActiveMap.MapPanel.Cursor = Cursors.WaitCursor;
             op = new GetControlOperation();
             op.Execute(cps, ent);
         }
@@ -422,7 +423,7 @@ partial class GetControlForm : Form
 
         finally
         {
-            m_Cmd.ActiveDisplay.MapPanel.Cursor = Cursors.Default;
+            m_Cmd.ActiveMap.MapPanel.Cursor = Cursors.Default;
         }
     }
 
@@ -511,7 +512,7 @@ partial class GetControlForm : Form
     /// </summary>
     /// <param name="display">The display to draw to</param>
     /// <param name="style">The style for the drawing</param>
-    internal void Render(ISpatialDisplay display, IDrawStyle style)
+    internal void Render(ISpatialGraphics display, IDrawStyle style)
     {
         foreach (ControlRange r in m_Ranges)
             r.Render(display, style);

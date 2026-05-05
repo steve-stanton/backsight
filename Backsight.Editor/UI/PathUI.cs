@@ -152,7 +152,7 @@ class PathUI : SimpleCommandUI, IDisposable
     /// <param name="point">The specific point (if any) that the parent window has drawn. Not used.</param>
     internal override void Paint(PointFeature point)
     {
-        ISpatialDisplay display = ActiveDisplay;
+        var display = ActiveMap;
 
         if (m_DialFrom!=null)
             m_DialFrom.Render(display);
@@ -325,7 +325,7 @@ class PathUI : SimpleCommandUI, IDisposable
         }
 
         if (m_From!=null)
-            m_From.Draw(ActiveDisplay, Color.DarkBlue);
+            m_From.Draw(ActiveMap, Color.DarkBlue);
     }
 
     /// <summary>
@@ -351,7 +351,7 @@ class PathUI : SimpleCommandUI, IDisposable
         }
 
         if (m_To!=null)
-            m_To.Draw(ActiveDisplay, Color.Cyan);
+            m_To.Draw(ActiveMap, Color.Cyan);
     }
 
     /// <summary>
