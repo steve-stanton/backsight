@@ -24,25 +24,15 @@ namespace Backsight.Editor;
 /// </summary>
 class FontInfo : IFont
 {
-    #region Static
-
     /// <summary>
     /// Information for the default font
     /// </summary>
-    static FontInfo s_DefaultFont = new FontInfo();
-
-    #endregion
-
-    #region Class data
+    static FontInfo s_DefaultFont = new ();
 
     /// <summary>
     /// The name of the type face
     /// </summary>
     readonly string m_Typeface;
-
-    #endregion
-
-    #region Constructors
 
     /// <summary>
     /// Default constructor creates a new <c>FontInfo</c> that represents the default font.
@@ -52,53 +42,32 @@ class FontInfo : IFont
         m_Typeface = FontFamily.GenericSansSerif.Name;
     }
 
-    #endregion
-
     /// <summary>
     /// Information about the default font.
     /// </summary>
-    internal static IFont Default
-    {
-        get { return s_DefaultFont; }
-    }
-
-    #region IFont Members
+    internal static IFont Default => s_DefaultFont;
 
     /// <summary>
     /// The name of the font family (e.g. "Arial").
     /// </summary>
-    public string TypeFace
-    {
-        get { return m_Typeface; }
-    }
+    public string TypeFace => m_Typeface;
 
     /// <summary>
     /// The point-size of the font (always 10.0)
     /// </summary>
-    public float PointSize
-    {
-        get { return 10.0F; }
-    }
+    public float PointSize => 10.0F;
+
+    public bool Underline => false;
+    public bool Italic => false;
+    public bool Bold => false;
 
     /// <summary>
     /// Flag bits defining font modifiers (always <c>FontStyle.Regular</c>)
     /// </summary>
-    public FontStyle Modifiers
-    {
-        get { return FontStyle.Regular; }
-    }
-
-    #endregion
-
-    #region IEnvironmentItem Members
+    public FontStyle Modifiers => FontStyle.Regular;
 
     /// <summary>
     /// The item ID (always 0, signifying "default")
     /// </summary>
-    public int Id
-    {
-        get { return 0; }
-    }
-
-    #endregion
+    public int Id => 0;
 }

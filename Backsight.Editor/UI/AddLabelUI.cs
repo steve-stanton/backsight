@@ -251,7 +251,7 @@ abstract class AddLabelUI : SimpleCommandUI
 
         // Convert into pixels on the active display
         float htPixels = ActiveMap.LengthToDisplay(ht);
-        Font font = new Font(fontInfo.TypeFace, htPixels, fontInfo.Modifiers, GraphicsUnit.Pixel);
+        Font font = new Font(fontInfo.TypeFace, htPixels, fontInfo.GetModifiers(), GraphicsUnit.Pixel);
 
         // Get the size of the text
         Size proposedSize = new Size(int.MaxValue, int.MaxValue);

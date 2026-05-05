@@ -31,9 +31,13 @@ public interface IEditFont : IFont, IEditControl
     /// The point-size of the font
     /// </summary>
     new float PointSize { get; set; }
-
-    /// <summary>
-    /// Flag bits defining font modifiers.
-    /// </summary>
-    new FontStyle Modifiers { get; set; }
+    
+    /// <inheritdoc cref="IFont.Underline"/>
+    new bool Underline { get; set; }
+    
+    /// <inheritdoc cref="IFont.Italic"/>
+    new bool Italic { get; set; }
+    
+    /// <inheritdoc cref="IFont.Bold"/>
+    new bool Bold { get; set; }
 }

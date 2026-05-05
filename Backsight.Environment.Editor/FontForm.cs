@@ -55,8 +55,8 @@ public partial class FontForm : Form
             fontFamilyComboBox.SelectedItem = Array.Find<FontFamily>(fams,
                 delegate(FontFamily ff) { return ff.Name==m_Edit.TypeFace; });
 
-            bool isBold = (m_Edit.Modifiers & FontStyle.Bold)!=0;
-            bool isItalic = (m_Edit.Modifiers & FontStyle.Italic)!=0;
+            bool isBold = m_Edit.Bold;
+            bool isItalic = m_Edit.Italic;
 
             if (isBold && isItalic)
                 fontStyleComboBox.SelectedItem = "Bold Italic";
@@ -126,21 +126,25 @@ public partial class FontForm : Form
         }
 
         m_Edit.TypeFace = fam.Name;
+        m_Edit.Bold = false;
+        m_Edit.Italic = false;
+        m_Edit.Underline = false;
 
         string fs = fontStyleComboBox.Text;
-        if (fs == "Regular")
-            m_Edit.Modifiers = FontStyle.Regular;
-        else if (fs == "Italic")
-            m_Edit.Modifiers = FontStyle.Italic;
+        if (fs == "Italic")
+            m_Edit.Italic = true;
         else if (fs == "Bold")
-            m_Edit.Modifiers = FontStyle.Bold;
+            m_Edit.Bold = true;
         else if (fs == "Bold Italic")
-            m_Edit.Modifiers = (FontStyle.Bold | FontStyle.Italic);
+        {
+            m_Edit.Bold = true;
+            m_Edit.Italic = true;
+        }
 
         m_Edit.PointSize = size;
 
         m_Edit.FinishEdit();
-        this.DialogResult = DialogResult.OK;
+        DialogResult = DialogResult.OK;
         Close();
     }
 }

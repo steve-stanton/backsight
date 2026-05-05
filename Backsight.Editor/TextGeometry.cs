@@ -275,8 +275,8 @@ abstract class TextGeometry : IString, IPersistent
         // reckons angles anti-clockwise.
         //int rotation = -(int)((m_Rotation + extraRotation) * Constants.RADTODEG * 10.0);
 
-        IFont fontInfo = (m_Font==null ? FontInfo.Default : m_Font);
-        return new Font(fontInfo.TypeFace, (float)heightInPixels, fontInfo.Modifiers, GraphicsUnit.Pixel);
+        IFont fontInfo = m_Font==null ? FontInfo.Default : m_Font;
+        return new Font(fontInfo.TypeFace, (float)heightInPixels, fontInfo.GetModifiers(), GraphicsUnit.Pixel);
 
         /*
         string familyName = (m_Font==null ? "Arial" : m_Font.Name);

@@ -36,7 +36,17 @@ public interface IFont : IEnvironmentItem
     float PointSize { get; }
 
     /// <summary>
-    /// Flag bits defining font modifiers.
+    /// Should text be underlined?
     /// </summary>
-    FontStyle Modifiers { get; } // was FNF enum
+    bool Underline { get; }
+    
+    /// <summary>
+    /// Should text be shown in italics?
+    /// </summary>
+    bool Italic { get; }
+    
+    /// <summary>
+    /// Should text be shown in bold?
+    /// </summary>
+    bool Bold { get; }
 }

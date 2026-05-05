@@ -78,29 +78,22 @@ public partial class BacksightDataSet
             get { return FontId; }
         }
 
-        public FontStyle Modifiers
+        public bool Bold
         {
-            get
-            {
-                FontStyle result = 0;
-                if (IsBold==YES)
-                    result |= FontStyle.Bold;
+            get => IsBold == YES;
+            set => IsBold = value ? YES : NO;
+        }
 
-                if (IsItalic==YES)
-                    result |= FontStyle.Italic;
+        public bool Underline
+        {
+            get => IsUnderline == YES;
+            set => IsUnderline = value ? YES : NO;
+        }
 
-                if (IsUnderline==YES)
-                    result |= FontStyle.Underline;
-
-                return result;
-            }
-
-            set
-            {
-                IsBold = ((value & FontStyle.Bold)==0 ? NO : YES);
-                IsItalic = ((value & FontStyle.Italic)==0 ? NO : YES);
-                IsUnderline = ((value & FontStyle.Underline)==0 ? NO : YES);
-            }
+        public bool Italic
+        {
+            get => IsItalic == YES;
+            set => IsItalic = value ? YES : NO;
         }
     }
 }

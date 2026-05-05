@@ -7,49 +7,4 @@
         <UseWindowsForms>true</UseWindowsForms>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="System.Drawing.Common" Version="10.0.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Properties\Resources.Designer.cs">
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Resources.resx</DependentUpon>
-        <DesignTime>True</DesignTime>
-      </Compile>
-      <Compile Update="Properties\Settings.Designer.cs">
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Settings.settings</DependentUpon>
-        <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Update="Forms\BatchRunnerControl.resx">
-        <SubType>Designer</SubType>
-        <DependentUpon>BatchRunnerControl.cs</DependentUpon>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Forms\DimmableButton.resx">
-        <DependentUpon>DimmableButton.cs</DependentUpon>
-        <SubType>Designer</SubType>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Forms\MagnifyForm.resx">
-        <SubType>Designer</SubType>
-        <DependentUpon>MagnifyForm.cs</DependentUpon>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Forms\MapControl.resx">
-        <DependentUpon>MapControl.cs</DependentUpon>
-        <SubType>Designer</SubType>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Forms\ScaleForm.resx">
-        <DependentUpon>ScaleForm.cs</DependentUpon>
-        <SubType>Designer</SubType>
-      </EmbeddedResource>
-      <None Remove="Resources\CarCursor.cur" />
-      <None Remove="Resources\HollowSquareCursor.cur" />
-      <None Remove="Resources\MagnifyingGlass.cur" />
-      <None Remove="Resources\MovingCarCursor.cur" />
-      <None Remove="Resources\NewCenterCursor.cur" />
-    </ItemGroup>
-
 </Project>
