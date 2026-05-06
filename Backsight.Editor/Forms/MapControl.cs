@@ -63,12 +63,12 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     /// <summary>
     /// The ground extent covered by the map panel
     /// </summary>
-    private Window m_MapPanelExtent = null;
+    private Window? m_MapPanelExtent;
 
     /// <summary>
     /// The value of <c>m_MapPanelExtent</c> when an overview is drawn
     /// </summary>
-    private Window m_OverviewExtent = null;
+    private Window? m_OverviewExtent;
 
     /// <summary>
     /// The current display navigation tool (null if nothing has been started)
@@ -139,14 +139,30 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         }
     }
 
+    private bool AreScrollBarsRequired()
+    {
+        if (m_MapPanelExtent is null)
+            return false;
+
+        if (m_OverviewExtent is null)
+            return false;
+    
+        IWindow? mapExtent = MapModel?.Extent;
+        if (mapExtent is null || mapExtent.IsEmpty)
+            return false;
+        
+        if (mapExtent.IsEnclosedBy(m_MapPanelExtent))
+            return false;
+
+        return true;
+    }
+    
     /// <summary>
     /// Initializes scrollbars for a new draw. 
     /// </summary>
     internal virtual void SetScrollBars()
     {
-        IWindow mapExtent = this.MapModel.Extent;
-        bool isAllMap = (mapExtent==null || mapExtent.IsEmpty || mapExtent.IsEnclosedBy(m_MapPanelExtent));
-        if (isAllMap)
+        if (!AreScrollBarsRequired())
         {
             // Just disable rather than make invisible, since making them invisible will
             // change the extent of the map panel.
@@ -155,6 +171,9 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         }
         else
         {
+            Debug.Assert(m_MapPanelExtent is not null);
+            Debug.Assert(m_OverviewExtent is not null);
+            
             // Roundoff to the nearest meter on the ground (you'll have to zoom in quite
             // a way before this is a problem with a projected coordinate system, though
             // lat-long data could be problematic)
@@ -248,7 +267,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
             AddExtent();
     }
 
-    private ISpatialModel? MapModel => EditingController.Current.MapModel;
+    private ISpatialModel MapModel => EditingController.Current.MapModel;
 
     /// <summary>
     /// Sets the extent covered by an overview display, based on the extent of
@@ -318,9 +337,11 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
         // Figure out the scale and fit the window to the client area.
         // This defines the client extent, window, and scale.
-        SetMapPanelMetrics(window);
+        if (!SetMapPanelMetrics(window))
+            return false;
 
         // Remember the extent of the overview.
+        Debug.Assert(m_MapPanelExtent is not null);
         m_OverviewExtent = new Window(m_MapPanelExtent);
         return true;
     }
@@ -360,10 +381,11 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     /// <param name="window">The window that must fit within the extent of the
     /// map panel</param>
     /// </summary>
-    void SetMapPanelMetrics(IWindow window)
+    /// <returns>True if <see cref="m_MapPanelExtent"/> was defined.</returns>
+    private bool SetMapPanelMetrics(IWindow window)
     {
         if (window.IsEmpty)
-            return;
+            return false;
 
         // Get the physical dimensions of this control (in meters).
         double width, height;
@@ -392,6 +414,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         // less half the ground coverage of the control).
         IPosition c = window.Center;
         m_MapPanelExtent = new Window(c.X - 0.5*dE, c.Y - 0.5*dN, c.X + 0.5*dE, c.Y + 0.5*dN);
+        return true;
     }
 
     /// <summary>
@@ -605,10 +628,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         this.Dispose();
     }
 
-    private bool IsInitialized
-    {
-        get { return (!this.MapModel.IsEmpty && m_MapPanelExtent!=null); }
-    }
+    private bool IsInitialized => m_MapPanelExtent is not null && MapModel?.IsEmpty == false;
 
     private void mapPanel_KeyPress(object sender, KeyPressEventArgs e)
     {
@@ -747,7 +767,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IPosition Center
     {
-        get { return (Extent==null ? null : Extent.Center); }
+        get => Extent?.Center;
         set
         {
             if (!DesignMode)
@@ -781,11 +801,17 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     public float EastingToDisplay(double x)
     {
+        if (m_MapPanelExtent is null)
+            return 0;
+        
         return (float)((x - m_MapPanelExtent.Min.X) * m_GroundToDisplay);
     }
 
     public float NorthingToDisplay(double y)
     {
+        if (m_MapPanelExtent is null)
+            return 0;
+
         return (float)((m_MapPanelExtent.Max.Y - y) * m_GroundToDisplay);
     }
 
@@ -810,6 +836,8 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     private Position DisplayToGround(System.Drawing.Point p)
     {
+        Debug.Assert(m_MapPanelExtent is not null);
+
         double x = (((double)p.X) / m_GroundToDisplay) + m_MapPanelExtent.Min.X;
         double y = m_MapPanelExtent.Max.Y - (((double)p.Y) / m_GroundToDisplay);
         return new Position(x, y);
@@ -827,7 +855,10 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     bool OnOverview()
     {
         if (SetOverviewExtent())
+        {
+            Debug.Assert(m_OverviewExtent is not null);
             SetNewWindow(m_OverviewExtent, true);
+        }
         else
             Draw(false);
 
@@ -841,7 +872,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     /// as the overview extent</returns>
     bool IsOverviewEnabled()
     {
-        if (m_MapPanelExtent==null || m_OverviewExtent==null)
+        if (m_MapPanelExtent is null || m_OverviewExtent is null)
             return false;
 
         return !m_MapPanelExtent.Equals(m_OverviewExtent);
@@ -859,6 +890,9 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     internal bool ZoomIn(double factor)
     {
+        if (m_MapPanelExtent is null)
+            return false;
+        
         Window extent = new Window(m_MapPanelExtent);
         extent.Expand(-factor);
         SetNewWindow(extent, true);
@@ -877,8 +911,11 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     internal bool ZoomOut(double factor)
     {
+        if (m_MapPanelExtent is null || m_OverviewExtent is null)
+            return false;
+        
         // Expand the current draw window by 20% all the way round
-        Window extent = new Window(m_MapPanelExtent);
+        var extent = new Window(m_MapPanelExtent);
         extent.Expand(factor);
 
         // Never allow expansion beyond the overview scale (restrict
@@ -903,6 +940,9 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     internal bool DrawScale()
     {
+        if (m_MapPanelExtent is null)
+            throw new InvalidOperationException("Map extent not defined");
+        
         ScaleForm dial = new ScaleForm(this.MapScale);
         if (dial.ShowDialog() == DialogResult.OK)
             SetCenterAndScale(m_MapPanelExtent.Center, dial.MapScale, true);
@@ -935,6 +975,9 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     internal bool MoveMap(double gdx, double gdy)
     {
+        if (m_MapPanelExtent is null)
+            return false;
+        
         // dx>0 => shifts left, dy>0 => shifts up
         int dx = -(int)(gdx * m_GroundToDisplay);
         int dy =  (int)(gdy * m_GroundToDisplay);
@@ -1131,6 +1174,9 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     /// </summary>
     void AddExtent()
     {
+        if (m_MapPanelExtent is null)
+            return;
+        
         // If we currently have 32 extents, drop the head.
         if (m_Extents.Count==32)
             m_Extents.RemoveAt(0);
@@ -1219,8 +1265,6 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
             PaintNow();
         }
     }
-
-    public ISpatialDisplay MapDisplay { get { return this; } }
 
     public Rectangle DrawReversibleFrame(IWindow x)
     {
