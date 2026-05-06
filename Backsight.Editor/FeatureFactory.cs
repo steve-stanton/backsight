@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System.Diagnostics;
 using Backsight.Environment;
 
 namespace Backsight.Editor;
@@ -228,6 +229,8 @@ class FeatureFactory
     /// <returns>The new feature (never null)</returns>
     internal virtual PointFeature CreatePointFeature(string itemName)
     {
+        Debug.Assert(MapModel.WorkingSession is not null, "Working session not set");
+        
         PointFeature result = null;
         IFeature f = FindFeatureDescription(itemName);
 
@@ -268,6 +271,8 @@ class FeatureFactory
     /// <returns>The created feature (never null)</returns>
     internal virtual LineFeature CreateSegmentLineFeature(string itemName, PointFeature from, PointFeature to)
     {
+        Debug.Assert(MapModel.WorkingSession is not null, "Working session not set");
+
         LineFeature result = null;
         IFeature f = FindFeatureDescription(itemName);
 
@@ -308,6 +313,8 @@ class FeatureFactory
     /// <returns>The created feature (never null)</returns>
     internal virtual ArcFeature CreateArcFeature(string itemName, PointFeature from, PointFeature to)
     {
+        Debug.Assert(MapModel.WorkingSession is not null, "Working session not set");
+
         ArcFeature result = null;
         IFeature f = FindFeatureDescription(itemName);
 
@@ -338,6 +345,7 @@ class FeatureFactory
         IFeature f = FindFeatureDescription(itemName);
         if (f == null)
         {
+            Debug.Assert(MapModel.WorkingSession is not null, "Working session not set");
             InternalIdValue id = MapModel.WorkingSession.AllocateNextId();
             f = new FeatureStub(m_Operation, id, baseLine.EntityType, baseLine.FeatureId);
         }

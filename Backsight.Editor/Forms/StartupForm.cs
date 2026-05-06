@@ -44,11 +44,13 @@ partial class StartupForm : Form
     private void StartupForm_Load(object sender, EventArgs e)
     {
         // Pick up a canned environment from embedded resource file
+        EnvironmentContainer.Current = new EnvironmentResource();
+        /*
         if (String.IsNullOrEmpty(LastDatabase.ConnectionString))
             EnvironmentContainer.Current = new EnvironmentResource();
         else
             EnvironmentContainer.Current = new EnvironmentDatabase(LastDatabase.ConnectionString);
-
+*/
         ShowDatabaseName();
 
         // Determine whether a previously open project is still available

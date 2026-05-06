@@ -30,7 +30,7 @@ abstract class Operation : Change, IFeatureDependent
     #region Class data
 
     /// <summary>
-    /// The session in which this operation was originally defined (not null)
+    /// The session in which this operation was originally defined.
     /// </summary>
     readonly Session m_Session;
 
@@ -57,11 +57,8 @@ abstract class Operation : Change, IFeatureDependent
     /// included in the current editing session.
     /// </summary>
     protected Operation()
-        : base()
     {
-        m_Session = CadastralMapModel.Current.WorkingSession;
-        if (m_Session == null)
-            throw new ArgumentNullException();
+        m_Session = CadastralMapModel.Current.WorkingSession ?? throw new ArgumentNullException(); 
     }
 
     /// <summary>
@@ -260,7 +257,7 @@ abstract class Operation : Change, IFeatureDependent
     protected void Complete()
     {
         // Is this method being called as part of application startup?
-        bool isStartup = !Object.ReferenceEquals(m_Session, CadastralMapModel.Current.WorkingSession);
+        bool isStartup = !ReferenceEquals(m_Session, CadastralMapModel.Current.WorkingSession);
 
         // Index features that were created (and ensure the map extent has been
         // expanded to include the new features)

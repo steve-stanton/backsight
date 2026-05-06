@@ -400,7 +400,7 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
     /// </summary>
     internal void SetNextId()
     {
-        if (CadastralMapModel.Current.WorkingSession != null)
+        if (CadastralMapModel.Current.WorkingSession is not null)
         {
             // Disallow if this feature already has an ID.
             if (m_Id!=null)

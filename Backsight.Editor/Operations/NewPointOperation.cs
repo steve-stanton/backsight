@@ -206,7 +206,7 @@ class NewPointOperation : Operation, IRecallable, IRevisable
         // context, so the update info will not be available. So do the exchange if
         // the model is just being loaded.
 
-        if (MapModel.WorkingSession == null)
+        if (MapModel.WorkingSession is null)
             ApplyUpdateItems(null, data);
     }
 

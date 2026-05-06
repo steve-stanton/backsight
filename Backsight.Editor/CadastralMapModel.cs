@@ -84,7 +84,7 @@ class CadastralMapModel : ISpatialModel
     /// <summary>
     /// The session that we are currently appending to.
     /// </summary>
-    Session m_WorkingSession;
+    Session? m_WorkingSession;
 
     /// <summary>
     /// Spatial features that have been loaded (including features that may
@@ -147,10 +147,7 @@ class CadastralMapModel : ISpatialModel
     /// <summary>
     /// The user-name of the model
     /// </summary>
-    public string Name
-    {
-        get { return EditingController.Current.Project.Name; }
-    }
+    public string Name => EditingController.Current.Project.Name;
 
     /// <summary>
     /// The spatial index for this model (in a form that's suitable for typical queries).
@@ -192,17 +189,14 @@ class CadastralMapModel : ISpatialModel
     /// </summary>
     internal double DefaultTextRotation
     {
-        get { return m_Rotation; }
-        set { m_Rotation = value; }
+        get => m_Rotation;
+        set => m_Rotation = value;
     }
 
     /// <summary>
     /// The editing sessions that define this model
     /// </summary>
-    internal Session[] Sessions
-    {
-        get { return m_Sessions.ToArray(); }
-    }
+    internal Session[] Sessions => m_Sessions.ToArray();
 
     /// <summary>
     /// Removes all empty sessions (including the files that hold the session data).
@@ -228,15 +222,9 @@ class CadastralMapModel : ISpatialModel
 
     #region ISpatialModel Members
 
-    public bool IsEmpty
-    {
-        get { return m_Window.IsEmpty; }
-    }
+    public bool IsEmpty => m_Window.IsEmpty;
 
-    public IWindow Extent
-    {
-        get { return m_Window; }
-    }
+    public IWindow Extent => m_Window;
 
     public ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types)
     {
@@ -345,11 +333,11 @@ class CadastralMapModel : ISpatialModel
     {
         get
         {
-            if (m_WorkingSession == null)
+            if (m_WorkingSession is null)
                 return 0;
 
             Operation o = m_WorkingSession.LastOperation;
-            if (o==null)
+            if (o is null)
                 return 0;
 
             return o.EditSequence;
@@ -387,6 +375,9 @@ class CadastralMapModel : ISpatialModel
     /// <returns>The created point feature.</returns>
     internal PointFeature AddPoint(IPosition p, IEntity e, Operation creator)
     {
+        if (m_WorkingSession is null)
+            throw new InvalidOperationException("Working session not set");
+        
         PointGeometry g = PointGeometry.Create(p);
         InternalIdValue id = m_WorkingSession.AllocateNextId();
         PointFeature f = new PointFeature(creator, id, e, g);
@@ -441,6 +432,9 @@ class CadastralMapModel : ISpatialModel
     /// <returns>The created line segment.</returns>
     internal LineFeature AddLine(PointFeature from, PointFeature to, IEntity e, Operation creator)
     {
+        if (m_WorkingSession is null)
+            throw new InvalidOperationException("Working session not set");
+
         InternalIdValue id = m_WorkingSession.AllocateNextId();
         LineFeature f = new LineFeature(creator, id, e, from, to);
         //m_Window.Union(f.Extent);
@@ -849,6 +843,9 @@ class CadastralMapModel : ISpatialModel
     internal LineFeature AddCircularArc(Circle circle, PointFeature start, PointFeature end,
         bool clockwise, IEntity lineEnt, Operation creator)
     {
+        if (m_WorkingSession is null)
+            throw new InvalidOperationException("Working session not set");
+
         InternalIdValue id = m_WorkingSession.AllocateNextId();
         ArcFeature result = new ArcFeature(creator, id, lineEnt, circle, start, end, clockwise);
         //m_Window.Union(result.Extent);
@@ -955,6 +952,9 @@ class CadastralMapModel : ISpatialModel
     /// <returns>True if an edit was rolled back</returns>
     internal bool UndoLastEdit()
     {
+        if (m_WorkingSession is null)
+            throw new InvalidOperationException("Working session not set");
+
         return Rollback(m_WorkingSession);
     }
 
@@ -1017,6 +1017,9 @@ class CadastralMapModel : ISpatialModel
     internal TextFeature AddMiscText(Operation creator, string s, IEntity ent, IPosition vtx, double height,
         double width, double rotation)
     {
+        if (m_WorkingSession is null)
+            throw new InvalidOperationException("Working session not set");
+
         // Create the "geometry"
         PointGeometry topLeft = PointGeometry.Create(vtx);
         MiscTextGeometry text = new MiscTextGeometry(s, topLeft, ent.Font, height, width, (float)rotation);
@@ -1048,6 +1051,9 @@ class CadastralMapModel : ISpatialModel
     internal TextFeature AddKeyLabel(Operation creator, IdHandle polygonId, IPosition vtx,
         double height, double width, double rotation)
     {
+        if (m_WorkingSession is null)
+            throw new InvalidOperationException("Working session not set");
+
         // Exit with error if the key is not reserved.
         if (!polygonId.IsReserved)
             throw new ArgumentException("CadastralMapMode.AddKeyLabel - ID is undefined.");
@@ -1079,6 +1085,9 @@ class CadastralMapModel : ISpatialModel
     internal TextFeature AddKeyLabel(Operation creator, IEntity ent, IPosition vtx,
         double height, double width, double rotation)
     {
+        if (m_WorkingSession is null)
+            throw new InvalidOperationException("Working session not set");
+
         // Create a key-text primitive.
         PointGeometry pos = PointGeometry.Create(vtx);
         KeyTextGeometry text = new KeyTextGeometry(pos, ent.Font, height, width, (float)rotation);
@@ -1108,6 +1117,9 @@ class CadastralMapModel : ISpatialModel
         DataRow row, ITemplate atemplate,
         double height, double width, double rotation)
     {
+        if (m_WorkingSession is null)
+            throw new InvalidOperationException("Working session not set");
+
         // Add the label with null geometry for now (chicken and egg -- need Feature in order
         // to create the Row object that's needed for the RowTextGeometry)
         InternalIdValue id = m_WorkingSession.AllocateNextId();
@@ -1139,6 +1151,9 @@ class CadastralMapModel : ISpatialModel
     internal TextFeature AddRowLabel(Operation creator, IdHandle polygonId, IPosition vtx, DataRow row,
         ITemplate atemplate, double height, double width, double rotation)
     {
+        if (m_WorkingSession is null)
+            throw new InvalidOperationException("Working session not set");
+
         // Exit with error if the key is not reserved.
         if (!polygonId.IsReserved)
             throw new ArgumentException();
@@ -1288,22 +1303,15 @@ class CadastralMapModel : ISpatialModel
     /// <summary>
     /// The session that we are currently appending to (null if the model is being deserialized).
     /// </summary>
-    internal Session WorkingSession
-    {
-        get { return m_WorkingSession; }
-    }
+    internal Session? WorkingSession => m_WorkingSession;
 
     /// <summary>
     /// Defines the current editing session.
     /// </summary>
-    /// <param name="s">The session that new edits should be appended to (not null).</param>
-    /// <exception cref="ArgumentNullException">If the supplied session is null.</exception>
+    /// <param name="s">The session that new edits should be appended to.</param>
     /// <remarks>During deserialization, the model does not have a working session.</remarks>
     internal void SetWorkingSession(Session s)
     {
-        if (s == null)
-            throw new ArgumentNullException();
-
         m_WorkingSession = s;
     }
 

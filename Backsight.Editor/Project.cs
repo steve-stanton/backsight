@@ -40,7 +40,7 @@ class Project
     /// <summary>
     /// The data for the original project creation event.
     /// </summary>
-    NewProjectEvent m_ProjectInfo;
+    NewProjectEvent? m_ProjectInfo;
 
     /// <summary>
     /// The current user's project settings (not null).
@@ -153,10 +153,7 @@ class Project
     /// <summary>
     /// The current user's project settings.
     /// </summary>
-    internal ProjectSettings Settings
-    {
-        get { return m_Settings; }
-    }
+    internal ProjectSettings Settings => m_Settings;
 
     /// <summary>
     /// Saves user settings for this project.
@@ -171,46 +168,22 @@ class Project
     /// <summary>
     /// The user-perceived project name
     /// </summary>
-    internal string Name
-    {
-        get
-        {
-            if (m_ProjectInfo == null)
-                return "Unknown";
-            else
-                return m_ProjectInfo.ProjectName;
-        }
-    }
+    internal string Name => m_ProjectInfo?.ProjectName ?? "Unknown";
 
     /// <summary>
     /// A unique ID for the project.
     /// </summary>
-    internal Guid Id
-    {
-        get { return m_Id; }
-    }
+    internal Guid Id => m_Id;
 
     /// <summary>
     /// The ID of the map layer the project is associated with.
     /// </summary>
-    internal int LayerId
-    {
-        get
-        {
-            if (m_ProjectInfo == null)
-                return 0;
-            else
-                return m_ProjectInfo.LayerId;
-        }
-    }
+    internal int LayerId => m_ProjectInfo?.LayerId ?? 0;
 
     /// <summary>
     /// The data model for the map.
     /// </summary>
-    internal CadastralMapModel Model
-    {
-        get { return m_MapModel; }
-    }
+    internal CadastralMapModel Model => m_MapModel;
 
     void LoadDataFiles(string folderName, uint[] fileNums)
     {
@@ -279,7 +252,7 @@ class Project
             }
         }
 
-        if (m_ProjectInfo == null)
+        if (m_ProjectInfo is null)
             throw new ApplicationException("Could not locate the project creation event");
 
         // Apply any forward references
@@ -292,18 +265,12 @@ class Project
     /// <summary>
     /// The data folder for this project.
     /// </summary>
-    internal string ProjectFolder
-    {
-        get { return Path.Combine(m_Container.FolderName, m_Id.ToString().ToUpper()); }
-    }
+    internal string ProjectFolder => Path.Combine(m_Container.FolderName, m_Id.ToString().ToUpper());
 
     /// <summary>
     /// The project undo folder (may not exist).
     /// </summary>
-    internal string UndoFolder
-    {
-        get { return Path.Combine(ProjectFolder, "undo"); }
-    }
+    internal string UndoFolder => Path.Combine(ProjectFolder, "undo");
 
     /// <summary>
     /// Obtains the path of the project undo folder (creating it if it does not already exist).

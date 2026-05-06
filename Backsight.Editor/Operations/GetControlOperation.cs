@@ -220,7 +220,7 @@ class GetControlOperation : Operation, IRevisable
     public override void ExchangeData(UpdateItemCollection data)
     {
         // Only exchange if the model is being loaded - see comments in NewPointOperation.ExchangeData
-        if (MapModel.WorkingSession == null)
+        if (MapModel.WorkingSession is null)
             ApplyUpdateItems(null, data);
     }
 

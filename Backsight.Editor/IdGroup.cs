@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System.Diagnostics;
 using System.Windows.Forms;
 using Backsight.Data;
 using Backsight.Environment;
@@ -74,6 +75,8 @@ class IdGroup : IdGroupFacade
         IDataServer ds = EditingController.Current.DataServer;
         if (ds == null)
             throw new ApplicationException("Database not available");
+
+        Debug.Assert(CadastralMapModel.Current.WorkingSession is not null, "Working session not set");
 
         ds.RunTransaction(delegate
         {

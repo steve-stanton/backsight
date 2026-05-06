@@ -101,8 +101,9 @@ class UpdateUI : SimpleCommandUI
         m_DepOps = null;
         m_Problem = null;
 
-        Session s = CadastralMapModel.Current.WorkingSession;
-        m_PreUpdateId = (s.LastOperation == null ? s.Id : s.LastOperation.EditSequence);
+        Session? s = CadastralMapModel.Current.WorkingSession;
+        Debug.Assert(s is not null);
+        m_PreUpdateId = s.LastOperation?.EditSequence ?? s.Id;
     }
 
     #endregion

@@ -142,7 +142,7 @@ public partial class MainForm : Form, IControlContainer
                 double cx = drawInfo.CenterX;
                 double cy = drawInfo.CenterY;
                 double mapScale = drawInfo.MapScale;
-                (EditingController.Current.ActiveDisplay as MapControl).SetCenterAndScale(cx, cy, mapScale, true);
+                m_Controller.ActiveMap.SetCenterAndScale(cx, cy, mapScale, true);
             }
 
             return p;
@@ -619,11 +619,11 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
             if (t == SpatialType.Line)
             {
-                LineFeature line = (s.Item as LineFeature);
-                if (line == null && s.Item is DividerObject)
-                    line = (s.Item as DividerObject).Divider.Line;
+                var line = s.Item as LineFeature;
+                if (line is null && s.Item is DividerObject d)
+                    line = d.Divider.Line;
 
-                if (line != null)
+                if (line is not null)
                     ctxLinePolygonBoundary.Checked = line.HasTopology;
 
                 return lineContextMenu;
@@ -714,8 +714,8 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private void FileSave(IUserAction action)
     {
-        Session s = CadastralMapModel.Current.WorkingSession;
-        Debug.Assert(s != null);
+        Session? s = CadastralMapModel.Current.WorkingSession;
+        Debug.Assert(s is not null);
         s.SaveChanges();
     }
 
@@ -927,8 +927,8 @@ else if ( m_Op == ID_LINE_CURVE ) {
     {
         get
         {
-            Session s = CadastralMapModel.Current.WorkingSession;
-            return (s==null ? true : s.LastOperation==null);
+            Session? s = CadastralMapModel.Current.WorkingSession;
+            return s?.LastOperation is null;
         }
     }
 
@@ -943,20 +943,20 @@ else if ( m_Op == ID_LINE_CURVE ) {
             return;
 
         // Get the last operation.
-        Operation op = CadastralMapModel.Current.WorkingSession.LastOperation;
-        if (op==null)
+        Operation? op = CadastralMapModel.Current.WorkingSession?.LastOperation;
+        if (op is null)
             return;
 
         // Locate the action that initiated the last edit
-        IUserAction lastAction = Array.Find<IUserAction>(m_Actions.Actions, delegate (IUserAction a)
+        IUserAction? lastAction = Array.Find<IUserAction>(m_Actions.Actions, delegate (IUserAction a)
         {
-            if (a is EditingAction)
-                return ((a as EditingAction).EditId == op.EditId);
+            if (a is EditingAction ea)
+                return ea.EditId == op.EditId;
             else
                 return false;
         });
 
-        if (lastAction == null)
+        if (lastAction is null)
         {
             MessageBox.Show("Cannot determine action that initiated "+op.Name);
             return;
@@ -999,8 +999,9 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
         // Get the user to select an edit from the current session (restricted
         // to those edits that implement IRecallable)
-        Session s = CadastralMapModel.Current.WorkingSession;
-        Operation op = null;
+        Session? s = CadastralMapModel.Current.WorkingSession;
+        Debug.Assert(s is not null);
+        Operation? op = null;
 
         using (PickEditForm dial = new PickEditForm(s))
         {
@@ -1008,19 +1009,19 @@ else if ( m_Op == ID_LINE_CURVE ) {
                 op = dial.SelectedEdit;
         }
 
-        if (op == null)
+        if (op is null)
             return;
 
         // Locate the action that normally performs the selected edit
-        EditingAction recallAction = (EditingAction)Array.Find<IUserAction>(m_Actions.Actions, delegate(IUserAction a)
+        EditingAction? recallAction = (EditingAction?)Array.Find<IUserAction>(m_Actions.Actions, delegate(IUserAction a)
         {
-            if (a is EditingAction)
-                return ((a as EditingAction).EditId == op.EditId);
+            if (a is EditingAction ea)
+                return ea.EditId == op.EditId;
             else
                 return false;
         });
 
-        if (recallAction == null)
+        if (recallAction is null)
         {
             MessageBox.Show("Cannot determine action that initiated " + op.Name);
             return;
@@ -1030,7 +1031,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
         m_Controller.AutoSelect = false;
 
         // Wrap the action alongside information about the edit the user wants to recall
-        RecalledEditingAction recall = new RecalledEditingAction(recallAction, op);
+        var recall = new RecalledEditingAction(recallAction, op);
         recall.Do(this, null);
     }
 
@@ -1227,7 +1228,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private bool IsDataImportMapEnabled()
     {
-        return (CadastralMapModel.Current.WorkingSession != null);
+        return CadastralMapModel.Current.WorkingSession is not null;
     }
 
     private void DataImportMap(IUserAction action)

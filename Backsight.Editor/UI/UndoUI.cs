@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System.Diagnostics;
 using System.Windows.Forms;
 using Backsight.Editor.Forms;
 
@@ -60,7 +61,8 @@ class UndoUI : SimpleCommandUI
 
             // Ask the map to rollback the last operation (restricting 
             // to the current editing session).
-            Session s = CadastralMapModel.Current.WorkingSession;
+            Session? s = CadastralMapModel.Current.WorkingSession;
+            Debug.Assert(s is not null);
             if (CadastralMapModel.Current.Rollback(s))
             {
                 c.FinishCommand(this);

@@ -76,10 +76,10 @@ public partial class HistoryForm : Form
     private void rollbackButton_Click(object sender, EventArgs e)
     {
         // If the working session contains anything, rollback that
-        Session ws = CadastralMapModel.Current.WorkingSession;
+        Session? ws = CadastralMapModel.Current.WorkingSession;
         bool done = false;
 
-        if (ws.OperationCount > 0)
+        if (ws?.OperationCount > 0)
             done = CadastralMapModel.Current.Rollback(ws);
         else
         {

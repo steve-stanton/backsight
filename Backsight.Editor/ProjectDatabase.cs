@@ -408,9 +408,9 @@ class ProjectDatabase
     /// <param name="p">The project to close</param>
     internal void CloseProject(Project p)
     {
-        Session s = p.Model.WorkingSession;
+        Session? s = p.Model.WorkingSession;
 
-        if (s != null)
+        if (s is not null)
         {
             if (s.ChangeCount == 0)
             {

@@ -312,9 +312,9 @@ class EditingController : SpatialController, ISpatialController
          */
 
         // Try to select something.
-        ISpatialObject thing = SelectObject(display, p, SpatialType.All);
+        ISpatialObject? thing = SelectObject(display, p, SpatialType.All);
 
-        if (thing!=null)
+        if (thing is not null)
         {
             // Caution: If we're auto-highlighting, and the thing
             // we've just selected is the thing that's already
@@ -341,7 +341,7 @@ class EditingController : SpatialController, ISpatialController
         }
         else
         {
-            // Ensure the selection has been unhighlited & clear out the selection.
+            // Ensure the selection has been unhighlighted & clear out the selection.
             if (!isMultiSelect)
                 ClearSelection(); // was m_Sel.RemoveSel();
         }
@@ -358,8 +358,8 @@ class EditingController : SpatialController, ISpatialController
 
     public override void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
     {
-        ISpatialObject so = SelectObject(display, p, spatialType);
-        if (so!=null)
+        ISpatialObject? so = SelectObject(display, p, spatialType);
+        if (so is not null)
             SetSelection(new Selection(so, p));
         else
             SetSelection(null);
@@ -535,20 +535,20 @@ class EditingController : SpatialController, ISpatialController
         };
     }
 
-    private ISpatialObject SelectObject(ISpatialDisplay display, IPosition p, SpatialType spatialType)
+    private ISpatialObject? SelectObject(ISpatialDisplay display, IPosition p, SpatialType spatialType)
     {
         ProjectSettings ps = m_Project.Settings;
         CadastralMapModel cmm = this.CadastralMapModel;
         ISpatialSelection currentSel = this.SpatialSelection;
-        ISpatialObject oldItem = currentSel.Item;
-        ISpatialObject newItem;
+        ISpatialObject? oldItem = currentSel.Item;
+        ISpatialObject? newItem;
 
         // Try to find a point feature if points are drawn.
         if ((spatialType & SpatialType.Point) != 0 && display.MapScale <= ps.ShowPointScale)
         {
             ILength size = new Length(ps.PointHeight * 0.5);
             newItem = cmm.QueryClosest(p, size, SpatialType.Point);
-            if (newItem!=null)
+            if (newItem is not null)
                 return newItem;
         }
 
@@ -578,7 +578,7 @@ class EditingController : SpatialController, ISpatialController
             // }
 
             newItem = cmm.QueryClosest(p, tol, SpatialType.Line);
-            if (newItem!=null)
+            if (newItem is not null)
                 return newItem;
         }
 
@@ -588,7 +588,7 @@ class EditingController : SpatialController, ISpatialController
         if ((spatialType & SpatialType.Text)!=0 && display.MapScale <= ps.ShowLabelScale)
         {
             newItem = cmm.QueryClosest(p, tol, SpatialType.Text);
-            if (newItem!=null)
+            if (newItem is not null)
                 return newItem;
         }
 
@@ -617,7 +617,7 @@ class EditingController : SpatialController, ISpatialController
             IPointGeometry pg = PointGeometry.Create(p);
             ISpatialIndex index = cmm.Index;
             Polygon pol = new FindPointContainerQuery(index, pg).Result;
-            if (pol!=null)
+            if (pol is not null)
                 return pol;
         }
 
@@ -1174,8 +1174,8 @@ class EditingController : SpatialController, ISpatialController
         if (IsSaved)
             return;
 
-        Session s = CadastralMapModel.Current.WorkingSession;
-        Debug.Assert(s != null);
+        Session? s = CadastralMapModel.Current.WorkingSession;
+        Debug.Assert(s is not null);
 
         if (MessageBox.Show("Do you want to save changes?", "Changes not saved", MessageBoxButtons.YesNo)
             == DialogResult.Yes)
@@ -1192,14 +1192,10 @@ class EditingController : SpatialController, ISpatialController
         get
         {
             CadastralMapModel model = CadastralMapModel.Current;
-            if (model == null)
+            if (model is null)
                 return true;
 
-            Session s = model.WorkingSession;
-            if (s == null)
-                return true;
-
-            return s.IsSaved;
+            return model.WorkingSession?.IsSaved ?? true;
         }
     }
 
