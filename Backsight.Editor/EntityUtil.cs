@@ -16,6 +16,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using Backsight.Data;
+using Backsight.Database;
 using Backsight.Editor.Forms;
 using Backsight.Environment;
 
@@ -108,8 +109,7 @@ class EntityUtil
     {
         // Get the translation (if any) of the property
         // that refers to the entity file.
-        IProperty prop = EnvironmentContainer.FindPropertyByName(PropertyNaming.EntityFile);
-        string entfile = (prop == null ? null : prop.Value);
+        var entfile = EnvironmentRepository.Current.FindPropertyByName(PropertyNaming.EntityFile); 
         if (String.IsNullOrEmpty(entfile))
             return null;
 
@@ -137,8 +137,7 @@ class EntityUtil
     {
         // Get the translation (if any) of the property
         // that refers to the standard style file.
-        IProperty prop = EnvironmentContainer.FindPropertyByName(PropertyNaming.StyleFile);
-        string stdfile = (prop == null ? null : prop.Value);
+        var stdfile = EnvironmentRepository.Current.FindPropertyByName(PropertyNaming.StyleFile);
         if (String.IsNullOrEmpty(stdfile))
             return new StyleFile();
 

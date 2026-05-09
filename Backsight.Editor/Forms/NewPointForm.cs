@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 using Backsight.Editor.Operations;
 using Backsight.Environment;
 using Backsight.Editor.UI;
@@ -121,7 +122,7 @@ public partial class NewPointForm : Form
             this.Text = m_Title;
 
         ILayer layer = m_Cmd.ActiveLayer;
-        IEntity[] entities = EnvironmentContainer.EntityTypes(SpatialType.Point, layer);
+        IEntity[] entities = EnvironmentRepository.FindEntityTypes(SpatialType.Point, layer).ToArray();
         Array.Sort<IEntity>(entities, delegate(IEntity a, IEntity b) { return a.Name.CompareTo(b.Name); });
         entityTypeComboBox.DataSource = entities;
 

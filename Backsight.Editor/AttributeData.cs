@@ -18,6 +18,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Backsight.Data;
+using Backsight.Database;
 using Backsight.Editor.Forms;
 using Backsight.Environment;
 
@@ -116,7 +117,7 @@ static class AttributeData
     static int Load(Dictionary<string, FeatureId> keyIds)
     {
         // Locate information about the tables associated with Backsight
-        ITable[] tables = EnvironmentContainer.Current.Tables;
+        ITable[] tables = EnvironmentRepository.Current.Tables.ToArray();
         if (tables.Length == 0)
             return -1;
 
@@ -182,7 +183,7 @@ static class AttributeData
     internal static DataRow[] FindByKey(string key)
     {
         // Locate information about the tables associated with Backsight
-        ITable[] tables = EnvironmentContainer.Current.Tables;
+        ITable[] tables = EnvironmentRepository.Current.Tables.ToArray();
         if (tables.Length == 0)
             return new DataRow[0];
 

@@ -750,44 +750,16 @@ class CadastralMapModel : ISpatialModel
     // that refers to one specific project (which may not be defined during deserialization).
 
     [Obsolete("Use Project.DefaultPointType instead")]
-    internal IEntity DefaultPointType
-    {
-        get
-        {
-            int entityId = EditingController.Current.Project.Settings.DefaultPointType;
-            return EnvironmentContainer.FindEntityById(entityId);
-        }
-    }
+    internal IEntity DefaultPointType => EditingController.Current.Project.DefaultPointType;
 
     [Obsolete("Use Project.DefaultLineType instead")]
-    internal IEntity DefaultLineType
-    {
-        get
-        {
-            int entityId = EditingController.Current.Project.Settings.DefaultLineType;
-            return EnvironmentContainer.FindEntityById(entityId);
-        }
-    }
+    internal IEntity DefaultLineType => EditingController.Current.Project.DefaultLineType;
 
     [Obsolete("Use Project.DefaultPolygonType instead")]
-    internal IEntity DefaultPolygonType
-    {
-        get
-        {
-            int entityId = EditingController.Current.Project.Settings.DefaultPolygonType;
-            return EnvironmentContainer.FindEntityById(entityId);
-        }
-    }
+    internal IEntity DefaultPolygonType => EditingController.Current.Project.DefaultPolygonType;
 
     [Obsolete("Use Project.DefaultTextType instead")]
-    internal IEntity DefaultTextType
-    {
-        get
-        {
-            int entityId = EditingController.Current.Project.Settings.DefaultTextType;
-            return EnvironmentContainer.FindEntityById(entityId);
-        }
-    }
+    internal IEntity DefaultTextType => EditingController.Current.Project.DefaultTextType;
 
     /// <summary>
     /// Finds all circles that pass near a specific position.

@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor.Forms;
@@ -70,7 +71,7 @@ public partial class EntityTranslationForm : Form
     {
         unknownTextBox.Text = m_Alias;
 
-        IEntity[] ents = EnvironmentContainer.EntityTypes(m_Type);
+        IEntity[] ents = EnvironmentRepository.FindEntityTypes(m_Type).ToArray();
         listBox.Items.AddRange(ents);
     }
 

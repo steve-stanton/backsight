@@ -47,6 +47,7 @@ public interface IEnvironmentRepository
     T? Find<T>(int id) where T : class, IEnvironmentItem;
     T FindRequired<T>(int id) where T : class, IEnvironmentItem;
     IEnumerable<T> FindMany<T>(Predicate<T> predicate) where T : class, IEnvironmentItem;
+    string? FindPropertyByName(string propertyName);
 }
 
 // string ITheme.Name

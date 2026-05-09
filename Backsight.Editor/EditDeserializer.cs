@@ -15,6 +15,7 @@
 
 using System.Diagnostics;
 using System.Reflection;
+using Backsight.Database;
 using Backsight.Environment;
 using Backsight.Editor.Operations;
 
@@ -385,7 +386,7 @@ class EditDeserializer
     internal IEntity ReadEntity(DataField field)
     {
         int id = m_Reader.ReadInt32(field.ToString());
-        return EnvironmentContainer.FindEntityById(id);
+        return EnvironmentRepository.FindEntityById(id);
     }
 
     /// <summary>

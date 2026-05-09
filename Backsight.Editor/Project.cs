@@ -317,7 +317,7 @@ class Project
         get
         {
             int entityId = m_Settings.DefaultPointType;
-            return EnvironmentContainer.FindEntityById(entityId);
+            return EnvironmentRepository.FindEntityById(entityId);
         }
     }
 
@@ -329,7 +329,7 @@ class Project
         get
         {
             int entityId = m_Settings.DefaultLineType;
-            return EnvironmentContainer.FindEntityById(entityId);
+            return EnvironmentRepository.FindEntityById(entityId);
         }
     }
 
@@ -341,7 +341,7 @@ class Project
         get
         {
             int entityId = m_Settings.DefaultPolygonType;
-            return EnvironmentContainer.FindEntityById(entityId);
+            return EnvironmentRepository.FindEntityById(entityId);
         }
     }
 
@@ -353,7 +353,7 @@ class Project
         get
         {
             int entityId = m_Settings.DefaultTextType;
-            return EnvironmentContainer.FindEntityById(entityId);
+            return EnvironmentRepository.FindEntityById(entityId);
         }
     }
 }

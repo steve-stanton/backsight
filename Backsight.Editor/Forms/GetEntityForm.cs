@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor.Forms;
@@ -63,7 +64,7 @@ partial class GetEntityForm : Form
             this.Text = "Specify entity type";
 
         // Load the entity types for the spatial data type
-        IEntity[] ents = EnvironmentContainer.EntityTypes(m_Type, m_Layer);
+        IEntity[] ents = EnvironmentRepository.FindEntityTypes(m_Type, m_Layer).ToArray();
         listBox.Items.AddRange(ents);
 
         // Remove first item if it's blank

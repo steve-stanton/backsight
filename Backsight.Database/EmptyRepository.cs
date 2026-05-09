@@ -30,4 +30,9 @@ public class EmptyRepository : IEnvironmentRepository
     {
         throw new NotImplementedException();
     }
+
+    public string? FindPropertyByName(string propertyName)
+    {
+        return null;
+    }
 }

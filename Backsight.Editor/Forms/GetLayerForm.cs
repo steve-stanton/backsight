@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor.Forms;
@@ -41,7 +42,7 @@ public partial class GetLayerForm : Form
     private void GetLayerForm_Shown(object sender, EventArgs e)
     {
         // Load the layers
-        ILayer[] layers = EnvironmentContainer.Current.Layers;
+        ILayer[] layers = EnvironmentRepository.Current.Layers.ToArray();
         listBox.Items.AddRange(layers);
 
         // Remove first item if it's blank
@@ -49,7 +50,7 @@ public partial class GetLayerForm : Form
             listBox.Items.RemoveAt(0);
 
         if (m_SelectedLayer!=null)
-            listBox.SelectedItem = Array.Find<ILayer>(layers, layer => layer.Id==m_SelectedLayer.Id);
+            listBox.SelectedItem = Array.Find(layers, layer => layer.Id==m_SelectedLayer.Id);
     }
 
     private void cancelButton_Click(object sender, EventArgs e)

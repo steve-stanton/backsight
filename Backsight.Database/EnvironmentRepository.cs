@@ -32,6 +32,11 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     /// </summary>
     private readonly Dictionary<int, List<ITable>> _entitySchemasIndex = new();
 
+    /// <summary>
+    /// Miscellaneous properties of the environment.
+    /// </summary>
+    private readonly Dictionary<string, string> _properties = new();
+
     public EnvironmentRepository(string connectionString) :
         base(connectionString,
             commandTimeout: null,
@@ -67,6 +72,10 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
             cd.Repository = this;
             _columnDomains.Add(cd);
         }
+        
+        // Load miscellaneous properties
+        foreach (var row in ExecuteQuery($"SELECT Name, Value FROM Properties"))
+            _properties.Add(row.Name.ToString(), row.Value.ToString());
     }
 
     private void LoadIndex<TItem, TRow>()
@@ -179,7 +188,12 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         var lookup = GetIndex<T>(typeof(T).Name);
         return lookup.Values.Where(x => predicate(x));
     }
-/*
+
+    public string? FindPropertyByName(string propertyName)
+    {
+        return _properties.GetValueOrDefault(propertyName);
+    }
+    
     /// <summary>
     /// Locates an entity type based on it's unique ID.
     /// </summary>
@@ -187,9 +201,40 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     /// <returns>The corresponding entity type (null if not found)</returns>
     public static IEntity FindEntityById(int id)
     {
-        return FindById<IEntity>(s_Container.EntityTypes, id);
+        return _repository.FindRequired<IEntity>(id);
     }
-*/
+
+    /// <summary>
+    /// The entity types that relate to the specified spatial type, regardless of the
+    /// mapping layer they may be restricted to.
+    /// </summary>
+    /// <param name="t">The type(s) of interest</param>
+    /// <returns>The entity types associated with the specified spatial type.</returns>
+    public static IEnumerable<IEntity> FindEntityTypes(SpatialType t)
+    {
+        return _repository.EntityTypes.Where(x => x.IsValid(t));
+    }
+
+    /// <summary>
+    /// The entity types that relate to the specified spatial type and mapping layer.
+    /// </summary>
+    /// <param name="t">The type(s) of interest</param>
+    /// <param name="layer">The layer of interest (null for all layers)</param>
+    /// <returns>The entity types associated with the specified spatial type and layer
+    /// (i.e. entities that either refer explicitly to the layer, or which can be
+    /// used on all layers).
+    /// </returns>
+    public static IEnumerable<IEntity> FindEntityTypes(SpatialType t, ILayer? layer)
+    {
+        if (layer is null || layer.Id == 0)
+            return _repository.EntityTypes.Where(x => x.IsValid(t));
+        
+        // The entity type should always be associated with a layer, but it may be the
+        // default layer (with an ID of 0).
+        return _repository.EntityTypes.Where(x =>
+            x.IsValid(t) && (x.Layer.Id == layer.Id || x.Layer.Id == 0));
+    }
+
     /// <summary>
     /// Locates font information based on it's unique ID.
     /// </summary>

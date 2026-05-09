@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor.Forms;
@@ -70,7 +71,7 @@ public partial class SchemaComboBox : ComboBox
     public ITable Load(SpatialType type)
     {
         ILayer layer = EditingController.Current.ActiveLayer;
-        ITable[] schemas = EnvironmentContainer.Schemas(type, layer);
+        ITable[] schemas = FindAssociatedTables(type, layer);
         Array.Sort<ITable>(schemas, delegate(ITable a, ITable b)
             { return a.TableName.CompareTo(b.TableName); });
         this.DataSource = schemas;
@@ -94,6 +95,29 @@ public partial class SchemaComboBox : ComboBox
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// The attribute tables that relate to the specified spatial type and mapping layer.
+    /// </summary>
+    /// <param name="type">The type(s) of interest</param>
+    /// <param name="layer">The layer of interest (null for all layers)</param>
+    /// <returns>The schemas associated with the entity types that apply to the specified
+    /// spatial type and mapping layer</returns>
+    private static ITable[] FindAssociatedTables(SpatialType type, ILayer? layer)
+    {
+        var result = new List<ITable>();
+
+        foreach (IEntity e in EnvironmentRepository.FindEntityTypes(type, layer))
+        {
+            foreach (ITable t in e.DefaultTables)
+            {
+                if (!result.Contains(t))
+                    result.Add(t);
+            }
+        }
+
+        return result.ToArray();
     }
 
     /// <summary>

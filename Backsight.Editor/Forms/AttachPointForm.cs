@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 using Backsight.Environment;
 using Backsight.Editor.UI;
 
@@ -94,13 +95,10 @@ public partial class AttachPointForm : Form
         int entId = ReadDefaultPointEntityTypeId();
         if (entId > 0)
         {
-            IEntity ent = EnvironmentContainer.FindEntityById(entId);
-            if (ent!=null)
-            {
-                entityTypeComboBox.SelectEntity(ent);
-                defaultCheckBox.Enabled = false;
-                m_PointType = ent;
-            }
+            IEntity ent = EnvironmentRepository.FindEntityById(entId);
+            entityTypeComboBox.SelectEntity(ent);
+            defaultCheckBox.Enabled = false;
+            m_PointType = ent;
         }
 
         // Check auto-repeat option (default is to repeat)

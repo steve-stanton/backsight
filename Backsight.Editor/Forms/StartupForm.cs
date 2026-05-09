@@ -48,12 +48,13 @@ partial class StartupForm : Form
         var repo = new EnvironmentRepository(@"Data Source=C:\ProgramData\Backsight\Manitoba.db;Mode=ReadWrite");
         repo.Load();
         
+        /*
         // Pick up a canned environment from embedded resource file
         if (String.IsNullOrEmpty(LastDatabase.ConnectionString))
             EnvironmentContainer.Current = new EnvironmentResource();
         else
             EnvironmentContainer.Current = new EnvironmentDatabase(LastDatabase.ConnectionString);
-
+*/
         ShowDatabaseName();
 
         // Determine whether a previously open project is still available

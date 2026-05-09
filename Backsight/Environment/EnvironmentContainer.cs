@@ -47,38 +47,19 @@ public static class EnvironmentContainer
         get { return (s_Container==null ? null : s_Container.Factory); }
     }
 
-    /// <summary>
-    /// The entity types that relate to the specified spatial type, regardless of the
-    /// mapping layer they may be restricted to.
-    /// </summary>
-    /// <param name="t">The type(s) of interest</param>
-    /// <returns>The entity types associated with the specified spatial type.</returns>
+    /*
     public static IEntity[] EntityTypes(SpatialType t)
     {
         return Filter(s_Container.EntityTypes, t, null);
     }
-
-    /// <summary>
-    /// The entity types that relate to the specified spatial type and mapping layer.
-    /// </summary>
-    /// <param name="t">The type(s) of interest</param>
-    /// <param name="layer">The layer of interest (null for all layers)</param>
-    /// <returns>The entity types associated with the specified spatial type and layer
-    /// (i.e. entities that either refer explicitly to the layer, or which can be
-    /// used on all layers).
-    /// </returns>
+*/
+/*
     public static IEntity[] EntityTypes(SpatialType t, ILayer layer)
     {
         return Filter(s_Container.EntityTypes, t, layer);
     }
-
-    /// <summary>
-    /// The schemas that relate to the specified spatial type and mapping layer.
-    /// </summary>
-    /// <param name="t">The type(s) of interest</param>
-    /// <param name="layer">The layer of interest (null for all layers)</param>
-    /// <returns>The schemas associated with the entity types that apply to the specified
-    /// spatial type and mapping layer</returns>
+*/
+    /*
     public static ITable[] Schemas(SpatialType t, ILayer layer)
     {
         List<ITable> result = new List<ITable>();
@@ -96,7 +77,7 @@ public static class EnvironmentContainer
 
         return result.ToArray();
     }
-
+*/
     /// <summary>
     /// Restricts the supplied array to those entity types where certain
     /// spatial type(s) are valid.

@@ -16,6 +16,7 @@
 using System.Windows.Forms;
 using Backsight.Environment;
 using System.ComponentModel;
+using Backsight.Database;
 
 namespace Backsight.Editor.Forms;
 
@@ -70,7 +71,7 @@ public partial class EntityTypeComboBox : ComboBox
     /// <returns>The default entity type in the combo (if any)</returns>
     public IEntity Load(SpatialType type, ILayer layer)
     {
-        IEntity[] entities = EnvironmentContainer.EntityTypes(type, layer);
+        IEntity[] entities = EnvironmentRepository.FindEntityTypes(type, layer).ToArray();
         Array.Sort<IEntity>(entities, delegate(IEntity a, IEntity b)
             { return a.Name.CompareTo(b.Name); });
 
