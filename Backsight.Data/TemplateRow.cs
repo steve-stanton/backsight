@@ -97,7 +97,7 @@ public partial class BacksightDataSet
                 this.tableTemplate.AddTemplateRow(this);
         }
 
-        internal static TemplateRow CreateTemplateRow(BacksightDataSet ds)
+        public static TemplateRow CreateTemplateRow(BacksightDataSet ds)
         {
             TemplateRow result = ds.Template.NewTemplateRow();
             result.SetDefaultValues();
