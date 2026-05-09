@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Drawing;
+using Backsight.Database;
 using Backsight.Environment;
 using Backsight.Forms;
 
@@ -410,7 +411,7 @@ abstract class TextGeometry : IString, IPersistent
         if (editDeserializer.IsNextField(DataField.Font))
         {
             int fontId = editDeserializer.ReadInt32(DataField.Font);
-            font = EnvironmentContainer.FindFontById(fontId);
+            font = EnvironmentRepository.FindFontById(fontId) ?? FontInfo.Default;
         }
         else
         {

@@ -145,16 +145,12 @@ public static class EnvironmentContainer
         return result.ToArray();
     }
 
-    /// <summary>
-    /// Locates a map layer based on it's unique ID
-    /// </summary>
-    /// <param name="id">The ID of the required layer</param>
-    /// <returns>The corresponding layer (null if not found)</returns>
+    /*
     public static ILayer FindLayerById(int id)
     {
         return FindById<ILayer>(s_Container.Layers, id);
     }
-
+*/
     /// <summary>
     /// Locates an entity type based on it's unique ID
     /// </summary>
@@ -165,15 +161,12 @@ public static class EnvironmentContainer
         return FindById<IEntity>(s_Container.EntityTypes, id);
     }
 
-    /// <summary>
-    /// Locate the entity type with an ID==0.
-    /// </summary>
-    /// <returns>The "blank" entity type</returns>
+    /*
     public static IEntity FindBlankEntity()
     {
         return FindEntityById(0);
     }
-
+*/
     /// <summary>
     /// Locates a Backsight property
     /// </summary>
@@ -185,26 +178,17 @@ public static class EnvironmentContainer
         return Array.Find<IProperty>(props, delegate(IProperty p) { return p.Name == propertyName; });
     }
 
-    /// <summary>
-    /// Locates font information based on it's unique ID
-    /// </summary>
-    /// <param name="id">The ID of the required font</param>
-    /// <returns>The corresponding font information  (null if not found)</returns>
+    /*
     public static IFont FindFontById(int id)
     {
         return FindById<IFont>(s_Container.Fonts, id);
     }
 
-    /// <summary>
-    /// Locates a text template based on it's unique ID
-    /// </summary>
-    /// <param name="id">The ID of the required template</param>
-    /// <returns>The corresponding template (null if not found)</returns>
     public static ITemplate FindTemplateById(int id)
     {
         return FindById<ITemplate>(s_Container.Templates, id);
     }
-
+*/
     /// <summary>
     /// Locates a map theme based on it's unique ID
     /// </summary>

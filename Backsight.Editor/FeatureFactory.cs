@@ -38,22 +38,22 @@ class FeatureFactory
     /// <summary>
     /// The entity type for new point features
     /// </summary>
-    IEntity m_PointType;
+    IEntity? m_PointType;
 
     /// <summary>
     /// The entity type for new line features
     /// </summary>
-    IEntity m_LineType;
+    IEntity? m_LineType;
 
     /// <summary>
     /// The entity type for new polygon labels
     /// </summary>
-    IEntity m_PolygonType;
+    IEntity? m_PolygonType;
 
     /// <summary>
     /// The entity type for new polygon labels
     /// </summary>
-    IEntity m_TextType;
+    IEntity? m_TextType;
 
     #endregion
 
@@ -78,18 +78,12 @@ class FeatureFactory
     /// <summary>
     /// The model containing the edit that this factory is for.
     /// </summary>
-    CadastralMapModel MapModel
-    {
-        get { return m_Operation.MapModel; }
-    }
+    CadastralMapModel MapModel => m_Operation.MapModel;
 
     /// <summary>
     /// The editing operation that needs to create features (not null).
     /// </summary>
-    internal Operation Creator
-    {
-        get { return m_Operation; }
-    }
+    internal Operation Creator => m_Operation;
 
     /// <summary>
     /// The entity type for new point features (if not previously
@@ -99,8 +93,8 @@ class FeatureFactory
     {
         get
         {
-            if (m_PointType == null)
-                m_PointType = MapModel.DefaultPointType;
+            if (m_PointType is null)
+                m_PointType = m_Operation.Session.Project.DefaultPointType;
 
             return m_PointType;
         }
@@ -116,8 +110,8 @@ class FeatureFactory
     {
         get
         {
-            if (m_LineType == null)
-                m_LineType = MapModel.DefaultLineType;
+            if (m_LineType is null)
+                m_LineType = m_Operation.Session.Project.DefaultLineType;
 
             return m_LineType;
         }
@@ -133,8 +127,8 @@ class FeatureFactory
     {
         get
         {
-            if (m_TextType == null)
-                m_TextType = MapModel.DefaultTextType;
+            if (m_TextType is null)
+                m_TextType = m_Operation.Session.Project.DefaultTextType;
 
             return m_TextType;
         }
@@ -150,8 +144,8 @@ class FeatureFactory
     {
         get
         {
-            if (m_PolygonType == null)
-                m_PolygonType = MapModel.DefaultPolygonType;
+            if (m_PolygonType is null)
+                m_PolygonType = m_Operation.Session.Project.DefaultPolygonType;
 
             return m_PolygonType;
         }
@@ -231,7 +225,7 @@ class FeatureFactory
     {
         Debug.Assert(MapModel.WorkingSession is not null, "Working session not set");
         
-        PointFeature result = null;
+        PointFeature? result = null;
         IFeature f = FindFeatureDescription(itemName);
 
         if (f == null)

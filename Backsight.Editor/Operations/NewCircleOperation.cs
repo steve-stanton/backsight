@@ -235,7 +235,7 @@ class NewCircleOperation : NewLineOperation, IRecallable //, IRevisable
         // The circle (and any closing point) will have the blank entity type (with ID=0).
         // If you don't do this, the factory will create stuff with default entity types,
         // and possibly a user-perceived ID.
-        IEntity blank = EnvironmentContainer.FindBlankEntity();
+        IEntity blank = EnvironmentContainer.FindEntityById(0);
         ff.PointType = blank;
         ff.LineType = blank;
 

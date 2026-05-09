@@ -391,7 +391,7 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
         // If a point will be needed at the start of the parallel line, remember that
         // fact so that ProcessFeatures will know what to do.
 
-        IEntity pointType = MapModel.DefaultPointType;
+        IEntity pointType = Session.Project.DefaultPointType;
 
         if (!IsPositionAtOffsetPoint(spar))
         {
@@ -608,8 +608,6 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
     /// used to define the offset to the parallel line).</returns>
     PointFeature AddPoint(IPosition loc)
     {
-        CadastralMapModel map = CadastralMapModel.Current;
-
         // Add the split point (with default entity type). If a
         // point already exists at the location, you'll get back
         // that point instead.
@@ -627,7 +625,8 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
                 return p;
         }
 
-        p = map.AddPoint(p, map.DefaultPointType, this);
+        var e = Session.Project.DefaultPointType;
+        p = CadastralMapModel.Current.AddPoint(p, e, this);
         p.SetNextId();
 
         return p;

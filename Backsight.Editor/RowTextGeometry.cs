@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Data;
 using Backsight.Environment;
 using Backsight.Data;
+using Backsight.Database;
 
 namespace Backsight.Editor;
 
@@ -95,7 +96,7 @@ class RowTextGeometry : TextGeometry
             throw new ArgumentNullException();
 
         m_Row = row;
-        m_Template = EnvironmentContainer.FindTemplateById(content.TemplateId);
+        m_Template = EnvironmentRepository.FindTemplateById(content.TemplateId);
 
         //if (m_Template == null)
         //    throw new ArgumentException("Text template not found");

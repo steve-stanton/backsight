@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Diagnostics;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor;
@@ -108,20 +109,12 @@ class IdManager
     /// </summary>
     IdGroup[] GetGroups()
     {
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        if (ec == null)
-            return new IdGroup[0];
+        var result = new List<IdGroup>();
 
-        IIdGroup[] groups = ec.IdGroups;
-        List<IdGroup> result = new List<IdGroup>(groups.Length);
-
-        foreach(IIdGroup group in groups)
+        foreach(IIdGroup group in EnvironmentRepository.Current.IdGroups.Where(x => x.Id != 0))
         {
-            if (group.Id != 0)
-            {
-                IdGroup idg = new IdGroup(group);
-                result.Add(idg);
-            }
+            IdGroup idg = new IdGroup(group);
+            result.Add(idg);
         }
 
         return result.ToArray();
@@ -136,14 +129,9 @@ class IdManager
     /// the values are elements in the <paramref name="groups"/> array.</returns>
     Dictionary<int, IdGroup> GetEntityGroups(IdGroup[] groups)
     {
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        if (ec == null)
-            return new Dictionary<int, IdGroup>();
+        var result = new Dictionary<int, IdGroup>();
 
-        IEntity[] ents = ec.EntityTypes;
-        Dictionary<int, IdGroup> result = new Dictionary<int, IdGroup>(ents.Length);
-
-        foreach (IEntity e in ents)
+        foreach (IEntity e in EnvironmentRepository.Current.EntityTypes)
         {
             IIdGroup idg = e.IdGroup;
             if (idg!=null && idg.Id>0)

@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor;
@@ -81,7 +82,7 @@ class TranslationFile
     {
         string line;
         char[] sep = new char[] { '=' };
-        IEntity[] ents = EnvironmentContainer.Current.EntityTypes;
+        IEntity[] ents = EnvironmentRepository.Current.EntityTypes.ToArray();
 
         while ((line=sr.ReadLine())!=null)
         {
@@ -95,7 +96,7 @@ class TranslationFile
                 string entName = items[1].Trim();
 
                 // Attempt to find the entity type
-                IEntity ent = Array.Find<IEntity>(ents, e => String.Compare(entName, e.Name, true) == 0);
+                IEntity ent = Array.Find(ents, e => String.Compare(entName, e.Name, true) == 0);
 
                 Translation<IEntity> t = new Translation<IEntity>(featureCode, ent, m_NumLoad);
                 m_Translations.Add(t);

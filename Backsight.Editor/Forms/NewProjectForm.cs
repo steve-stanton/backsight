@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor.Forms;
@@ -70,8 +71,7 @@ public partial class NewProjectForm : Form
     private void NewProjectForm_Load(object sender, EventArgs e)
     {
         // Load all defined editing layers
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        layerComboBox.DataSource = ec.Layers;
+        layerComboBox.DataSource = EnvironmentRepository.Current.Layers.ToArray();
     }
 
     private void okButton_Click(object sender, EventArgs e)

@@ -23,6 +23,7 @@ using Backsight.Editor.UI;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Data;
+using Backsight.Database;
 
 namespace Backsight.Editor;
 
@@ -56,7 +57,6 @@ class EditingController : SpatialController, ISpatialController
     /// <summary>
     /// Information about the editing layer
     /// </summary>
-    // There's now just one editing ayer per project - this should be obtained probably from Project.LayerId
     ILayer m_ActiveLayer;
 
     /// <summary>
@@ -471,10 +471,7 @@ class EditingController : SpatialController, ISpatialController
     /// <param name="p">The project the user is working with</param>
     internal void SetProject(Project p)
     {
-        m_ActiveLayer = EnvironmentContainer.FindLayerById(p.LayerId);
-        if (m_ActiveLayer == null)
-            throw new ApplicationException("Cannot locate map layer associated with selected project");
-
+        m_ActiveLayer = EnvironmentRepository.FindLayerById(p.LayerId);
         m_Project = p;
     }
 
@@ -1072,6 +1069,7 @@ class EditingController : SpatialController, ISpatialController
             if (divider is not null)
             {
                 var thinYellow = new DrawStyle(Color.Yellow);
+                thinYellow.Pen.Width = 3;
                 mapDisplay = new MapDisplay(ActiveMap, thinYellow);
                 divider.Draw(mapDisplay);
             }
@@ -1297,22 +1295,6 @@ class EditingController : SpatialController, ISpatialController
     /// The database server (null if a database has not been specified).
     /// </summary>
     internal IDataServer DataServer => m_DataServer;
-
-    /// <summary>
-    /// Defines (or clears) a database server.
-    /// </summary>
-    /// <param name="connectionString">The database connection string (specify null if you want
-    /// to clear a previously defined database).</param>
-    /// <returns>The database server (null if a null connection string was supplied).</returns>
-    internal IDataServer SetDataServer(string connectionString)
-    {
-        if (String.IsNullOrWhiteSpace(connectionString))
-            m_DataServer = null;
-        else
-            m_DataServer = new DataServer(connectionString);
-
-        return m_DataServer;
-    }
 
     /// <summary>
     /// The main screen (largely comprised of a control for displaying the current map model).

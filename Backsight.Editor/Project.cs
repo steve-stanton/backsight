@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Diagnostics;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor;
@@ -214,7 +215,7 @@ class Project
                         // the layer defaults. This covers a case where the settings file has been lost, and
                         // automatically re-created by ProjectSettings.CreateInstance.
 
-                        var layer = EnvironmentContainer.FindLayerById(m_ProjectInfo.LayerId);
+                        var layer = EnvironmentRepository.FindLayerById(m_ProjectInfo.LayerId);
                         m_Settings.SetEntityTypeDefaults(layer);
                     }
                     else if (edit is NewSessionEvent)

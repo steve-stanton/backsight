@@ -274,6 +274,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Backsight.Database\Backsight.Database.csproj" />
       <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj" />
       <ProjectReference Include="..\Backsight.Forms\Backsight.Forms.csproj" />
       <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj" />
@@ -860,6 +861,10 @@
         <Generator>SettingsSingleFileGenerator</Generator>
         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="RepoDb.Sqlite.Microsoft" Version="1.13.1" />
     </ItemGroup>
 
 </Project>

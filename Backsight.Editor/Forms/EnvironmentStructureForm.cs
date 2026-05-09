@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor.Forms;
@@ -34,45 +35,33 @@ partial class EnvironmentStructureForm : Form
         // Hide the color label, since it only applies when an entity type is selected
         colorLabel.Visible = false;
 
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-
-        TreeNode root = new TreeNode(ec.Name);
+        var repo = EnvironmentRepository.Current;
+        TreeNode root = new TreeNode(repo.Name);
         root.ImageKey = root.SelectedImageKey = "AttributeContainer";
         tree.Nodes.Add(root);
 
         // Themes and layers
-
-        ITheme[] themes = ec.Themes;
-        if (themes.Length > 0)
+        foreach (ITheme theme in repo.Themes.Where(x => x.Id != 0))
         {
-            for (int i=0; i<themes.Length; i++)
+            TreeNode themeNode = new TreeNode(theme.Name);
+            themeNode.ImageKey = themeNode.SelectedImageKey = "Theme";
+            themeNode.Tag = theme;
+
+            foreach (ILayer layer in theme.Layers)
             {
-                // Ignore the blank theme
-                ITheme theme = themes[i];
-                if (theme.Id==0)
-                    continue;
-
-                TreeNode themeNode = new TreeNode(theme.Name);
-                themeNode.ImageKey = themeNode.SelectedImageKey = "Theme";
-                themeNode.Tag = theme;
-
-                ILayer[] layers = theme.Layers;
-                for (int j=0; j<layers.Length; j++)
-                {
-                    ILayer layer = layers[j];
-                    TreeNode layerNode = new TreeNode(layer.Name);
-                    layerNode.ImageKey = layerNode.SelectedImageKey = "Layer";
-                    layerNode.Tag = layer;
-                    themeNode.Nodes.Add(layerNode);
-                }
-
-                root.Nodes.Add(themeNode);
+                TreeNode layerNode = new TreeNode(layer.Name);
+                layerNode.ImageKey = layerNode.SelectedImageKey = "Layer";
+                layerNode.Tag = layer;
+                themeNode.Nodes.Add(layerNode);
             }
+
+            root.Nodes.Add(themeNode);
         }
 
         // Now any layers that aren't associated with a theme
-        ILayer[] allLayers = ec.Layers;
-        foreach (ILayer layer in allLayers)
+        // TODO: The database structure suggests that every layer must be associated with a theme, so what's this for?
+        /*
+        foreach (ILayer layer in repo.Layers)
         {
             if (layer.Theme == null)
             {
@@ -82,18 +71,15 @@ partial class EnvironmentStructureForm : Form
                 root.Nodes.Add(layerNode);
             }
         }
+        */
 
         // Entity types
-        IEntity[] ents = ec.EntityTypes;
-        foreach (IEntity ent in ents)
+        foreach (IEntity ent in repo.EntityTypes.Where(x => x.Id != 0))
         {
-            if (ent.Id != 0)
-            {
-                TreeNode entNode = new TreeNode(ent.Name);
-                entNode.ImageKey = entNode.SelectedImageKey = "Body";
-                entNode.Tag = ent;
-                root.Nodes.Add(entNode);
-            }
+            TreeNode entNode = new TreeNode(ent.Name);
+            entNode.ImageKey = entNode.SelectedImageKey = "Body";
+            entNode.Tag = ent;
+            root.Nodes.Add(entNode);
         }
     }
 

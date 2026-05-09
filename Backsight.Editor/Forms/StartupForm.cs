@@ -13,14 +13,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Backsight.Data;
+using Backsight.Database;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.SqlServer;
+using RepoDb;
 
 namespace Backsight.Editor.Forms;
 
@@ -43,14 +44,16 @@ partial class StartupForm : Form
 
     private void StartupForm_Load(object sender, EventArgs e)
     {
+        GlobalConfiguration.Setup().UseSqlite();
+        var repo = new EnvironmentRepository(@"Data Source=C:\ProgramData\Backsight\Manitoba.db;Mode=ReadWrite");
+        repo.Load();
+        
         // Pick up a canned environment from embedded resource file
-        EnvironmentContainer.Current = new EnvironmentResource();
-        /*
         if (String.IsNullOrEmpty(LastDatabase.ConnectionString))
             EnvironmentContainer.Current = new EnvironmentResource();
         else
             EnvironmentContainer.Current = new EnvironmentDatabase(LastDatabase.ConnectionString);
-*/
+
         ShowDatabaseName();
 
         // Determine whether a previously open project is still available
@@ -65,12 +68,12 @@ partial class StartupForm : Form
         if (canOpen)
         {
             openLastButton.Text = "&Open " + lastProjectName;
-            this.AcceptButton = openLastButton;
+            AcceptButton = openLastButton;
         }
         else
         {
             newProjectButton.BackColor = openLastButton.BackColor;
-            this.AcceptButton = newProjectButton;
+            AcceptButton = newProjectButton;
             openLastButton.BackColor = SystemColors.Control;
             openLastButton.Enabled = false;
         }
@@ -78,23 +81,7 @@ partial class StartupForm : Form
 
     void ShowDatabaseName()
     {
-        string cs = LastDatabase.ConnectionString;
-        if (String.IsNullOrWhiteSpace(cs))
-        {
-            lastDatabaseLabel.Text = "No database";
-        }
-        else
-        {
-            //DbConnectionStringBuilder sb = new DbConnectionStringBuilder();
-            //sb.ConnectionString = cs;
-            //object dataSource = sb["Data Source"];
-            //object initialCatalog = sb["Initial Catalog"];
-            //lastDatabaseLabel.Text = String.Format(@"{0}\{1}", dataSource, initialCatalog);
-
-            SqlConnectionStringBuilder sb = new SqlConnectionStringBuilder(cs);
-            lastDatabaseLabel.Text = String.Format(@"{0}\{1}", sb.DataSource, sb.InitialCatalog);
-        }
-
+        lastDatabaseLabel.Text = EnvironmentRepository.Current?.Name ?? "No database";
     }
 
     private void exitButton_Click(object sender, EventArgs e)

@@ -522,7 +522,7 @@ public partial class MainForm : Form, IControlContainer
             ILayer layer = m_Controller.ActiveLayer;
             activeLayerStatusLabel.Text = (layer==null ? "No active layer" : layer.Name);
             unitsStatusLabel.Text = m_Controller.EntryUnit.ToString();
-            IEntity ent = map.DefaultPointType;
+            IEntity ent = m_Controller.Project.DefaultPointType;
             pointEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);
             ent = map.DefaultLineType;
             lineEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);

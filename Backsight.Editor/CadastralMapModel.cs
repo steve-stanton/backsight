@@ -698,16 +698,14 @@ class CadastralMapModel : ISpatialModel
 
     internal IEntity GetDefaultEntity(SpatialType t)
     {
-        if (t == SpatialType.Point)
-            return DefaultPointType;
-        else if (t == SpatialType.Line)
-            return DefaultLineType;
-        else if (t == SpatialType.Polygon)
-            return DefaultPolygonType;
-        else if (t == SpatialType.Text)
-            return DefaultTextType;
-        else
-            throw new NotImplementedException("GetDefaultEntity");
+        return t switch
+        {
+            SpatialType.Point => DefaultPointType,
+            SpatialType.Line => DefaultLineType,
+            SpatialType.Polygon => DefaultPolygonType,
+            SpatialType.Text => DefaultTextType,
+            _ => throw new NotImplementedException("GetDefaultEntity")
+        };
     }
 
     /// <summary>
