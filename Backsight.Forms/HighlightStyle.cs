@@ -30,7 +30,7 @@ public class HighlightStyle : DrawStyle
     public HighlightStyle(ILength? pointHeight = null) : base(pointHeight)
     {
         base.Pen.Color = Color.Red;
-        base.Pen.Width = 3.0F;
+        base.Pen.Width = 5.0F;
 
         (base.Brush as SolidBrush).Color = Color.Red;
         m_ShowLineEndPoints = true;
