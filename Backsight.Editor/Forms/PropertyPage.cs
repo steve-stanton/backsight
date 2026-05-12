@@ -17,7 +17,6 @@ using System.Windows.Forms;
 using System.Data;
 using Backsight.Forms;
 using Backsight.Environment;
-using Backsight.Data;
 
 namespace Backsight.Editor.Forms;
 
@@ -27,21 +26,10 @@ namespace Backsight.Editor.Forms;
 /// </summary>
 partial class PropertyPage : TabPage
 {
-    #region Class data
-
-    /// <summary>
-    /// The database holding the attribute data (not null).
-    /// </summary>
-    readonly IDataServer m_DataServer;
-
     /// <summary>
     /// The database row that's being displayed
     /// </summary>
     Row m_Row;
-
-    #endregion
-
-    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PropertyPage"/> class.
@@ -53,15 +41,8 @@ partial class PropertyPage : TabPage
         : base()
     {
         InitializeComponent();
-
-        m_DataServer = EditingController.Current.DataServer;
-        if (m_DataServer == null)
-            throw new InvalidOperationException("No database available");
-
         SetRow(row);
     }
-
-    #endregion
 
     /// <summary>
     /// The database row that's being displayed
@@ -121,7 +102,7 @@ partial class PropertyPage : TabPage
             if (cd != null)
             {
                 string shortValue = items[i].ToString();
-                string longValue = cd.Domain.Lookup(m_DataServer.ConnectionString, shortValue);
+                string longValue = cd.Domain.Lookup(shortValue);
                 item.Description = longValue;
             }
 

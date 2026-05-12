@@ -15,7 +15,6 @@
 
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using Backsight.Data;
 using Backsight.Database;
 using Backsight.Editor.Forms;
 using Backsight.Environment;

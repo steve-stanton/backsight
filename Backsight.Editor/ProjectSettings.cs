@@ -215,16 +215,6 @@ public class ProjectSettings
     }
 
     /// <summary>
-    /// The database connection string
-    /// </summary>
-    [XmlElement]
-    public string ConnectionString
-    {
-        get { return m_ConnectionString; }
-        set { m_ConnectionString = Set<string>(value); }
-    }
-
-    /// <summary>
     /// Information about the area that was last drawn.
     /// </summary>
     [XmlElement]

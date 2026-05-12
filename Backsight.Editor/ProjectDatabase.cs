@@ -13,7 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using Backsight.Data;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 
@@ -163,13 +162,6 @@ class ProjectDatabase
 
         // Write initial project settings to the data folder
         ProjectSettings ps = new ProjectSettings();
-        IDataServer ds = EditingController.Current.DataServer;
-        if (ds != null)
-            ps.ConnectionString = ds.ConnectionString;
-
-        // Turn off auto-number if there's no database connection string
-        if (String.IsNullOrEmpty(ps.ConnectionString))
-            ps.IsAutoNumber = false;
 
         // Remember default entity types for points, lines, text, polygons
         ps.SetEntityTypeDefaults(layer);

@@ -19,7 +19,6 @@ using System.Windows.Forms;
 using Backsight.Data;
 using Backsight.Database;
 using Backsight.Editor.Properties;
-using Backsight.Environment;
 using Backsight.SqlServer;
 using RepoDb;
 

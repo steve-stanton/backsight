@@ -66,16 +66,13 @@ public partial class BacksightDataSet
             get { return DomainId; }
         }
 
-        /// <summary>
-        /// Performs a lookup on the domain table
-        /// </summary>
-        /// <param name="connectionString">The connection string for the database holding domain data.</param>
-        /// <param name="shortValue">The abbreviated code to lookup</param>
-        /// <returns>The expanded value for the lookup (blank if not found)</returns>
-        public string Lookup(string connectionString, string shortValue)
+
+        public string Lookup(string shortValue)
         {
+            throw new NotImplementedException();
+            /*
             if (m_Data == null)
-                m_Data = LoadDomainTable(connectionString);
+                m_Data = LoadDomainTable();
 
             string result;
 
@@ -83,13 +80,10 @@ public partial class BacksightDataSet
                 return result;
             else
                 return String.Empty;
+                */
         }
 
-        /// <summary>
-        /// Loads the domain table from the database
-        /// </summary>
-        /// <param name="connectionString">The connection string for the database holding domain data.</param>
-        /// <returns>A index of the domain table, keyed by the short value</returns>
+        /*
         Dictionary<string, string> LoadDomainTable(string connectionString)
         {
             IDataServer ds = new DataServer(connectionString);
@@ -105,14 +99,14 @@ public partial class BacksightDataSet
 
             return result;
         }
-
-        /// <summary>
-        /// The lookup values in the domain table
-        /// </summary>
-        public string[] GetLookupValues(string connectionString)
+*/
+        
+        public string[] GetLookupValues()
         {
+            throw new NotImplementedException();
+            /*
             if (m_Data == null)
-                m_Data = LoadDomainTable(connectionString);
+                m_Data = LoadDomainTable();
 
             string[] result = new string[m_Data.Count];
 
@@ -124,6 +118,7 @@ public partial class BacksightDataSet
             }
 
             return result;
+            */
         }
     }
 }

@@ -15,7 +15,6 @@
 
 using System.ComponentModel;
 using Backsight.Environment;
-using Backsight.Data;
 
 namespace Backsight.Editor.Forms;
 
@@ -26,13 +25,6 @@ namespace Backsight.Editor.Forms;
 /// </summary>
 class ColumnDomainConverter : StringConverter
 {
-    #region Class data
-
-    /// <summary>
-    /// The database holding the attribute data (not null).
-    /// </summary>
-    readonly IDataServer m_DataServer;
-
     /// <summary>
     /// The column domain that is being converted
     /// </summary>
@@ -43,28 +35,18 @@ class ColumnDomainConverter : StringConverter
     /// </summary>
     readonly StandardValuesCollection m_Values;
 
-    #endregion
-
-    #region Constructors
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ColumnDomainConverter"/> class.
     /// </summary>
     /// <param name="ds">The database holding domain data</param>
     /// <param name="cd">The column domain that is being converted (not null)</param>
-    public ColumnDomainConverter(IDataServer ds, IColumnDomain cd)
+    public ColumnDomainConverter(IColumnDomain cd)
     {
-        if (ds == null || cd == null)
-            throw new ArgumentNullException();
-
-        m_DataServer = ds;
         m_ColumnDomain = cd;
         IDomainTable dt = cd.Domain;
-        string[] lookups = dt.GetLookupValues(ds.ConnectionString);
+        string[] lookups = dt.GetLookupValues();
         m_Values = new StandardValuesCollection(lookups);
     }
-
-    #endregion
 
     /// <summary>
     /// Returns whether this object supports a standard set of values that can be picked from a list,
@@ -102,7 +84,7 @@ class ColumnDomainConverter : StringConverter
     /// <returns>The expanded value for the lookup (blank if not found)</returns>
     public string Lookup(string shortValue)
     {
-        return m_ColumnDomain.Domain.Lookup(m_DataServer.ConnectionString, shortValue);
+        return m_ColumnDomain.Domain.Lookup(shortValue);
     }
 
     /// <summary>

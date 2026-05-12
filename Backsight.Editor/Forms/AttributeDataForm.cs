@@ -40,11 +40,6 @@ public partial class AttributeDataForm : Form
     #endregion
 
     #region Class data
-        
-    /// <summary>
-    /// The database holding the attribute data (not null).
-    /// </summary>
-    readonly IDataServer m_DataServer;
 
     /// <summary>
     /// The table the attribute data is for
@@ -81,10 +76,6 @@ public partial class AttributeDataForm : Form
         m_Table = t;
         m_Id = id;
         m_Data = null;
-        m_DataServer = EditingController.Current.DataServer;
-
-        if (m_DataServer == null)
-            throw new InvalidOperationException("No database available");
     }
 
     /// <summary>
@@ -102,7 +93,6 @@ public partial class AttributeDataForm : Form
         m_Table = t;
         m_Id = row[t.IdColumnName].ToString();
         m_Data = row;
-        m_DataServer = EditingController.Current.DataServer;
     }
 
     #endregion
@@ -176,7 +166,7 @@ public partial class AttributeDataForm : Form
 
                 if (cd != null)
                 {
-                    string[] vals = cd.Domain.GetLookupValues(m_DataServer.ConnectionString);
+                    string[] vals = cd.Domain.GetLookupValues();
                     if (vals.Length > 0)
                         data[dc] = vals[0];
                 }
@@ -358,7 +348,7 @@ public partial class AttributeDataForm : Form
             DataGridViewCell currentCell = null;
 
             IDomainTable domainTable = cd.Domain;
-            string[] lookups = domainTable.GetLookupValues(m_DataServer.ConnectionString);
+            string[] lookups = domainTable.GetLookupValues();
             domainGrid.RowCount = lookups.Length;
             for (int i=0; i<lookups.Length; i++)
             {
@@ -366,7 +356,7 @@ public partial class AttributeDataForm : Form
                 DataGridViewRow r = domainGrid.Rows[i];
                 r.Tag = shortValue;
                 r.Cells["dgcShortValue"].Value = shortValue;
-                r.Cells["dgcLongValue"].Value = domainTable.Lookup(m_DataServer.ConnectionString, shortValue);
+                r.Cells["dgcLongValue"].Value = domainTable.Lookup(shortValue);
 
                 // If we have just defined the current data value, remember the cell so
                 // that we can set it once the grid has been loaded.

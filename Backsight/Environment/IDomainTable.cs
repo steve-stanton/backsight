@@ -33,16 +33,12 @@ public interface IDomainTable : IEnvironmentItem
     /// <summary>
     /// Performs a lookup on the domain table
     /// </summary>
-    /// <param name="connectionString">The connection string to the database holding domain data.</param>
     /// <param name="shortValue">The abbreviated code to lookup</param>
     /// <returns>The expanded value for the lookup (blank if not found)</returns>
-    /// TODO: Remove connection string parameter
-    string Lookup(string connectionString, string shortValue);
+    string Lookup(string shortValue);
 
     /// <summary>
     /// Retrieves the lookup values in the domain table.
     /// </summary>
-    /// <param name="connectionString">The connection string to the database holding domain data.</param>
-    /// TODO: Remove connection string parameter
-    string[] GetLookupValues(string connectionString);
+    string[] GetLookupValues();
 }

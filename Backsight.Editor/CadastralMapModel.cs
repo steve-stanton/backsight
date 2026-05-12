@@ -16,7 +16,6 @@
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using Backsight.Data;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
@@ -119,12 +118,7 @@ class CadastralMapModel : ISpatialModel
         m_Sessions = new List<Session>();
         m_Edits = new Dictionary<InternalIdValue, Operation>();
         m_Index = null; // new EditingIndex();
-
-        // Create an ID manager only if a database can be reached
-        IDataServer ds = EditingController.Current.DataServer;
-        if (ds != null && ds.CanConnect())
-            m_IdManager = new IdManager();
-
+        m_IdManager = new IdManager();
         m_Features = new Dictionary<InternalIdValue, Feature>(1000);
         m_NativeIds = new Dictionary<uint, NativeId>(1000);
         m_ForeignIds = new Dictionary<string, ForeignId>(1000);

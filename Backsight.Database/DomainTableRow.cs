@@ -30,7 +30,7 @@ internal partial class DomainTableRow : Row, IDomainTable
     }
     
     public int Id => DomainId;
-    public string Lookup(string connectionString, string shortValue)
+    public string Lookup(string shortValue)
     {
         // The connection string is not currently used (in the past, it was possible to hold
         // user data in a database apart from the Backsight environment data, but the current
@@ -39,7 +39,7 @@ internal partial class DomainTableRow : Row, IDomainTable
         return _content.GetValueOrDefault(shortValue, "");
     }
 
-    public string[] GetLookupValues(string connectionString)
+    public string[] GetLookupValues()
     {
         return _content.Keys.ToArray();
     }
