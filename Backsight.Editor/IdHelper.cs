@@ -57,7 +57,7 @@ class IdHelper
         // If we didn't find any, obtain an extra allocation
         if (avail.Length == 0)
         {
-            IdPacket newPacket = group.GetAllocation(true); // with announcement
+            group.GetAllocation(true); // with announcement
             avail = group.GetAvailIds();
             if (avail.Length == 0)
                 throw new ApplicationException("Cannot obtain ID allocation");

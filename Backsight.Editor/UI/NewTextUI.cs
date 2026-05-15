@@ -16,7 +16,6 @@
 using System.Windows.Forms;
 using System.Drawing;
 using Backsight.Editor.Forms;
-using Backsight.Forms;
 using Backsight.Environment;
 using Backsight.Editor.Operations;
 

@@ -13,11 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Windows.Forms;
-using Backsight.Data;
 using Backsight.Database;
 using Backsight.Editor.Forms;
 using Backsight.Environment;
@@ -38,11 +35,11 @@ static class AttributeData
     /// been associated with Backsight)</returns>
     internal static int Load(Feature[] features)
     {
-        List<FeatureId> fids = new List<FeatureId>(features.Length);
+        var fids = new List<FeatureId>(features.Length);
         foreach (Feature f in features)
         {
             FeatureId fid = f.FeatureId;
-            if (fid!=null)
+            if (fid is not null)
                 fids.Add(fid);
         }
 
@@ -88,7 +85,7 @@ static class AttributeData
     internal static int Load(FeatureId[] fids)
     {
         // Cross-reference the supplied IDs to their formatted key
-        Dictionary<string, FeatureId> keyIds = new Dictionary<string, FeatureId>(fids.Length);
+        var keyIds = new Dictionary<string, FeatureId>(fids.Length);
         foreach (FeatureId fid in fids)
         {
             string key = fid.FormattedKey;
@@ -121,146 +118,39 @@ static class AttributeData
         if (tables.Length == 0)
             return -1;
 
-        IDataServer ds = EditingController.Current.DataServer;
-        if (ds == null)
-            return -1;
-
         // Copy the required keys into a temp table
-        Trace.WriteLine(String.Format("Locating attributes for {0} feature IDs in {1} tables", keyIds.Count, tables.Length));
+        Trace.WriteLine($"Locating attributes for {keyIds.Count} feature IDs in {tables.Length} tables");
 
         int nFound = 0;
-
-        ds.RunTransaction(delegate
-        {
-            IConnection ic = ds.GetConnection();
-            const string KEYS_TABLE_NAME = "#Ids";
-            CopyKeysToTable(ic, keyIds, KEYS_TABLE_NAME);
-
-            foreach (ITable t in tables)
-            {
-                string sql = String.Format("SELECT * FROM {0} WHERE [{1}] IN (SELECT [FeatureId] FROM [{2}])",
-                    t.TableName, t.IdColumnName, KEYS_TABLE_NAME);
-                DataTable tab = ds.ExecuteSelect(sql);
-                tab.TableName = t.TableName;
-
-                int featureIdIndex = tab.Columns[t.IdColumnName].Ordinal;
-                Debug.Assert(featureIdIndex>=0);
-                foreach (DataRow row in tab.Select())
-                {
-                    string key = row[featureIdIndex].ToString().TrimEnd();
-                    FeatureId fid;
-                    if (keyIds.TryGetValue(key, out fid))
-                    {
-                        // Don't create a row if the ID is already associated with the
-                        // table (this is meant to cover situations where the edit has actively
-                        // formed the attributes, and is calling this method only to cover the
-                        // fact that further attributes may be involved).
-
-                        if (!fid.RefersToTable(t))
-                        {
-                            Row r = new Row(fid, t, row);
-                            nFound++;
-                        }
-                    }
-                    else
-                    {
-                        string msg = String.Format("Cannot find '{0}' in dictionary", key);
-                        throw new Exception(msg);
-                    }
-                }
-            }
-        });
-
-        return nFound;
-    }
-
-    /// <summary>
-    /// Attempts to locate any rows of attribute data that have a specific key (this involves
-    /// a select on all database tables that have been associated with Backsight).
-    /// </summary>
-    /// <param name="key">The key to look for</param>
-    /// <returns>The rows found (may be an empty array)</returns>
-    internal static DataRow[] FindByKey(string key)
-    {
-        // Locate information about the tables associated with Backsight
-        ITable[] tables = EnvironmentRepository.Current.Tables.ToArray();
-        if (tables.Length == 0)
-            return new DataRow[0];
-
-        IDataServer ds = EditingController.Current.DataServer;
-        if (ds == null)
-            return new DataRow[0];
-
-        List<DataRow> result = new List<DataRow>();
-
+        var repo = EnvironmentRepository.Current;
+        var keys = keyIds.Keys.ToArray();
+        
         foreach (ITable t in tables)
         {
-            string sql = String.Format("SELECT * FROM {0} WHERE [{1}]='{2}'",
-                t.TableName, t.IdColumnName, key);
-            DataTable tab = ds.ExecuteSelect(sql);
-            tab.TableName = t.TableName;
-            result.AddRange(tab.Select());
+            foreach (var record in repo.FindAttributeRecords(t, keys))
+            {
+                if (keyIds.TryGetValue(record.Id, out var fid))
+                {
+                    // Don't create a row if the ID is already associated with the
+                    // table (this is meant to cover situations where the edit has actively
+                    // formed the attributes, and is calling this method only to cover the
+                    // fact that further attributes may be involved).
+
+                    if (!fid.RefersToTable(t))
+                    {
+                        // Creating the row will update the supplied FeatureId to refer to it
+                        var r = new Row(fid, record);
+                        nFound++;
+                    }
+                }
+                else
+                {
+                    throw new ApplicationException($"Cannot find '{record.Id}' in dictionary");
+                }
+            }
         }
 
-        return result.ToArray();
-    }
-
-    /// <summary>
-    /// Searches a specific table to see whether it contains any rows with a specific key
-    /// </summary>
-    /// <param name="table">The table to select from</param>
-    /// <param name="key">The key to look for</param>
-    /// <returns>The rows found (may be an empty array). Normally, this array should contain
-    /// no more than one row - however, it is possible that the spatial key is not the primary
-    /// key of the table.</returns>
-    internal static DataRow[] FindByKey(ITable table, string key)
-    {
-        IDataServer ds = EditingController.Current.DataServer;
-        if (ds == null)
-            return new DataRow[0];
-
-        string sql = String.Format("SELECT * FROM {0} WHERE [{1}]='{2}'",
-            table.TableName, table.IdColumnName, key);
-        DataTable tab = ds.ExecuteSelect(sql);
-        tab.TableName = table.TableName;
-        return tab.Select();
-    }
-
-    /// <summary>
-    /// Copies an array of keys (formatted feature IDs) into a new database table.
-    /// </summary>
-    /// <param name="con">The database connection to use</param>
-    /// <param name="keys">The keys of the features to copy in</param>
-    /// <param name="tableName">The name of the table to create and load. This will
-    /// typically be a temporary table (a name starting with the "#" character
-    /// in SqlServer systems).</param>
-    static void CopyKeysToTable(IConnection con, Dictionary<string, FeatureId> keys, string tableName)
-    {
-        // Stick session IDs into an array of row objects
-        DataTable dt = new DataTable(tableName);
-        DataColumn dc = new DataColumn("FeatureId", typeof(string));
-        dc.MaxLength = 16;
-        dt.Columns.Add(dc);
-        DataRow[] rows = new DataRow[keys.Count];
-
-        int i = 0;
-        foreach (string key in keys.Keys)
-        {
-            rows[i] = dt.NewRow();
-            rows[i][0] = key;
-            i++;
-        }
-
-        // Create the temp table
-        string sql = String.Format("CREATE TABLE [{0}] ([FeatureId] VARCHAR(16) NOT NULL)", tableName);
-        SqlCommand cmd = new SqlCommand(sql, con.Value);
-        cmd.ExecuteNonQuery();
-
-        // Bulk copy the rows into the temp table
-        SqlBulkCopy bcp = new SqlBulkCopy(con.Value);
-        bcp.BatchSize = rows.Length;
-        bcp.DestinationTableName = tableName;
-        bcp.WriteToServer(rows);
+        return nFound;
     }
 
     /// <summary>
@@ -284,18 +174,12 @@ static class AttributeData
                 index.RemoveFeature(tf);
 
             // Display the attribute entry dialog
-            AttributeDataForm dial = new AttributeDataForm(r.Table, r.Data);
-            isChanged = (dial.ShowDialog() == DialogResult.OK);
+            var dial = new AttributeDataForm(r.Record);
+            isChanged = dial.ShowDialog() == DialogResult.OK;
             dial.Dispose();
 
             if (isChanged)
-            {
-                IDataServer ds = EditingController.Current.DataServer;
-                if (ds == null)
-                    throw new InvalidOperationException("No database available");
-
-                ds.SaveRow(r.Data);
-            }
+                EnvironmentRepository.Current.UpdateRecord(r.Record);
         }
 
         finally

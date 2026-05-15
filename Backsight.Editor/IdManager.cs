@@ -157,8 +157,8 @@ class IdManager
 
         foreach (IdGroup g in m_IdGroups)
         {
-            IdPacket p = g.GetAllocation(false);
-            if (p != null)
+            IdPacket? p = g.GetAllocation(false);
+            if (p is not null)
                 allocs.Add(p);
         }
 

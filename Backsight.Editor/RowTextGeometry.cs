@@ -15,7 +15,6 @@
 
 using System.Text;
 using System.Diagnostics;
-using System.Data;
 using Backsight.Environment;
 using Backsight.Database;
 
@@ -23,7 +22,7 @@ namespace Backsight.Editor;
 
 /// <written by="Steve Stanton" on="15-MAY-1998" was="CeRowText" />
 /// <summary>
-/// Row text describes how to format a text string that is
+/// Row text describes how to format a text string
 /// defined via attributes in an associated database table.
 /// </summary>
 class RowTextGeometry : TextGeometry
@@ -34,6 +33,7 @@ class RowTextGeometry : TextGeometry
     /// The row that contains the information to format
     /// </summary>
     Row m_Row;
+    AttributeRecord m_Record;
 
     /// <summary>
     /// How to form the text string out of the data in the row.
@@ -62,8 +62,7 @@ class RowTextGeometry : TextGeometry
     {
         // The row may be null during deserialization (attributes only get loaded after
         // all spatial featues have been deserialized).
-        if (template==null)
-            throw new ArgumentNullException();
+        ArgumentNullException.ThrowIfNull(template);
 
         m_Row = row;
         m_Template = template;
@@ -121,18 +120,12 @@ class RowTextGeometry : TextGeometry
     /// <summary>
     /// The row that contains the information to format
     /// </summary>
-    internal Row Row
-    {
-        get { return m_Row; }
-    }
+    internal Row Row => m_Row;
 
     /// <summary>
     /// How to form the text string out of the data in the row.
     /// </summary>
-    internal ITemplate Template
-    {
-        get { return m_Template; }
-    }
+    internal ITemplate Template => m_Template;
 
     /// <summary>
     /// The text string represented by this geometry
@@ -141,18 +134,18 @@ class RowTextGeometry : TextGeometry
     {
         get
         {
-            if (m_Template == null)
+            if (m_Template is null)
                 return "NoTemplate";
 
             Debug.Assert(m_Row.Table.Id == m_Template.Schema.Id);
-            return GetText(m_Row.Data, m_Template);
+            return GetText(m_Row.Record, m_Template);
         }
     }
 
     /// <summary>
     /// Generates the text that should be displayed for the supplied row and template
     /// </summary>
-    /// <param name="row">The row containing the information to display</param>
+    /// <param name="data">The row containing the information to display</param>
     /// <param name="template">The template that defines the output format</param>
     /// <returns>The text that needs to be displayed</returns>
     /// <remarks>
@@ -182,12 +175,9 @@ class RowTextGeometry : TextGeometry
     /// <para/>
     /// "Public Lane" - specifies that only this text be output
     /// </remarks>
-    internal static string GetText(DataRow data, ITemplate template)
+    internal static string GetText(AttributeRecord data, ITemplate template)
     {
-        ITable schema = template.Schema;
-        Debug.Assert(schema!=null);
-
-        StringBuilder result = new StringBuilder(100);
+        var result = new StringBuilder(100);
         string fmt = template.Format;
         int startIndex = 0;
 
@@ -224,13 +214,12 @@ class RowTextGeometry : TextGeometry
                 if (expand)
                     fieldName = fieldName.Substring(0, fieldName.Length-1);
 
-                // Grab the value from the row
-                DataColumn dc = data.Table.Columns[fieldName];
-                int columnIndex = dc.Ordinal;
-                string s = (data.IsNull(columnIndex) ? String.Empty : data[columnIndex].ToString());
+                // Grab the value from the record
+                var c = data.Content.GetValueOrDefault(fieldName);
+                string s = c?.ToString() ?? String.Empty;
 
                 if (expand)
-                    s = GetDomainValue(s, fieldName, schema);
+                    s = GetDomainValue(s, fieldName, data.Table);
 
                 result.Append(s);
 
@@ -258,8 +247,9 @@ class RowTextGeometry : TextGeometry
     {
         // Attempt to locate the column in question
         IColumnDomain[] cds = table.ColumnDomains;
-        IColumnDomain cd = Array.Find<IColumnDomain>(cds, t => String.Compare(t.ColumnName, columnName, true) == 0);
-        if (cd == null)
+        IColumnDomain? cd = Array.Find(cds, t =>
+            String.Compare(t.ColumnName, columnName, StringComparison.OrdinalIgnoreCase) == 0);
+        if (cd is null)
             return shortValue;
 
         // Perform a lookup on the domain

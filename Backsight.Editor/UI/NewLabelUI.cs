@@ -13,7 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -22,7 +21,7 @@ using Backsight.Editor.Operations;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 using Backsight.Forms;
-using Backsight.Data;
+using Backsight.Database;
 
 namespace Backsight.Editor.UI;
 
@@ -42,12 +41,12 @@ class NewLabelUI : AddLabelUI
     /// <summary>
     /// Annotation template (null means use IDs)
     /// </summary>
-    ITemplate m_Template;
+    ITemplate? m_Template;
 
     /// <summary>
     /// The last row that was added (if any).
     /// </summary>
-    DataRow m_LastRow;
+    private AttributeRecord? m_LastRecord;
 
     /// <summary>
     /// The polygon enclosing the last mouse position.
@@ -93,7 +92,7 @@ class NewLabelUI : AddLabelUI
     {
         m_Schema = null;
         m_Template = null;
-        m_LastRow = null;
+        m_LastRecord = null;
         m_Polygon = null;
         m_PolygonId = new IdHandle();
         m_IsAutoPos = Settings.Default.AutoPosition;
@@ -104,10 +103,7 @@ class NewLabelUI : AddLabelUI
 
     #endregion
 
-    internal override bool IsAutoPosition
-    {
-        get { return m_IsAutoPos; }
-    }
+    internal override bool IsAutoPosition => m_IsAutoPos;
 
     /// <summary>
     /// Starts the user interface (if any) for this command.
@@ -194,18 +190,17 @@ class NewLabelUI : AddLabelUI
         string str = m_PolygonId.FormattedKey;
 
         // Get any attributes.
-        if (m_Schema != null)
+        if (m_Schema is not null)
         {
-            if (!GetAttributes(str) || m_LastRow == null)
+            if (!GetAttributes(str) || m_LastRecord is null)
             {
                 DialFinish(null);
                 return false;
             }
 
-            // If an annotation template has been specified, use that
-            // to get the text from the row
-            if (m_Template != null)
-                str = RowTextGeometry.GetText(m_LastRow, m_Template);
+            // If an annotation template has been specified, use that to get the text from the row
+            if (m_Template is not null)
+                str = RowTextGeometry.GetText(m_LastRecord, m_Template);
         }
 
         // Tell the base class.
@@ -568,7 +563,6 @@ class NewLabelUI : AddLabelUI
     internal override TextFeature AddNewLabel(IPosition posn)
     {
         Debug.Assert(m_Polygon!=null);
-        CadastralMapModel map = CadastralMapModel.Current;
         TextFeature newLabel = null;
 
         // Confirm that the polygon ID has been reserved.
@@ -604,22 +598,18 @@ class NewLabelUI : AddLabelUI
          */
 
         // Execute the edit
-        NewTextOperation txop = null;
+        NewTextOperation? txop = null;
 
         try
         {
-            if (m_Template!=null && m_LastRow!=null)
+            if (m_Template is not null && m_LastRecord is not null)
             {
                 // Save the attributes in the database
-                IDataServer ds = EditingController.Current.DataServer;
-                if (ds == null)
-                    throw new InvalidOperationException("No database available");
+                EnvironmentRepository.Current.InsertRecord(m_LastRecord);
 
-                ds.SaveRow(m_LastRow);
-
-                NewRowTextOperation op = new NewRowTextOperation();
+                var op = new NewRowTextOperation();
                 txop = op;
-                op.Execute(posn, m_PolygonId, m_LastRow, m_Template, m_Polygon, Height, Width, Rotation);
+                op.Execute(posn, m_PolygonId, m_LastRecord, m_Template, m_Polygon, Height, Width, Rotation);
 
                 // Confirm that the row got cross-referenced to an ID (not
                 // sure what the above ends up doing).
@@ -651,11 +641,11 @@ class NewLabelUI : AddLabelUI
     /// Gets the attributes for a new label.
     /// </summary>
     /// <param name="id">The ID that will be assigned to the new label</param>
-    /// <returns>True if attributes entered OK (m_LastRow defined).</returns>
+    /// <returns>True if attributes entered OK (m_LastRecord defined).</returns>
     bool GetAttributes(string id)
     {
-        // There HAS to be a schema.
-        if (m_Schema==null)
+        // There HAS to be an associated attribute table
+        if (m_Schema is null)
             return false;
 
         // Although unlikely, it is conceivable that the attributes have already
@@ -664,19 +654,20 @@ class NewLabelUI : AddLabelUI
 
         AttributeDataForm dial;
 
-        DataRow[] existingData = AttributeData.FindByKey(m_Schema, id);
+        var repo = EnvironmentRepository.Current;
+        AttributeRecord[] existingData = repo.FindAttributeRecordsByKey(m_Schema, id);
         if (existingData.Length > 0)
-            dial = new AttributeDataForm(m_Schema, existingData[0]);
+            dial = new AttributeDataForm(existingData[0]);
         else
             dial = new AttributeDataForm(m_Schema, id);
 
         if (dial.ShowDialog() == DialogResult.OK)
-            m_LastRow = dial.Data;
+            m_LastRecord = dial.Record;
         else
-            m_LastRow = null;
+            m_LastRecord = null;
 
         dial.Dispose();
-        return (m_LastRow != null);
+        return m_LastRecord is not null;
     }
 
     /// <summary>

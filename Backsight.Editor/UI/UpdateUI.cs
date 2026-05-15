@@ -19,7 +19,6 @@ using System.Windows.Forms;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Observations;
 using Backsight.Editor.Operations;
-using Backsight.Forms;
 
 namespace Backsight.Editor.UI;
 

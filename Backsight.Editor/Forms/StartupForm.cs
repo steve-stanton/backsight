@@ -16,10 +16,8 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
-using Backsight.Data;
 using Backsight.Database;
 using Backsight.Editor.Properties;
-using Backsight.SqlServer;
 using RepoDb;
 
 namespace Backsight.Editor.Forms;
@@ -135,22 +133,6 @@ partial class StartupForm : Form
             MessageBox.Show(ex.Message);
             Trace.Write(ex.StackTrace);
         }
-    }
-
-    private void databaseButton_Click(object sender, EventArgs e)
-    {
-        // The connection dialog is currently disabled while I figure out how to
-        // remove an explicit dependency on SQLServer
-        //throw new NotImplementedException();
-
-        ConnectionForm dial = new ConnectionForm();
-        if (dial.ShowDialog() == DialogResult.OK)
-        {
-            LastDatabase.ConnectionString = dial.ConnectionString;
-            ShowDatabaseName();
-        }
-
-        dial.Dispose();
     }
 
     private void openLastButton_Click(object sender, EventArgs e)

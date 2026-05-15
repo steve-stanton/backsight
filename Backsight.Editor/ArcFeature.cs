@@ -13,9 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Drawing;
 using Backsight.Environment;
-using Backsight.Geometry;
 using Backsight.Forms;
 
 namespace Backsight.Editor;

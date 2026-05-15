@@ -13,7 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Data;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor;
@@ -31,14 +31,9 @@ class Row : IPossibleList<Row>
     readonly FeatureId m_Id;
 
     /// <summary>
-    /// The definition of the table this row is part of 
-    /// </summary>
-    readonly ITable m_Table;
-
-    /// <summary>
     /// The data for the row 
     /// </summary>
-    readonly DataRow m_Data;
+    readonly AttributeRecord m_Record;
 
     #endregion
 
@@ -48,19 +43,15 @@ class Row : IPossibleList<Row>
     /// Initializes a new instance of the <see cref="Row"/> class,
     /// forming a two-way association with the ID
     /// </summary>
-    /// <param name="id">The ID for the row (not null). Modified to refer to
-    /// the newly created <c>Row</c> object.</param>
-    /// <param name="table">The definition of the table this row is part of (not null).</param>
+    /// <param name="id">The ID for the row (not null). Modified to refer to the newly created <c>Row</c> object.</param>
     /// <param name="data">Data for the row (not null).</param>
     /// <exception cref="ArgumentNullException">If any parameter is null</exception>
-    internal Row(FeatureId id, ITable table, DataRow data)
+    internal Row(FeatureId id, AttributeRecord data)
     {
-        if (id == null || table == null || data == null)
-            throw new ArgumentNullException();
+        ArgumentNullException.ThrowIfNull(id);
+        ArgumentNullException.ThrowIfNull(data);
 
         m_Id = id;
-        m_Table = table;
-        m_Data = data;
 
         // Relate the ID to this row
         id.AddReference(this);
@@ -70,7 +61,7 @@ class Row : IPossibleList<Row>
 
     #region Implement IPossibleList<Row>
 
-    public int Count { get { return 1; } }
+    public int Count => 1;
 
     public Row this[int index]
     {
@@ -116,24 +107,15 @@ class Row : IPossibleList<Row>
     /// <summary>
     /// The ID for the row
     /// </summary>
-    internal FeatureId Id
-    {
-        get { return m_Id; }
-    }
+    internal FeatureId Id => m_Id;
 
     /// <summary>
     /// The definition of the table this row is part of 
     /// </summary>
-    internal ITable Table
-    {
-        get { return m_Table; }
-    }
+    internal ITable Table => m_Record.Table;
 
     /// <summary>
     /// The data for the row 
     /// </summary>
-    internal DataRow Data
-    {
-        get { return m_Data; }
-    }
+    internal AttributeRecord Record => m_Record;
 }

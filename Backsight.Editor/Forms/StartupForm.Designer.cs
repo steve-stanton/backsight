@@ -28,140 +28,122 @@ namespace Backsight.Editor.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.openLastButton = new System.Windows.Forms.Button();
-            this.openFileButton = new System.Windows.Forms.Button();
-            this.newProjectButton = new System.Windows.Forms.Button();
-            this.exitButton = new System.Windows.Forms.Button();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.lastDatabaseLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.databaseButton = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            openLastButton = new System.Windows.Forms.Button();
+            openFileButton = new System.Windows.Forms.Button();
+            newProjectButton = new System.Windows.Forms.Button();
+            exitButton = new System.Windows.Forms.Button();
+            toolTip = new System.Windows.Forms.ToolTip(components);
+            statusStrip1 = new System.Windows.Forms.StatusStrip();
+            lastDatabaseLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            groupBox1.SuspendLayout();
+            statusStrip1.SuspendLayout();
+            SuspendLayout();
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.openLastButton);
-            this.groupBox1.Controls.Add(this.openFileButton);
-            this.groupBox1.Controls.Add(this.newProjectButton);
-            this.groupBox1.Controls.Add(this.exitButton);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(314, 210);
-            this.groupBox1.TabIndex = 4;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "What do you want to do?";
+            groupBox1.Controls.Add(openLastButton);
+            groupBox1.Controls.Add(openFileButton);
+            groupBox1.Controls.Add(newProjectButton);
+            groupBox1.Controls.Add(exitButton);
+            groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
+            groupBox1.Location = new System.Drawing.Point(14, 12);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new System.Drawing.Size(353, 210);
+            groupBox1.TabIndex = 4;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "What do you want to do?";
             // 
             // openLastButton
             // 
-            this.openLastButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
-            this.openLastButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.openLastButton.Location = new System.Drawing.Point(32, 37);
-            this.openLastButton.Name = "openLastButton";
-            this.openLastButton.Size = new System.Drawing.Size(256, 25);
-            this.openLastButton.TabIndex = 0;
-            this.openLastButton.Text = "&Open last project";
-            this.toolTip.SetToolTip(this.openLastButton, "Re-opens the project with the name shown");
-            this.openLastButton.UseVisualStyleBackColor = false;
-            this.openLastButton.Click += new System.EventHandler(this.openLastButton_Click);
+            openLastButton.BackColor = System.Drawing.Color.FromArgb(((int)((byte)255)), ((int)((byte)192)), ((int)((byte)128)));
+            openLastButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            openLastButton.Location = new System.Drawing.Point(36, 37);
+            openLastButton.Name = "openLastButton";
+            openLastButton.Size = new System.Drawing.Size(288, 32);
+            openLastButton.TabIndex = 0;
+            openLastButton.Text = "&Open last project";
+            toolTip.SetToolTip(openLastButton, "Re-opens the project with the name shown");
+            openLastButton.UseVisualStyleBackColor = false;
+            openLastButton.Click += openLastButton_Click;
             // 
             // openFileButton
             // 
-            this.openFileButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.openFileButton.Location = new System.Drawing.Point(32, 79);
-            this.openFileButton.Name = "openFileButton";
-            this.openFileButton.Size = new System.Drawing.Size(256, 25);
-            this.openFileButton.TabIndex = 7;
-            this.openFileButton.TabStop = false;
-            this.openFileButton.Text = "Open anothe&r project";
-            this.toolTip.SetToolTip(this.openFileButton, "You will be asked to pick an existing project");
-            this.openFileButton.UseVisualStyleBackColor = true;
-            this.openFileButton.Click += new System.EventHandler(this.openFileButton_Click);
+            openFileButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            openFileButton.Location = new System.Drawing.Point(36, 79);
+            openFileButton.Name = "openFileButton";
+            openFileButton.Size = new System.Drawing.Size(288, 32);
+            openFileButton.TabIndex = 7;
+            openFileButton.TabStop = false;
+            openFileButton.Text = "Open anothe&r project";
+            toolTip.SetToolTip(openFileButton, "You will be asked to pick an existing project");
+            openFileButton.UseVisualStyleBackColor = true;
+            openFileButton.Click += openFileButton_Click;
             // 
             // newProjectButton
             // 
-            this.newProjectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.newProjectButton.Location = new System.Drawing.Point(32, 121);
-            this.newProjectButton.Name = "newProjectButton";
-            this.newProjectButton.Size = new System.Drawing.Size(256, 25);
-            this.newProjectButton.TabIndex = 6;
-            this.newProjectButton.TabStop = false;
-            this.newProjectButton.Text = "Create a &new project";
-            this.toolTip.SetToolTip(this.newProjectButton, "Create a brand new project");
-            this.newProjectButton.UseVisualStyleBackColor = true;
-            this.newProjectButton.Click += new System.EventHandler(this.newProjectButton_Click);
+            newProjectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            newProjectButton.Location = new System.Drawing.Point(36, 121);
+            newProjectButton.Name = "newProjectButton";
+            newProjectButton.Size = new System.Drawing.Size(288, 32);
+            newProjectButton.TabIndex = 6;
+            newProjectButton.TabStop = false;
+            newProjectButton.Text = "Create a &new project";
+            toolTip.SetToolTip(newProjectButton, "Create a brand new project");
+            newProjectButton.UseVisualStyleBackColor = true;
+            newProjectButton.Click += newProjectButton_Click;
             // 
             // exitButton
             // 
-            this.exitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.exitButton.Location = new System.Drawing.Point(32, 163);
-            this.exitButton.Name = "exitButton";
-            this.exitButton.Size = new System.Drawing.Size(256, 25);
-            this.exitButton.TabIndex = 5;
-            this.exitButton.TabStop = false;
-            this.exitButton.Text = "E&xit";
-            this.toolTip.SetToolTip(this.exitButton, "Close the Cadastral Editor application");
-            this.exitButton.UseVisualStyleBackColor = true;
-            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
+            exitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            exitButton.Location = new System.Drawing.Point(36, 163);
+            exitButton.Name = "exitButton";
+            exitButton.Size = new System.Drawing.Size(288, 32);
+            exitButton.TabIndex = 5;
+            exitButton.TabStop = false;
+            exitButton.Text = "E&xit";
+            toolTip.SetToolTip(exitButton, "Close the Cadastral Editor application");
+            exitButton.UseVisualStyleBackColor = true;
+            exitButton.Click += exitButton_Click;
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lastDatabaseLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 239);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(344, 22);
-            this.statusStrip1.SizingGrip = false;
-            this.statusStrip1.TabIndex = 5;
-            this.statusStrip1.Text = "statusStrip1";
+            statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { lastDatabaseLabel });
+            statusStrip1.Location = new System.Drawing.Point(0, 235);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
+            statusStrip1.Size = new System.Drawing.Size(387, 26);
+            statusStrip1.SizingGrip = false;
+            statusStrip1.TabIndex = 5;
+            statusStrip1.Text = "statusStrip1";
             // 
             // lastDatabaseLabel
             // 
-            this.lastDatabaseLabel.Name = "lastDatabaseLabel";
-            this.lastDatabaseLabel.Size = new System.Drawing.Size(99, 17);
-            this.lastDatabaseLabel.Text = "Database unknown";
-            // 
-            // databaseButton
-            // 
-            this.databaseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.databaseButton.FlatAppearance.BorderColor = System.Drawing.Color.White;
-            this.databaseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.databaseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.databaseButton.Location = new System.Drawing.Point(281, 239);
-            this.databaseButton.Name = "databaseButton";
-            this.databaseButton.Size = new System.Drawing.Size(63, 22);
-            this.databaseButton.TabIndex = 6;
-            this.databaseButton.TabStop = false;
-            this.databaseButton.Text = "Change...";
-            this.databaseButton.UseVisualStyleBackColor = true;
-            this.databaseButton.Click += new System.EventHandler(this.databaseButton_Click);
+            lastDatabaseLabel.Name = "lastDatabaseLabel";
+            lastDatabaseLabel.Size = new System.Drawing.Size(135, 20);
+            lastDatabaseLabel.Text = "Database unknown";
             // 
             // StartupForm
             // 
-            this.AcceptButton = this.openLastButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(344, 261);
-            this.Controls.Add(this.databaseButton);
-            this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.groupBox1);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "StartupForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Cadastral Editor";
-            this.Load += new System.EventHandler(this.StartupForm_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AcceptButton = openLastButton;
+            AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(387, 261);
+            Controls.Add(statusStrip1);
+            Controls.Add(groupBox1);
+            Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)0));
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            Margin = new System.Windows.Forms.Padding(4);
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "Cadastral Editor";
+            Load += StartupForm_Load;
+            groupBox1.ResumeLayout(false);
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -173,7 +155,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.Button openFileButton;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel lastDatabaseLabel;
-        private System.Windows.Forms.Button databaseButton;
         private System.Windows.Forms.Button openLastButton;
     }
 }

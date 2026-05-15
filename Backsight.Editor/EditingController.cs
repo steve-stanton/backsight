@@ -22,7 +22,6 @@ using Backsight.Editor.Properties;
 using Backsight.Editor.UI;
 using Backsight.Environment;
 using Backsight.Forms;
-using Backsight.Data;
 using Backsight.Database;
 
 namespace Backsight.Editor;
@@ -99,11 +98,6 @@ class EditingController : SpatialController, ISpatialController
     /// </summary>
     bool m_HasSelectionChanged;
 
-    /// <summary>
-    /// The database server (null if a database has not been specified).
-    /// </summary>
-    IDataServer m_DataServer;
-
     #endregion
 
     #region Constructors
@@ -117,13 +111,7 @@ class EditingController : SpatialController, ISpatialController
         m_ActiveLayer = null;
         m_IsAutoSelect = 0;
         m_HasSelectionChanged = false;
-        m_DataServer = null;
-
-        // If we know of a database, create the access class
-        string cs = LastDatabase.ConnectionString;
-        if (!String.IsNullOrWhiteSpace(cs))
-            m_DataServer = new DataServer(cs);
-    }
+   }
 
     #endregion
 
@@ -1290,11 +1278,6 @@ class EditingController : SpatialController, ISpatialController
 
         return Settings.Default.LastSystemText;
     }
-
-    /// <summary>
-    /// The database server (null if a database has not been specified).
-    /// </summary>
-    internal IDataServer DataServer => m_DataServer;
 
     /// <summary>
     /// The main screen (largely comprised of a control for displaying the current map model).

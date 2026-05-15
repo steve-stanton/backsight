@@ -15,6 +15,30 @@ public class EmptyRepository : IEnvironmentRepository
 
     public IEnumerable<ITable> FindAssociatedTables(IEntity entity) => Enumerable.Empty<ITable>();
     public IEnumerable<IColumnDomain> FindColumnDomains(ITable table) => Enumerable.Empty<IColumnDomain>();
+    public AttributeRecord CreateNewRecord(ITable table)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object? InsertRecord(AttributeRecord record)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdateRecord(AttributeRecord record)
+    {
+        throw new NotImplementedException();
+    }
+
+    public AttributeRecord[] FindAttributeRecords(ITable table, IEnumerable<string> keys)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IIdGroup UpdateIdGroup(IIdGroup group, int maxUsedId)
+    {
+        throw new NotImplementedException();
+    }
 
     public T? Find<T>(int id) where T : class, IEnvironmentItem
     {

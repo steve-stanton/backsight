@@ -13,8 +13,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Data;
 using System.Diagnostics;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor.Operations;
@@ -53,7 +53,7 @@ class NewRowTextOperation : NewTextOperation
     /// <param name="height">The height of the text, in meters on the ground.</param>
     /// <param name="width">The width of the new label, in meters on the ground.</param>
     /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
-    internal void Execute(IPosition vtx, IdHandle polygonId, DataRow row, ITemplate atemplate, Polygon pol,
+    internal void Execute(IPosition vtx, IdHandle polygonId, AttributeRecord row, ITemplate atemplate, Polygon pol,
         double height, double width, double rotation)
     {
         if (pol == null)

@@ -14,7 +14,6 @@
 // </remarks>
 
 using System.Windows.Forms;
-using Backsight.Forms;
 
 namespace Backsight.Editor.Forms;
 

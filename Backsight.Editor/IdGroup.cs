@@ -15,7 +15,7 @@
 
 using System.Diagnostics;
 using System.Windows.Forms;
-using Backsight.Data;
+using Backsight.Database;
 using Backsight.Environment;
 
 namespace Backsight.Editor;
@@ -58,65 +58,43 @@ class IdGroup : IdGroupFacade
     /// <summary>
     /// Any ID packets allocated for this group.
     /// </summary>
-    internal IdPacket[] IdPackets
-    {
-        get { return m_Packets.ToArray(); }
-    }
+    internal IdPacket[] IdPackets => m_Packets.ToArray();
 
     /// <summary>
     /// Gets a new allocation for this ID group.
     /// </summary>
     /// <param name="announce">Should the allocation be announced to the user?</param>
-    /// <returns>Information about the allocated range.</returns>
-    internal IdPacket GetAllocation(bool announce)
+    /// <returns>Information about the allocated range (null if the allocation failed).</returns>
+    internal IdPacket? GetAllocation(bool announce)
     {
-        IdPacket result = null;
-
-        IDataServer ds = EditingController.Current.DataServer;
-        if (ds == null)
-            throw new ApplicationException("Database not available");
-
         Debug.Assert(CadastralMapModel.Current.WorkingSession is not null, "Working session not set");
 
-        ds.RunTransaction(delegate
+        IdPacket? result = null;
+        var repo = EnvironmentRepository.Current;
+        
+        int oldMaxUsedId = m_MaxAllocatedId;
+        int newMaxUsedId = (oldMaxUsedId == 0 ? LowestId + PacketSize - 1 : oldMaxUsedId + PacketSize);
+        Data = repo.UpdateIdGroup(Data, newMaxUsedId);
+        
+        // Remember the allocation as as part of this group
+        var alloc = new IdAllocation
         {
-            // May be best to remove this from IIdGroup! -- DO want to be able to retrieve the value
-            // currently stored in the database.
-            int oldMaxUsedId = m_MaxAllocatedId;
-            int newMaxUsedId = (oldMaxUsedId == 0 ? LowestId + PacketSize - 1 : oldMaxUsedId + PacketSize);
-            
-            // The following should be covered by the implementation of the ID server (for a personal ID server,
-            // there should be nothing to do).
-            // TODO: What was a personal ID server ??
-            string sql = String.Format("UPDATE [ced].[IdGroups] SET [MaxUsedId]={0} WHERE [GroupId]={1} AND [MaxUsedId]={2}",
-                                            newMaxUsedId, Id, oldMaxUsedId);
-            int nRows = ds.ExecuteNonQuery(sql);
+            GroupId = this.Id,
+            LowestId = newMaxUsedId - PacketSize + 1,
+            HighestId = newMaxUsedId,
+        };
 
-            if (nRows != 1)
-                throw new ApplicationException("Allocation failed");
+        result = AddIdPacket(alloc);
+        Debug.Assert(result is not null);
+        m_MaxAllocatedId = newMaxUsedId;
 
-            // Remember the allocation as as part of this group
-            IdAllocation alloc = new IdAllocation()
-            {
-                GroupId = this.Id,
-                LowestId = newMaxUsedId - PacketSize + 1,
-                HighestId = newMaxUsedId,
-            };
-
-            result = AddIdPacket(alloc);
-            m_MaxAllocatedId = newMaxUsedId;
-
-            // Write event data for the allocation
-            CadastralMapModel.Current.WorkingSession.AddAllocation(alloc);
-            EditingController.Current.Project.WriteChange(alloc);
-        });
+        // Write event data for the allocation
+        CadastralMapModel.Current.WorkingSession.AddAllocation(alloc);
+        EditingController.Current.Project.WriteChange(alloc);
 
         // If the user should be informed, list out any ranges we created.
-        if (announce && result != null)
-        {
-            string announcement = String.Format("Allocating extra IDs: {0}-{1}", result.Min, result.Max);
-            MessageBox.Show(announcement);
-        }
+        if (announce)
+            MessageBox.Show($"Allocating extra IDs: {result.Min}-{result.Max}");
 
         return result;
     }
@@ -211,7 +189,7 @@ class IdGroup : IdGroupFacade
     /// <returns>The ID packet corresponding to the supplied allocation</returns>
     internal IdPacket AddIdPacket(IdAllocation a)
     {
-        IdPacket result = new IdPacket(this, a);
+        var result = new IdPacket(this, a);
         m_Packets.Add(result);
         m_MaxAllocatedId = Math.Max(m_MaxAllocatedId, a.HighestId);
         return result;

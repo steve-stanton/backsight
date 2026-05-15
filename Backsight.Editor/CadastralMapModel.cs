@@ -13,9 +13,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using Backsight.Database;
 using Backsight.Editor.Forms;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
@@ -1064,43 +1064,6 @@ class CadastralMapModel : ISpatialModel
     }
 
     /// <summary>
-    /// Adds a label that is based on a row. This version covers cases where the
-    /// label is replacing a label on a base layer (see the <see cref="ReplaceTextOperation"/>).
-    /// </summary>
-    /// <param name="creator">The editing operation creating the text</param>
-    /// <param name="ent">The entity type for the label.</param>
-    /// <param name="vtx">The reference position of the label</param>
-    /// <param name="fid">The user-perceived ID for the label</param>
-    /// <param name="row">The row to attach to the label.</param>
-    /// <param name="atemplate">The template for the row text.</param>
-    /// <param name="height">The height of the text, in meters on the ground.</param>
-    /// <param name="width">The width of the text, in meters on the ground.</param>
-    /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
-    /// <returns>The newly created text</returns>
-    internal TextFeature AddRowLabel(Operation creator, IEntity ent, IPosition vtx, FeatureId fid,
-        DataRow row, ITemplate atemplate,
-        double height, double width, double rotation)
-    {
-        if (m_WorkingSession is null)
-            throw new InvalidOperationException("Working session not set");
-
-        // Add the label with null geometry for now (chicken and egg -- need Feature in order
-        // to create the Row object that's needed for the RowTextGeometry)
-        InternalIdValue id = m_WorkingSession.AllocateNextId();
-        TextFeature label = new TextFeature(creator, id, ent, null);
-
-        // Define the label's ID and attach the row to it
-        Row r = new Row(fid, atemplate.Schema, row);
-
-        // Attach the geometry
-        PointGeometry p = PointGeometry.Create(vtx);
-        RowTextGeometry text = new RowTextGeometry(r, atemplate, p, ent.Font, height, width, (float)rotation);
-        label.TextGeometry = text;
-
-        return label;
-    }
-
-    /// <summary>
     /// Adds a label that is based on a row.
     /// </summary>
     /// <param name="creator">The editing operation creating the text</param>
@@ -1112,11 +1075,14 @@ class CadastralMapModel : ISpatialModel
     /// <param name="width">The width of the text, in meters on the ground.</param>
     /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
     /// <returns>The newly created text</returns>
-    internal TextFeature AddRowLabel(Operation creator, IdHandle polygonId, IPosition vtx, DataRow row,
+    internal TextFeature AddRowLabel(Operation creator, IdHandle polygonId, IPosition vtx, AttributeRecord row,
         ITemplate atemplate, double height, double width, double rotation)
     {
         if (m_WorkingSession is null)
             throw new InvalidOperationException("Working session not set");
+        
+        if (!row.Table.Templates.Contains(atemplate))
+            throw new ArgumentException($"Template {atemplate.Name} is not associated with {row.Table.TableName}.{row.Id}");
 
         // Exit with error if the key is not reserved.
         if (!polygonId.IsReserved)
@@ -1130,7 +1096,7 @@ class CadastralMapModel : ISpatialModel
 
         // Define the label's ID and attach the row to it
         FeatureId fid = polygonId.CreateId(label);
-        Row r = new Row(fid, atemplate.Schema, row);
+        var r = new Row(fid, row);
 
         // Attach the geometry
         PointGeometry p = PointGeometry.Create(vtx);

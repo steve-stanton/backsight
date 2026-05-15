@@ -14,7 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
-using System.Data;
+using Backsight.Database;
 using Backsight.Forms;
 using Backsight.Environment;
 
@@ -82,26 +82,24 @@ partial class PropertyPage : TabPage
         // Hmm, there isn't a PropertyGrid.DataSource property, so do it the
         // hard way (is there a better way?)
 
-        DataRow data = row.Data;
-        DataTable table = data.Table;
-        object[] items = data.ItemArray;
-        AdhocPropertyList props = new AdhocPropertyList(items.Length);
+        AttributeRecord data = row.Record;
+        AdhocPropertyList props = new AdhocPropertyList(data.Columns.Length);
 
-        for (int i=0; i<items.Length; i++)
+        foreach (var c in data.Columns)
         {
-            DataColumn dc = table.Columns[i];
-            string columnName = dc.ColumnName;
-            AdhocProperty item = new AdhocProperty(columnName, items[i]);
+            var value = data.Content.GetValueOrDefault(c.Name) ?? String.Empty;
+            var item = new AdhocProperty(c.Name, value);
             item.ReadOnly = true;
 
             // If the column is associated with a domain, lookup the expanded value and
             // record as the item's description
 
-            IColumnDomain cd = Array.Find<IColumnDomain>(cds, t => String.Compare(t.ColumnName, columnName, true) == 0);
+            IColumnDomain? cd = Array.Find(cds, t =>
+                String.Compare(t.ColumnName, c.Name, StringComparison.OrdinalIgnoreCase) == 0);
 
-            if (cd != null)
+            if (cd is not null)
             {
-                string shortValue = items[i].ToString();
+                string shortValue = value.ToString();
                 string longValue = cd.Domain.Lookup(shortValue);
                 item.Description = longValue;
             }
