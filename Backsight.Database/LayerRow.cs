@@ -19,6 +19,7 @@ internal partial class LayerRow
 // Additional properties to satisfy the readonly interface.
 internal partial class LayerRow : Row, ILayer
 {
+    public override string ToString() => Name;
     public int Id => LayerId;
     public ITheme Theme => Repository.FindRequired<ITheme>(ThemeId);
     public IEntity DefaultPointType => Repository.FindRequired<IEntity>(DefaultPointId); 

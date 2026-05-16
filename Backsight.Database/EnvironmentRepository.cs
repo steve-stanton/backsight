@@ -308,28 +308,20 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
 
     private IEnumerable<ColumnInfo> QueryTableColumns(string tableName)
     {
-        string quotedTableName = QuoteSqliteIdentifier(tableName);
-
-        foreach (var row in ExecuteQuery($"PRAGMA table_info({quotedTableName})"))
+        using (var connection = new SqliteConnection(ConnectionString))
         {
-            string name = row.name.ToString();
-            string type = row.type?.ToString().ToUpper() ?? "TEXT";
-            bool nullable = Convert.ToInt32(row.notnull) == 0;
-            bool isPrimaryKey = Convert.ToInt32(row.pk) > 0;
+            connection.Open();
+            var helper = connection.GetDbHelper();
 
-            yield return new ColumnInfo(name, GetColumnType(type), nullable, isPrimaryKey);
+            foreach (var column in helper.GetFields(connection, tableName))
+            {
+                yield return new ColumnInfo(
+                    column.Name,
+                    column.Type,
+                    column.IsNullable,
+                    column.IsPrimary);
+            }
         }
-    }
-
-    private static Type GetColumnType(string type)
-    {
-        return type switch
-        {
-            "INTEGER" => typeof(int),
-            "REAL" => typeof(double),
-            "TEXT" => typeof(string),
-            _ => throw new NotImplementedException(type)
-        };
     }
 
     private static string QuoteSqliteIdentifier(string identifier)
@@ -401,9 +393,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     /// <inheritdoc cref="IEnvironmentRepository.UpdateIdGroup"/>
     public IIdGroup UpdateIdGroup(IIdGroup group, int maxUsedId)
     {
-        var row = group as IdGroupRow;
-        if (row is null)
-            throw new ArgumentException("Unexpected group type.");
+        var row = group as IdGroupRow ?? throw new ArgumentException("Unexpected group type");
             
         row.MaxUsedId = maxUsedId;
         int rowCount = Update(row);

@@ -19,6 +19,7 @@ internal partial class TemplateRow : Row, ITemplate
 // Additional properties to satisfy the readonly interface.
 internal partial class TemplateRow
 {
+    public override string ToString() => Name;
     public int Id => TemplateId;
     public ITable Schema => Repository.FindRequired<ITable>(SchemaId);
     public bool IsNew => false; // is this really needed?

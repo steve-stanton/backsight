@@ -17,6 +17,8 @@ internal partial class SchemaRow
 // Additional properties to satisfy the readonly interface.
 internal partial class SchemaRow : Row, ITable
 {
+    public override string ToString() => TableName;
+    
     public int Id => SchemaId;
     public ITemplate[] Templates => Repository
         .FindMany<ITemplate>(x => x.Id == SchemaId)

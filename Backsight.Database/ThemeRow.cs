@@ -16,6 +16,7 @@ internal partial class ThemeRow
 // Additional properties to satisfy the readonly interface.
 internal partial class ThemeRow : Row, ITheme
 {
+    public override string ToString() => Name;
     public int Id => ThemeId;
     public ILayer[] Layers => Repository
         .FindMany<ILayer>(x => x.Id == ThemeId)

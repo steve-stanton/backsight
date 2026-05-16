@@ -25,6 +25,7 @@ internal partial class EntityTypeRow
 // Additional properties to satisfy the readonly interface.
 internal partial class EntityTypeRow : Row, IEntity
 {
+    public override string ToString() => Name;
     public int Id => EntityId;
     public bool IsPointValid => IsPoint == YES;
     public bool IsLineValid => IsLine == YES;

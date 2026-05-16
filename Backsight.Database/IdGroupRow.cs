@@ -22,6 +22,7 @@ internal partial class IdGroupRow
 // Additional properties to satisfy the readonly interface.
 internal partial class IdGroupRow : Row, IIdGroup
 {
+    public override string ToString() => Name;
     public int Id => GroupId;
     public bool HasCheckDigit => CheckDigit == YES;
     public IEntity[] EntityTypes => Repository
