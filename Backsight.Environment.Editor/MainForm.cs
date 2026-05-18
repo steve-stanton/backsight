@@ -15,10 +15,7 @@
 
 using System.Windows.Forms;
 using System.Diagnostics;
-using Microsoft.SqlServer.Management.Smo;
-using Backsight.Data;
 using Backsight.Database;
-using Backsight.SqlServer;
 using RepoDb;
 
 namespace Backsight.Environment.Editor;
@@ -112,70 +109,6 @@ public partial class MainForm : Form
         }
 
         return false;
-    }
-
-    private void fileExportMenuItem_Click(object sender, EventArgs e)
-    {
-        SaveFileDialog dial = new SaveFileDialog();
-        dial.Filter = "Backsight environment files (*.xml)|*.xml|All files (*.*)|*.*";
-        dial.DefaultExt = ".xml";
-
-        if (dial.ShowDialog() == DialogResult.OK)
-            WriteExportFile(dial.FileName);
-
-        dial.Dispose();
-    }
-
-    void WriteExportFile(string fileName)
-    {
-        // A by-product of the following is that the database name gets re-assigned
-        // to the supplied filename, so we'll need to fix it up. Should really handle
-        // names a bit better.
-        string dbName = m_Data.Name;
-
-        try
-        {
-            EnvironmentFile ef = new EnvironmentFile(fileName, m_Data);
-            ef.Write();
-        }
-
-        catch (Exception e)
-        {
-            MessageBox.Show(e.Message);
-        }
-
-        finally
-        {
-            m_Data.Name = dbName;
-            MessageBox.Show("Done");
-        }
-    }
-
-    private void fileImportMenuItem_Click(object sender, EventArgs e)
-    {
-        // Confirm that everything currently in the database will be blown away
-        string msg = String.Empty;
-        msg += ("Importing will replace the content of current database." + System.Environment.NewLine);
-        msg += ("Are you sure that's what you want to do?");
-        if (MessageBox.Show(msg, "Confirm Import", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
-            return;
-
-        OpenFileDialog dial = new OpenFileDialog();
-        dial.Title = "Locate file containing the new environment";
-        dial.Filter = "Backsight environment files (*.xml)|*.xml|All files (*.*)|*.*";
-
-        if (dial.ShowDialog() == DialogResult.OK)
-        {
-            // Load the file into its own dataset
-            EnvironmentFile ef = new EnvironmentFile(dial.FileName);
-
-            // Get rid of the content of the current database (including empty rows)
-            m_Data.Replace(ef);
-            RefreshList();
-            MessageBox.Show("Done");
-        }
-
-        dial.Dispose();
     }
 
     private void fileExitMenuItem_Click(object sender, EventArgs e)

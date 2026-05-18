@@ -48,9 +48,6 @@ namespace Backsight.Environment.Editor
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.fileSaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.fileExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileImportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.fileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -102,9 +99,6 @@ namespace Backsight.Environment.Editor
             this.fileMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileSaveMenuItem,
-            this.toolStripSeparator2,
-            this.fileExportMenuItem,
-            this.fileImportMenuItem,
             this.toolStripSeparator1,
             this.fileExitMenuItem});
             this.fileMenu.Name = "fileMenu";
@@ -118,25 +112,6 @@ namespace Backsight.Environment.Editor
             this.fileSaveMenuItem.Size = new System.Drawing.Size(136, 22);
             this.fileSaveMenuItem.Text = "&Save";
             this.fileSaveMenuItem.Click += new System.EventHandler(this.fileSaveMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(133, 6);
-            // 
-            // fileExportMenuItem
-            // 
-            this.fileExportMenuItem.Name = "fileExportMenuItem";
-            this.fileExportMenuItem.Size = new System.Drawing.Size(136, 22);
-            this.fileExportMenuItem.Text = "Export...";
-            this.fileExportMenuItem.Click += new System.EventHandler(this.fileExportMenuItem_Click);
-            // 
-            // fileImportMenuItem
-            // 
-            this.fileImportMenuItem.Name = "fileImportMenuItem";
-            this.fileImportMenuItem.Size = new System.Drawing.Size(136, 22);
-            this.fileImportMenuItem.Text = "Import...";
-            this.fileImportMenuItem.Click += new System.EventHandler(this.fileImportMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -432,9 +407,6 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem fileExitMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem fileExportMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fileImportMenuItem;
         private System.Windows.Forms.HelpProvider helpProvider;
         private System.Windows.Forms.ToolTip tipProvider;
         private System.Windows.Forms.TabControl tabControl;
@@ -455,7 +427,6 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ToolStripButton newToolStripButton;
         private System.Windows.Forms.ToolStripButton deleteToolStripButton;
         private System.Windows.Forms.ToolStripButton updateToolStripButton;
-        //private EntityListControl entityListControl;
     }
 }
 

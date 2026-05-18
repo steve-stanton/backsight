@@ -84,10 +84,4 @@ public interface IEnvironmentFactory
     /// </summary>
     /// <returns>The newly created map layer</returns>
     IEditLayer CreateLayer();
-
-    /// <summary>
-    /// Creates a new zone
-    /// </summary>
-    /// <returns>The newly created zone</returns>
-    IEditZone CreateZone();
 }

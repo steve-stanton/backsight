@@ -140,7 +140,7 @@ public partial class TemplateForm : Form
     private void cancelButton_Click(object sender, EventArgs e)
     {
         m_Edit.CancelEdit();
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 
@@ -214,15 +214,4 @@ public partial class TemplateForm : Form
         formatTextBox.Text = String.Empty;
         formatTextBox.Enabled = true;
     }
-
-    /*
-void CdTemplate::OnSelchangeSchemas()
-{
-    // Fix the template object to refer to the new schema (with
-    // no fields selected so far).
-    m_Edit.SetSchemaId(pSchema->GetId());
-    m_Edit.RemoveFields();
-    m_Edit.SetFormat(str);
-}
-     */
 }
