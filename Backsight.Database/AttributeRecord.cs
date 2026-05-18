@@ -48,7 +48,7 @@ public record AttributeRecord(ITable Table, ColumnInfo[] Columns, Dictionary<str
         {
             Type t = c.DataType;
             
-            if (t == typeof(int) || t == typeof(short) || t == typeof(byte))
+            if (t == typeof(long) || t == typeof(int) || t == typeof(short) || t == typeof(byte))
             {
                 Content[c.Name] = 0;
             }
@@ -67,9 +67,9 @@ public record AttributeRecord(ITable Table, ColumnInfo[] Columns, Dictionary<str
                     if (vals.Length > 0)
                         Content[c.Name] = vals[0];
                 }
-                else
+                else if (!c.PrimaryKey)
                 {
-                    // Default to a blank string is the field isn't nullable  
+                    // Default to a blank string is the field isn't nullable (and it's not the primary key)
                     Content[c.Name] = String.Empty;
                 }
             }

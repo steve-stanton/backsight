@@ -921,8 +921,8 @@ public partial class RadialControl : UserControl
     private void entityTypeComboBox_SelectedValueChanged(object sender, EventArgs e)
     {
         // Get the new point type (it might be null while the control is loading)
-        IEntity ent = entityTypeComboBox.SelectedEntityType;
-        if (ent==null)
+        IEntity? ent = entityTypeComboBox.SelectedEntityType;
+        if (ent is null)
             return;
 
         // If the current ID does not apply to the new point type,

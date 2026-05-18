@@ -76,7 +76,7 @@ class CadastralMapModel : ISpatialModel
     readonly Dictionary<InternalIdValue, Operation> m_Edits;
 
     /// <summary>
-    /// Management of user-specified IDs (null if there is no ID provider).
+    /// Management of user-specified IDs.
     /// </summary>
     IdManager m_IdManager;
 
@@ -451,25 +451,27 @@ class CadastralMapModel : ISpatialModel
         {
             FeatureId fid = f.FeatureId;
 
-            if (fid != null)
+            if (fid is not null)
             {
-                if (fid is ForeignId)
+                if (fid is ForeignId foreignId)
                 {
-                    ForeignId foreignId = (fid as ForeignId);
-                    ForeignId existingId = FindForeignId(foreignId.FormattedKey);
-                    if (existingId == null)
+                    ForeignId? existingId = FindForeignId(foreignId.FormattedKey);
+                    if (existingId is null)
                         AddForeignId(foreignId);
                     else if (!object.ReferenceEquals(foreignId, existingId))
                         throw new Exception("More than one foreign ID object for: "+foreignId.FormattedKey);
                 }
-                else
+                else if (fid is NativeId nativeId)
                 {
-                    NativeId nativeId = (fid as NativeId);
-                    NativeId existingId = FindNativeId(nativeId.RawId);
-                    if (existingId == null)
+                    NativeId? existingId = FindNativeId(nativeId.RawId);
+                    if (existingId is null)
                         m_NativeIds.Add(nativeId.RawId, nativeId);
                     else if (!object.ReferenceEquals(nativeId, existingId))
                         throw new Exception("More than one native ID object for: "+nativeId.RawId);
+                }
+                else
+                {
+                    throw new NotImplementedException("Unsupported ID type: " + fid.GetType().Name);
                 }
             }
         }
@@ -1069,20 +1071,20 @@ class CadastralMapModel : ISpatialModel
     /// <param name="creator">The editing operation creating the text</param>
     /// <param name="polygonId">The ID and entity type to assign to the label.</param>
     /// <param name="vtx">The reference position of the label.</param>
-    /// <param name="row">The row to attach to the label.</param>
+    /// <param name="attributes">The database attributes for the label.</param>
     /// <param name="atemplate">The template for the row text.</param>
     /// <param name="height">The height of the text, in meters on the ground.</param>
     /// <param name="width">The width of the text, in meters on the ground.</param>
     /// <param name="rotation">The clockwise rotation of the text, in radians from the horizontal.</param>
     /// <returns>The newly created text</returns>
-    internal TextFeature AddRowLabel(Operation creator, IdHandle polygonId, IPosition vtx, AttributeRecord row,
+    internal TextFeature AddRowLabel(Operation creator, IdHandle polygonId, IPosition vtx, AttributeRecord attributes,
         ITemplate atemplate, double height, double width, double rotation)
     {
         if (m_WorkingSession is null)
             throw new InvalidOperationException("Working session not set");
         
-        if (!row.Table.Templates.Contains(atemplate))
-            throw new ArgumentException($"Template {atemplate.Name} is not associated with {row.Table.TableName}.{row.Id}");
+        if (!attributes.Table.Templates.Contains(atemplate))
+            throw new ArgumentException($"Template {atemplate.Name} is not associated with {attributes.Table.TableName}.{attributes.Id}");
 
         // Exit with error if the key is not reserved.
         if (!polygonId.IsReserved)
@@ -1096,11 +1098,11 @@ class CadastralMapModel : ISpatialModel
 
         // Define the label's ID and attach the row to it
         FeatureId fid = polygonId.CreateId(label);
-        var r = new Row(fid, row);
+        var row = new Row(fid, attributes);
 
         // Attach the geometry
         PointGeometry p = PointGeometry.Create(vtx);
-        RowTextGeometry text = new RowTextGeometry(r, atemplate, p, ent.Font, height, width, (float)rotation);
+        RowTextGeometry text = new RowTextGeometry(row, atemplate, p, ent.Font, height, width, (float)rotation);
         label.TextGeometry = text;
 
         return label;
@@ -1222,13 +1224,9 @@ class CadastralMapModel : ISpatialModel
     }
 
     /// <summary>
-    /// The object that manages assignment of user-specified IDs (null if there
-    /// is no ID provider).
+    /// The object that manages assignment of user-specified IDs.
     /// </summary>
-    internal IdManager IdManager
-    {
-        get { return m_IdManager; }
-    }
+    internal IdManager IdManager => m_IdManager;
 
     /// <summary>
     /// The session that we are currently appending to (null if the model is being deserialized).
@@ -1358,14 +1356,9 @@ class CadastralMapModel : ISpatialModel
     /// <param name="rawId">The raw ID to look for</param>
     /// <returns>The ID that corresponds to the supplied key. Null if there is no matching ID - make
     /// a call to <see cref="AddNativeId"/> to register a new ID.</returns>
-    internal NativeId FindNativeId(uint rawId)
+    internal NativeId? FindNativeId(uint rawId)
     {
-        NativeId result;
-
-        if (m_NativeIds.TryGetValue(rawId, out result))
-            return result;
-        else
-            return null;
+        return m_NativeIds.GetValueOrDefault(rawId);
     }
 
     /// <summary>
@@ -1380,9 +1373,6 @@ class CadastralMapModel : ISpatialModel
     /// raw key cannot be found</exception>
     internal NativeId AddNativeId(uint rawId)
     {
-        if (m_IdManager == null)
-            return null;
-
         IdGroup group = m_IdManager.FindGroupByRawId(rawId);
         Debug.Assert(group != null);
         NativeId result = new NativeId(group, rawId);
@@ -1396,14 +1386,9 @@ class CadastralMapModel : ISpatialModel
     /// <param name="key">The formatted key to look for</param>
     /// <returns>The ID that corresponds to the supplied key. Null if there is no matching ID - make
     /// a call to <see cref="AddForeignId"/> to register a new ID.</returns>
-    internal ForeignId FindForeignId(string key)
+    internal ForeignId? FindForeignId(string key)
     {
-        ForeignId result;
-
-        if (m_ForeignIds.TryGetValue(key, out result))
-            return result;
-        else
-            return null;
+        return m_ForeignIds.GetValueOrDefault(key);
     }
 
     /// <summary>

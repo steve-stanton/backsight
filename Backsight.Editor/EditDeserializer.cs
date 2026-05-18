@@ -589,7 +589,7 @@ class EditDeserializer
     /// Reads a user-perceived feature ID using the standard naming convention.
     /// </summary>
     /// <returns>The user-perceived ID that was read (may be null)</returns>
-    internal FeatureId ReadFeatureId()
+    internal FeatureId? ReadFeatureId()
     {
         return ReadFeatureId(DataField.Key, DataField.ForeignKey);
     }
@@ -600,28 +600,18 @@ class EditDeserializer
     /// <param name="nativeField">The tag to use for a native ID.</param>
     /// <param name="foreignField">The tag to use for a foreign ID.</param>
     /// <returns>The user-perceived ID that was read (may be null)</returns>
-    internal FeatureId ReadFeatureId(DataField nativeField, DataField foreignField)
+    private FeatureId? ReadFeatureId(DataField nativeField, DataField foreignField)
     {
         if (IsNextField(nativeField))
         {
             uint nativeKey = m_Reader.ReadUInt32(nativeField.ToString());
-            NativeId nid = MapModel.FindNativeId(nativeKey);
-
-            if (nid == null)
-                return MapModel.AddNativeId(nativeKey);
-            else
-                return nid;
+            return MapModel.FindNativeId(nativeKey) ?? MapModel.AddNativeId(nativeKey);
         }
 
         if (IsNextField(foreignField))
         {
             string key = m_Reader.ReadString(foreignField.ToString());
-            ForeignId fid = MapModel.FindForeignId(key);
-
-            if (fid == null)
-                return MapModel.AddForeignId(key);
-            else
-                return fid;
+            return MapModel.FindForeignId(key) ?? MapModel.AddForeignId(key);
         }
 
         return null;
@@ -639,13 +629,9 @@ class EditDeserializer
 
         IdMapping[] mapping = ReadPersistentArray<IdMapping>(field);
 
-        for (int i=0; i<mapping.Length; i++)
+        foreach (var m in mapping)
         {
-            IdMapping m = mapping[i];
-            NativeId nid = MapModel.FindNativeId(m.RawId);
-            if (nid == null)
-                nid = MapModel.AddNativeId(m.RawId);
-
+            NativeId nid = MapModel.FindNativeId(m.RawId) ?? MapModel.AddNativeId(m.RawId);
             Feature f = MapModel.Find<Feature>(m.InternalId);
 
             // Ignore null ref if we are dealing with the very last mapping of a connection path

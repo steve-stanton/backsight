@@ -1318,7 +1318,7 @@ namespace Backsight.Editor.Forms
             // 
             this.mapControl.AutoScroll = true;
             this.mapControl.AutoScrollMinSize = new System.Drawing.Size(300, 300);
-            this.mapControl.BackColor = System.Drawing.Color.White;
+            this.mapControl.BackColor = System.Drawing.Color.AntiqueWhite;
             this.mapControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.mapControl.Center = null;
             this.mapControl.Dock = System.Windows.Forms.DockStyle.Fill;

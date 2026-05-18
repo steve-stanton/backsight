@@ -94,7 +94,7 @@ public partial class AttributeDataForm : Form
             this.Text = m_Record.Table.TableName;
             updateLabel.Visible = m_IsUpdate;
 
-            if (!m_IsUpdate)
+                    if (!m_IsUpdate)
             {
                 // Initialize items so they match the values of the last row we processed (if any).
                 // Otherwise assign default values that are indicative of the data type.

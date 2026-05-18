@@ -21,7 +21,7 @@ internal partial class SchemaRow : Row, ITable
     
     public int Id => SchemaId;
     public ITemplate[] Templates => Repository
-        .FindMany<ITemplate>(x => x.Id == SchemaId)
+        .FindMany<ITemplate>(x => x.Schema.Id == SchemaId)
         .ToArray();
 
     public IColumnDomain[] ColumnDomains => Repository

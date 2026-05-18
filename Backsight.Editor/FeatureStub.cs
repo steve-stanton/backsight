@@ -172,7 +172,7 @@ class FeatureStub : IFeature, IPersistent
     /// <param name="id">The internal of the feature within the project that created it.</param>
     /// <param name="entity">The type of real-world object that the feature corresponds to.</param>
     /// <param name="fid">The ID of the feature (may be null).</param>
-    static void ReadData(EditDeserializer editDeserializer, out InternalIdValue id, out IEntity entity, out FeatureId fid)
+    static void ReadData(EditDeserializer editDeserializer, out InternalIdValue id, out IEntity entity, out FeatureId? fid)
     {
         id = editDeserializer.ReadInternalId(DataField.Id);
         entity = editDeserializer.ReadEntity(DataField.Entity);

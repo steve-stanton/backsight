@@ -31,14 +31,14 @@ class IdHandle
     #region Class data
 
     /// <summary>
-    /// The ID packet that contains the ID. Will be null if the group is null.
+    /// The ID packet that contains the ID.
     /// </summary>
-    private IdPacket m_Packet;
+    private IdPacket? m_Packet;
 
     /// <summary>
     /// The entity type that the ID relates to.
     /// </summary>
-    private IEntity m_Entity;
+    private IEntity? m_Entity;
 
     /// <summary>
     /// The reserved ID (0 if not yet reserved).
@@ -63,10 +63,7 @@ class IdHandle
     /// <summary>
     /// Has an ID been reserved?
     /// </summary>
-    internal bool IsReserved
-    {
-        get { return (m_Id>0); }
-    }
+    internal bool IsReserved => m_Id > 0;
 
     /// <summary>
     /// A formatted string representing the key (if any) for this ID handle.
@@ -77,7 +74,7 @@ class IdHandle
         {
             // If an ID has been reserved, format that as a string. Otherwise it's blank.
 
-            if (m_Id!=0 && m_Packet!=null)
+            if (m_Id != 0 && m_Packet is not null)
                 return m_Packet.IdGroup.FormatId(m_Id);
             else
                 return String.Empty;
@@ -93,7 +90,7 @@ class IdHandle
     /// </remarks>
     internal void DiscardReservedId()
     {
-        if (m_Packet!=null && m_Id!=0)
+        if (m_Packet is not null && m_Id != 0)
             m_Packet.FreeReservedId(m_Id);
     }
 
@@ -110,23 +107,14 @@ class IdHandle
         // Get the ID manager to define the results.
 
         IdManager idMan = CadastralMapModel.Current.IdManager;
-        if (idMan==null)
-        {
-            this.Reset();
-            return false;
-        }
-
         if (idMan.ReserveId(this, ent, id))
         {
             m_Entity = ent;
             return true;
         }
 
-        if (id!=0)
-        {
-            string errmsg = String.Format("Failed to reserve ID {0} for '{1}'", id, ent.Name);
-            MessageBox.Show(errmsg);
-        }
+        if (id != 0)
+            MessageBox.Show($"Failed to reserve ID {id} for '{ent.Name}'");
 
         return false;
     }
@@ -153,7 +141,7 @@ class IdHandle
             return true;
         }
 
-        this.Reset();
+        Reset();
         return false;
     }
 
@@ -167,7 +155,7 @@ class IdHandle
     internal FeatureId CreateId(Feature feature)
     {
         // Confirm that the feature does not already have an ID.
-        if (feature.FeatureId!=null)
+        if (feature.FeatureId is not null)
             throw new ApplicationException("IdHandle.CreateId - Feature already has an ID.");
 
         // Claim the reserved ID and cross reference to the feature
@@ -183,12 +171,8 @@ class IdHandle
     /// <returns>The created feature ID (null if an ID hasn't been reserved).</returns>
     internal FeatureId CreateId()
     {
-        // The packet has to be known.
-        if (m_Packet == null)
-            return null;
-
-        // Create a NativeId, clear the reserve status
-        return m_Packet.CreateId(m_Id);
+        // Create a NativeId, clear the reserve status (or null if the packet hasn't been defined)
+        return m_Packet?.CreateId(m_Id);
     }
 
     /// <summary>
@@ -196,9 +180,7 @@ class IdHandle
     /// </summary>
     internal void FreeReservedId()
     {
-        if (m_Packet!=null)
-            m_Packet.FreeReservedId(m_Id);
-
+        m_Packet?.FreeReservedId(m_Id);
         Reset();
     }
 
@@ -228,25 +210,21 @@ class IdHandle
     /// </summary>
     /// <param name="ent">The entity type to check.</param>
     /// <returns>True if this ID handle is suitable for the entity type.</returns>
-    internal bool IsValidFor(IEntity ent)
+    internal bool IsValidFor(IEntity? ent)
     {
-        if (ent==null)
+        if (ent is null)
             return false;
 
-        IdManager idMan = CadastralMapModel.Current.IdManager;
-        if (idMan==null)
-            return true;
-
         // Try to find the ID group for the specified entity type.
-        IIdGroup group = ent.IdGroup;
+        IIdGroup? group = ent.IdGroup;
 
         // If we actually found an a group, it has to match the one that we already know about.
         // If we didn't find a group, this ID is valid only if it is undefined!
 
-        if (group!=null && m_Packet!=null)
-            return (group.Id == m_Packet.IdGroup.Id);
+        if (group is not null && m_Packet is not null)
+            return group.Id == m_Packet.IdGroup.Id;
         else
-            return (m_Id==0);
+            return m_Id == 0;
     }
 
     /// <summary>
@@ -265,7 +243,7 @@ class IdHandle
     /// </summary>
     internal IEntity Entity
     {
-        get { return m_Entity; }
-        set { m_Entity = value; }
+        get => m_Entity;
+        set => m_Entity = value;
     }
 }

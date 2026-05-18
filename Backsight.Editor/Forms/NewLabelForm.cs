@@ -56,11 +56,6 @@ partial class NewLabelForm : Form
     /// </summary>
     bool m_IsNoAttr;
 
-    /// <summary>
-    /// True if the dialog is currently being loaded
-    /// </summary>
-    //bool m_IsLoading;
-
     #endregion
 
     #region Constructors
@@ -85,33 +80,20 @@ partial class NewLabelForm : Form
     /// <summary>
     /// Entity type for the polygons.
     /// </summary>
-    internal IEntity Entity
-    {
-        get { return m_PolygonType; }
-    }
+    internal IEntity Entity => m_PolygonType;
 
     /// <summary>
     /// The schema for the polygon attribute data
     /// </summary>
-    internal ITable Schema
-    {
-        get { return m_Schema; }
-    }
+    internal ITable Schema => m_Schema;
 
     /// <summary>
     /// The template for the polygon attribute data
     /// </summary>
-    internal ITemplate Template
-    {
-        get { return m_Template; }
-    }
+    internal ITemplate Template => m_Template;
 
     private void NewLabelForm_Shown(object sender, EventArgs e)
     {
-        //try
-        //{
-        //    m_IsLoading = true;
-
         // Load up entity combo box with the default type for polygons.
         m_PolygonType = entityTypeComboBox.Load(SpatialType.Polygon);
 
@@ -172,7 +154,7 @@ partial class NewLabelForm : Form
 
         // If the user does NOT want to use the ID, confirm that we
         // have a schema!
-        if (!m_IsUseId && m_Schema == null)
+        if (!m_IsUseId && m_Schema is null)
         {
             noTemplatesLabel.Visible = true;
             //string errmsg = String.Empty;
@@ -196,13 +178,13 @@ partial class NewLabelForm : Form
         if (m_PolygonType != null)
             CadastralMapModel.Current.SetDefaultEntity(SpatialType.Polygon, m_PolygonType);
 
-        this.DialogResult = DialogResult.OK;
+        DialogResult = DialogResult.OK;
         Close();
     }
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 

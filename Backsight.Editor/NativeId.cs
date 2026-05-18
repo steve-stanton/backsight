@@ -78,24 +78,15 @@ class NativeId : FeatureId
     /// <summary>
     /// The user-perceived ID value
     /// </summary>
-    internal override string FormattedKey
-    {
-        get { return m_Group.FormatId(m_Key); }
-    }
+    internal override string FormattedKey => m_Group.FormatId(m_Key);
 
     /// <summary>
     /// The undecorated ID value (excluding any prefix or suffix or check digit).
     /// </summary>
-    internal override uint RawId
-    {
-        get { return m_Key; }
-    }
+    internal override uint RawId => m_Key;
 
     /// <summary>
     /// The associated ID group
     /// </summary>
-    internal IdGroup IdGroup
-    {
-        get { return m_Group; }
-    }
+    internal IdGroup IdGroup => m_Group;
 }

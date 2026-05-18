@@ -23,8 +23,6 @@ namespace Backsight.Editor;
 /// </summary>
 class Row : IPossibleList<Row>
 {
-    #region Class data
-
     /// <summary>
     /// The ID for the row
     /// </summary>
@@ -34,10 +32,6 @@ class Row : IPossibleList<Row>
     /// The data for the row 
     /// </summary>
     readonly AttributeRecord m_Record;
-
-    #endregion
-
-    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Row"/> class,
@@ -52,12 +46,11 @@ class Row : IPossibleList<Row>
         ArgumentNullException.ThrowIfNull(data);
 
         m_Id = id;
+        m_Record = data;
 
         // Relate the ID to this row
         id.AddReference(this);
     }
-
-    #endregion
 
     #region Implement IPossibleList<Row>
 

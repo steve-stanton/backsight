@@ -190,7 +190,7 @@ partial class IntersectInfoControl : UserControl
             return;
 
         // Get the new point type.
-        IEntity ent = pointTypeComboBox.SelectedEntityType;
+        IEntity? ent = pointTypeComboBox.SelectedEntityType;
 
         // If the current ID does not apply to the new point type,
         // reload the ID combo (reserving a different ID).
