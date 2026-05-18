@@ -540,7 +540,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         // Ensure we have the focus (so that key presses will be recognized)
         this.Focus();
          */
-        mapPanel.BackColor = SystemColors.Window;
+        mapPanel.BackColor = Color.Khaki; //SystemColors.Window;
     }
 
     private void mapPanel_Paint(object sender, PaintEventArgs e)
