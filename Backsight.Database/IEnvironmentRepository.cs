@@ -6,26 +6,12 @@ public interface IEnvironmentRepository
 {
     string Name { get; }
     
-    // IEntity[] EntityTypes(SpatialType)
-    // IEntity[] EntityTypes(SpatialType, ILayer)
-    // ok (as enumerable) ITheme[] Themes
-    // ok (as enumerable) ILayer[] Layers
-    // ITable[] Tables
-    // IIdGroup[] IdGroups
-    // ok (as enumerable) IEntity[] EntityTypes
-    // ITable[] Schemas(SpatialType, ILayer)
-    // IEntity FindBlankEntity
-    // IProperty FindPropertyByName(string propertyName)
-    // IEntity FindEntityById(int entityId)
-    // ok ILayer FindLayerById(int layerId)
-    // ok ITemplate FindTemplateById(int templateId)
-    // ok IFont FindFontById(int fontId)
-
+    IEnumerable<IDomainTable> DomainTables { get; }
     IEnumerable<IEntity> EntityTypes { get; }
     IEnumerable<IFont> Fonts { get; }
     IEnumerable<IIdGroup> IdGroups { get; }
     IEnumerable<ILayer> Layers { get; }
-    //IEnumerable<IProperty> Properties { get; }
+    IEnumerable<IProperty> Properties { get; }
     IEnumerable<ITable> Tables { get; }
     IEnumerable<ITemplate> Templates { get; }
     IEnumerable<ITheme> Themes { get; }
@@ -104,10 +90,3 @@ public interface IEnvironmentRepository
     IEnumerable<T> FindMany<T>(Predicate<T> predicate) where T : class, IEnvironmentItem;
     string? FindPropertyByName(string propertyName);
 }
-
-// string ITheme.Name
-// ILayer[] ITheme.Layers
-// ITheme ILayer.Theme
-// string ILayer.Name
-// string IEntity.Name
-// IIdGroup IEntity.IdGroup

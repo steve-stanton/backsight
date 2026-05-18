@@ -47,7 +47,6 @@ namespace Backsight.Environment.Editor
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileOpenMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileSaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.fileExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,7 +74,6 @@ namespace Backsight.Environment.Editor
             this.tablesPage = new System.Windows.Forms.TabPage();
             this.templatesPage = new System.Windows.Forms.TabPage();
             this.themesPage = new System.Windows.Forms.TabPage();
-            this.zonesPage = new System.Windows.Forms.TabPage();
             this.helpProvider = new System.Windows.Forms.HelpProvider();
             this.tipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.menuStrip.SuspendLayout();
@@ -103,7 +101,6 @@ namespace Backsight.Environment.Editor
             // 
             this.fileMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileOpenMenuItem,
             this.fileSaveMenuItem,
             this.toolStripSeparator2,
             this.fileExportMenuItem,
@@ -113,14 +110,6 @@ namespace Backsight.Environment.Editor
             this.fileMenu.Name = "fileMenu";
             this.fileMenu.Size = new System.Drawing.Size(35, 20);
             this.fileMenu.Text = "&File";
-            // 
-            // fileOpenMenuItem
-            // 
-            this.fileOpenMenuItem.Name = "fileOpenMenuItem";
-            this.fileOpenMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.fileOpenMenuItem.Size = new System.Drawing.Size(136, 22);
-            this.fileOpenMenuItem.Text = "&Open";
-            this.fileOpenMenuItem.Click += new System.EventHandler(this.fileOpenMenuItem_Click);
             // 
             // fileSaveMenuItem
             // 
@@ -289,7 +278,6 @@ namespace Backsight.Environment.Editor
             this.tabControl.Controls.Add(this.tablesPage);
             this.tabControl.Controls.Add(this.templatesPage);
             this.tabControl.Controls.Add(this.themesPage);
-            this.tabControl.Controls.Add(this.zonesPage);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabControl.Location = new System.Drawing.Point(0, 0);
@@ -401,17 +389,6 @@ namespace Backsight.Environment.Editor
             this.themesPage.Text = "Themes";
             this.themesPage.UseVisualStyleBackColor = true;
             // 
-            // zonesPage
-            // 
-            this.zonesPage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.zonesPage.Location = new System.Drawing.Point(4, 4);
-            this.zonesPage.Margin = new System.Windows.Forms.Padding(0);
-            this.zonesPage.Name = "zonesPage";
-            this.zonesPage.Size = new System.Drawing.Size(698, 388);
-            this.zonesPage.TabIndex = 3;
-            this.zonesPage.Text = "Zones";
-            this.zonesPage.UseVisualStyleBackColor = true;
-            // 
             // helpProvider
             // 
             this.helpProvider.HelpNamespace = "C:\\Users\\sstanton\\Code\\Files\\Backsight.chm";
@@ -449,7 +426,6 @@ namespace Backsight.Environment.Editor
 
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileMenu;
-        private System.Windows.Forms.ToolStripMenuItem fileOpenMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpMenu;
         private System.Windows.Forms.ToolStripMenuItem helpAboutMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fileSaveMenuItem;
@@ -470,7 +446,6 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.TabPage tablesPage;
         private System.Windows.Forms.TabPage templatesPage;
         private System.Windows.Forms.TabPage themesPage;
-        private System.Windows.Forms.TabPage zonesPage;
         private System.Windows.Forms.TabPage propertiesPage;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editNewMenuItem;

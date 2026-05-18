@@ -40,9 +40,9 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     public EnvironmentRepository(string connectionString) :
         base(connectionString,
             commandTimeout: null,
+            //trace: new ConsoleTrace(),
             cache: null, // use MemoryCache -- consider using a do-nothing cache
-            cacheItemExpiration: Int32.MaxValue,
-            trace: new ConsoleTrace())
+            cacheItemExpiration: Int32.MaxValue)
     {
         _repository = this;
     }
@@ -127,6 +127,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     public IEnumerable<IFont> Fonts => _fontIndex.Values;
     public IEnumerable<IIdGroup> IdGroups => _idGroupIndex.Values;
     public IEnumerable<ILayer> Layers => _layerIndex.Values;
+    public IEnumerable<IProperty> Properties => _properties.Select(x => new PropertyItem(x.Key, x.Value));
     public IEnumerable<ITable> Tables => _schemaIndex.Values;
     public IEnumerable<ITemplate> Templates => _templateIndex.Values;
     public IEnumerable<ITheme> Themes => _themeIndex.Values;

@@ -17,7 +17,9 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using Microsoft.SqlServer.Management.Smo;
 using Backsight.Data;
+using Backsight.Database;
 using Backsight.SqlServer;
+using RepoDb;
 
 namespace Backsight.Environment.Editor;
 
@@ -36,20 +38,11 @@ public partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
-
-        //helpProvider.SetHelpNavigator(this, HelpNavigator.TableOfContents);
-        //helpProvider.SetHelpNavigator(this, HelpNavigator.KeywordIndex);//HelpNavigator.Topic);
-        //helpProvider.SetHelpKeyword(this, "Thecedxfile");
-
-        //helpProvider.SetHelpNavigator(this, HelpNavigator.TopicId);
-        //helpProvider.SetHelpNavigator(this, HelpNavigator.TopicId);
-        //helpProvider.SetHelpKeyword(this, "DatabaseTables.htm");
-        //SendKeys.Send(Keys.F1);
     }
 
     void OnIdle(object sender, EventArgs args)
     {
-        string name = (m_Data==null ? String.Empty : m_Data.Name);
+        string name = EnvironmentRepository.Current.Name;
 
         if (String.IsNullOrEmpty(name))
         {
@@ -59,68 +52,19 @@ public partial class MainForm : Form
         else
         {
             this.Text = name;
-            fileSaveMenuItem.Enabled = m_Data.IsModified;
+            fileSaveMenuItem.Enabled = true; //m_Data.IsModified;
         }
     }
 
     private void MainForm_Shown(object sender, EventArgs e)
     {
-        bool doClose = false;
+        GlobalConfiguration.Setup().UseSqlite();
+        var repo = new EnvironmentRepository(@"Data Source=C:\ProgramData\Backsight\Manitoba.db;Mode=ReadWrite");
+        repo.Load();
 
-        // If a database connection isn't defined, see if a database called 'Backsight' exists
-        // on the local server. If not, ask the user to locate a database.
-
-        string lastConn = LastDatabase.ConnectionString;
-        bool lookedForDefault = false;
-
-        if (String.IsNullOrEmpty(lastConn))
-        {
-            lastConn = TableFactory.GetDefaultConnection();
-            lookedForDefault = true;
-
-            if (!String.IsNullOrEmpty(lastConn))
-                LastDatabase.ConnectionString = lastConn;
-        }
-
-        if (String.IsNullOrEmpty(lastConn) && lookedForDefault)
-        {
-            string msg = String.Empty;
-            msg += ("The Environment Editor doesn't have a record of the database" + System.Environment.NewLine);
-            msg += ("where information should be stored. Please pick an existing" + System.Environment.NewLine);
-            msg += ("database, or click Cancel to exit.");
-
-            if (MessageBox.Show(msg, "Database unknown", MessageBoxButtons.OKCancel)==DialogResult.Cancel)
-                doClose = true;
-            else if (OpenDatabase()==null)
-                doClose = true;
-        }
-        else
-        {
-            if (OpenDatabase(lastConn) == null)
-            {
-                string msg = String.Empty;
-                msg += (String.Format("Unable to access database '{0}'", lastConn) + System.Environment.NewLine);
-                msg += ("Please pick the database you want to access, or click Cancel to exit.");
-
-                if (MessageBox.Show(msg, "Cannot access database", MessageBoxButtons.OKCancel)==DialogResult.Cancel)
-                    doClose = true;
-                else
-                {
-                    LastDatabase.ConnectionString = String.Empty;
-                    if (OpenDatabase()==null)
-                        doClose = true;
-                }
-            }
-        }
-
-        if (doClose)
-            Close();
-        else
-        {
-            Application.Idle += OnIdle;
-            tabControl.SelectedTab = entityTypesPage;
-            RefreshList();
-        }
+        Application.Idle += OnIdle;
+        tabControl.SelectedTab = entityTypesPage;
+        RefreshList();
     }
 
     bool CheckSave()
@@ -147,71 +91,6 @@ public partial class MainForm : Form
             return false;
 
         return true;
-    }
-
-    private void fileOpenMenuItem_Click(object sender, EventArgs e)
-    {
-        OpenDatabase();
-        RefreshList();
-    }
-
-    IEnvironmentContainer OpenDatabase()
-    {
-        ConnectionForm dial = new ConnectionForm();
-        if (dial.ShowDialog() == DialogResult.OK)
-        {
-            Database db = dial.Database;
-            TableFactory tf = new TableFactory(db);
-            if (!ConfirmTablesExist(tf))
-                return null;
-
-            return OpenDatabase(tf.ConnectionString);
-        }
-
-        dial.Dispose();
-        return null;
-    }
-
-    IEnvironmentContainer OpenDatabase(string connectionString)
-    {
-        try
-        {
-            TableFactory tf = new TableFactory(connectionString);
-            if (!ConfirmTablesExist(tf))
-                throw new Exception("Cannot load Backsight system tables");
-
-            m_Data = new EnvironmentDatabase(connectionString);
-            EnvironmentContainer.Current = m_Data;
-            LastDatabase.ConnectionString = connectionString;
-            return m_Data;
-        }
-
-        catch (Exception e)
-        {
-            MessageBox.Show(e.Message);
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// Confirms that Backsight system tables exist. This checks whether a database schema
-    /// called "ced" has been created.
-    /// </summary>
-    /// <param name="tf">The factory that can be used to create database tables in an
-    /// associated database.</param>
-    bool ConfirmTablesExist(TableFactory tf)
-    {
-        if (tf==null)
-            return false;
-
-        if (tf.DoTablesExist())
-            return true;
-
-        CreateTablesForm ctf = new CreateTablesForm(tf);
-        bool isCreatedOk = (ctf.ShowDialog()==DialogResult.OK);
-        ctf.Dispose();
-        return isCreatedOk;
     }
 
     private void fileSaveMenuItem_Click(object sender, EventArgs e)
@@ -372,8 +251,6 @@ public partial class MainForm : Form
                 AttachListData<TemplateListData>(templatesPage);
             else if (e.TabPage == themesPage)
                 AttachListData<ThemeListData>(themesPage);
-            else if (e.TabPage == zonesPage)
-                AttachListData<ZoneListData>(zonesPage);
             else
                 throw new Exception("No display for tab page");
 

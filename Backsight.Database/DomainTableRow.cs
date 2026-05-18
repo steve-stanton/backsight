@@ -17,6 +17,8 @@ internal partial class DomainTableRow
 // Additional properties to satisfy the readonly interface.
 internal partial class DomainTableRow : Row, IDomainTable
 {
+    public override string ToString() => TableName;
+    
     /// <summary>
     /// The content of the domain table. The key is the lookup value, the
     /// value is the expanded value.

@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
@@ -29,7 +30,7 @@ class IdGroupListData : ISimpleListData
     /// <returns>The active set of environment items</returns>
     public IEnvironmentItem[] GetEnvironmentItems()
     {
-        return EnvironmentContainer.Current.IdGroups;
+        return EnvironmentRepository.Current.IdGroups.Cast<IEnvironmentItem>().ToArray();
     }
 
     /// <summary>

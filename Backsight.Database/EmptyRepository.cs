@@ -5,10 +5,12 @@ namespace Backsight.Database;
 public class EmptyRepository : IEnvironmentRepository
 {
     public string Name => "";
+    public IEnumerable<IDomainTable> DomainTables => Enumerable.Empty<IDomainTable>();
     public IEnumerable<IEntity> EntityTypes => Enumerable.Empty<IEntity>();
     public IEnumerable<IFont> Fonts => Enumerable.Empty<IFont>();
     public IEnumerable<IIdGroup> IdGroups => Enumerable.Empty<IIdGroup>();
     public IEnumerable<ILayer> Layers => Enumerable.Empty<ILayer>();
+    public IEnumerable<IProperty> Properties => Enumerable.Empty<IProperty>();
     public IEnumerable<ITable> Tables => Enumerable.Empty<ITable>();
     public IEnumerable<ITemplate> Templates => Enumerable.Empty<ITemplate>();
     public IEnumerable<ITheme> Themes => Enumerable.Empty<ITheme>();

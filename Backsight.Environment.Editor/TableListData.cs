@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
@@ -29,7 +30,7 @@ class TableListData : ISimpleListData
     /// <returns>The active set of environment items</returns>
     public IEnvironmentItem[] GetEnvironmentItems()
     {
-        return EnvironmentContainer.Current.Tables;
+        return EnvironmentRepository.Current.Tables.Cast<IEnvironmentItem>().ToArray();
     }
 
     /// <summary>

@@ -14,7 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
-using Backsight.Data;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
@@ -89,11 +89,11 @@ public partial class PropertyGridControl : UserControl, IDisplayControl
     /// </summary>
     public void RefreshList()
     {
-        IProperty[] data = EnvironmentContainer.Current.Properties;
+        IProperty[] data = EnvironmentRepository.Current.Properties.ToArray();
 
         // If we don't have mandatory properties, add them now with blank values
         if (AddMandatoryProperties(data))
-            data = EnvironmentContainer.Current.Properties;
+            data = EnvironmentRepository.Current.Properties.ToArray();
 
         propertyGrid.RowCount = data.Length;
 
@@ -121,6 +121,8 @@ public partial class PropertyGridControl : UserControl, IDisplayControl
         {
             if (!Array.Exists<IProperty>(data, delegate(IProperty t) { return t.Name == p; }))
             {
+                throw new NotImplementedException("Missing property: " + p);
+                /*
                 IEnvironmentFactory f = EnvironmentContainer.Factory;
                 IEditProperty newProp = f.CreateProperty();
                 newProp.BeginEdit();
@@ -129,6 +131,7 @@ public partial class PropertyGridControl : UserControl, IDisplayControl
                 newProp.FinishEdit();
 
                 result = true;
+                */
             }
         }
 

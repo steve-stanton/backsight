@@ -18,10 +18,6 @@
         <DependentUpon>ChecklistForm.cs</DependentUpon>
         <SubType>Designer</SubType>
       </EmbeddedResource>
-      <EmbeddedResource Update="CreateTablesForm.resx">
-        <SubType>Designer</SubType>
-        <DependentUpon>CreateTablesForm.cs</DependentUpon>
-      </EmbeddedResource>
       <EmbeddedResource Update="DomainForm.resx">
         <SubType>Designer</SubType>
         <DependentUpon>DomainForm.cs</DependentUpon>
@@ -92,9 +88,6 @@
       <Compile Update="ChecklistForm.cs">
         <SubType>Form</SubType>
       </Compile>
-      <Compile Update="CreateTablesForm.cs">
-        <SubType>Form</SubType>
-      </Compile>
       <Compile Update="DomainForm.cs">
         <SubType>Form</SubType>
       </Compile>
@@ -160,6 +153,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Backsight.Database\Backsight.Database.csproj" />
       <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj" />
       <ProjectReference Include="..\Backsight.Forms\Backsight.Forms.csproj" />
       <ProjectReference Include="..\Backsight.SqlServer\Backsight.SqlServer.csproj" />
@@ -172,6 +166,10 @@
         <Generator>SettingsSingleFileGenerator</Generator>
         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="RepoDb.Sqlite.Microsoft" Version="1.13.1" />
     </ItemGroup>
 
 </Project>
