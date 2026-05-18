@@ -67,9 +67,10 @@ public record AttributeRecord(ITable Table, ColumnInfo[] Columns, Dictionary<str
                     if (vals.Length > 0)
                         Content[c.Name] = vals[0];
                 }
-                else if (!c.PrimaryKey)
+                else
                 {
-                    // Default to a blank string is the field isn't nullable (and it's not the primary key)
+                    // Default to a blank string is the field isn't nullable (the column could be
+                    // the ID field, it needs to get set later)
                     Content[c.Name] = String.Empty;
                 }
             }

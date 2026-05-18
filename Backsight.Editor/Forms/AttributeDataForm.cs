@@ -94,14 +94,18 @@ public partial class AttributeDataForm : Form
             this.Text = m_Record.Table.TableName;
             updateLabel.Visible = m_IsUpdate;
 
-                    if (!m_IsUpdate)
+            if (!m_IsUpdate)
             {
+                string id = m_Record.Id;
+                
                 // Initialize items so they match the values of the last row we processed (if any).
                 // Otherwise assign default values that are indicative of the data type.
                 if (s_LastRecord?.Table.Id == m_Record.Table.Id)
                     m_Record.Assign(s_LastRecord);
                 else
                     m_Record.AssignDefaultValues();
+                
+                m_Record.Id = id;
             }
 
             SetGrid();
