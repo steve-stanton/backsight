@@ -23,13 +23,7 @@ namespace Backsight.Editor;
 /// </summary>
 class MiscTextGeometry : TextGeometry
 {
-    #region Class data
-
     private string m_Text;
-
-    #endregion
-
-    #region Constructors
 
     /// <summary>
     /// Creates new miscellaneous text
@@ -57,20 +51,10 @@ class MiscTextGeometry : TextGeometry
         m_Text = editDeserializer.ReadString(DataField.Text);
     }
 
-    #endregion
-
     /// <summary>
     /// The text for this object.
     /// </summary>
-    public override string Text
-    {
-        get { return m_Text; }
-    }
-
-    internal void SetText(string s)
-    {
-        m_Text = s;
-    }
+    public override string Text => m_Text;
 
     /// <summary>
     /// Changes the text for this object
@@ -84,57 +68,6 @@ class MiscTextGeometry : TextGeometry
         m_Text = s;
         index.AddFeature(label);
     }
-
-    /// <summary>
-    /// Makes a copy of this text.
-    /// </summary>
-    /// <param name="where">The position for the copy. Specify null if the copy should
-    /// be at the same position as this text.</param>
-    /// <returns>The copy that was created.</returns>
-    /*
-    TextGeometry MakeText(IPosition where)
-    {
-        // If a position was not specified, get the position of this text.
-        IPosition pos = (where==null ? this.Position : where);
-
-        // Create a new key text object.
-        MiscText text = new MiscText(pos, m_Text);
-
-        // Pick up info from this object ... the constructor did it.
-
-        // Pick up info from the base class.
-        DefineText(text);
-        return text;
-    }
-     */
-
-    /// <summary>
-    /// Extracts this text primitive into another map.
-    /// </summary>
-    /// <param name="xref">Info about the extract.</param>
-    /// <param name="exLabel">The extract label that has already been created.</param>
-    /// <returns>The text that was created.</returns>
-    /*
-    TextGeometry Extract(ExTranslation xref, TextFeature exLabel)
-    {
-        throw new NotImplementedException();
-
-        // What map are we extracting into?
-        CeMap& output = xref.GetExMap();
-
-        // Create a new misc-text primitive in the output map.
-        CeVertex pos(GetEasting(),GetNorthing());
-        CeMiscText* pEx = new ( os_database::of(&output)
-                              , os_ts<CeMiscText>::get() )
-                                CeMiscText(pos,m_pString);
-
-        // Define base class stuff.
-        CeText::Extract(xref,*pEx);
-
-        // Return the address of the text we created.
-        return pEx;
-    }
-    */
 
     /// <summary>
     /// Writes the content of this instance to a persistent storage area.

@@ -156,20 +156,6 @@ abstract class FeatureId
     }
 
     /// <summary>
-    /// Creates an ID for an extracted feature. An extracted ID points only to
-    /// ONE feature. If this ID is associated with any Row objects and more than
-    /// one feature, the rows will be duplicated for each of the features that
-    /// get extracted.
-    /// </summary>
-    /// <param name="xref">Info about the extract.</param>
-    /// <param name="exFeat">The extracted feature.</param>
-    /// <returns>The extract ID that was created.</returns>
-    FeatureId Extract(ExTranslation xref, Feature exFeat)
-    {
-        throw new NotImplementedException("FeatureId.Extract");
-    }
-
-    /// <summary>
     /// Gets any labels associated with a row to remove themselves from
     /// the spatial index. This should be done just before the row is about to
     /// be changed in some way (a call to <see cref="AddIndex"/> should

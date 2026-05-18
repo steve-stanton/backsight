@@ -92,11 +92,6 @@ class Row : IPossibleList<Row>
 
     #endregion
 
-    internal Row Extract(ExTranslation xref, Feature xfeat)
-    {
-        throw new NotImplementedException("Row.Extract");
-    }
-
     /// <summary>
     /// The ID for the row
     /// </summary>
