@@ -2,7 +2,7 @@
 
 namespace Backsight.Database;
 
-public interface IEnvironmentRepository
+public interface IEnvironmentRepository : IEnvironmentFactory
 {
     string Name { get; }
     

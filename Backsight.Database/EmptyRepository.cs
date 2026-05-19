@@ -61,4 +61,54 @@ public class EmptyRepository : IEnvironmentRepository
     {
         return null;
     }
+
+    public IEditColumnDomain CreateColumnDomain()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditDomainTable CreateDomainTable()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditEntity CreateEntity()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditFont CreateFont()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditIdGroup CreateIdGroup()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditProperty CreateProperty()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditTable CreateTableAssociation()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditTemplate CreateTemplate()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditTheme CreateTheme()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditLayer CreateLayer()
+    {
+        throw new NotImplementedException();
+    }
 }

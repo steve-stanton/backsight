@@ -404,4 +404,55 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
 
         return row;
     }
+
+    public IEditColumnDomain CreateColumnDomain()
+    {
+        throw new NotImplementedException();
+        //return new ColumnDomainRow { Repository = this };
+    }
+
+    public IEditDomainTable CreateDomainTable()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditEntity CreateEntity()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditFont CreateFont()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditIdGroup CreateIdGroup()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditProperty CreateProperty()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditTable CreateTableAssociation()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditTemplate CreateTemplate()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditTheme CreateTheme()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEditLayer CreateLayer()
+    {
+        throw new NotImplementedException();
+    }
 }
