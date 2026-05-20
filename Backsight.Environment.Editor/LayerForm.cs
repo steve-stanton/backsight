@@ -55,7 +55,7 @@ public partial class LayerForm : Form
         if (m_Item.DefaultPolygonType is not null)
             polygonComboBox.SelectedItem = m_Item.DefaultPolygonType;
 
-        ITheme theme = m_Item.Theme;
+        ITheme? theme = m_Item.Theme;
         if (theme is not null)
         {
             themeLabel.Visible = true;

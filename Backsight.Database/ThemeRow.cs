@@ -14,12 +14,17 @@ internal partial class ThemeRow
 }
 
 // Additional properties to satisfy the readonly interface.
-internal partial class ThemeRow : Row, ITheme
+internal partial class ThemeRow : Row, ITheme, ISetTheme
 {
     public override string ToString() => Name;
-    public int Id => ThemeId;
+    public int Id
+    {
+        get => ThemeId;
+        set => ThemeId = value;
+    }
+
     public ILayer[] Layers => Repository
-        .FindMany<ILayer>(x => x.Id == ThemeId)
+        .FindMany<ILayer>(x => x.Theme?.Id == ThemeId)
         .OrderBy(x => x.ThemeSequence)
         .ToArray();
 }

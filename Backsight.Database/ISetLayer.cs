@@ -9,4 +9,6 @@ public interface ISetLayer : ISetter
     IEntity DefaultLineType { set; }
     IEntity DefaultTextType { set; }
     IEntity DefaultPolygonType { set; }
+    ITheme? Theme { set; }
+    int ThemeSequence { set; }
 }

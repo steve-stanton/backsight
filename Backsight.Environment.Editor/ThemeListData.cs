@@ -39,6 +39,6 @@ class ThemeListData : ISimpleListData
     /// <returns>The dialog to display</returns>
     public Form GetEntryDialog(IEnvironmentItem item)
     {
-        return new ThemeForm(item as IEditTheme);
+        return new ThemeForm(item as ITheme);
     }
 }

@@ -30,7 +30,7 @@ public interface ILayer : IEnvironmentItem
     /// The theme that this map layer is part of (null if the layer isn't
     /// associated with a theme).
     /// </summary>
-    ITheme Theme { get; }
+    ITheme? Theme { get; }
 
     /// <summary>
     /// The sequence of this map layer in any associated theme (0 if

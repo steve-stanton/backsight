@@ -15,56 +15,77 @@
 
 using System.Windows.Forms;
 using System.Diagnostics;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
 public partial class ThemeForm : Form
 {
-    private readonly IEditTheme m_Edit;
+    private readonly ITheme m_Item;
 
     /// <summary>
-    /// The original set of layers for the theme (base layer first)
+    /// The initial set of layers for the theme (base layer first)
     /// </summary>
-    private readonly ILayer[] m_Layers;
+    private readonly ILayer[] m_OriginalLayers;
 
-    internal ThemeForm() : this(null)
-    {
-    }
-
-    internal ThemeForm(IEditTheme edit)
+    internal ThemeForm(ITheme? item)
     {
         InitializeComponent();
 
-        m_Edit = edit;
-        if (m_Edit==null)
-        {
-            IEnvironmentFactory f = EnvironmentContainer.Factory;
-            m_Edit = f.CreateTheme();
-            m_Layers = new ILayer[0];
-        }
-        else
-            m_Layers = m_Edit.Layers;
-
-        m_Edit.BeginEdit();
+        m_Item = item ?? EnvironmentRepository.Current.CreateNewItem<ITheme>();
+        m_OriginalLayers = m_Item.Layers;
     }
 
     private void ThemeForm_Shown(object sender, EventArgs e)
     {
-        nameTextBox.Text = m_Edit.Name;
+        nameTextBox.Text = m_Item.Name;
 
         // Put the base layer at the end of the list
-        foreach (ILayer layer in m_Layers)
+        foreach (ILayer layer in m_OriginalLayers)
             listBox.Items.Insert(0, layer);
     }
 
     private void okButton_Click(object sender, EventArgs e)
     {
-        if (ValidateEdit())
+        if (!ValidateEdit())
+            return;
+
+        var repo = EnvironmentRepository.Current;
+
+        // Save any changes to the theme name
+        var name = nameTextBox.Text.Trim();
+        if (name != m_Item.Name)
         {
-            m_Edit.FinishEdit();
-            this.DialogResult = DialogResult.OK;
-            Close();
+            var setTheme = repo.GetSetter<ITheme, ISetTheme>(m_Item);
+            setTheme.Name = name;
+            repo.SaveChanges(m_Item, setTheme);
         }
+        
+        // Save any changes to the associated layers
+
+        // If any layers have been removed from the list, ensure they no longer refer to the edited theme
+        foreach (ILayer layer in m_OriginalLayers.Where(x => GetListLayer(x) is null))
+        {
+            var setLayer = repo.GetSetter<ILayer, ISetLayer>(layer);
+            setLayer.Theme = null;
+            repo.SaveChanges(layer, setLayer);
+        }
+
+        // Ensure all displayed layers refer to this theme, and have the same sequence as the display
+        ILayer[] layers = GetListedLayers();
+        int themeSequence = 0;
+
+        foreach (ILayer layer in layers)
+        {
+            var setLayer = repo.GetSetter<ILayer, ISetLayer>(layer);
+            setLayer.Theme = m_Item;
+            themeSequence++;
+            setLayer.ThemeSequence = themeSequence;
+            repo.SaveChanges(layer, setLayer);
+        }
+        
+        DialogResult = DialogResult.OK;
+        Close();
     }
 
     bool ValidateEdit()
@@ -76,35 +97,11 @@ public partial class ThemeForm : Form
             nameTextBox.Focus();
             return false;
         }
-
-        // If any layers have been removed from the list, ensure they no
-        // longer refer to the edited theme
-        foreach (ILayer layer in m_Layers)
-        {
-            ILayer listedLayer = GetListLayer(layer);
-            if (listedLayer==null)
-                (layer as IEditLayer).Theme = null;
-        }
-
-        // Ensure all displayed layers refer to this theme, and have the same
-        // sequence as the display
-        ILayer[] layers = GetListedLayers();
-        int themeSequence = 0;
-
-        foreach (ILayer layer in layers)
-        {
-            IEditLayer ed = (IEditLayer)layer;
-            ed.Theme = m_Edit;
-            themeSequence++;
-            ed.ThemeSequence = themeSequence;
-        }
-
-        m_Edit.Name = name;
-
+        
         return true;
     }
 
-    ILayer GetListLayer(ILayer layer)
+    ILayer? GetListLayer(ILayer layer)
     {
         foreach (object o in listBox.Items)
         {
@@ -137,19 +134,19 @@ public partial class ThemeForm : Form
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
-        m_Edit.CancelEdit();
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 
     private void addButton_Click(object sender, EventArgs e)
     {
-        AddLayerToThemeForm dial = new AddLayerToThemeForm();
-        if (dial.ShowDialog()==DialogResult.OK)
+        var dial = new AddLayerToThemeForm();
+        if (dial.ShowDialog() == DialogResult.OK)
         {
-            ILayer layer = dial.SelectedLayer;
+            ILayer? layer = dial.SelectedLayer;
+            Debug.Assert(layer is not null);
             int selIndex = listBox.SelectedIndex; // -1 if nothing selected
-            int insIndex = (selIndex<0 ? 0 : selIndex);
+            int insIndex = selIndex<0 ? 0 : selIndex;
             listBox.Items.Insert(insIndex, layer);
             listBox.SelectedItem = layer;
         }

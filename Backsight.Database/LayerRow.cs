@@ -29,7 +29,11 @@ internal partial class LayerRow : Row, ILayer, ISetLayer
         set => LayerId = value;
     }
 
-    public ITheme Theme => Repository.FindRequired<ITheme>(ThemeId);
+    public ITheme? Theme
+    {
+        get => Repository.FindRequired<ITheme>(ThemeId);
+        set => ThemeId = value?.Id ?? 0;
+    }
 
     public IEntity DefaultPointType
     {

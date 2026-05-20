@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
@@ -22,7 +23,7 @@ public partial class AddLayerToThemeForm : Form
     /// <summary>
     /// The selected layer (null if user cancelled)
     /// </summary>
-    private ILayer m_Layer;
+    private ILayer? m_Layer;
 
     public AddLayerToThemeForm()
     {
@@ -30,45 +31,46 @@ public partial class AddLayerToThemeForm : Form
         m_Layer = null;
     }
 
-    internal ILayer SelectedLayer
-    {
-        get { return m_Layer; }
-    }
+    internal ILayer? SelectedLayer => m_Layer;
 
     private void AddLayerToThemeForm_Shown(object sender, EventArgs e)
     {
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        ILayer[] layers = ec.Layers;
+        var layers = EnvironmentRepository.Current
+            .Layers
+            .Where(x => x.Id > 0)
+            .OrderBy(x => x.Name)
+            .ToArray<object>();
+        
         listBox.Items.AddRange(layers);
     }
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 
     private void okButton_Click(object sender, EventArgs e)
     {
-        ILayer sel = (ILayer)listBox.SelectedItem;
-        if (sel==null)
+        var sel = (ILayer?)listBox.SelectedItem;
+        if (sel is null)
         {
             MessageBox.Show("You must first select the layer you want to use");
             return;
         }
 
         m_Layer = sel;
-        this.DialogResult = DialogResult.OK;
+        DialogResult = DialogResult.OK;
         Close();
     }
 
     private void listBox_DoubleClick(object sender, EventArgs e)
     {
-        ILayer sel = (ILayer)listBox.SelectedItem;
-        if (sel!=null)
+        var sel = (ILayer?)listBox.SelectedItem;
+        if (sel is not null)
         {
             m_Layer = sel;
-            this.DialogResult = DialogResult.OK;
+            DialogResult = DialogResult.OK;
             Close();
         }
     }
