@@ -39,6 +39,6 @@ class LayerListData : ISimpleListData
     /// <returns>The dialog to display</returns>
     public Form GetEntryDialog(IEnvironmentItem item)
     {
-        return new LayerForm(item as IEditLayer);
+        return new LayerForm(item as ILayer);
     }
 }

@@ -14,56 +14,49 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
 public partial class LayerForm : Form
 {
-    private readonly IEditLayer m_Edit;
+    private readonly ILayer m_Item;
 
     internal LayerForm() : this(null)
     {
     }
 
-    internal LayerForm(IEditLayer edit)
+    internal LayerForm(ILayer? item)
     {
         InitializeComponent();
 
-        m_Edit = edit;
-        if (m_Edit==null)
-        {
-            IEnvironmentFactory f = EnvironmentContainer.Factory;
-            m_Edit = f.CreateLayer();
-        }
-
-        m_Edit.BeginEdit();
+        m_Item = item ?? EnvironmentRepository.Current.CreateNewItem<ILayer>();
     }
 
     private void LayerForm_Shown(object sender, EventArgs e)
     {
-        nameTextBox.Text = m_Edit.Name;
+        nameTextBox.Text = m_Item.Name;
+        
+        IEntity[] all = EnvironmentRepository.Current.EntityTypes.OrderBy(x => x.Name).ToArray();
+        pointComboBox.Items.AddRange(all.Where(x => x.IsPointValid).ToArray<object>());
+        lineComboBox.Items.AddRange(all.Where(x => x.IsLineValid).ToArray<object>());
+        textComboBox.Items.AddRange(all.Where(x => x.IsTextValid).ToArray<object>());
+        polygonComboBox.Items.AddRange(all.Where(x => x.IsPolygonValid).ToArray<object>());
 
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        IEntity[] all = ec.EntityTypes;
-        pointComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Point));
-        lineComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Line));
-        textComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Text));
-        polygonComboBox.Items.AddRange(EnvironmentContainer.Filter(all, SpatialType.Polygon));
+        if (m_Item.DefaultPointType is not null)
+            pointComboBox.SelectedItem = m_Item.DefaultPointType;
 
-        if (m_Edit.DefaultPointType!=null)
-            pointComboBox.SelectedItem = m_Edit.DefaultPointType;
+        if (m_Item.DefaultLineType is not null)
+            lineComboBox.SelectedItem = m_Item.DefaultLineType;
 
-        if (m_Edit.DefaultLineType!=null)
-            lineComboBox.SelectedItem = m_Edit.DefaultLineType;
+        if (m_Item.DefaultTextType is not null)
+            textComboBox.SelectedItem = m_Item.DefaultTextType;
 
-        if (m_Edit.DefaultTextType!=null)
-            textComboBox.SelectedItem = m_Edit.DefaultTextType;
+        if (m_Item.DefaultPolygonType is not null)
+            polygonComboBox.SelectedItem = m_Item.DefaultPolygonType;
 
-        if (m_Edit.DefaultPolygonType!=null)
-            polygonComboBox.SelectedItem = m_Edit.DefaultPolygonType;
-
-        ITheme theme = m_Edit.Theme;
-        if (theme!=null)
+        ITheme theme = m_Item.Theme;
+        if (theme is not null)
         {
             themeLabel.Visible = true;
             themeTextBox.Visible = true;
@@ -73,12 +66,22 @@ public partial class LayerForm : Form
 
     private void okButton_Click(object sender, EventArgs e)
     {
-        if (ValidateEdit())
-        {
-            m_Edit.FinishEdit();
-            this.DialogResult = DialogResult.OK;
-            Close();
-        }
+        if (!ValidateEdit())
+            return;
+
+        var repo = EnvironmentRepository.Current;
+        var set = repo.GetSetter<ILayer, ISetLayer>(m_Item);
+        
+        set.Name = nameTextBox.Text.Trim();
+        set.DefaultPointType = (IEntity)pointComboBox.SelectedItem;
+        set.DefaultLineType = (IEntity)lineComboBox.SelectedItem;
+        set.DefaultTextType = (IEntity)textComboBox.SelectedItem;
+        set.DefaultPolygonType = (IEntity)polygonComboBox.SelectedItem;
+        
+        repo.SaveChanges(m_Item, set);
+        
+        DialogResult = DialogResult.OK;
+        Close();
     }
 
     bool ValidateEdit()
@@ -91,19 +94,12 @@ public partial class LayerForm : Form
             return false;
         }
 
-        m_Edit.Name = name;
-        m_Edit.DefaultPointType = (IEntity)pointComboBox.SelectedItem;
-        m_Edit.DefaultLineType = (IEntity)lineComboBox.SelectedItem;
-        m_Edit.DefaultTextType = (IEntity)textComboBox.SelectedItem;
-        m_Edit.DefaultPolygonType = (IEntity)polygonComboBox.SelectedItem;
-
         return true;
     }
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
-        m_Edit.CancelEdit();
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 }
