@@ -39,6 +39,6 @@ class IdGroupListData : ISimpleListData
     /// <returns>The dialog to display</returns>
     public Form GetEntryDialog(IEnvironmentItem item)
     {
-        return new IdGroupForm(item as IEditIdGroup);
+        return new IdGroupForm(item as IIdGroup);
     }
 }

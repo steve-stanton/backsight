@@ -8,4 +8,9 @@ internal abstract class Row
     protected const string NO = "n";
 
     [NotMapped] public IEnvironmentRepository Repository { get; set; } = null!;
+
+    protected static string AsString(bool b)
+    {
+        return (b==true ? YES : NO);
+    }
 }

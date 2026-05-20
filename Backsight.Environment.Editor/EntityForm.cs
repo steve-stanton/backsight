@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
@@ -22,59 +23,52 @@ public partial class EntityForm : Form
     /// <summary>
     /// The entity type that's being edited
     /// </summary>
-    private readonly IEditEntity m_Edit;
+    private readonly IEntity m_Item;
 
     /// <summary>
     /// The tables (if any) that are associated with the entity type (null if
     /// the list hasn't been edited).
     /// </summary>
-    private ITable[] m_DefaultTables;
+    private ITable[]? m_DefaultTables;
 
-    internal EntityForm() : this(null)
-    {
-    }
-
-    internal EntityForm(IEditEntity edit)
+    /// <summary>
+    /// Creates a new <c>EntityForm</c> for the specified entity type.
+    /// </summary>
+    /// <param name="item">The entity type to update (specify null to create a new entity type).</param>
+    internal EntityForm(IEntity? item)
     {
         InitializeComponent();
 
-        m_Edit = edit;
+        m_Item = item ?? EnvironmentRepository.Current.CreateNewItem<IEntity>();
         m_DefaultTables = null;
-
-        if (m_Edit==null)
-        {
-            IEnvironmentFactory f = EnvironmentContainer.Factory;
-            m_Edit = f.CreateEntity();
-        }
-
-        m_Edit.BeginEdit();
     }
 
     private void EntityForm_Shown(object sender, EventArgs e)
     {
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        idGroupComboBox.Items.AddRange(ec.IdGroups);
-        layerComboBox.Items.AddRange(ec.Layers);
-        fontComboBox.Items.AddRange(ec.Fonts);
+        var repo = EnvironmentRepository.Current;
+        idGroupComboBox.Items.AddRange(repo.IdGroups.Cast<object>().ToArray());
+        layerComboBox.Items.AddRange(repo.Layers.Cast<object>().ToArray());
+        fontComboBox.Items.AddRange(repo.Fonts.Cast<object>().ToArray());
 
-        IIdGroup g = m_Edit.IdGroup;
-        if (g!=null)
+        IIdGroup? g = m_Item.IdGroup;
+        if (g is not null)
             idGroupComboBox.SelectedItem = g;
 
-        ILayer layer = m_Edit.Layer;
-        if (layer!=null)
+        ILayer? layer = m_Item.Layer;
+        if (layer is not null)
             layerComboBox.SelectedItem = layer;
 
-        IFont font = m_Edit.Font;
-        if (font != null)
+        IFont? font = m_Item.Font;
+        if (font is not null)
             fontComboBox.SelectedItem = font;
 
-        entityNameTextBox.Text = m_Edit.Name;
-        pointCheckbox.Checked = m_Edit.IsPointValid;
-        lineCheckbox.Checked = m_Edit.IsLineValid;
-        boundaryCheckbox.Checked = m_Edit.IsPolygonBoundaryValid;
-        textCheckbox.Checked = m_Edit.IsTextValid;
-        labelCheckbox.Checked = m_Edit.IsPolygonValid;
+        entityNameTextBox.Text = m_Item.Name;
+
+        pointCheckbox.Checked = m_Item.IsPointValid;
+        lineCheckbox.Checked = m_Item.IsLineValid;
+        boundaryCheckbox.Checked = m_Item.IsPolygonBoundaryValid;
+        textCheckbox.Checked = m_Item.IsTextValid;
+        labelCheckbox.Checked = m_Item.IsPolygonValid;
 
         labelCheckbox.Enabled = textCheckbox.Checked;
         boundaryCheckbox.Enabled = lineCheckbox.Checked;
@@ -82,8 +76,7 @@ public partial class EntityForm : Form
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
-        m_Edit.CancelEdit();
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 
@@ -95,22 +88,28 @@ public partial class EntityForm : Form
             entityNameTextBox.Focus();
             return;
         }
+        
+        var repo = EnvironmentRepository.Current;
+        var set = repo.GetSetter<IEntity, ISetEntity>(m_Item);
 
-        m_Edit.Name = entityNameTextBox.Text;
-        m_Edit.IsPointValid = pointCheckbox.Checked;
-        m_Edit.IsLineValid = lineCheckbox.Checked;
-        m_Edit.IsPolygonBoundaryValid = boundaryCheckbox.Checked;
-        m_Edit.IsTextValid = textCheckbox.Checked;
-        m_Edit.IsPolygonValid = labelCheckbox.Checked;
-        m_Edit.IdGroup = (IIdGroup)idGroupComboBox.SelectedItem;
-        m_Edit.Layer = (ILayer)layerComboBox.SelectedItem;
-        m_Edit.Font = (IFont)fontComboBox.SelectedItem;
+        set.Name = entityNameTextBox.Text;
+        set.IsPointValid = pointCheckbox.Checked;
+        set.IsLineValid = lineCheckbox.Checked;
+        set.IsLineAutoTrimmed = false;
+        set.IsPolygonBoundaryValid = boundaryCheckbox.Checked;
+        set.IsTextValid = textCheckbox.Checked;
+        set.IsPolygonValid = labelCheckbox.Checked;
+        set.IdGroup = (IIdGroup?)idGroupComboBox.SelectedItem;
+        set.Layer = (ILayer?)layerComboBox.SelectedItem;
+        set.Font = (IFont?)fontComboBox.SelectedItem;
+        
+        repo.SaveChanges(m_Item, set);
+        
+        // Update the associated tables separately (needs the entity type ID when dealing with a new instance)
+        if (m_DefaultTables is not null)
+            repo.SaveAssociatedTables(m_Item, m_DefaultTables);
 
-        if (m_DefaultTables!=null)
-            m_Edit.DefaultTables = m_DefaultTables;
-
-        m_Edit.FinishEdit();
-        this.DialogResult = DialogResult.OK;
+        DialogResult = DialogResult.OK;
         Close();
     }
 
@@ -136,13 +135,14 @@ public partial class EntityForm : Form
 
     private void tablesButton_Click(object sender, EventArgs e)
     {
+        var repo = EnvironmentRepository.Current;
+        
         // If this is the first time the button has been clicked, load up current associations
-        if (m_DefaultTables==null)
-            m_DefaultTables = m_Edit.DefaultTables;
+        if (m_DefaultTables is null)
+            m_DefaultTables = repo.FindAssociatedTables(m_Item).ToArray();
 
         // Grab the complete table list
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        ITable[] tables = ec.Tables;
+        ITable[] tables = repo.Tables.ToArray();
 
         ChecklistForm<ITable> dial = new ChecklistForm<ITable>(tables, m_DefaultTables);
         if (dial.ShowDialog() == DialogResult.OK)

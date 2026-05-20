@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 using Backsight.Environment;
 using RepoDb.Attributes;
 
@@ -16,10 +17,11 @@ internal partial class FontRow
     public string IsBold { get; set; } = NO;
     public string IsItalic { get; set; } = NO;
     public string IsUnderline { get; set; } = NO;
+    public string FontFile { get; set; } = "";
 }
 
-// Additional properties to satisfy the readonly interface.
-internal partial class FontRow : Row, IFont
+// Additional properties to satisfy the interfaces.
+internal partial class FontRow : Row, IFont, ISetFont
 {
     /// <summary>
     /// A user-perceived title for this font.
@@ -44,9 +46,29 @@ internal partial class FontRow : Row, IFont
 
         return sb.ToString();
     }
+    
+    [NotMapped]
+    public int Id
+    {
+        get => FontId;
+        set => FontId = value;
+    }
 
-    public int Id => FontId;
-    public bool Underline => IsUnderline == YES;
-    public bool Italic => IsItalic == YES;
-    public bool Bold => IsBold == YES;
+    public bool Bold
+    {
+        get => IsBold == YES;
+        set => IsBold = AsString(value);
+    }
+
+    public bool Italic
+    {
+        get => IsItalic == YES;
+        set => IsItalic = AsString(value);
+    }
+
+    public bool Underline
+    {
+        get => IsUnderline == YES;
+        set => IsUnderline = AsString(value);
+    }
 }

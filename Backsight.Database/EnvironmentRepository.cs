@@ -1,4 +1,5 @@
-﻿using Backsight.Environment;
+﻿using System.Diagnostics;
+using Backsight.Environment;
 using Microsoft.Data.Sqlite;
 using RepoDb;
 
@@ -36,11 +37,31 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     /// Miscellaneous properties of the environment.
     /// </summary>
     private readonly Dictionary<string, string> _properties = new();
+    
+    /// <summary>
+    /// The last ID assigned to an item in the environment database.
+    /// </summary>
+    private int _lastId = 0;
 
+    /// <summary>
+    /// The concrete types that implement interfaces that extend from <see cref="IEnvironmentItem"/>.
+    /// </summary>
+    private readonly Dictionary<string, Type> _itemTypes = new()
+    {
+        { nameof(IFont), typeof(FontRow) },
+        { nameof(IDomainTable), typeof(DomainTableRow) },
+        { nameof(IEntity), typeof(EntityTypeRow) },
+        { nameof(IIdGroup), typeof(IdGroupRow) },
+        { nameof(ILayer), typeof(LayerRow) },
+        { nameof(ITable), typeof(SchemaRow) },
+        { nameof(ITemplate), typeof(TemplateRow) },
+        { nameof(ITheme), typeof(ThemeRow) },
+    };
+    
     public EnvironmentRepository(string connectionString) :
         base(connectionString,
             commandTimeout: null,
-            //trace: new ConsoleTrace(),
+            trace: new ConsoleTrace(),
             cache: null, // use MemoryCache -- consider using a do-nothing cache
             cacheItemExpiration: Int32.MaxValue)
     {
@@ -76,6 +97,10 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         // Load miscellaneous properties
         foreach (var row in ExecuteQuery($"SELECT Name, Value FROM Properties"))
             _properties.Add(row.Name.ToString(), row.Value.ToString());
+        
+        // Load the last assigned ID
+        _lastId = ExecuteScalar<int>("SELECT LastId FROM SysId");
+        Console.WriteLine($"Last ID: {_lastId}");
     }
 
     private void LoadIndex<TItem, TRow>()
@@ -140,6 +165,59 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         return Enumerable.Empty<ITable>();
     }
 
+    public void SaveAssociatedTables(IEntity entity, IEnumerable<ITable> tables)
+    {
+        var entityId = entity.Id;
+        var oldTables = FindAssociatedTables(entity);
+        var newTables = tables.ToList();
+
+        // Update the database
+        foreach (var table in newTables.Where(x => !oldTables.Contains(x)))
+        {
+            ExecuteNonQuery(
+                $"""
+                 INSERT INTO EntityTypeSchemas (EntityId, SchemaId)
+                 VALUES ({entityId}, {table.Id})
+                 """);
+        }
+
+        foreach (var table in oldTables.Where(x => !newTables.Contains(x)))
+        {
+            ExecuteNonQuery(
+                $"""
+                 DELETE FROM EntityTypeSchemas
+                 WHERE EntityId={entityId} AND SchemaId={table.Id}
+                 """);
+        }
+
+        // Update the in-memory index
+        if (newTables.Count == 0)
+            _entitySchemasIndex.Remove(entityId);
+        else
+            _entitySchemasIndex[entityId] = newTables;
+    }
+
+    /// <inheritdoc cref="IEnvironmentRepository.SaveAssociatedEntities"/>
+    public void SaveAssociatedEntities(IIdGroup group, IEnumerable<IEntity> entities)
+    {
+        var oldTypes = group.EntityTypes;
+        var newTypes = entities.ToArray();
+
+        foreach (var type in newTypes.Where(x => !oldTypes.Contains(x)))
+        {
+            var set = GetSetter<IEntity, ISetEntity>(type);
+            set.IdGroup = group;
+            SaveChanges(type, set);
+        }
+
+        foreach (var type in oldTypes.Where(x => !newTypes.Contains(x)))
+        {
+            var set = GetSetter<IEntity, ISetEntity>(type);
+            set.IdGroup = null;
+            SaveChanges(type, set);
+        }
+    }
+        
     public IEnumerable<IColumnDomain> FindColumnDomains(ITable table)
     {
         return _columnDomains.Where(x => x.TableId == table.Id);
@@ -194,7 +272,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     {
         return _properties.GetValueOrDefault(propertyName);
     }
-    
+
     /// <summary>
     /// Locates an entity type based on it's unique ID.
     /// </summary>
@@ -405,54 +483,62 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         return row;
     }
 
-    public IEditColumnDomain CreateColumnDomain()
+    private int ReserveId()
     {
-        throw new NotImplementedException();
-        //return new ColumnDomainRow { Repository = this };
+        int rowCount = ExecuteNonQuery($"UPDATE SysId SET LastId = LastId + 1 WHERE LastId={_lastId}");
+        if (rowCount != 1)
+            throw new ApplicationException("Unexpected update count: " + rowCount);
+
+        _lastId++;
+        return _lastId;
     }
 
-    public IEditDomainTable CreateDomainTable()
+    public TSetter GetSetter<TItem, TSetter>(TItem item)
+        where TItem : class, IEnvironmentItem
+        where TSetter : class, ISetter
     {
-        throw new NotImplementedException();
+        // Perform in-situ edits to the item
+        return item as TSetter ?? throw new NotSupportedException($"{typeof(TItem).Name} does not implement {typeof(TSetter).Name}");
     }
 
-    public IEditEntity CreateEntity()
+    public void SaveChanges<TItem, TSetter>(TItem item, TSetter setter)
+        where TItem : class, IEnvironmentItem
+        where TSetter : class, ISetter
     {
-        throw new NotImplementedException();
+        if (item.Id == 0)
+        {
+            // TODO: RepoDb appears to assign an ID even if it has been supplied
+            // (and the column isn't autoincremented)
+            // int id = ReserveId();
+            // setter.Id = id;
+            // Debug.Assert(item.Id == id);
+
+            Insert(item);
+            Debug.Assert(item.Id != 0);
+            var dic = GetIndex<TItem>(typeof(TItem).Name);
+            dic.Add(item.Id, item);
+        }
+        else
+        {
+            Update(item);
+        }
     }
 
-    public IEditFont CreateFont()
+    public TItem CreateNewItem<TItem>() where TItem : class, IEnvironmentItem
     {
-        throw new NotImplementedException();
-    }
-
-    public IEditIdGroup CreateIdGroup()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditProperty CreateProperty()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditTable CreateTableAssociation()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditTemplate CreateTemplate()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditTheme CreateTheme()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditLayer CreateLayer()
-    {
-        throw new NotImplementedException();
+        var rowType = _itemTypes[typeof(TItem).Name];
+        if (rowType is null)
+            throw new NotImplementedException(typeof(TItem).Name);
+        
+        var result = Activator.CreateInstance(rowType) ?? throw new InvalidOperationException();
+ 
+        // Confirm that the _itemTypes dictionary is actually correct
+        if (result is not TItem)
+            throw new ApplicationException();
+        
+        if (result is Row row)
+            row.Repository = this;
+        
+        return (TItem)result;
     }
 }

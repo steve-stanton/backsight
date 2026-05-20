@@ -23,14 +23,4 @@ static class FontExtensions
             return result;
         }
     }
-
-    extension(IEditFont f)
-    {
-        internal void SetModifiers(FontStyle style)
-        {
-            f.Bold = (style & FontStyle.Bold) != 0;
-            f.Italic = (style & FontStyle.Italic) != 0;
-            f.Underline = (style & FontStyle.Underline) != 0;
-        }
-    }
 }

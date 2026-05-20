@@ -16,6 +16,16 @@ public class EmptyRepository : IEnvironmentRepository
     public IEnumerable<ITheme> Themes => Enumerable.Empty<ITheme>();
 
     public IEnumerable<ITable> FindAssociatedTables(IEntity entity) => Enumerable.Empty<ITable>();
+    public void SaveAssociatedTables(IEntity entity, IEnumerable<ITable> tables)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SaveAssociatedEntities(IIdGroup group, IEnumerable<IEntity> entities)
+    {
+        throw new NotImplementedException();
+    }
+
     public IEnumerable<IColumnDomain> FindColumnDomains(ITable table) => Enumerable.Empty<IColumnDomain>();
     public AttributeRecord CreateNewRecord(ITable table)
     {
@@ -62,6 +72,16 @@ public class EmptyRepository : IEnvironmentRepository
         return null;
     }
 
+    public TSetter GetSetter<TItem, TSetter>(TItem item) where TItem : class, IEnvironmentItem where TSetter : class, ISetter
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SaveChanges<TItem, TSetter>(TItem item, TSetter setter) where TItem : class, IEnvironmentItem where TSetter : class, ISetter
+    {
+        throw new NotImplementedException();
+    }
+
     public IEditColumnDomain CreateColumnDomain()
     {
         throw new NotImplementedException();
@@ -72,12 +92,12 @@ public class EmptyRepository : IEnvironmentRepository
         throw new NotImplementedException();
     }
 
-    public IEditEntity CreateEntity()
+    public IEntity CreateEntity()
     {
         throw new NotImplementedException();
     }
 
-    public IEditFont CreateFont()
+    public IFont CreateFont()
     {
         throw new NotImplementedException();
     }
@@ -108,6 +128,11 @@ public class EmptyRepository : IEnvironmentRepository
     }
 
     public IEditLayer CreateLayer()
+    {
+        throw new NotImplementedException();
+    }
+    
+    public TItem CreateNewItem<TItem>() where TItem : class, IEnvironmentItem
     {
         throw new NotImplementedException();
     }

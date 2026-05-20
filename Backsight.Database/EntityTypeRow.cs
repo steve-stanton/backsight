@@ -23,16 +23,68 @@ internal partial class EntityTypeRow
 }
 
 // Additional properties to satisfy the readonly interface.
-internal partial class EntityTypeRow : Row, IEntity
+internal partial class EntityTypeRow : Row, IEntity, ISetEntity
 {
     public override string ToString() => Name;
-    public int Id => EntityId;
-    public bool IsPointValid => IsPoint == YES;
-    public bool IsLineValid => IsLine == YES;
-    public bool IsLineAutoTrimmed => IsLineTrimmed == YES;
-    public bool IsPolygonValid => IsPolygon == YES;
-    public bool IsPolygonBoundaryValid => IsLineTopological == YES;
-    public bool IsTextValid => IsText == YES && IsPolygon == NO;
+    public int Id
+    {
+        get => EntityId;
+        set => EntityId = value;
+    }
+
+    public bool IsPointValid
+    {
+        get => IsPoint == YES;
+        set => IsPoint = AsString(value);
+    }
+
+    public bool IsLineValid
+    {
+        get => IsLine == YES;
+        set => IsLine = AsString(value);
+    }
+
+    public bool IsLineAutoTrimmed
+    {
+        get => IsLineTrimmed == YES;
+        set => IsLineTrimmed = AsString(value);
+    }
+
+    public bool IsPolygonValid
+    {
+        get => IsPolygon == YES;
+        set => IsPolygon = AsString(value);
+    }
+
+    public bool IsPolygonBoundaryValid
+    {
+        get => IsLineTopological == YES;
+        set => IsLineTopological = AsString(value);
+    }
+
+    public bool IsTextValid
+    {
+        get => IsText == YES && IsPolygon == NO;
+        set => IsText = AsString(value);
+    }
+
+    public ILayer? Layer
+    {
+        get => Repository.Find<ILayer>(LayerId);
+        set => LayerId = value?.Id ?? 0;
+    }
+
+    public IIdGroup? IdGroup
+    {
+        get => Repository.Find<IIdGroup>(GroupId);
+        set => GroupId = value?.Id ?? 0;
+    }
+    
+    public IFont? Font
+    {
+        get => Repository.Find<IFont>(FontId);
+        set => FontId = value?.Id ?? 0;
+    }
 
     /// <summary>
     /// Checks whether this entity type can be associated with the supplied spatial data type.
@@ -48,7 +100,4 @@ internal partial class EntityTypeRow : Row, IEntity
     }
 
     public ITable[] DefaultTables => Repository.FindAssociatedTables(this).ToArray();
-    public IIdGroup IdGroup => Repository.FindRequired<IIdGroup>(GroupId);
-    public ILayer? Layer => Repository.Find<ILayer>(LayerId);
-    public IFont Font => Repository.FindRequired<IFont>(FontId);
 }

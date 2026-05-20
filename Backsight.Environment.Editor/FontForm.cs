@@ -15,29 +15,23 @@
 
 using System.Windows.Forms;
 using System.Drawing;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
 public partial class FontForm : Form
 {
-    private readonly IEditFont m_Edit;
+    private readonly IFont m_Item;
 
     internal FontForm() : this(null)
     {
     }
 
-    internal FontForm(IEditFont edit)
+    internal FontForm(IFont? item)
     {
         InitializeComponent();
 
-        m_Edit = edit;
-        if (m_Edit == null)
-        {
-            IEnvironmentFactory f = EnvironmentContainer.Factory;
-            m_Edit = f.CreateFont();
-        }
-
-        m_Edit.BeginEdit();
+        m_Item = item ?? EnvironmentRepository.Current.CreateNewItem<IFont>(); 
     }
 
     private void FontForm_Shown(object sender, EventArgs e)
@@ -50,13 +44,13 @@ public partial class FontForm : Form
         fontStyleComboBox.SelectedItem = null;
         sizeComboBox.SelectedItem = null;
 
-        if (!String.IsNullOrEmpty(m_Edit.TypeFace))
+        if (!String.IsNullOrEmpty(m_Item.TypeFace))
         {
             fontFamilyComboBox.SelectedItem = Array.Find<FontFamily>(fams,
-                delegate(FontFamily ff) { return ff.Name==m_Edit.TypeFace; });
+                delegate(FontFamily ff) { return ff.Name==m_Item.TypeFace; });
 
-            bool isBold = m_Edit.Bold;
-            bool isItalic = m_Edit.Italic;
+            bool isBold = m_Item.Bold;
+            bool isItalic = m_Item.Italic;
 
             if (isBold && isItalic)
                 fontStyleComboBox.SelectedItem = "Bold Italic";
@@ -67,7 +61,7 @@ public partial class FontForm : Form
             else
                 fontStyleComboBox.SelectedItem = "Regular";
 
-            string s = m_Edit.PointSize.ToString();
+            string s = m_Item.PointSize.ToString();
             if (sizeComboBox.Items.Contains(s))
                 sizeComboBox.SelectedItem = s;
             else
@@ -80,8 +74,8 @@ public partial class FontForm : Form
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
-        m_Edit.CancelEdit();
-        this.DialogResult = DialogResult.Cancel;
+        //m_Item.CancelEdit(); // release ID?
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 
@@ -124,26 +118,20 @@ public partial class FontForm : Form
             sizeComboBox.Focus();
             return;
         }
-
-        m_Edit.TypeFace = fam.Name;
-        m_Edit.Bold = false;
-        m_Edit.Italic = false;
-        m_Edit.Underline = false;
-
+        
         string fs = fontStyleComboBox.Text;
-        if (fs == "Italic")
-            m_Edit.Italic = true;
-        else if (fs == "Bold")
-            m_Edit.Bold = true;
-        else if (fs == "Bold Italic")
-        {
-            m_Edit.Bold = true;
-            m_Edit.Italic = true;
-        }
 
-        m_Edit.PointSize = size;
+        var repo = EnvironmentRepository.Current;
+        var set = repo.GetSetter<IFont, ISetFont>(m_Item);
 
-        m_Edit.FinishEdit();
+        set.TypeFace = fam.Name;
+        set.Bold = fs.Contains("Bold");
+        set.Italic = fs.Contains("Italic");
+        set.Underline = false;
+        set.PointSize = size;
+        
+        repo.SaveChanges(m_Item, set);
+
         DialogResult = DialogResult.OK;
         Close();
     }

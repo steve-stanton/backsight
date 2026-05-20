@@ -42,7 +42,7 @@ class DomainListData : ISimpleListData
         if (item != null)
             throw new NotSupportedException("Domain updates not supported");
 
-        //return new DomainForm(item as IEditDomainTable);
+        //return new DomainForm(item as IDomainTable);
         return new DomainForm();
     }
 }

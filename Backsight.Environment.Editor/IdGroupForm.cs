@@ -14,151 +14,151 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
 public partial class IdGroupForm : Form
 {
-    private readonly IEditIdGroup m_Edit;
+    /// <summary>
+    /// The ID group that's being updated.
+    /// </summary>
+    private readonly IIdGroup m_Item;
+    
+    /// <summary>
+    /// The current details for the ID group.
+    /// </summary>
+    private IdGroupDetail m_Details;
 
     /// <summary>
     /// The entity types that are currently associated with the ID group (null
     /// if the user hasn't yet displayed entity types).
     /// </summary>
-    private IEntity[] m_EntityTypes;
+    private IEntity[]? m_EntityTypes;
 
-    internal IdGroupForm() : this(null)
-    {
-    }
-
-    internal IdGroupForm(IEditIdGroup edit)
+    internal IdGroupForm(IIdGroup? item)
     {
         InitializeComponent();
 
-        m_Edit = edit;
-        if (m_Edit==null)
-        {
-            IEnvironmentFactory f = EnvironmentContainer.Factory;
-            m_Edit = f.CreateIdGroup();
-        }
-
-        m_Edit.BeginEdit();
+        m_Item = item ?? EnvironmentRepository.Current.CreateNewItem<IIdGroup>();
+        m_Details = new IdGroupDetail(m_Item);
+        m_EntityTypes = null;
     }
 
     private void IdGroupForm_Shown(object sender, EventArgs e)
     {
-        groupNameTextBox.Text = m_Edit.Name;
-        minTextBox.Text = m_Edit.LowestId.ToString();
-        maxTextBox.Text = m_Edit.HighestId.ToString();
-        packetSizeTextBox.Text = m_Edit.PacketSize.ToString();
+        groupNameTextBox.Text = m_Details.Name;
+        minTextBox.Text = m_Details.LowestId.ToString();
+        maxTextBox.Text = m_Details.HighestId.ToString();
+        packetSizeTextBox.Text = m_Details.PacketSize.ToString();
     }
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
-        m_Edit.CancelEdit();
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 
-    bool ValidateEdit()
+    /// <summary>
+    /// Creates the group details based on the current form values.
+    /// </summary>
+    /// <returns>The current details (not necessarily valid).</returns>
+    IdGroupDetail GetCurrentDetails()
     {
         string name = groupNameTextBox.Text.Trim();
-        if (name.Length==0)
+        int minId = GetInt(minTextBox);
+        int maxId = GetInt(maxTextBox);
+        int psize = GetInt(packetSizeTextBox);
+        
+        // The HasCheckDigit and KeyFormat properties may have been changed via IdFormatForm 
+        return new IdGroupDetail(name, minId, maxId, m_Details.HasCheckDigit, psize, m_Details.KeyFormat);
+    }
+    
+    bool Validate(IdGroupDetail detail)
+    {
+        if (detail.Name.Length==0)
         {
             MessageBox.Show("A name must be supplied for the ID group");
             groupNameTextBox.Focus();
             return false;
         }
 
-        int minId = GetInt(minTextBox);
-        int maxId = GetInt(maxTextBox);
-
-        if (minId>maxId)
+        if (detail.LowestId > detail.HighestId)
         {
             MessageBox.Show("Low end of range is bigger than the max");
             minTextBox.Focus();
             return false;
         }
 
-        int psize = GetInt(packetSizeTextBox);
-        if (psize > (maxId-minId+1))
+        var numId = detail.HighestId - detail.LowestId + 1;
+        if (detail.PacketSize > numId)
         {
             MessageBox.Show("Packet size exceeds the number of IDs in the group");
             packetSizeTextBox.Focus();
             return false;
         }
-
-        m_Edit.Name = name;
-        m_Edit.LowestId = minId;
-        m_Edit.HighestId = maxId;
-        m_Edit.PacketSize = psize;
-
+        
         return true;
     }
 
     private void okButton_Click(object sender, EventArgs e)
     {
-        if (!ValidateEdit())
+        var details = GetCurrentDetails();
+        if (!Validate(details))
             return;
 
-        // If the list of associated entity types has been displayed, see whether
-        // any changes need to be made.
+        var repo = EnvironmentRepository.Current;
+        var set = repo.GetSetter<IIdGroup, ISetIdGroup>(m_Item);
+        
+        set.Name = details.Name;
+        set.LowestId = details.LowestId;
+        set.HighestId = details.HighestId;
+        set.PacketSize = details.PacketSize;
+        set.KeyFormat = details.KeyFormat;
+        set.HasCheckDigit = details.HasCheckDigit;
 
-        if (m_EntityTypes!=null)
-        {
-            IEntity[] currentTypes = m_Edit.EntityTypes;
-            IEntity[] newTypes = m_EntityTypes;
+        repo.SaveChanges(m_Item, set);
 
-            // If any entity types have been de-selected, make sure they don't refer to
-            // the ID group
-            foreach (IEntity ent in currentTypes)
-            {
-                if (Array.Find<IEntity>(newTypes, delegate(IEntity r)
-                        { return (ent.Id==r.Id); })==null)
-                    (ent as IEditEntity).IdGroup = null;
-            }
+        // Save any changes to the entity types associated with the ID group
+        if (m_EntityTypes is not null)
+            repo.SaveAssociatedEntities(m_Item, m_EntityTypes);
 
-            foreach (IEntity ent in newTypes)
-            {
-                (ent as IEditEntity).IdGroup = m_Edit;
-            }
-        }
-
-        m_Edit.FinishEdit();
-        this.DialogResult = DialogResult.OK;
+        DialogResult = DialogResult.OK;
         Close();
     }
 
     private void formatButton_Click(object sender, EventArgs e)
     {
-        // Ensure currently displayed values have been pushed into the ID group
-        if (!ValidateEdit())
+        // Validate the current details
+        var details = GetCurrentDetails();
+        if (!Validate(details))
             return;
 
-        IdFormatForm dial = new IdFormatForm(m_Edit);
+        var dial = new IdFormatForm(details);
         if (dial.ShowDialog() == DialogResult.OK)
         {
-            m_Edit.HasCheckDigit = dial.HasCheckDigit;
-            m_Edit.KeyFormat = dial.KeyFormat;
+            m_Details = details with
+            {
+                HasCheckDigit = dial.HasCheckDigit,
+                KeyFormat = dial.KeyFormat
+            };
         }
         dial.Dispose();
     }
 
     IEntity[] GetEntityTypes()
     {
-        if (m_EntityTypes==null)
-            m_EntityTypes = m_Edit.EntityTypes;
+        if (m_EntityTypes is null)
+            m_EntityTypes = m_Item.EntityTypes;
 
         return m_EntityTypes;
     }
 
     private void entitiesButton_Click(object sender, EventArgs e)
     {
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        IEntity[] entities = ec.EntityTypes;
+        IEntity[] entities = EnvironmentRepository.Current.EntityTypes.OrderBy(x => x.Name).ToArray();
         IEntity[] selection = GetEntityTypes();
-        ChecklistForm<IEntity> dial =
-            new ChecklistForm<IEntity>(entities, selection);
+        var dial = new ChecklistForm<IEntity>(entities, selection);
 
         if (dial.ShowDialog() == DialogResult.OK)
             m_EntityTypes = dial.Selection;
@@ -169,6 +169,6 @@ public partial class IdGroupForm : Form
     int GetInt(TextBox tb)
     {
         string s = tb.Text.Trim();
-        return (s.Length==0 ? 0 : Int32.Parse(s));
+        return s.Length==0 ? 0 : Int32.Parse(s);
     }
 }

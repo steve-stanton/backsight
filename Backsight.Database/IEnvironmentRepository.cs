@@ -2,7 +2,7 @@
 
 namespace Backsight.Database;
 
-public interface IEnvironmentRepository : IEnvironmentFactory
+public interface IEnvironmentRepository
 {
     string Name { get; }
     
@@ -22,7 +22,16 @@ public interface IEnvironmentRepository : IEnvironmentFactory
     /// <param name="entity">The entity type.</param>
     /// <returns>Details for the attribute tables normally associated with the entity type.</returns>
     IEnumerable<ITable> FindAssociatedTables(IEntity entity);
-
+    
+    void SaveAssociatedTables(IEntity entity, IEnumerable<ITable> tables);
+    
+    /// <summary>
+    /// Saves any changes to the entity types associated with an ID group. 
+    /// </summary>
+    /// <param name="group">The ID group.</param>
+    /// <param name="entities">The entity types to be associated with the group.</param>
+    void SaveAssociatedEntities(IIdGroup group, IEnumerable<IEntity> entities);
+    
     /// <summary>
     /// Finds the columns in an attribute table that are associated with domain values.
     /// </summary>
@@ -89,4 +98,14 @@ public interface IEnvironmentRepository : IEnvironmentFactory
     T FindRequired<T>(int id) where T : class, IEnvironmentItem;
     IEnumerable<T> FindMany<T>(Predicate<T> predicate) where T : class, IEnvironmentItem;
     string? FindPropertyByName(string propertyName);
+
+    TSetter GetSetter<TItem, TSetter>(TItem item)
+        where TItem : class, IEnvironmentItem
+        where TSetter : class, ISetter;
+
+    void SaveChanges<TItem, TSetter>(TItem item, TSetter setter)
+        where TItem : class, IEnvironmentItem
+        where TSetter : class, ISetter;
+    
+    TItem CreateNewItem<TItem>() where TItem : class, IEnvironmentItem;
 }

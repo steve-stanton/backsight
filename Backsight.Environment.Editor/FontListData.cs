@@ -39,6 +39,6 @@ class FontListData : ISimpleListData
     /// <returns>The dialog to display</returns>
     public Form GetEntryDialog(IEnvironmentItem item)
     {
-        return new FontForm(item as IEditFont);
+        return new FontForm(item as IFont);
     }
 }

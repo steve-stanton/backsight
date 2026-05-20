@@ -39,6 +39,6 @@ class EntityListData : ISimpleListData
     /// <returns>The dialog to display</returns>
     public Form GetEntryDialog(IEnvironmentItem item)
     {
-        return new EntityForm(item as IEditEntity);
+        return new EntityForm(item as IEntity);
     }
 }

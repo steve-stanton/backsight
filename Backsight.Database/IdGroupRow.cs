@@ -10,22 +10,32 @@ namespace Backsight.Database;
 internal partial class IdGroupRow
 {
     [Primary] public int GroupId { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = "";
     public int LowestId { get; set; }
     public int HighestId { get; set; }
     public int PacketSize { get; set; }
-    public string CheckDigit { get; set; }
-    public string KeyFormat { get; set; }
+    public string CheckDigit { get; set; } = NO;
+    public string KeyFormat { get; set; } = "{0}";
     public int MaxUsedId { get; set;  }
 }
 
 // Additional properties to satisfy the readonly interface.
-internal partial class IdGroupRow : Row, IIdGroup
+internal partial class IdGroupRow : Row, IIdGroup, ISetIdGroup
 {
     public override string ToString() => Name;
-    public int Id => GroupId;
-    public bool HasCheckDigit => CheckDigit == YES;
+    public int Id
+    {
+        get => GroupId;
+        set => GroupId = value;
+    }
+    
+    public bool HasCheckDigit
+    {
+        get => CheckDigit == YES;
+        set => CheckDigit = AsString(value);
+    }
+
     public IEntity[] EntityTypes => Repository
-        .FindMany<IEntity>(x => x.Id == GroupId)
+        .FindMany<IEntity>(x => x.IdGroup.Id == GroupId)
         .ToArray();
 }

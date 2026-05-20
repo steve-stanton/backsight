@@ -19,10 +19,9 @@ namespace Backsight.Environment.Editor;
 
 public partial class IdFormatForm : Form
 {
-    private readonly IIdGroup m_Group;
-
-    // The number of characters in the IDs for the smallest and highest
-    // IDs in the group
+    private readonly IdGroupDetail m_Group;
+    
+    // The number of characters in the IDs for the smallest and highest IDs in the group
     private readonly int m_MinWidth;
     private readonly int m_MaxWidth;
 
@@ -33,7 +32,7 @@ public partial class IdFormatForm : Form
     private bool m_IsKeepZeroes;
 
 
-    internal IdFormatForm(IIdGroup group)
+    internal IdFormatForm(IdGroupDetail group)
     {
         InitializeComponent();
         m_Group = group;
@@ -44,20 +43,11 @@ public partial class IdFormatForm : Form
         m_MinWidth = group.LowestId.ToString().Length;
         m_MaxWidth = group.HighestId.ToString().Length;
 
-        /*
-        if (group.Id==0)
-        {
-            m_Lead = String.Empty;
-            m_Trail = String.Empty;
-            m_IsKeepZeroes = false;
-            m_NumWidth = m_MaxWidth;
-        }
-        else
-         */
         ParseFormat(group.KeyFormat);
     }
 
-    internal bool HasCheckDigit { get { return m_HasCheckDigit; } }
+    internal bool HasCheckDigit => m_HasCheckDigit;
+
     internal string KeyFormat
     {
         get
@@ -78,7 +68,7 @@ public partial class IdFormatForm : Form
     private void IdFormatForm_Load(object sender, EventArgs e)
     {
         // Display info about the group
-        this.Text = String.Format("{0} (range {1}-{2})", m_Group.Name, m_Group.LowestId, m_Group.HighestId);
+        this.Text = $"{m_Group.Name} (range {m_Group.LowestId}-{m_Group.HighestId})";
 
         // Display any leader characters
         leadingCharsTextBox.Text = m_Lead;
@@ -108,7 +98,6 @@ public partial class IdFormatForm : Form
     private void checkDigitCheckBox_CheckedChanged(object sender, EventArgs e)
     {
         m_HasCheckDigit = checkDigitCheckBox.Checked;
-
     }
 
     private void keepLeadingZeroesCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -139,24 +128,23 @@ public partial class IdFormatForm : Form
             MessageBox.Show("The width of the numeric portion is excessive.");
             numDigitTextBox.Focus();
             return;
-
         }
 
         // Pick up any leading and trailing characters
         m_Lead = leadingCharsTextBox.Text.Trim();
         m_Trail = trailingCharsTextBox.Text.Trim();
 
-        this.DialogResult = DialogResult.OK;
+        DialogResult = DialogResult.OK;
         Close();
     }
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 
-    void ParseFormat(string format)
+    private void ParseFormat(string format)
     {
         m_IsKeepZeroes = false;
         m_Lead = String.Empty;
