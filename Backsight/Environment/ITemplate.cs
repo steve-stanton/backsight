@@ -29,11 +29,6 @@ public interface ITemplate : IEnvironmentItem
     ITable Schema { get; }
 
     /// <summary>
-    /// Is this a new item (not yet saved in the database)?
-    /// </summary>
-    bool IsNew { get; }
-
-    /// <summary>
     /// A name for the template
     /// </summary>
     string Name { get; }

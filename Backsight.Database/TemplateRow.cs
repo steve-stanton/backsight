@@ -8,7 +8,7 @@ namespace Backsight.Database;
 /// refers to content found is an associated attribute table.
 /// </summary>
 [Map("Templates")]
-internal partial class TemplateRow : Row, ITemplate
+internal partial class TemplateRow
 {
     [Primary] public int TemplateId { get; set; }
     public string Name { get; set; } = "";
@@ -16,12 +16,25 @@ internal partial class TemplateRow : Row, ITemplate
     public int SchemaId { get; set; }
 }
 
-// Additional properties to satisfy the readonly interface.
-internal partial class TemplateRow
+// Additional properties to satisfy interfaces.
+internal partial class TemplateRow : Row, ITemplate, ISetTemplate
 {
     public override string ToString() => Name;
-    public int Id => TemplateId;
-    public ITable Schema => Repository.FindRequired<ITable>(SchemaId);
-    public bool IsNew => false; // is this really needed?
-    public string Format => TemplateFormat;
+    public int Id
+    {
+        get => TemplateId;
+        set => TemplateId = value;
+    }
+
+    public ITable Schema
+    {
+        get => Repository.FindRequired<ITable>(SchemaId);
+        set => SchemaId = value.Id;
+    }
+
+    public string Format
+    {
+        get => TemplateFormat;
+        set => TemplateFormat = value;
+    }
 }

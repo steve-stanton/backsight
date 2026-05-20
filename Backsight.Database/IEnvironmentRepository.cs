@@ -6,6 +6,13 @@ public interface IEnvironmentRepository
 {
     string Name { get; }
     
+    /// <summary>
+    /// Gets details for the columns in a table. 
+    /// </summary>
+    /// <param name="tableName">The name of the database table.</param>
+    /// <returns>Metadata for each column in the specified table.</returns>
+    IEnumerable<ColumnInfo> QueryTableColumns(string tableName);
+    
     IEnumerable<IDomainTable> DomainTables { get; }
     IEnumerable<IEntity> EntityTypes { get; }
     IEnumerable<IFont> Fonts { get; }

@@ -5,6 +5,11 @@ namespace Backsight.Database;
 public class EmptyRepository : IEnvironmentRepository
 {
     public string Name => "";
+    public IEnumerable<ColumnInfo> QueryTableColumns(string tableName)
+    {
+        return Enumerable.Empty<ColumnInfo>();
+    }
+
     public IEnumerable<IDomainTable> DomainTables => Enumerable.Empty<IDomainTable>();
     public IEnumerable<IEntity> EntityTypes => Enumerable.Empty<IEntity>();
     public IEnumerable<IFont> Fonts => Enumerable.Empty<IFont>();

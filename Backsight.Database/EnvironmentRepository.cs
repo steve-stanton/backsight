@@ -385,7 +385,8 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         }
     }
 
-    private IEnumerable<ColumnInfo> QueryTableColumns(string tableName)
+    /// <inheritdoc cref="IEnvironmentRepository.QueryTableColumns"/>
+    public IEnumerable<ColumnInfo> QueryTableColumns(string tableName)
     {
         using (var connection = new SqliteConnection(ConnectionString))
         {

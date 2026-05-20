@@ -13,9 +13,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System.Diagnostics;
 using System.Windows.Forms;
-using Smo = Microsoft.SqlServer.Management.Smo;
-using Backsight.SqlServer;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
@@ -24,38 +24,19 @@ namespace Backsight.Environment.Editor;
 /// </summary>
 public partial class TemplateForm : Form
 {
-    readonly IEditTemplate m_Edit;
+    readonly ITemplate m_Item;
 
     /// <summary>
-    /// Access to the database
+    /// The table (if any) that refers to the template (may be null while creating a new template).
     /// </summary>
-    readonly TableFactory m_TableFactory;
-
-    /// <summary>
-    /// The table (if any) that refers to the template
-    /// </summary>
-    ITable m_Table;
-
-    internal TemplateForm()
-        : this(null)
-    {
-    }
-
-
-    internal TemplateForm(IEditTemplate edit)
+    ITable? m_Table;
+    
+    internal TemplateForm(ITemplate? item)
     {
         InitializeComponent();
 
-        m_Edit = edit;
-        if (m_Edit == null)
-        {
-            IEnvironmentFactory f = EnvironmentContainer.Factory;
-            m_Edit = f.CreateTemplate();
-        }
-
-        m_TableFactory = new TableFactory();
+        m_Item = item ?? EnvironmentRepository.Current.CreateNewItem<ITemplate>();
         m_Table = null;
-        m_Edit.BeginEdit();
     }
 
     private void TemplateForm_Shown(object sender, EventArgs e)
@@ -63,30 +44,15 @@ public partial class TemplateForm : Form
         // Load the schema combo (without the <none> item). Note that
         // this will end up calling tableComboBox_SelectedValueChanged,
         // which will set m_Table to be the first table in the array.
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        ITable[] tables = ec.Tables;
+        ITable[] tables = EnvironmentRepository.Current.Tables.OrderBy(x => x.TableName).ToArray();
         tableComboBox.DataSource = tables;
 
-        // Attempt to locate a table that refers to the template (while the
-        // database structure makes it possible to relate a template to
-        // more than one table, the UI works under the assumption that a
-        // template will apply to no more than one table - if this proves
-        // ok in the longer run, the database structure should be revised
-        // to match).
-
-        m_Table = m_Edit.Schema;
-        if (m_Table == null)
+        // The associated table will initially be undefined when creating a new template
+        if (m_Item.Id == 0)
         {
+            tableComboBox.SelectedItem = null;
             fieldsListBox.Enabled = false;
             formatTextBox.Enabled = false;
-        }
-
-        // Return if we're creating a new template
-        if (m_Edit.IsNew)
-        {
-            if (tables.Length>0)
-                tableComboBox.SelectedItem = tables[0];
-
             nameTextBox.Focus();
             return;
         }
@@ -95,22 +61,16 @@ public partial class TemplateForm : Form
         this.Text = "Update Text Template";
 
         // Display the name of the item.
-        nameTextBox.Text = m_Edit.Name;
+        nameTextBox.Text = m_Item.Name;
 
-        // If the schema is defined (it should be), select it. Then
-        // load the list of fields, and select those that the template
-        // already uses.
-        if (m_Table != null)
-        {
-            //MessageBox.Show(m_Table.TableName);
-            tableComboBox.SelectedItem = m_Table;
-            ListFields();
-        }
-        else
-            MessageBox.Show("Template does not have an associated table");
+        // Select the associated table. Then load the list of fields, and select
+        // those that the template already uses.
+        tableComboBox.SelectedItem = m_Item.Schema;
+        Debug.Assert(m_Table == m_Item.Schema);
+        ListFields();
 
         // Display the current format.
-        formatTextBox.Text = m_Edit.Format;
+        formatTextBox.Text = m_Item.Format;
 
         // Set focus on the OK button.
         okButton.Focus();
@@ -119,27 +79,25 @@ public partial class TemplateForm : Form
     void ListFields()
     {
         // The list should be enabled.
-        fieldsListBox.Enabled = (m_Table != null);
+        fieldsListBox.Enabled = m_Table is not null;
         fieldsListBox.DataSource = null;
 
-        if (m_Table != null)
+        if (m_Table is not null)
         {
-            Smo.Table t = m_TableFactory.FindTableByName(m_Table.TableName);
+            var columns = EnvironmentRepository.Current
+                .QueryTableColumns(m_Table.TableName)
+                .Select(x => x.Name)
+                .ToArray();
 
-            if (t != null)
-            {
-                // You can only poke the columns into the ListBox via a BindingSource,
-                // don't know why, don't care
-                BindingSource bs = new BindingSource();
-                bs.DataSource = t.Columns;
-                fieldsListBox.DataSource = bs;
-            }
+            // You can only poke the columns into the ListBox via a BindingSource, don't know why, don't care
+            BindingSource bs = new BindingSource();
+            bs.DataSource = columns;
+            fieldsListBox.DataSource = bs;
         }
     }
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
-        m_Edit.CancelEdit();
         DialogResult = DialogResult.Cancel;
         Close();
     }
@@ -156,28 +114,32 @@ public partial class TemplateForm : Form
         }
 
         // Ensure the schema is defined.
-        if (m_Table == null)
+        if (m_Table is null)
         {
             MessageBox.Show("The template must be related to a table.");
             tableComboBox.Focus();
             return;
         }
 
-        // Ensure thew format is defined
+        // Ensure the format is defined
         string fmt = formatTextBox.Text.TrimEnd();
-        if (fmt.Length==0)
+        if (fmt.Length == 0)
         {
             MessageBox.Show("The text formatting instructions have not been specified");
             formatTextBox.Focus();
             return;
         }
 
-        m_Edit.Name = name;
-        m_Edit.Format = fmt;
-        m_Edit.Schema = m_Table;
-        m_Edit.FinishEdit();
+        var repo = EnvironmentRepository.Current;
+        var set = repo.GetSetter<ITemplate, ISetTemplate>(m_Item);
+        
+        set.Name = name;
+        set.Format = fmt;
+        set.Schema = m_Table;
 
-        this.DialogResult = DialogResult.OK;
+        repo.SaveChanges(m_Item, set);
+
+        DialogResult = DialogResult.OK;
         Close();
     }
 
@@ -194,18 +156,18 @@ public partial class TemplateForm : Form
     void OnSelect()
     {
         // Get the ID of the selected field.
-        Smo.Column col = (fieldsListBox.SelectedItem as Smo.Column);
-        if (col==null)
+        var col = fieldsListBox.SelectedItem?.ToString();
+        if (col is null)
             return;
 
         // Append the column name to the format
-        formatTextBox.Text += String.Format("[{0}]", col.Name);
+        formatTextBox.Text += $"[{col}]";
     }
 
     private void tableComboBox_SelectedValueChanged(object sender, EventArgs e)
     {
         // Get the selected schema.
-        m_Table = (ITable)tableComboBox.SelectedItem;
+        m_Table = (ITable?)tableComboBox.SelectedItem;
 
         // And list the fields
         ListFields();
