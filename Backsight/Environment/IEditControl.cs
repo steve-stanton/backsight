@@ -22,23 +22,6 @@ namespace Backsight.Environment;
 public interface IEditControl
 {
     /// <summary>
-    /// Begins a series of edits to an item.
-    /// </summary>
-    void BeginEdit();
-
-    /// <summary>
-    /// Undoes changes since edits were last committed.
-    /// </summary>
-    void CancelEdit();
-
-    /// <summary>
-    /// Commits an edit. If the item is brand new, this will add the item into an
-    /// instance of <c>IEnvironmentContainer</c>. If the item was previously part
-    /// of a container, constraint checking will be enabled.
-    /// </summary>
-    void FinishEdit();
-
-    /// <summary>
     /// Marks something for deletion
     /// </summary>
     void Delete();
