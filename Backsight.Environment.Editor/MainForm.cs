@@ -25,32 +25,9 @@ namespace Backsight.Environment.Editor;
 /// </summary>
 public partial class MainForm : Form
 {
-    private const string NO_NAME = "(Untitled)";
-
-    /// <summary>
-    /// The container that holds the environment settings.
-    /// </summary>
-    EnvironmentDatabase m_Data;
-
     public MainForm()
     {
         InitializeComponent();
-    }
-
-    void OnIdle(object sender, EventArgs args)
-    {
-        string name = EnvironmentRepository.Current.Name;
-
-        if (String.IsNullOrEmpty(name))
-        {
-            this.Text = NO_NAME;
-            fileSaveMenuItem.Enabled = false;
-        }
-        else
-        {
-            this.Text = name;
-            fileSaveMenuItem.Enabled = true; //m_Data.IsModified;
-        }
     }
 
     private void MainForm_Shown(object sender, EventArgs e)
@@ -59,56 +36,9 @@ public partial class MainForm : Form
         var repo = new EnvironmentRepository(@"Data Source=C:\ProgramData\Backsight\Manitoba.db;Mode=ReadWrite");
         repo.Load();
 
-        Application.Idle += OnIdle;
+        Text = repo.Name;
         tabControl.SelectedTab = entityTypesPage;
         RefreshList();
-    }
-
-    bool CheckSave()
-    {
-        if (m_Data==null)
-            return true;
-
-        if (m_Data.IsEmpty)
-            return true;
-
-        if (!m_Data.IsModified)
-            return true;
-
-        string name = m_Data.Name;
-        if (String.IsNullOrEmpty(name))
-            name = NO_NAME;
-
-        string msg = String.Format("Save changes to {0}?", name);
-        DialogResult res = MessageBox.Show(msg, "Unsaved Changes", MessageBoxButtons.YesNoCancel);
-        if (res==DialogResult.Cancel)
-            return false;
-
-        if (res==DialogResult.Yes && !SaveData())
-            return false;
-
-        return true;
-    }
-
-    private void fileSaveMenuItem_Click(object sender, EventArgs e)
-    {
-        SaveData();
-    }
-
-    bool SaveData()
-    {
-        try
-        {
-            m_Data.Write();
-            return true;
-        }
-
-        catch (Exception e)
-        {
-            MessageBox.Show(e.Message);
-        }
-
-        return false;
     }
 
     private void fileExitMenuItem_Click(object sender, EventArgs e)
@@ -116,43 +46,24 @@ public partial class MainForm : Form
         Close();
     }
 
-    private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-    {
-        if (!CheckSave())
-        {
-            e.Cancel = true;
-            return;
-        }
-
-        Application.Idle -= OnIdle;
-    }
-
     private void newButton_Click(object sender, EventArgs e)
     {
-        IDisplayControl display = GetCurrentDisplay();
-        if (display != null)
-            display.NewItem();
+        GetCurrentDisplay()?.NewItem();
     }
 
     private void updateButton_Click(object sender, EventArgs e)
     {
-        IDisplayControl display = GetCurrentDisplay();
-        if (display != null)
-            display.UpdateSelectedItem();
+        GetCurrentDisplay()?.UpdateSelectedItem();
     }
 
     private void deleteButton_Click(object sender, EventArgs e)
     {
-        IDisplayControl display = GetCurrentDisplay();
-        if (display != null)
-            display.DeleteSelectedItem();
+        GetCurrentDisplay()?.DeleteSelectedItem();
     }
 
     private void RefreshList()
     {
-        IDisplayControl display = GetCurrentDisplay();
-        if (display != null)
-            display.RefreshList();
+        GetCurrentDisplay()?.RefreshList();
     }
 
     /// <summary>
@@ -163,8 +74,8 @@ public partial class MainForm : Form
     /// <param name="e"></param>
     private void tabControl_Selected(object sender, TabControlEventArgs e)
     {
-        IDisplayControl display = (IDisplayControl)e.TabPage.Tag;
-        if (display == null)
+        var display = (IDisplayControl?)e.TabPage.Tag;
+        if (display is null)
         {
             if (e.TabPage == domainsPage)
                 AttachListData<DomainListData>(domainsPage);
@@ -187,10 +98,10 @@ public partial class MainForm : Form
             else
                 throw new Exception("No display for tab page");
 
-            display = (IDisplayControl)e.TabPage.Tag;
+            display = (IDisplayControl?)e.TabPage.Tag;
         }
 
-        Debug.Assert(display != null);
+        Debug.Assert(display is not null);
 
         // Ensure the display is up to date. This is meant to cover the
         // fact that items on one page may have been removed via changes
@@ -234,7 +145,7 @@ public partial class MainForm : Form
     void AttachListData<T>(TabPage page) where T : ISimpleListData, new()
     {
         T listData = new T();
-        SimpleListControl display = new SimpleListControl(listData);
+        var display = new SimpleListControl(listData);
         AttachDisplay<SimpleListControl>(page, display);
     }
 
@@ -243,12 +154,12 @@ public partial class MainForm : Form
     /// </summary>
     /// <returns>The selected display (null if no tabs are selected, or
     /// a display is not attached to the tab).</returns>
-    IDisplayControl GetCurrentDisplay()
+    IDisplayControl? GetCurrentDisplay()
     {
-        TabPage page = tabControl.SelectedTab;
-        if (page == null)
+        TabPage? page = tabControl.SelectedTab;
+        if (page is null)
             return null;
 
-        return (page.Tag as IDisplayControl);
+        return page.Tag as IDisplayControl;
     }
 }

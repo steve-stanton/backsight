@@ -47,7 +47,6 @@ namespace Backsight.Environment.Editor
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileSaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.fileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -98,25 +97,11 @@ namespace Backsight.Environment.Editor
             // 
             this.fileMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileSaveMenuItem,
             this.toolStripSeparator1,
             this.fileExitMenuItem});
             this.fileMenu.Name = "fileMenu";
             this.fileMenu.Size = new System.Drawing.Size(35, 20);
             this.fileMenu.Text = "&File";
-            // 
-            // fileSaveMenuItem
-            // 
-            this.fileSaveMenuItem.Name = "fileSaveMenuItem";
-            this.fileSaveMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.fileSaveMenuItem.Size = new System.Drawing.Size(136, 22);
-            this.fileSaveMenuItem.Text = "&Save";
-            this.fileSaveMenuItem.Click += new System.EventHandler(this.fileSaveMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
             // 
             // fileExitMenuItem
             // 
@@ -382,7 +367,6 @@ namespace Backsight.Environment.Editor
             this.helpProvider.SetShowHelp(this, true);
             this.Text = "Environment Editor";
             this.Shown += new System.EventHandler(this.MainForm_Shown);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -403,7 +387,6 @@ namespace Backsight.Environment.Editor
         private System.Windows.Forms.ToolStripMenuItem fileMenu;
         private System.Windows.Forms.ToolStripMenuItem helpMenu;
         private System.Windows.Forms.ToolStripMenuItem helpAboutMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fileSaveMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem fileExitMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
