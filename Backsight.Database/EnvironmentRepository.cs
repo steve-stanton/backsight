@@ -100,7 +100,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         
         // Load the last assigned ID
         _lastId = ExecuteScalar<int>("SELECT LastId FROM SysId");
-        Console.WriteLine($"Last ID: {_lastId}");
+        //Console.WriteLine($"Last ID: {_lastId}");
     }
 
     private void LoadIndex<TItem, TRow>()
@@ -221,6 +221,45 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     public IEnumerable<IColumnDomain> FindColumnDomains(ITable table)
     {
         return _columnDomains.Where(x => x.TableId == table.Id);
+    }
+
+    /// <inheritdoc/>
+    public IColumnDomain CreateColumnDomain(ITable parentTable, string columnName, IDomainTable domainTable)
+    {
+        return new ColumnDomainRow
+        {
+            Repository = this,
+            TableId = parentTable.Id,
+            ColumnName = columnName,
+            DomainId = domainTable.Id
+        };
+    }
+    
+    /// <inheritdoc/>
+    /// <exception cref="ArgumentException">Supplied item is not an instance of <see cref="ColumnDomainRow"/>.</exception>
+    public void SaveColumnDomain(IColumnDomain columnDomain)
+    {
+        var row = columnDomain as ColumnDomainRow ?? throw new ArgumentException("Unexpected column domain type");
+        
+        _columnDomains.Add(row);
+        Insert(row);
+    }
+
+    public void DeleteColumnDomain(IColumnDomain columnDomain)
+    {
+        var row = columnDomain as ColumnDomainRow ?? throw new ArgumentException("Unexpected column domain type");
+        var removed = _columnDomains.Remove(row);
+        Debug.Assert(removed);
+        
+        // Don't use base.Delete to remove the row because RepoDb deletes using the TableId alone.
+        // But we've actually got a composite primary key that also involves the column name.
+        ExecuteNonQuery(
+            $"""
+             DELETE FROM ColumnDomains
+             WHERE TableId={row.TableId}
+             AND ColumnName='{row.ColumnName}'
+             AND DomainId={row.DomainId}
+             """);
     }
 
     private Dictionary<int,List<ITable>> LoadEntityTypeSchemas()
@@ -385,6 +424,24 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         }
     }
 
+    /// <inheritdoc cref="IEnvironmentRepository.QueryTableNames"/>
+    public IEnumerable<string> QueryTableNames()
+    {
+        using (var connection = new SqliteConnection(ConnectionString))
+        {
+            connection.Open();
+
+            foreach (var row in connection.ExecuteQuery("PRAGMA table_list"))
+            {
+                string type = row.type.ToString();
+                string name = row.name.ToString();
+                
+                if (type == "table" && !name.StartsWith("sqlite_"))
+                    yield return row.name.ToString();
+            }
+        }
+    }
+
     /// <inheritdoc cref="IEnvironmentRepository.QueryTableColumns"/>
     public IEnumerable<ColumnInfo> QueryTableColumns(string tableName)
     {
@@ -494,14 +551,28 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         return _lastId;
     }
 
+    /// <inheritdoc cref="IEnvironmentRepository.GetSetter"/>
+    /// <remarks>
+    /// This implementation assumes that the concrete class for environment items can also be used as a setter,
+    /// so it just casts the supplied item to the setter. Changes made using the returned setter therefore
+    /// mutate the supplied item in-situ. This is acceptable so long as the changes will be promptly saved
+    /// back to the database via a call to <see cref="SaveChanges"/>.
+    /// </remarks>
     public TSetter GetSetter<TItem, TSetter>(TItem item)
         where TItem : class, IEnvironmentItem
         where TSetter : class, ISetter
     {
-        // Perform in-situ edits to the item
         return item as TSetter ?? throw new NotSupportedException($"{typeof(TItem).Name} does not implement {typeof(TSetter).Name}");
     }
 
+    /// <inheritdoc cref="IEnvironmentRepository.SaveChanges"/>
+    /// <remarks>
+    /// This implementation optimistically assumes that the save will always work. If it doesn't, the
+    /// in-memory instance of the item will be out of sync with the database. This method could perhaps
+    /// avoid this by refreshing the instance from the database following a save that has failed. However,
+    /// it would probably be better to modify <see cref="GetSetter"/> so that it returns some object
+    /// apart from the environment item itself.
+    /// </remarks>
     public void SaveChanges<TItem, TSetter>(TItem item, TSetter setter)
         where TItem : class, IEnvironmentItem
         where TSetter : class, ISetter
@@ -527,11 +598,11 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
 
     public TItem CreateNewItem<TItem>() where TItem : class, IEnvironmentItem
     {
-        var rowType = _itemTypes[typeof(TItem).Name];
-        if (rowType is null)
+        var itemType = _itemTypes[typeof(TItem).Name];
+        if (itemType is null)
             throw new NotImplementedException(typeof(TItem).Name);
         
-        var result = Activator.CreateInstance(rowType) ?? throw new InvalidOperationException();
+        var result = Activator.CreateInstance(itemType) ?? throw new InvalidOperationException();
  
         // Confirm that the _itemTypes dictionary is actually correct
         if (result is not TItem)

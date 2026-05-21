@@ -13,9 +13,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System.Diagnostics;
 using System.Windows.Forms;
-using Smo=Microsoft.SqlServer.Management.Smo;
-using Backsight.SqlServer;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
@@ -28,41 +28,39 @@ public partial class TableForm : Form
     /// <summary>
     /// The table association the user is editing
     /// </summary>
-    readonly IEditTable m_Edit;
+    readonly ITable m_Item;
 
     /// <summary>
     /// The tables already associated with Backsight
     /// </summary>
     ITable[] m_Tables;
 
-    internal TableForm() : this(null)
-    {
-    }
-
-    internal TableForm(IEditTable edit)
+    /// <summary>
+    /// The name of the table that the user has selected (relevant only when adding
+    /// a new table association).
+    /// </summary>
+    private string m_TableName;
+    
+    internal TableForm(ITable? item)
     {
         InitializeComponent();
 
-        m_Edit = edit;
-        if (m_Edit == null)
-        {
-            IEnvironmentFactory f = EnvironmentContainer.Factory;
-            m_Edit = f.CreateTableAssociation();
-        }
-
-        m_Edit.BeginEdit();
+        m_Item = item ?? EnvironmentRepository.Current.CreateNewItem<ITable>();
+        m_TableName = m_Item.TableName;
     }
 
     private void TableForm_Load(object sender, EventArgs e)
     {
-        // Load tables that have already been associated with Backsight
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        m_Tables = ec.Tables;
+        // Load attribute tables that have already been associated with Backsight
+        var repo = EnvironmentRepository.Current;
+        m_Tables = repo.Tables.OrderBy(x => x.TableName).ToArray();
 
         // If we're adding a new table, list the database tables. Otherwise
         // skip to the page that lists column names
-        if (String.IsNullOrEmpty(m_Edit.TableName))
+        if (String.IsNullOrEmpty(m_Item.TableName))
+        {
             LoadTableList();
+        }
         else
         {
             wizard.Pages.Remove(tablesPage);
@@ -70,58 +68,74 @@ public partial class TableForm : Form
         }
 
         // Display available domains
-        domainsListBox.DataSource = ec.DomainTables;
+        domainsListBox.DataSource = repo.DomainTables.OrderBy(x => x.TableName).ToArray();
     }
 
     void LoadTableList()
     {
-        IEnvironmentContainer ec = EnvironmentContainer.Current;
-        string[] tableNames = new TableFactory().GetUserTables();
-        List<string> exclude = new List<string>();
+        var repo = EnvironmentRepository.Current;
+        string[] tableNames = GetUserTables();
+        var exclude = new List<string>();
 
         if (excludeDomainTablesCheckBox.Checked)
-        {
-            IDomainTable[] domainTables = ec.DomainTables;
-            foreach (IDomainTable t in domainTables)
-                exclude.Add(t.TableName);
-        }
+            exclude.AddRange(repo.DomainTables.Select(x => x.TableName));
 
         if (excludeAlreadyAddedCheckBox.Checked)
-        {
-            ITable[] tables = ec.Tables;
-            foreach (ITable t in tables)
-                exclude.Add(t.TableName);
-        }
+            exclude.AddRange(repo.Tables.Select(x => x.TableName));
 
         if (exclude.Count > 0)
-        {
-            tableNames = Array.FindAll<string>(tableNames, delegate(string s)
-                { return !exclude.Contains(s); });
-        }
+            tableNames = tableNames.Except(exclude).ToArray();
 
         tableList.Items.Clear();
         tableList.Items.AddRange(tableNames);
     }
 
+    private string[] GetUserTables()
+    {
+        var systemTables = new HashSet<string>()
+        {
+            "ColumnDomains",
+            "DomainTables",
+            "EntityTypeSchemas",
+            "EntityTypes",
+            "Domains",
+            "Fonts",
+            "IdGroups",
+            "Layers",
+            "Properties",
+            "Schemas",
+            "SchemaTemplates",
+            "SysId",
+            "Templates",
+            "Themes",
+            "Zones"
+        };
+        
+        return EnvironmentRepository.Current
+            .QueryTableNames()
+            .Except(systemTables)
+            .OrderBy(x => x)
+            .ToArray();
+    }
+    
     private void tablesPage_CloseFromNext(object sender, Gui.Wizard.PageEventArgs e)
     {
-        object o = tableList.SelectedItem;
-        if (o == null)
+        string? s = tableList.SelectedItem?.ToString();
+        if (s is null)
         {
             MessageBox.Show("You must first select a table");
             e.Page = tablesPage;
         }
         else
         {
-            string s = o.ToString();
-            if (Array.Exists<ITable>(m_Tables, delegate(ITable t) { return t.TableName==s; }))
+            if (m_Tables.Any(x => x.TableName == s))
             {
                 MessageBox.Show("The selected table has already been recorded as a data source for Backsight");
                 e.Page = tablesPage;
             }
             else
             {
-                m_Edit.TableName = s;
+                m_TableName = s;
             }
         }
     }
@@ -138,8 +152,14 @@ public partial class TableForm : Form
 
     private void columnsPage_CloseFromNext(object sender, Gui.Wizard.PageEventArgs e)
     {
+        if (String.IsNullOrEmpty(m_TableName))
+        {
+            MessageBox.Show("The associated attribute table has not been defined");
+            return;
+        }
+        
         // Ensure ID column has been defined
-        string idColumnName = (idColumnComboBox.SelectedItem == null ? String.Empty : idColumnComboBox.SelectedItem.ToString());
+        string idColumnName = idColumnComboBox.SelectedItem?.ToString() ?? String.Empty;
         if (idColumnName.Length == 0)
         {
             MessageBox.Show("You must specify the name of the column that holds the feature ID");
@@ -147,43 +167,55 @@ public partial class TableForm : Form
             e.Page = columnsPage;
             return;
         }
+        
+        // Save the table association if we're dealing with a new item (if we're doing an update,
+        // the table selection page should have been skipped because these fields should never change)
+        var repo = EnvironmentRepository.Current;
 
-        m_Edit.IdColumnName = idColumnName;
-
-        // Ensure column domains are up to date.
-        // For the time being, we do NOT establish or remove foreign keys in the
-        // database - if that is considered desirable, bear in mind that the changes
-        // being saved here may ultimately be discarded by the user (on exit from the
-        // application).
-
-        List<IColumnDomain> cds = new List<IColumnDomain>();
-        IEnvironmentFactory factory = EnvironmentContainer.Factory;
+        if (m_Item.Id == 0)
+        {
+            var set = repo.GetSetter<ITable, ISetTable>(m_Item);
+            set.TableName = m_TableName;
+            set.IdColumnName = idColumnName;
+            repo.SaveChanges(m_Item, set);
+            Debug.Assert(m_Item.Id != 0);
+        }
+        
+        // Figure out whether any new column domains need to be inserted
+        var oldColumnDomains = new List<IColumnDomain>(m_Item.ColumnDomains);
+        var newColumnDomains = new List<IColumnDomain>();
 
         foreach (DataGridViewRow row in columnsGrid.Rows)
         {
-            IDomainTable dt = (row.Cells["dgcDomain"].Value as IDomainTable);
+            string? columnName = row.Cells["dgcColumnName"].FormattedValue?.ToString();
 
-            if (dt != null)
+            if (row.Cells["dgcDomain"].Value is IDomainTable dt)
             {
-                IEditColumnDomain cd = factory.CreateColumnDomain();
-                cd.ParentTable = m_Edit;
-                cd.ColumnName = row.Cells["dgcColumnName"].FormattedValue.ToString();
-                cd.Domain = dt;
+                Debug.Assert(columnName is not null);
 
-                cds.Add(cd);
+                bool wasExisting = oldColumnDomains.RemoveAll(x => x.ColumnName == columnName && x.Domain == dt) != 0; 
+
+                if (!wasExisting)
+                    newColumnDomains.Add(repo.CreateColumnDomain(m_Item, columnName, dt));
             }
         }
+        
+        // Remove any column domains that haven't been accounted for
+        foreach (IColumnDomain cd in oldColumnDomains)
+            repo.DeleteColumnDomain(cd);
+        
+        // And save any new ones (we need to do this after removing the old ones, because any change
+        // to an associated domain would otherwise lead to a unique constraint violation)
+        foreach (IColumnDomain cd in newColumnDomains)
+            repo.SaveColumnDomain(cd);
 
-        m_Edit.ColumnDomains = cds.ToArray();
-        m_Edit.FinishEdit();
-        this.DialogResult = DialogResult.OK;
+        DialogResult = DialogResult.OK;
         Close();
     }
 
     private void wizard_CloseFromCancel(object sender, System.ComponentModel.CancelEventArgs e)
     {
-        m_Edit.CancelEdit();
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
     }
 
     private void columnsPage_ShowFromNext(object sender, EventArgs e)
@@ -191,44 +223,30 @@ public partial class TableForm : Form
         columnsGrid.Rows.Clear();
         idColumnComboBox.Items.Clear();
 
-        TableFactory tf = new TableFactory();
-        string tableName = m_Edit.TableName;
-        Smo.Table t = tf.FindTableByName(tableName);
-
-        if (t == null)
-            return;
+        var columns = EnvironmentRepository.Current.QueryTableColumns(m_TableName).ToArray();
 
         // Get any domains already associated with the table
-        IColumnDomain[] curDomains = m_Edit.ColumnDomains;
+        IColumnDomain[] curDomains = m_Item.ColumnDomains;
 
-        columnsGrid.RowCount = t.Columns.Count;
+        columnsGrid.RowCount = columns.Length;
 
         for (int i=0; i<columnsGrid.RowCount; i++)
         {
-            Smo.Column c = t.Columns[i];
+            ColumnInfo c = columns[i];
             idColumnComboBox.Items.Add(c.Name);
 
             DataGridViewRow row = columnsGrid.Rows[i];
             row.Cells["dgcColumnName"].Value = c.Name;
 
-            Smo.DataType dt = c.DataType;
-            string dataType = dt.SqlDataType.ToString().ToLower();
-
-            if (dt.SqlDataType == Smo.SqlDataType.Char ||
-                dt.SqlDataType == Smo.SqlDataType.NChar ||
-                dt.SqlDataType == Smo.SqlDataType.VarChar ||
-                dt.SqlDataType == Smo.SqlDataType.NVarChar)
-                dataType += String.Format("({0})", dt.MaximumLength);
-
+            string dataType = c.DataType.Name;
             if (!c.Nullable)
                 dataType += " not null";
 
             row.Cells["dgcDataType"].Value = dataType;
 
             // Display any domain previously associated with the column
-            IColumnDomain cd = Array.Find<IColumnDomain>(curDomains,
-                delegate(IColumnDomain tcd) { return tcd.ColumnName == c.Name; });
-            if (cd != null)
+            IColumnDomain? cd = curDomains.FirstOrDefault(x => x.ColumnName == c.Name);
+            if (cd is not null)
                 row.Cells["dgcDomain"].Value = cd.Domain;
 
             row.Tag = c;
@@ -238,35 +256,51 @@ public partial class TableForm : Form
         columnsGrid.CurrentCell = null;
 
         // If we have a simple primary key, assume it's the feature ID column
-        if (String.IsNullOrEmpty(m_Edit.IdColumnName))
+        if (String.IsNullOrEmpty(m_Item.IdColumnName))
         {
-            Smo.Column pk = TableFactory.GetSimplePrimaryKeyColumn(t);
-            if (pk != null)
+            ColumnInfo? pk = GetSimplePrimaryKeyColumn(columns);
+            if (pk is not null)
                 idColumnComboBox.SelectedItem = pk.Name;
         }
         else
         {
-            idColumnComboBox.SelectedItem = m_Edit.IdColumnName;
+            idColumnComboBox.SelectedItem = m_Item.IdColumnName;
         }
+    }
+
+    /// <summary>
+    /// Attempts to locate a simple primary key for a table (a key where the
+    /// index consists of just one column)
+    /// </summary>
+    /// <param name="columns">The columns to consider</param>
+    /// <returns>The column that defines the primary key (null if the table does
+    /// not have a primary key, or it consists of more than one column)</returns>
+    private static ColumnInfo? GetSimplePrimaryKeyColumn(ColumnInfo[] columns)
+    {
+        var pk = columns.Where(x => x.PrimaryKey).ToArray();
+        if (pk.Length != 1)
+            return null;
+
+        return pk[0];
     }
 
     private void domainsListBox_DoubleClick(object sender, EventArgs e)
     {
-        IDomainTable dt = GetSelectedDomainTable();
-        DataGridViewRow c = GetSelectedColumn();
-        if (dt !=null && c != null)
+        IDomainTable? dt = GetSelectedDomainTable();
+        DataGridViewRow? c = GetSelectedColumn();
+        if (dt is not null && c is not null)
             c.Cells["dgcDomain"].Value = dt;
     }
 
-    IDomainTable GetSelectedDomainTable()
+    IDomainTable? GetSelectedDomainTable()
     {
-        return (domainsListBox.SelectedItem as IDomainTable);
+        return domainsListBox.SelectedItem as IDomainTable;
     }
 
-    DataGridViewRow GetSelectedColumn()
+    DataGridViewRow? GetSelectedColumn()
     {
         DataGridViewSelectedRowCollection sel = columnsGrid.SelectedRows;
-        if (sel == null || sel.Count == 0)
+        if (sel is null || sel.Count == 0)
             return null;
         else
             return sel[0];
@@ -274,12 +308,12 @@ public partial class TableForm : Form
 
     private void setDomainLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
-        IDomainTable dt = GetSelectedDomainTable();
-        DataGridViewRow c = GetSelectedColumn();
+        IDomainTable? dt = GetSelectedDomainTable();
+        DataGridViewRow? c = GetSelectedColumn();
 
-        if (dt == null)
+        if (dt is null)
             MessageBox.Show("You must select the domain table you want to assign");
-        else if (c == null)
+        else if (c is null)
             MessageBox.Show("You must select the database column the domain should apply to");
         else
             c.Cells["dgcDomain"].Value = dt;
@@ -287,8 +321,8 @@ public partial class TableForm : Form
 
     private void clearDomainLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
-        DataGridViewRow c = GetSelectedColumn();
-        if (c == null)
+        DataGridViewRow? c = GetSelectedColumn();
+        if (c is null)
             MessageBox.Show("You must first select a database column");
         else
             c.Cells["dgcDomain"].Value = null;

@@ -14,12 +14,17 @@ internal partial class SchemaRow
     public string IdColumnName { get; set; } = "";
 }
 
-// Additional properties to satisfy the readonly interface.
-internal partial class SchemaRow : Row, ITable
+// Additional properties to satisfy the interfaces.
+internal partial class SchemaRow : Row, ITable, ISetTable
 {
     public override string ToString() => TableName;
+
+    public int Id
+    {
+        get => SchemaId;
+        set => SchemaId = value;
+    }
     
-    public int Id => SchemaId;
     public ITemplate[] Templates => Repository
         .FindMany<ITemplate>(x => x.Schema.Id == SchemaId)
         .ToArray();

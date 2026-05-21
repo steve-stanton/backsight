@@ -39,6 +39,6 @@ class TableListData : ISimpleListData
     /// <returns>The dialog to display</returns>
     public Form GetEntryDialog(IEnvironmentItem item)
     {
-        return new TableForm(item as IEditTable);
+        return new TableForm(item as ITable);
     }
 }

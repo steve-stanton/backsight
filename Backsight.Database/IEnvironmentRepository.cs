@@ -5,6 +5,8 @@ namespace Backsight.Database;
 public interface IEnvironmentRepository
 {
     string Name { get; }
+
+    IEnumerable<string> QueryTableNames();
     
     /// <summary>
     /// Gets details for the columns in a table. 
@@ -45,6 +47,28 @@ public interface IEnvironmentRepository
     /// <param name="table">The attribute table associated with an entity.</param>
     /// <returns>Details for any columns in the table that have an associated <see cref="IDomainTable"/>.</returns>
     IEnumerable<IColumnDomain> FindColumnDomains(ITable table);
+
+    /// <summary>
+    /// Creates a new association between a column in an attribute table, and a table that
+    /// holds the domain values for that column (but does not save it to the database). 
+    /// </summary>
+    /// <param name="parentTable">The attribute table.</param>
+    /// <param name="columnName">The name of a column within the attribute table.</param>
+    /// <param name="domainTable">The table that holds the values permitted in that column..</param>
+    /// <returns>The new association.</returns>
+    IColumnDomain CreateColumnDomain(ITable parentTable, string columnName, IDomainTable domainTable);
+    
+    /// <summary>
+    /// Saves a new item created by <see cref="CreateColumnDomain"/>.
+    /// </summary>
+    /// <param name="columnDomain">The item to be saved.</param>
+    void SaveColumnDomain(IColumnDomain columnDomain);
+    
+    /// <summary>
+    /// Removes the association between a column in an attribute table, and a domain table. 
+    /// </summary>
+    /// <param name="columnDomain">The association to be removed.</param>
+    void DeleteColumnDomain(IColumnDomain columnDomain);
     
     /// <summary>
     /// Creates a new runtime-shaped record for the specified attribute table.

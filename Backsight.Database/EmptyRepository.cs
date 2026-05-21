@@ -5,6 +5,11 @@ namespace Backsight.Database;
 public class EmptyRepository : IEnvironmentRepository
 {
     public string Name => "";
+    public IEnumerable<string> QueryTableNames()
+    {
+        return Enumerable.Empty<string>();
+    }
+
     public IEnumerable<ColumnInfo> QueryTableColumns(string tableName)
     {
         return Enumerable.Empty<ColumnInfo>();
@@ -32,6 +37,21 @@ public class EmptyRepository : IEnvironmentRepository
     }
 
     public IEnumerable<IColumnDomain> FindColumnDomains(ITable table) => Enumerable.Empty<IColumnDomain>();
+    public IColumnDomain CreateColumnDomain(ITable parentTable, string columnName, IDomainTable domainTable)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SaveColumnDomain(IColumnDomain columnDomain)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteColumnDomain(IColumnDomain columnDomain)
+    {
+        throw new NotImplementedException();
+    }
+
     public AttributeRecord CreateNewRecord(ITable table)
     {
         throw new NotImplementedException();
