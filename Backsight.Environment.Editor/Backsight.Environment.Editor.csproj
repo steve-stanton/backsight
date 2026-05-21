@@ -147,7 +147,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Backsight.Database\Backsight.Database.csproj" />
-      <ProjectReference Include="..\Backsight.Data\Backsight.Data.csproj" />
       <ProjectReference Include="..\Backsight.Forms\Backsight.Forms.csproj" />
       <ProjectReference Include="..\Backsight\Backsight.csproj" />
       <ProjectReference Include="..\Gui.Wizard\Gui.Wizard.csproj" />

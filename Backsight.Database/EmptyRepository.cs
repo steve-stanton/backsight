@@ -121,57 +121,6 @@ public class EmptyRepository : IEnvironmentRepository
     {
         throw new NotImplementedException();
     }
-
-    public IEditColumnDomain CreateColumnDomain()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditDomainTable CreateDomainTable()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEntity CreateEntity()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IFont CreateFont()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditIdGroup CreateIdGroup()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditProperty CreateProperty()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditTable CreateTableAssociation()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditTemplate CreateTemplate()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditTheme CreateTheme()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEditLayer CreateLayer()
-    {
-        throw new NotImplementedException();
-    }
-    
     public TItem CreateNewItem<TItem>() where TItem : class, IEnvironmentItem
     {
         throw new NotImplementedException();
