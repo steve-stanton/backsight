@@ -312,6 +312,26 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         return _properties.GetValueOrDefault(propertyName);
     }
 
+    public IProperty InsertProperty(string propertyName, string propertyValue)
+    {
+        var result = new PropertyItem(propertyName, propertyValue);
+        Insert(result);
+        _properties[propertyName] = propertyValue;
+        return result;
+    }
+
+    public void UpdateProperty(string propertyName, string propertyValue)
+    {
+        Update(new PropertyItem(propertyName, propertyValue));
+        _properties[propertyName] = propertyValue;
+    }
+
+    public void DeleteProperty(string propertyName)
+    {
+        _properties.Remove(propertyName);
+        ExecuteNonQuery($"DELETE FROM Properties WHERE Name='{propertyName}'");
+    }
+    
     /// <summary>
     /// Locates an entity type based on it's unique ID.
     /// </summary>

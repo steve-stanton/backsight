@@ -1,5 +1,7 @@
 ﻿using Backsight.Environment;
+using RepoDb.Attributes;
 
 namespace Backsight.Database;
 
-public record PropertyItem(string Name, string Value) : IProperty;
+[Map("Properties")]
+public record PropertyItem(string Name, string Value, string Description = "") : IProperty;

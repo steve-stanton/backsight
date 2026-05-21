@@ -129,7 +129,10 @@ public interface IEnvironmentRepository
     T FindRequired<T>(int id) where T : class, IEnvironmentItem;
     IEnumerable<T> FindMany<T>(Predicate<T> predicate) where T : class, IEnvironmentItem;
     string? FindPropertyByName(string propertyName);
-
+    IProperty InsertProperty(string propertyName, string propertyValue);
+    void UpdateProperty(string propertyName, string propertyValue);
+    void DeleteProperty(string propertyName);
+    
     TSetter GetSetter<TItem, TSetter>(TItem item)
         where TItem : class, IEnvironmentItem
         where TSetter : class, ISetter;

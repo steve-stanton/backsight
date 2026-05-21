@@ -40,13 +40,7 @@ public partial class PropertyGridControl : UserControl, IDisplayControl
         {
             if (dial.ShowDialog() == DialogResult.OK)
             {
-                IEnvironmentFactory f = EnvironmentContainer.Factory;
-                IEditProperty newProp = f.CreateProperty();
-                newProp.BeginEdit();
-                newProp.Name = dial.PropertyName;
-                newProp.Value = dial.PropertyValue;
-                newProp.FinishEdit();
-
+                EnvironmentRepository.Current.InsertProperty(dial.PropertyName, dial.PropertyValue);
                 RefreshList();
             }
         }
@@ -72,15 +66,15 @@ public partial class PropertyGridControl : UserControl, IDisplayControl
     /// </summary>
     public void DeleteSelectedItem()
     {
-        DataGridViewRow row = GetSelectedRow();
-        if (row == null)
+        DataGridViewRow? row = GetSelectedRow();
+        if (row is null)
         {
             MessageBox.Show("You must first select the property to delete");
             return;
         }
 
-        IEditProperty p = (IEditProperty)row.Tag;
-        p.Delete();
+        var p = (IProperty)row.Tag;
+        EnvironmentRepository.Current.DeleteProperty(p.Name);
         RefreshList();
     }
 
@@ -119,19 +113,10 @@ public partial class PropertyGridControl : UserControl, IDisplayControl
 
         foreach (string p in props)
         {
-            if (!Array.Exists<IProperty>(data, delegate(IProperty t) { return t.Name == p; }))
+            if (!data.Any(x => x.Name == p))
             {
-                throw new NotImplementedException("Missing property: " + p);
-                /*
-                IEnvironmentFactory f = EnvironmentContainer.Factory;
-                IEditProperty newProp = f.CreateProperty();
-                newProp.BeginEdit();
-                newProp.Name = p;
-                newProp.Value = String.Empty;
-                newProp.FinishEdit();
-
+                EnvironmentRepository.Current.InsertProperty(p, String.Empty);
                 result = true;
-                */
             }
         }
 
@@ -145,8 +130,8 @@ public partial class PropertyGridControl : UserControl, IDisplayControl
     /// <param name="e"></param>
     void propertyGrid_DoubleClick(object sender, EventArgs e)
     {
-        DataGridViewRow sel = GetSelectedRow();
-        if (sel != null)
+        DataGridViewRow? sel = GetSelectedRow();
+        if (sel is not null)
             UpdateProperty(sel);
     }
 
@@ -157,16 +142,13 @@ public partial class PropertyGridControl : UserControl, IDisplayControl
     /// <param name="row">The row associated with the property item to update.</param>
     void UpdateProperty(DataGridViewRow row)
     {
-        IEditProperty p = (IEditProperty)row.Tag;
+        var p = (IProperty)row.Tag;
 
         using (PropertyForm dial = new PropertyForm(p.Name, p.Value))
         {
             if (dial.ShowDialog() == DialogResult.OK)
             {
-                p.BeginEdit();
-                p.Value = dial.PropertyValue;
-                p.FinishEdit();
-
+                EnvironmentRepository.Current.UpdateProperty(p.Name, dial.PropertyValue);
                 RefreshList();
             }
         }
@@ -176,7 +158,7 @@ public partial class PropertyGridControl : UserControl, IDisplayControl
     /// Gets the currently selected row.
     /// </summary>
     /// <returns>The selected row (null if nothing is selected)</returns>
-    DataGridViewRow GetSelectedRow()
+    DataGridViewRow? GetSelectedRow()
     {
         DataGridViewSelectedRowCollection sel = propertyGrid.SelectedRows;
         if (sel.Count == 0)

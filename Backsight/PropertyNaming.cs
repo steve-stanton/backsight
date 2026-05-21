@@ -25,25 +25,16 @@ public static class PropertyNaming
     /// The name of the property that identifies the default style file
     /// </summary>
     /// <remarks>This was historically accessed through the environment variable called CED_STYLE_FILE</remarks>
-    public static string StyleFile
-    {
-        get { return "StyleFile"; }
-    }
+    public static string StyleFile => "StyleFile";
 
     /// <summary>
     /// The name of the property that identifies the entity translation file
     /// </summary>
     /// <remarks>This was historically accessed through the environment variable called CED_ENTITY_FILE</remarks>
-    public static string EntityFile
-    {
-        get { return "EntityFile"; }
-    }
+    public static string EntityFile => "EntityFile";
 
     /// <summary>
     /// The names of properties that should be defined in the database
     /// </summary>
-    public static string[] MandatoryProperties
-    {
-        get { return new string[] { StyleFile, EntityFile }; }
-    }
+    public static string[] MandatoryProperties => [StyleFile, EntityFile];
 }

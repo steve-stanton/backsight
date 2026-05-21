@@ -97,6 +97,21 @@ public class EmptyRepository : IEnvironmentRepository
         return null;
     }
 
+    public IProperty InsertProperty(string propertyName, string propertyValue)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdateProperty(string propertyName, string propertyValue)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteProperty(string propertyName)
+    {
+        throw new NotImplementedException();
+    }
+
     public TSetter GetSetter<TItem, TSetter>(TItem item) where TItem : class, IEnvironmentItem where TSetter : class, ISetter
     {
         throw new NotImplementedException();
