@@ -58,7 +58,7 @@ public record AttributeRecord(ITable Table, ColumnInfo[] Columns, Dictionary<str
             }
             else if (t == typeof(string))
             {
-                var cd = Array.Find(cds, x => 
+                var cd = cds.FirstOrDefault(x =>
                     String.Compare(x.ColumnName, c.Name, StringComparison.OrdinalIgnoreCase) == 0);
                 
                 if (cd is not null)

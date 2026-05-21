@@ -94,8 +94,8 @@ partial class PropertyPage : TabPage
             // If the column is associated with a domain, lookup the expanded value and
             // record as the item's description
 
-            IColumnDomain? cd = Array.Find(cds, t =>
-                String.Compare(t.ColumnName, c.Name, StringComparison.OrdinalIgnoreCase) == 0);
+            IColumnDomain? cd = cds.FirstOrDefault(x =>
+                String.Compare(x.ColumnName, c.Name, StringComparison.OrdinalIgnoreCase) == 0);
 
             if (cd is not null)
             {

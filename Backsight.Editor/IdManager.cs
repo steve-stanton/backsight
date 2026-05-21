@@ -68,20 +68,20 @@ class IdManager
     /// Attempts to find the ID group with a specific ID
     /// </summary>
     /// <param name="groupId">The ID of the group to look for</param>
-    /// <returns>The corresponding ID group (null if not found)</returns>
+    /// <returns>The corresponding ID group.</returns>
     internal IdGroup FindGroupById(int groupId)
     {
-        return Array.Find<IdGroup>(m_IdGroups, g => g.Id == groupId);
+        return m_IdGroups.First(g => g.Id == groupId);
     }
 
     /// <summary>
     /// Attempts to find the ID group that encloses a specific raw ID
     /// </summary>
     /// <param name="rawId">The raw ID of interest</param>
-    /// <returns>The corresponding ID group (null if not found)</returns>
+    /// <returns>The corresponding ID group</returns>
     internal IdGroup FindGroupByRawId(uint rawId)
     {
-        return Array.Find<IdGroup>(m_IdGroups, g => (uint)g.LowestId <= rawId && rawId <= (uint)g.HighestId);
+        return m_IdGroups.First(g => g.LowestId <= rawId && rawId <= g.HighestId);
     }
 
     /// <summary>
@@ -134,11 +134,10 @@ class IdManager
         foreach (IEntity e in EnvironmentRepository.Current.EntityTypes)
         {
             IIdGroup idg = e.IdGroup;
-            if (idg!=null && idg.Id>0)
+            if (idg is not null && idg.Id > 0)
             {
                 int gid = idg.Id;
-                IdGroup entGroup = Array.Find<IdGroup>(groups, g => g.Id==gid);
-                Debug.Assert(entGroup!=null);
+                IdGroup entGroup = groups.First(g => g.Id == gid);
                 result.Add(e.Id, entGroup);
             }
         }

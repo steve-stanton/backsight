@@ -79,17 +79,17 @@ public partial class EntityTypeComboBox : ComboBox
         if (!m_ShowBlankEntityType)
             entities = Array.FindAll(entities, e => e.Name.Length>0);
 
-        this.DataSource = entities;
+        DataSource = entities;
 
         //IEntity ent = EnvironmentContainer.GetDefaultEntity(type, layer);
         IEntity ent = CadastralMapModel.Current.GetDefaultEntity(type);
-        if (ent==null)
+        if (ent is null)
             return null;
 
         // The objects representing the default may be in a different address
         // space, so ensure we return the item from the combo.
-        ent = Array.Find<IEntity>(entities, e => (e.Name == ent.Name));
-        this.SelectedItem = ent;
+        ent = Array.Find(entities, e => e.Name == ent.Name);
+        SelectedItem = ent;
         return ent;
     }
 

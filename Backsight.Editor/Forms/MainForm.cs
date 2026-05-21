@@ -948,7 +948,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
             return;
 
         // Locate the action that initiated the last edit
-        IUserAction? lastAction = Array.Find<IUserAction>(m_Actions.Actions, delegate (IUserAction a)
+        IUserAction? lastAction = Array.Find(m_Actions.Actions, delegate (IUserAction a)
         {
             if (a is EditingAction ea)
                 return ea.EditId == op.EditId;
@@ -1013,7 +1013,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
             return;
 
         // Locate the action that normally performs the selected edit
-        EditingAction? recallAction = (EditingAction?)Array.Find<IUserAction>(m_Actions.Actions, delegate(IUserAction a)
+        EditingAction? recallAction = (EditingAction?)Array.Find(m_Actions.Actions, delegate(IUserAction a)
         {
             if (a is EditingAction ea)
                 return ea.EditId == op.EditId;

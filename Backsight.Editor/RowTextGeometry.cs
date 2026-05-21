@@ -247,7 +247,7 @@ class RowTextGeometry : TextGeometry
     {
         // Attempt to locate the column in question
         IColumnDomain[] cds = table.ColumnDomains;
-        IColumnDomain? cd = Array.Find(cds, t =>
+        IColumnDomain? cd = cds.FirstOrDefault(t =>
             String.Compare(t.ColumnName, columnName, StringComparison.OrdinalIgnoreCase) == 0);
         if (cd is null)
             return shortValue;

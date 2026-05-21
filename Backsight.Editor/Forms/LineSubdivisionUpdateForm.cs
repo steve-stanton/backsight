@@ -136,7 +136,7 @@ partial class LineSubdivisionUpdateForm : Form
         if (selectedLine != null)
         {
             LineFeature[] sections = (m_CurrentFace == m_Face1 ? m_pop.Face.Sections : m_pop.OtherSide.Face.Sections);
-            int lineIndex = Array.FindIndex<LineFeature>(sections, t => t == selectedLine);
+            int lineIndex = Array.FindIndex(sections, t => t == selectedLine);
 
             if (lineIndex >= 0)
                 m_SelectedLine = m_CurrentFace.Sections[lineIndex];
@@ -255,7 +255,7 @@ partial class LineSubdivisionUpdateForm : Form
         // If a line is currently selected, select the corresponding distance in the listbox
         if (m_SelectedLine != null)
         {
-            int lineIndex = Array.FindIndex<LineFeature>(m_CurrentFace.Sections, t => t == m_SelectedLine);
+            int lineIndex = Array.FindIndex(m_CurrentFace.Sections, t => t == m_SelectedLine);
             if (lineIndex >= 0)
                 listBox.SelectedIndex = lineIndex;
         }

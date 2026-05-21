@@ -121,8 +121,8 @@ public partial class AttributeDataForm : Form
     IColumnDomain? FindColumnDomain(string columnName)
     {
         IColumnDomain[] cds = m_Record.Table.ColumnDomains;
-        return Array.Find(cds, t =>
-            String.Compare(t.ColumnName, columnName, StringComparison.OrdinalIgnoreCase)==0);
+        return cds.FirstOrDefault(x =>
+            String.Compare(x.ColumnName, columnName, StringComparison.OrdinalIgnoreCase) == 0);
     }
 
     private void SetGrid()

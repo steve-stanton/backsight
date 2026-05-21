@@ -46,8 +46,7 @@ public partial class FontForm : Form
 
         if (!String.IsNullOrEmpty(m_Item.TypeFace))
         {
-            fontFamilyComboBox.SelectedItem = Array.Find<FontFamily>(fams,
-                delegate(FontFamily ff) { return ff.Name==m_Item.TypeFace; });
+            fontFamilyComboBox.SelectedItem = fams.FirstOrDefault(x => x.Name == m_Item.TypeFace); 
 
             bool isBold = m_Item.Bold;
             bool isItalic = m_Item.Italic;
@@ -102,9 +101,10 @@ public partial class FontForm : Form
         // Confirm the text for the font family agrees with one of the
         // installed fonts
         FontFamily[] fams = FontFamily.Families;
-        FontFamily fam = Array.Find<FontFamily>(fams, delegate(FontFamily ff)
-            { return String.Compare(familyName, ff.Name, true)==0; });
-        if (fam == null)
+        var fam = fams.FirstOrDefault(x =>
+            String.Compare(familyName, x.Name, StringComparison.OrdinalIgnoreCase) == 0);
+
+        if (fam is null)
         {
             MessageBox.Show("Cannot locate entered font name");
             fontFamilyComboBox.Focus();

@@ -173,8 +173,8 @@ class EntityUtil
         // that's us done.
         if (s_EntityFile != null)
         {
-            string dervEntName = s_EntityFile.GetDerivedType(line, layer);
-            if (dervEntName != null)
+            string? dervEntName = s_EntityFile.GetDerivedType(line, layer);
+            if (dervEntName is not null)
                 return dervEntName;
         }
 

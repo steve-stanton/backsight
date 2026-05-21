@@ -60,12 +60,12 @@ public class UserActionSupport
     {
         if (items.Length > 1)
         {
-            ToolStripItem toolTipItem = Array.Find<ToolStripItem>(items, delegate(ToolStripItem t)
+            ToolStripItem? toolTipItem = Array.Find(items, delegate(ToolStripItem t)
             {
-                return (t.ToolTipText!=null && t.ToolTipText.Length>0);
+                return t.ToolTipText!=null && t.ToolTipText.Length>0;
             });
 
-            if (toolTipItem != null)
+            if (toolTipItem is not null)
             {
                 string toolTip = toolTipItem.ToolTipText;
 

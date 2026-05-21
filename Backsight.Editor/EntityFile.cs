@@ -108,7 +108,7 @@ class EntityFile
     /// <param name="layer">The layer of interest (in the same address space as
     /// the map that contains the line).</param>
     /// <returns>The name of the derived entity type (null if not found).</returns>
-    internal string GetDerivedType(IDivider line, ILayer layer)
+    internal string? GetDerivedType(IDivider line, ILayer layer)
     {
         // Return if the line does not have an entity type (it SHOULD do)
         IEntity ent = line.Line.EntityType;
@@ -118,10 +118,10 @@ class EntityFile
         // Get the translation block (if any) that refers to the line's entity type.
         string entName = ent.Name;
         string lyrName = layer.Name;
-        EntityBlock block = Array.Find<EntityBlock>(m_Blocks, eb => eb.IsMatch(entName, lyrName));
+        EntityBlock? block = m_Blocks.FirstOrDefault(eb => eb.IsMatch(entName, lyrName));
 
         // Return if the line's entity type is not associated with a translation.
-        if (block==null)
+        if (block is null)
             return null;
 
         // Get the polygons on either side of the line (the REAL

@@ -1374,7 +1374,6 @@ class CadastralMapModel : ISpatialModel
     internal NativeId AddNativeId(uint rawId)
     {
         IdGroup group = m_IdManager.FindGroupByRawId(rawId);
-        Debug.Assert(group != null);
         NativeId result = new NativeId(group, rawId);
         m_NativeIds.Add(rawId, result);
         return result;

@@ -49,8 +49,8 @@ public partial class GetLayerForm : Form
         if (listBox.Items.Count > 0 && listBox.Items[0].ToString().Length==0)
             listBox.Items.RemoveAt(0);
 
-        if (m_SelectedLayer!=null)
-            listBox.SelectedItem = Array.Find(layers, layer => layer.Id==m_SelectedLayer.Id);
+        if (m_SelectedLayer is not null)
+            listBox.SelectedItem = layers.FirstOrDefault(x => x.Id == m_SelectedLayer.Id);
     }
 
     private void cancelButton_Click(object sender, EventArgs e)
