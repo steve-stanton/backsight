@@ -19,26 +19,19 @@ using Backsight.Database;
 namespace Backsight.Environment.Editor;
 
 /// <summary>
-/// Information about ID groups that is used in conjunction with
-/// the <see cref="SimpleListControl"/>
+/// Information about ID groups that is used in conjunction with the <see cref="SimpleListControl"/>.
 /// </summary>
-class IdGroupListData : ISimpleListData
+class IdGroupListData : ISimpleListData<IIdGroup>
 {
-    /// <summary>
-    /// Obtains the environment items that should be displayed.
-    /// </summary>
-    /// <returns>The active set of environment items</returns>
-    public IEnvironmentItem[] GetEnvironmentItems()
+    /// <inheritdoc/>
+    public IIdGroup[] GetEnvironmentItems()
     {
-        return EnvironmentRepository.Current.IdGroups.Cast<IEnvironmentItem>().ToArray();
+        return EnvironmentRepository.Current.IdGroups.ToArray();
     }
 
-    /// <summary>
-    /// Creates a dialog that is suitable for entering a new environment item.
-    /// </summary>
-    /// <returns>The dialog to display</returns>
-    public Form GetEntryDialog(IEnvironmentItem item)
+    /// <inheritdoc/>
+    public Form GetEntryDialog(IIdGroup? item)
     {
-        return new IdGroupForm(item as IIdGroup);
+        return new IdGroupForm(item);
     }
 }

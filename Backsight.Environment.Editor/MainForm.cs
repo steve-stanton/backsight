@@ -78,23 +78,23 @@ public partial class MainForm : Form
         if (display is null)
         {
             if (e.TabPage == domainsPage)
-                AttachListData<DomainListData>(domainsPage);
+                AttachListData<DomainListData, IDomainTable>(domainsPage);
             else if (e.TabPage == entityTypesPage)
-                AttachListData<EntityListData>(entityTypesPage);
+                AttachListData<EntityListData, IEntity>(entityTypesPage);
             else if (e.TabPage == fontsPage)
-                AttachListData<FontListData>(fontsPage);
+                AttachListData<FontListData, IFont>(fontsPage);
             else if (e.TabPage == idGroupsPage)
-                AttachListData<IdGroupListData>(idGroupsPage);
+                AttachListData<IdGroupListData, IIdGroup>(idGroupsPage);
             else if (e.TabPage == layersPage)
-                AttachListData<LayerListData>(layersPage);
+                AttachListData<LayerListData, ILayer>(layersPage);
             else if (e.TabPage == propertiesPage)
                 AttachDisplay<PropertyGridControl>(propertiesPage);
             else if (e.TabPage == tablesPage)
-                AttachListData<TableListData>(tablesPage);
+                AttachListData<TableListData, ITable>(tablesPage);
             else if (e.TabPage == templatesPage)
-                AttachListData<TemplateListData>(templatesPage);
+                AttachListData<TemplateListData, ITemplate>(templatesPage);
             else if (e.TabPage == themesPage)
-                AttachListData<ThemeListData>(themesPage);
+                AttachListData<ThemeListData, ITheme>(themesPage);
             else
                 throw new Exception("No display for tab page");
 
@@ -142,11 +142,13 @@ public partial class MainForm : Form
     /// </summary>
     /// <typeparam name="T">The object that provides data for the display</typeparam>
     /// <param name="page">The page to add the display to</param>
-    void AttachListData<T>(TabPage page) where T : ISimpleListData, new()
+    void AttachListData<TData, TItem>(TabPage page)
+        where TData : ISimpleListData<TItem>, new()
+        where TItem : IEnvironmentItem
     {
-        T listData = new T();
-        var display = new SimpleListControl(listData);
-        AttachDisplay<SimpleListControl>(page, display);
+        TData listData = new TData();
+        var display = new SimpleListControl<TItem>(listData);
+        AttachDisplay<SimpleListControl<TItem>>(page, display);
     }
 
     /// <summary>

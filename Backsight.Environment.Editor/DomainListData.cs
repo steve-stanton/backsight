@@ -19,30 +19,22 @@ using Backsight.Database;
 namespace Backsight.Environment.Editor;
 
 /// <summary>
-/// Information about domains that is used in conjunction with
-/// the <see cref="SimpleListControl"/>
+/// Information about domains that is used in conjunction with the <see cref="SimpleListControl"/>.
 /// </summary>
-class DomainListData : ISimpleListData
+class DomainListData : ISimpleListData<IDomainTable>
 {
-    /// <summary>
-    /// Obtains the environment items that should be displayed.
-    /// </summary>
-    /// <returns>The active set of environment items</returns>
-    public IEnvironmentItem[] GetEnvironmentItems()
+    /// <inheritdoc/>
+    public IDomainTable[] GetEnvironmentItems()
     {
-        return EnvironmentRepository.Current.DomainTables.Cast<IEnvironmentItem>().ToArray();
+        return EnvironmentRepository.Current.DomainTables.ToArray();
     }
 
-    /// <summary>
-    /// Creates a dialog that is suitable for entering a new environment item.
-    /// </summary>
-    /// <returns>The dialog to display</returns>
-    public Form GetEntryDialog(IEnvironmentItem item)
+    /// <inheritdoc/>
+    public Form GetEntryDialog(IDomainTable? item)
     {
-        if (item != null)
+        if (item is not null)
             throw new NotSupportedException("Domain updates not supported");
 
-        //return new DomainForm(item as IDomainTable);
         return new DomainForm();
     }
 }

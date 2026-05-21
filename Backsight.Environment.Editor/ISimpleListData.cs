@@ -20,13 +20,13 @@ namespace Backsight.Environment.Editor;
 /// <summary>
 /// Information needed for the <see cref="SimpleListControl"/>
 /// </summary>
-interface ISimpleListData
+interface ISimpleListData<T> where T : IEnvironmentItem
 {
     /// <summary>
-    /// Obtains the environment items that should be displayed.
+    /// Gets the environment items that should be displayed.
     /// </summary>
     /// <returns>The active set of environment items</returns>
-    IEnvironmentItem[] GetEnvironmentItems();
+    T[] GetEnvironmentItems();
 
     /// <summary>
     /// Creates a dialog that is suitable for entering a new environment item, or
@@ -35,5 +35,5 @@ interface ISimpleListData
     /// <param name="item">An existing item that needs to be updated (specify null
     /// if creating a brand new item)</param>
     /// <returns>The dialog to display</returns>
-    Form GetEntryDialog(IEnvironmentItem item);
+    Form GetEntryDialog(T? item);
 }

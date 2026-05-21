@@ -21,19 +21,19 @@ namespace Backsight.Environment.Editor;
 /// A display that contains a <c>ListBox</c> that displays the
 /// names of environment items.
 /// </summary>
-partial class SimpleListControl : UserControl, IDisplayControl
+partial class SimpleListControl<T> : UserControl, IDisplayControl where T : IEnvironmentItem
 {
     /// <summary>
     /// The object that provides data for this display.
     /// </summary>
-    readonly ISimpleListData m_DataProvider;
+    readonly ISimpleListData<T> m_DataProvider;
 
     //public SimpleListControl()
     //{
     //    InitializeComponent();
     //}
 
-    internal SimpleListControl(ISimpleListData dataProvider)
+    internal SimpleListControl(ISimpleListData<T> dataProvider)
     {
         InitializeComponent();
         m_DataProvider = dataProvider;
@@ -44,7 +44,7 @@ partial class SimpleListControl : UserControl, IDisplayControl
     /// </summary>
     public virtual void NewItem()
     {
-        UpdateItem(null);
+        UpdateItem(default);
     }
 
     /// <summary>
@@ -52,8 +52,8 @@ partial class SimpleListControl : UserControl, IDisplayControl
     /// </summary>
     public virtual void UpdateSelectedItem()
     {
-        IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
-        if (item == null)
+        var item = (T?)listBox.SelectedItem;
+        if (item is null)
             MessageBox.Show("You must first select an item from the list");
         else
             UpdateItem(item);
@@ -61,12 +61,12 @@ partial class SimpleListControl : UserControl, IDisplayControl
 
     private void listBox_DoubleClick(object sender, EventArgs e)
     {
-        IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
-        if (item != null)
+        var item = (T?)listBox.SelectedItem;
+        if (item is not null)
             UpdateItem(item);
     }
 
-    void UpdateItem(IEnvironmentItem item)
+    void UpdateItem(T item)
     {
         // Some pages don't support the update function
 
@@ -90,8 +90,8 @@ partial class SimpleListControl : UserControl, IDisplayControl
     /// </summary>
     public virtual void DeleteSelectedItem()
     {
-        IEnvironmentItem item = (IEnvironmentItem)listBox.SelectedItem;
-        if (item == null)
+        var item = (T?)listBox.SelectedItem;
+        if (item is null)
         {
             MessageBox.Show("You must first select an item from the list");
             return;
@@ -99,9 +99,9 @@ partial class SimpleListControl : UserControl, IDisplayControl
 
         // Deletions should be disallowed if the environment has been "published"
 
-        if (item is IEditControl)
+        if (item is IEditControl ec)
         {
-            (item as IEditControl).Delete();
+            ec.Delete();
             RefreshList();
         }
         else
@@ -110,7 +110,7 @@ partial class SimpleListControl : UserControl, IDisplayControl
 
     public virtual void RefreshList()
     {
-        IEnvironmentItem[] items = m_DataProvider.GetEnvironmentItems();
+        var items = m_DataProvider.GetEnvironmentItems().Cast<object>().ToArray();
         listBox.Items.Clear();
         listBox.Items.AddRange(items);
 

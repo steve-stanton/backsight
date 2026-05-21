@@ -19,26 +19,19 @@ using Backsight.Database;
 namespace Backsight.Environment.Editor;
 
 /// <summary>
-/// Information about fonts that is used in conjunction with
-/// the <see cref="SimpleListControl"/>
+/// Information about fonts that is used in conjunction with the <see cref="SimpleListControl"/>.
 /// </summary>
-class FontListData : ISimpleListData
+class FontListData : ISimpleListData<IFont>
 {
-    /// <summary>
-    /// Obtains the environment items that should be displayed.
-    /// </summary>
-    /// <returns>The active set of environment items</returns>
-    public IEnvironmentItem[] GetEnvironmentItems()
+    /// <inheritdoc/>
+    public IFont[] GetEnvironmentItems()
     {
-        return EnvironmentRepository.Current.Fonts.Cast<IEnvironmentItem>().ToArray();
+        return EnvironmentRepository.Current.Fonts.ToArray();
     }
 
-    /// <summary>
-    /// Creates a dialog that is suitable for entering a new environment item.
-    /// </summary>
-    /// <returns>The dialog to display</returns>
-    public Form GetEntryDialog(IEnvironmentItem item)
+    /// <inheritdoc/>
+    public Form GetEntryDialog(IFont? item)
     {
-        return new FontForm(item as IFont);
+        return new FontForm(item);
     }
 }

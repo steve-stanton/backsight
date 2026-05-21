@@ -1,6 +1,6 @@
 namespace Backsight.Environment.Editor
 {
-    partial class SimpleListControl
+    partial class SimpleListControl<T>
     {
         /// <summary> 
         /// Required designer variable.

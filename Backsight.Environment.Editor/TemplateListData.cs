@@ -19,26 +19,19 @@ using Backsight.Database;
 namespace Backsight.Environment.Editor;
 
 /// <summary>
-/// Information about templates that is used in conjunction with
-/// the <see cref="SimpleListControl"/>
+/// Information about templates that is used in conjunction with the <see cref="SimpleListControl"/>.
 /// </summary>
-class TemplateListData : ISimpleListData
+class TemplateListData : ISimpleListData<ITemplate>
 {
-    /// <summary>
-    /// Obtains the environment items that should be displayed.
-    /// </summary>
-    /// <returns>The active set of environment items</returns>
-    public IEnvironmentItem[] GetEnvironmentItems()
+    /// <inheritdoc/>
+    public ITemplate[] GetEnvironmentItems()
     {
-        return EnvironmentRepository.Current.Templates.Cast<IEnvironmentItem>().ToArray();
+        return EnvironmentRepository.Current.Templates.ToArray();
     }
 
-    /// <summary>
-    /// Creates a dialog that is suitable for entering a new environment item.
-    /// </summary>
-    /// <returns>The dialog to display</returns>
-    public Form GetEntryDialog(IEnvironmentItem item)
+    /// <inheritdoc/>
+    public Form GetEntryDialog(ITemplate? item)
     {
-        return new TemplateForm(item as ITemplate);
+        return new TemplateForm(item);
     }
 }

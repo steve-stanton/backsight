@@ -19,26 +19,19 @@ using Backsight.Database;
 namespace Backsight.Environment.Editor;
 
 /// <summary>
-/// Information about database tables that is used in conjunction with
-/// the <see cref="SimpleListControl"/>
+/// Information about database tables that is used in conjunction with the <see cref="SimpleListControl"/>.
 /// </summary>
-class TableListData : ISimpleListData
+class TableListData : ISimpleListData<ITable>
 {
-    /// <summary>
-    /// Obtains the environment items that should be displayed.
-    /// </summary>
-    /// <returns>The active set of environment items</returns>
-    public IEnvironmentItem[] GetEnvironmentItems()
+    /// <inheritdoc/>
+    public ITable[] GetEnvironmentItems()
     {
-        return EnvironmentRepository.Current.Tables.Cast<IEnvironmentItem>().ToArray();
+        return EnvironmentRepository.Current.Tables.ToArray();
     }
 
-    /// <summary>
-    /// Creates a dialog that is suitable for entering a new environment item.
-    /// </summary>
-    /// <returns>The dialog to display</returns>
-    public Form GetEntryDialog(IEnvironmentItem item)
+    /// <inheritdoc/>
+    public Form GetEntryDialog(ITable? item)
     {
-        return new TableForm(item as ITable);
+        return new TableForm(item);
     }
 }

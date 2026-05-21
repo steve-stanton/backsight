@@ -19,26 +19,19 @@ using Backsight.Database;
 namespace Backsight.Environment.Editor;
 
 /// <summary>
-/// Information about themes that is used in conjunction with
-/// the <see cref="SimpleListControl"/>
+/// Information about themes that is used in conjunction with the <see cref="SimpleListControl"/>.
 /// </summary>
-class ThemeListData : ISimpleListData
+class ThemeListData : ISimpleListData<ITheme>
 {
-    /// <summary>
-    /// Obtains the environment items that should be displayed.
-    /// </summary>
-    /// <returns>The active set of environment items</returns>
-    public IEnvironmentItem[] GetEnvironmentItems()
+    /// <inheritdoc/>
+    public ITheme[] GetEnvironmentItems()
     {
-        return EnvironmentRepository.Current.Themes.Cast<IEnvironmentItem>().ToArray();
+        return EnvironmentRepository.Current.Themes.ToArray();
     }
 
-    /// <summary>
-    /// Creates a dialog that is suitable for entering a new environment item.
-    /// </summary>
-    /// <returns>The dialog to display</returns>
-    public Form GetEntryDialog(IEnvironmentItem item)
+    /// <inheritdoc/>
+    public Form GetEntryDialog(ITheme? item)
     {
-        return new ThemeForm(item as ITheme);
+        return new ThemeForm(item);
     }
 }

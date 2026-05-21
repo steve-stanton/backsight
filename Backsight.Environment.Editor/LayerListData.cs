@@ -19,26 +19,19 @@ using Backsight.Database;
 namespace Backsight.Environment.Editor;
 
 /// <summary>
-/// Information about layers that is used in conjunction with
-/// the <see cref="SimpleListControl"/>
+/// Information about layers that is used in conjunction with the <see cref="SimpleListControl"/>.
 /// </summary>
-class LayerListData : ISimpleListData
+class LayerListData : ISimpleListData<ILayer>
 {
-    /// <summary>
-    /// Obtains the environment items that should be displayed.
-    /// </summary>
-    /// <returns>The active set of environment items</returns>
-    public IEnvironmentItem[] GetEnvironmentItems()
+    /// <inheritdoc/>
+    public ILayer[] GetEnvironmentItems()
     {
-        return EnvironmentRepository.Current.Layers.Cast<IEnvironmentItem>().ToArray();
+        return EnvironmentRepository.Current.Layers.ToArray();
     }
 
-    /// <summary>
-    /// Creates a dialog that is suitable for entering a new environment item.
-    /// </summary>
-    /// <returns>The dialog to display</returns>
-    public Form GetEntryDialog(IEnvironmentItem item)
+    /// <inheritdoc/>
+    public Form GetEntryDialog(ILayer? item)
     {
-        return new LayerForm(item as ILayer);
+        return new LayerForm(item);
     }
 }
