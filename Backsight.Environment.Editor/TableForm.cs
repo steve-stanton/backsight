@@ -74,7 +74,7 @@ public partial class TableForm : Form
     void LoadTableList()
     {
         var repo = EnvironmentRepository.Current;
-        string[] tableNames = GetUserTables();
+        string[] tableNames = repo.GetUserTables();
         var exclude = new List<string>();
 
         if (excludeDomainTablesCheckBox.Checked)
@@ -88,34 +88,6 @@ public partial class TableForm : Form
 
         tableList.Items.Clear();
         tableList.Items.AddRange(tableNames);
-    }
-
-    private string[] GetUserTables()
-    {
-        var systemTables = new HashSet<string>()
-        {
-            "ColumnDomains",
-            "DomainTables",
-            "EntityTypeSchemas",
-            "EntityTypes",
-            "Domains",
-            "Fonts",
-            "IdGroups",
-            "Layers",
-            "Properties",
-            "Schemas",
-            "SchemaTemplates",
-            "SysId",
-            "Templates",
-            "Themes",
-            "Zones"
-        };
-        
-        return EnvironmentRepository.Current
-            .QueryTableNames()
-            .Except(systemTables)
-            .OrderBy(x => x)
-            .ToArray();
     }
     
     private void tablesPage_CloseFromNext(object sender, Gui.Wizard.PageEventArgs e)

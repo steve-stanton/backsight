@@ -14,8 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
-using Smo=Microsoft.SqlServer.Management.Smo;
-using Backsight.SqlServer;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
@@ -32,75 +31,70 @@ public partial class DomainForm : Form
 
     private void DomainForm_Shown(object sender, EventArgs e)
     {
-        // Load the database tables in the current database (excluding all
-        // Backsight system tables)
-        string[] tableNames = new TableFactory().GetUserTables();
+        // Load the database tables in the current database (excluding all Backsight system tables)
+        var repo = EnvironmentRepository.Current;
+        string[] tableNames = repo.GetUserTables();
 
         // Grab the currently defined domain tables
-        IDomainTable[] currentDomains = EnvironmentContainer.Current.DomainTables;
+        IDomainTable[] currentDomains = repo.DomainTables.ToArray();
 
-        List<string> domains = new List<string>();
-        domains.Add(String.Empty);
+        var domains = new List<string>();
 
         // Include only those tables that have the required columns.
         // Exclude tables that have already been defined as domain tables.
 
         foreach (string t in tableNames)
         {
-            if (!Array.Exists<IDomainTable>(currentDomains, delegate(IDomainTable dt)
-                    { return String.Compare(dt.TableName, t, true) == 0; }))
+            var isDomainTable = currentDomains.Any(x => String.Compare(x.TableName, t, StringComparison.OrdinalIgnoreCase) == 0);
+            
+            if (!isDomainTable)
             {
-                string[] cols = GetColumnNames(t);
+                string[] cols = repo.QueryTableColumns(t).Select(x => x.Name).ToArray();
 
-                if (Array.Exists(cols, delegate(string a) { return String.Compare(a, "ShortValue", true) == 0; }) &&
-                    Array.Exists(cols, delegate(string a) { return String.Compare(a, "LongValue", true) == 0; }))
+                if (cols.Any(x => String.Compare(x, "ShortValue", StringComparison.OrdinalIgnoreCase) == 0) &&
+                    cols.Any(x => String.Compare(x, "LongValue", StringComparison.OrdinalIgnoreCase) == 0))
+                {
                     domains.Add(t);
+                }
             }
         }
 
-        tableNameComboBox.DataSource = domains;
-    }
-
-    string[] GetColumnNames(string tableName)
-    {
-        TableFactory tf = new TableFactory();
-        Smo.Table t = tf.FindTableByName(tableName);
-
-        if (t == null)
-            return new string[0];
-
-        List<string> result = new List<string>(t.Columns.Count);
-
-        foreach (Smo.Column c in t.Columns)
-            result.Add(c.Name);
-
-        return result.ToArray();
+        if (domains.Count == 0)
+        {
+            MessageBox.Show("No suitable domain tables found in the current database");
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+        else
+        {
+            tableNameComboBox.DataSource = domains;
+        }
     }
 
     private void okButton_Click(object sender, EventArgs e)
     {
         // Ensure the table name is defined
-        string tableName = tableNameComboBox.SelectedItem.ToString();
-        if (tableName.Length == 0)
+        string? tableName = tableNameComboBox.SelectedItem?.ToString();
+        if (String.IsNullOrWhiteSpace(tableName))
         {
             MessageBox.Show("The name of the domain table must be specified");
             tableNameComboBox.Focus();
             return;
         }
 
-        IEnvironmentFactory f = EnvironmentContainer.Factory;
-        IEditDomainTable dt = f.CreateDomainTable();
-        dt.BeginEdit();
-        dt.TableName = tableName;
-        dt.FinishEdit();
+        var repo = EnvironmentRepository.Current;
+        var item = repo.CreateNewItem<IDomainTable>();
+        var set = repo.GetSetter<IDomainTable, ISetDomainTable>(item);
+        set.TableName = tableName;
+        repo.SaveChanges(item, set);
 
-        this.DialogResult = DialogResult.OK;
+        DialogResult = DialogResult.OK;
         Close();
     }
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
-        this.DialogResult = DialogResult.Cancel;
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 }

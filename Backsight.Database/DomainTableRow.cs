@@ -15,7 +15,7 @@ internal partial class DomainTableRow
 }
 
 // Additional properties to satisfy the readonly interface.
-internal partial class DomainTableRow : Row, IDomainTable
+internal partial class DomainTableRow : Row, IDomainTable, ISetDomainTable
 {
     public override string ToString() => TableName;
     
@@ -31,7 +31,12 @@ internal partial class DomainTableRow : Row, IDomainTable
             _content.Add(row.ShortValue.ToString(), row.LongValue.ToString());
     }
     
-    public int Id => DomainId;
+    public int Id
+    {
+        get => DomainId;
+        set => DomainId = value;
+    }
+
     public string Lookup(string shortValue)
     {
         // The connection string is not currently used (in the past, it was possible to hold
