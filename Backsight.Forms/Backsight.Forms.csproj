@@ -8,22 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Update="BatchRunnerControl.cs">
-        <SubType>UserControl</SubType>
-      </Compile>
       <Compile Update="DimmableButton.cs">
-        <SubType>Component</SubType>
-      </Compile>
-      <Compile Update="TypedComboBox.cs">
         <SubType>Component</SubType>
       </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Update="BatchRunnerControl.resx">
-        <SubType>Designer</SubType>
-        <DependentUpon>BatchRunnerControl.cs</DependentUpon>
-      </EmbeddedResource>
       <EmbeddedResource Update="DimmableButton.resx">
         <DependentUpon>DimmableButton.cs</DependentUpon>
         <SubType>Designer</SubType>
