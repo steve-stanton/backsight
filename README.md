@@ -75,6 +75,24 @@ The current system will only run on Windows platforms running NET4, and makes us
 Setting things up is a bit complicated, so I am looking to  rework the codebase to make it more accessible. I expect to do this in 3 phases:
 
 1. Re-target the system to net10.0-windows (**done**)
-2. Replace the SQLExpress database with SQLite (making use of [RepoDB](https://repodb.net/))  (**work in progress**)
-3. Eliminate dependencies on Windows by moving to MAUI, and target net10.0
+2. Replace the SQLExpress database with SQLite (making use of [RepoDB](https://repodb.net/))  (**done**)
+3. Eliminate dependencies on Windows by moving to MAUI, and target net10.0 (**future**)
+
+It should be relatively straightforward to convert the Environment Editor to a MAUI
+application, but the Map Editor is quite a different matter. Apart from the many forms that are
+involved, the MapControl class would need to be reworked. While there are now opensource map
+controls out there that work cross-platform, these tend to rely on native controls that
+pull in static maps from the web. The most promising option I see would be to build on the
+immplementation provided by a package called [MapSui](https://github.com/Mapsui/Mapsui).
+However, that in itself is quite a big task that is probably worthwhile only if someone else
+would like to collaborate with me.
+
+In the meantime, I think it would be better to document how to get things running. Including
+some sample data, and perhaps a tutorial.
+
+
+
+
+
+
 
