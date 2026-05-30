@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Windows.Forms;
+using Backsight.Database;
 
 namespace Backsight.Environment.Editor;
 
@@ -21,17 +22,12 @@ namespace Backsight.Environment.Editor;
 /// A display that contains a <c>ListBox</c> that displays the
 /// names of environment items.
 /// </summary>
-partial class SimpleListControl<T> : UserControl, IDisplayControl where T : IEnvironmentItem
+partial class SimpleListControl<T> : UserControl, IDisplayControl where T : class, IEnvironmentItem
 {
     /// <summary>
     /// The object that provides data for this display.
     /// </summary>
     readonly ISimpleListData<T> m_DataProvider;
-
-    //public SimpleListControl()
-    //{
-    //    InitializeComponent();
-    //}
 
     internal SimpleListControl(ISimpleListData<T> dataProvider)
     {
@@ -44,7 +40,7 @@ partial class SimpleListControl<T> : UserControl, IDisplayControl where T : IEnv
     /// </summary>
     public virtual void NewItem()
     {
-        UpdateItem(default);
+        UpdateItem(null);
     }
 
     /// <summary>
@@ -66,7 +62,7 @@ partial class SimpleListControl<T> : UserControl, IDisplayControl where T : IEnv
             UpdateItem(item);
     }
 
-    void UpdateItem(T item)
+    void UpdateItem(T? item)
     {
         // Some pages don't support the update function
 
@@ -99,13 +95,8 @@ partial class SimpleListControl<T> : UserControl, IDisplayControl where T : IEnv
 
         // Deletions should be disallowed if the environment has been "published"
 
-        if (item is IEditControl ec)
-        {
-            ec.Delete();
-            RefreshList();
-        }
-        else
-            throw new NotSupportedException();
+        EnvironmentRepository.Current.DeleteItem(item);
+        RefreshList();
     }
 
     public virtual void RefreshList()

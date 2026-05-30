@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Backsight.Environment;
 using Microsoft.Data.Sqlite;
 using RepoDb;
@@ -11,6 +12,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     /// The one (and only) container for environment-related information.
     /// </summary>
     private static IEnvironmentRepository _repository = new EmptyRepository();
+
     public static IEnvironmentRepository Current => _repository;
 
     private readonly Dictionary<int, IDomainTable> _domainTableIndex = new();
@@ -26,7 +28,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     /// The association between columns in attribute tables with their corresponding domains.
     /// </summary>
     private readonly List<ColumnDomainRow> _columnDomains = new();
-    
+
     /// <summary>
     /// The association between entity types and corresponding attribute data tables
     /// (indexed by the ID of the entity type).
@@ -37,7 +39,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     /// Miscellaneous properties of the environment.
     /// </summary>
     private readonly Dictionary<string, string> _properties = new();
-    
+
     /// <summary>
     /// The last ID assigned to an item in the environment database.
     /// </summary>
@@ -57,7 +59,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         { nameof(ITemplate), typeof(TemplateRow) },
         { nameof(ITheme), typeof(ThemeRow) },
     };
-    
+
     public EnvironmentRepository(string connectionString) :
         base(connectionString,
             commandTimeout: null,
@@ -75,29 +77,29 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         LoadIndex<IFont, FontRow>();
         LoadIndex<IIdGroup, IdGroupRow>();
         LoadIndex<ILayer, LayerRow>();
-        LoadIndex<ITable, SchemaRow> ();
+        LoadIndex<ITable, SchemaRow>();
         LoadIndex<ITemplate, TemplateRow>();
         LoadIndex<ITheme, ThemeRow>();
 
         // Load the association between entity types and attribute data tables
         foreach (var row in LoadEntityTypeSchemas())
             _entitySchemasIndex.Add(row.Key, row.Value);
-        
+
         // Load all domain tables
         foreach (var d in _domainTableIndex.Values.Cast<DomainTableRow>())
             d.LoadContent(this);
-        
+
         // Load the association between columns in attribute tables with their corresponding domains
         foreach (var cd in QueryAll<ColumnDomainRow>())
         {
             cd.Repository = this;
             _columnDomains.Add(cd);
         }
-        
+
         // Load miscellaneous properties
         foreach (var row in ExecuteQuery($"SELECT Name, Value FROM Properties"))
             _properties.Add(row.Name.ToString(), row.Value.ToString());
-        
+
         // Load the last assigned ID
         _lastId = ExecuteScalar<int>("SELECT LastId FROM SysId");
         //Console.WriteLine($"Last ID: {_lastId}");
@@ -137,7 +139,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
 
         return typedResult;
     }
-    
+
     public string Name
     {
         get
@@ -161,7 +163,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     {
         if (_entitySchemasIndex.TryGetValue(entity.Id, out List<ITable>? result))
             return result;
-        
+
         return Enumerable.Empty<ITable>();
     }
 
@@ -217,7 +219,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
             SaveChanges(type, set);
         }
     }
-        
+
     public IEnumerable<IColumnDomain> FindColumnDomains(ITable table)
     {
         return _columnDomains.Where(x => x.TableId == table.Id);
@@ -234,13 +236,13 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
             DomainId = domainTable.Id
         };
     }
-    
+
     /// <inheritdoc/>
     /// <exception cref="ArgumentException">Supplied item is not an instance of <see cref="ColumnDomainRow"/>.</exception>
     public void SaveColumnDomain(IColumnDomain columnDomain)
     {
         var row = columnDomain as ColumnDomainRow ?? throw new ArgumentException("Unexpected column domain type");
-        
+
         _columnDomains.Add(row);
         Insert(row);
     }
@@ -250,7 +252,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         var row = columnDomain as ColumnDomainRow ?? throw new ArgumentException("Unexpected column domain type");
         var removed = _columnDomains.Remove(row);
         Debug.Assert(removed);
-        
+
         // Don't use base.Delete to remove the row because RepoDb deletes using the TableId alone.
         // But we've actually got a composite primary key that also involves the column name.
         ExecuteNonQuery(
@@ -262,10 +264,10 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
              """);
     }
 
-    private Dictionary<int,List<ITable>> LoadEntityTypeSchemas()
+    private Dictionary<int, List<ITable>> LoadEntityTypeSchemas()
     {
         var result = new Dictionary<int, List<ITable>>();
-        
+
         // Doing a raw select because RepoDb doesn't appear to support composite primary keys 
         foreach (var row in ExecuteQuery($"SELECT EntityId, SchemaId FROM EntityTypeSchemas"))
         {
@@ -282,7 +284,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
 
             schemas.Add(schema);
         }
-        
+
         return result;
     }
 
@@ -305,6 +307,158 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     {
         var lookup = GetIndex<T>(typeof(T).Name);
         return lookup.Values.Where(x => predicate(x));
+    }
+
+    public bool DeleteItem<T>(T item) where T : class, IEnvironmentItem
+    {
+        // RepoDb requires the concrete type of the item on the call to the Delete method, but there's
+        // no easy way to cast it. But even if we could, there's still the matter of foreign key
+        // constraints...
+        
+        // While the database could fix itself up via appropriate use of ON DELETE CASCADE or ON DELETE SET DEFAULT,
+        // that wouldn't fix up our in-memory representation of the database. I decided to do everything necessary
+        // in each delete method - mainly to make it clear what's going on. But if might be better to go with
+        // ON DELETE clauses in the database, then reload the entire database following any delete made through
+        // the app - it's not a giant database, and deletion should be a once-in-a-blue-moon event.
+
+        // Actually, the simplest would be to provide ON DELETE clauses in the database, and entirely remove
+        // the ability to do it via the app.
+
+        // Note: Whereas typeof(T) gives the interface type, item.GetType gives the concrete type
+        var typeName = item.GetType().Name;
+
+        var rowCount = typeName switch
+        {
+            nameof(FontRow) => DeleteFont(item as FontRow ?? throw new ArgumentException("Unexpected font type")),
+            nameof(DomainTableRow) => DeleteDomainTable(item as DomainTableRow ?? throw new ArgumentException("Unexpected domain table type")),
+            nameof(EntityTypeRow) => DeleteEntityType(item as EntityTypeRow ?? throw new ArgumentException("Unexpected entity type")),
+            nameof(IdGroupRow) => DeleteIdGroup(item as IdGroupRow ?? throw new ArgumentException("Unexpected id group type")),
+            nameof(LayerRow) => DeleteLayer(item as LayerRow ?? throw new ArgumentException("Unexpected layer type")),
+            nameof(SchemaRow) => DeleteTable(item as SchemaRow ?? throw new ArgumentException("Unexpected schema type")),
+            nameof(TemplateRow) => Delete(item as TemplateRow),
+            nameof(ThemeRow) => DeleteTheme(item as ThemeRow ?? throw new ArgumentException("Unexpected theme type")),
+            _ => 0
+        };
+
+        var lookup = GetIndex<T>(typeof(T).Name);
+        lookup.Remove(item.Id);
+        return rowCount > 0;
+    }
+
+    private int DeleteTable(SchemaRow table)
+    {
+        ExecuteNonQuery($"DELETE FROM ColumnDomains WHERE TableId={table.SchemaId}");
+        ExecuteNonQuery($"DELETE FROM EntityTypeSchemas WHERE SchemaId={table.SchemaId}");
+        ExecuteNonQuery($"DELETE FROM Templates WHERE SchemaId={table.SchemaId}");
+
+        // Any domains associated with columns in the table are now n/a
+        _columnDomains.RemoveAll(x => x.TableId == table.SchemaId);
+
+        // Remove any templates that refer to the table
+        var templateIds = _templateIndex.Values
+            .Cast<TemplateRow>()
+            .Where(x => x.SchemaId == table.SchemaId)
+            .Select(x => x.TemplateId)
+            .ToArray();
+        
+        foreach(var id  in templateIds)
+            _templateIndex.Remove(id);
+
+        // Remove any references from entity types
+        var toBeDeleted = new List<int>();
+
+        foreach (var (entityId, tables) in _entitySchemasIndex)
+        {
+            if (tables.RemoveAll(x => x.Id == table.SchemaId) > 0)
+            {
+                if (tables.Count == 0)
+                    toBeDeleted.Add(entityId);
+            }
+        }
+
+        foreach (var entityId in toBeDeleted)
+            _entitySchemasIndex.Remove(entityId);
+        
+        return Delete(table);
+    }
+    
+    private int DeleteEntityType(EntityTypeRow entityType)
+    {
+        ExecuteNonQuery($"DELETE FROM EntityTypeSchemas WHERE EntityId={entityType.EntityId}");
+        ExecuteNonQuery($"UPDATE Layers SET DefaultPointId=0 WHERE DefaultPointId={entityType.EntityId}");
+        ExecuteNonQuery($"UPDATE Layers SET DefaultLineId=0 WHERE DefaultLineId={entityType.EntityId}");
+        ExecuteNonQuery($"UPDATE Layers SET DefaultPolygonId=0 WHERE DefaultPolygonId={entityType.EntityId}");
+        ExecuteNonQuery($"UPDATE Layers SET DefaultTextId=0 WHERE DefaultTextId={entityType.EntityId}");
+
+        _entitySchemasIndex.Remove(entityType.EntityId);
+
+        foreach (var layer in _layerIndex.Values.Cast<LayerRow>())
+        {
+            if (layer.DefaultPointId == entityType.EntityId)
+                layer.DefaultPointId = 0;
+            
+            if (layer.DefaultLineId == entityType.EntityId)
+                layer.DefaultLineId = 0;
+            
+            if (layer.DefaultPolygonId == entityType.EntityId)
+                layer.DefaultPolygonId = 0;
+            
+            if (layer.DefaultTextId == entityType.EntityId)
+                layer.DefaultTextId = 0;
+        }
+
+        return Delete(entityType);
+    }
+
+    private int DeleteDomainTable(DomainTableRow domainTable)
+    {
+        ExecuteNonQuery($"DELETE FROM ColumnDomains WHERE DomainId={domainTable.DomainId}");
+        _columnDomains.RemoveAll(x => x.DomainId == domainTable.DomainId);
+        return Delete(domainTable);
+    }
+
+    private int DeleteTheme(ThemeRow theme)
+    {
+        ExecuteNonQuery($"UPDATE Layers SET ThemeId=0 WHERE ThemeId={theme.ThemeId}");
+
+        foreach (var layer in _layerIndex.Values
+            .Cast<LayerRow>()
+            .Where(x => x.ThemeId == theme.ThemeId)) layer.ThemeId = 0;
+        
+        return Delete(theme);
+    }
+
+    private int DeleteLayer(LayerRow layer)
+    {
+        ExecuteNonQuery($"UPDATE EntityTypes SET LayerId=0 WHERE LayerId={layer.LayerId}");
+
+        foreach (var ent in _entityIndex.Values
+            .Cast<EntityTypeRow>()
+            .Where(x => x.LayerId == layer.LayerId)) ent.LayerId = 0;
+
+        return Delete(layer);
+    }
+    
+    private int DeleteFont(FontRow font)
+    {
+        ExecuteNonQuery($"UPDATE EntityTypes SET FontId=0 WHERE FontId={font.FontId}");
+
+        foreach (var ent in _entityIndex.Values
+            .Cast<EntityTypeRow>()
+            .Where(x => x.FontId == font.FontId)) ent.FontId = 0;
+        
+        return Delete(font);
+    }
+
+    private int DeleteIdGroup(IdGroupRow idGroup)
+    {
+        ExecuteNonQuery($"UPDATE EntityTypes SET GroupId=0 WHERE GroupId={idGroup.GroupId}");
+
+        foreach(var ent in _entityIndex.Values
+            .Cast<EntityTypeRow>()
+            .Where(x => x.GroupId == idGroup.Id)) ent.GroupId = 0;
+
+        return Delete(idGroup);
     }
 
     public string? FindPropertyByName(string propertyName)
@@ -411,6 +565,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
 
         foreach (var column in columns)
         {
+            // TODO: Should an autoincremented pk be included?
             if (!column.IsAutoGeneratedPrimaryKey)
                 content.Add(column.Name, null);
         }
@@ -470,6 +625,8 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
             connection.Open();
             var helper = connection.GetDbHelper();
 
+            // TODO: need to select from sqlite_master to determine if a pk is auto-incremented
+            
             foreach (var column in helper.GetFields(connection, tableName))
             {
                 yield return new ColumnInfo(

@@ -144,11 +144,11 @@ public partial class MainForm : Form
     /// <param name="page">The page to add the display to</param>
     void AttachListData<TData, TItem>(TabPage page)
         where TData : ISimpleListData<TItem>, new()
-        where TItem : IEnvironmentItem
+        where TItem : class, IEnvironmentItem
     {
         TData listData = new TData();
         var display = new SimpleListControl<TItem>(listData);
-        AttachDisplay<SimpleListControl<TItem>>(page, display);
+        AttachDisplay(page, display);
     }
 
     /// <summary>

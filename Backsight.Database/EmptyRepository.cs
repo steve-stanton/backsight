@@ -92,6 +92,11 @@ public class EmptyRepository : IEnvironmentRepository
         throw new NotImplementedException();
     }
 
+    public bool DeleteItem<T>(T item) where T : class, IEnvironmentItem
+    {
+        throw new NotImplementedException();
+    }
+
     public string? FindPropertyByName(string propertyName)
     {
         return null;
