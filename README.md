@@ -76,9 +76,9 @@ Setting things up is a bit complicated, so I am looking to  rework the codebase 
 
 1. Re-target the system to net10.0-windows (**done**)
 2. Replace the SQLExpress database with SQLite (making use of [RepoDB](https://repodb.net/))  (**done**)
-3. Eliminate dependencies on Windows by moving to MAUI, and target net10.0 (**future**)
+3. Eliminate dependencies on Windows by moving to <s>MAUI</s> Avalonia, and target net10.0 (**future**)
 
-It should be relatively straightforward to convert the Environment Editor to a MAUI
+It should be relatively straightforward to convert the Environment Editor to <s>a MAUI</s> an Avalonia
 application, but the Map Editor is quite a different matter. Apart from the many forms that are
 involved, the MapControl class would need to be reworked. While there are now opensource map
 controls out there that work cross-platform, these tend to rely on native controls that
