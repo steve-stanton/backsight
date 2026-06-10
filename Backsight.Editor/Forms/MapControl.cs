@@ -418,15 +418,6 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     }
 
     /// <summary>
-    /// Draws the specified spatial extent
-    /// </summary>
-    /// <param name="win">The window to draw</param>
-    public void DrawWindow(IWindow win)
-    {
-        SetNewWindow(win, true);
-    }
-
-    /// <summary>
     /// Initializes for a redraw. Prior to call, the overview extent of the map
     /// must be defined via a call to <c>SetOverviewExtent</c>.
     /// </summary>

@@ -106,12 +106,6 @@ public interface ISpatialDisplay
     void DrawOverview();
 
     /// <summary>
-    /// Draws the specified spatial extent.
-    /// </summary>
-    /// <param name="win">The window to draw</param>
-    void DrawWindow(IWindow win);
-
-    /// <summary>
     /// The position at the center of the display (when set, the display will be redrawn).
     /// </summary>
     IPosition Center { get; set; }
