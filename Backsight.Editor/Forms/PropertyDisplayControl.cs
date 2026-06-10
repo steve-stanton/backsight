@@ -45,7 +45,7 @@ public partial class PropertyDisplayControl : UserControl
         editButton.Visible = false;
     }
 
-    internal void SetSelectedObject(ISpatialObject so)
+    internal void SetSelectedObject(ISpatialObject? so)
     {
         try
         {
@@ -103,19 +103,17 @@ public partial class PropertyDisplayControl : UserControl
     /// </summary>
     /// <param name="so">The object of interest</param>
     /// <returns>Any attributes for the spatial object (never null, but may be an empty list)</returns>
-    List<Row> GetRows(ISpatialObject so)
+    List<Row> GetRows(ISpatialObject? so)
     {
         List<Row> result = new List<Row>();
+        
+        Feature? f = (so as Polygon)?.Label ?? so as Feature;
+        FeatureId? fid = f?.FeatureId;
 
-        Feature f = (so as Feature);
-        if (f == null && so is Polygon)
-            f = (so as Polygon).Label;
-
-        if (f != null && f.FeatureId != null)
+        if (fid is not null)
         {
-            FeatureId fid = f.FeatureId;
             IPossibleList<Row> rows = fid.Rows;
-            if (rows != null)
+            if (rows is not null)
             {
                 foreach (Row r in rows)
                     result.Add(r);

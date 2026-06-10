@@ -198,6 +198,9 @@ class Polygon : Ring
     /// <param name="style">The drawing style</param>
     public override void Render(ISpatialGraphics display, IDrawStyle style)
     {
+        var outlines = GetRingOutlines(display.MapScale, display.Extent);
+        style.Render(display, outlines);
+        /*
         // For any circular arcs, we will need to determine a suitable
         // arc tolerance, based on the current draw scale. Try 0.1mm at scale.
         ILength curvetol = new Length(0.0001 * display.MapScale);
@@ -221,6 +224,30 @@ class Polygon : Ring
         }
 
         style.Render(display, outlines.ToArray());
+        */
+    }
+
+    internal IPosition[][] GetRingOutlines(double mapScale, IWindow extent)
+    {
+        // For any circular arcs, we will need to determine a suitable
+        // arc tolerance, based on the current draw scale. Try 0.1mm at scale.
+        ILength curvetol = new Length(0.0001 * mapScale);
+
+        List<IPosition[]> outlines = new List<IPosition[]>(1+IslandCount);
+
+        // Grab the fill outline for this polygon.
+        List<IDivider[]> edges = GetSimpleEdges();
+        foreach(IDivider[] da in edges)
+            outlines.Add(GetOutline(curvetol, this, da));
+
+        // Now do any islands (but ignore any that don't overlap the display window)
+        if (m_Islands is not null)
+        {
+            foreach (Island i in m_Islands.Where(x => x.Extent.IsOverlap(extent)))
+                outlines.Add(i.GetOutline(curvetol));
+        }
+        
+        return outlines.ToArray();
     }
 
     /// <summary>

@@ -14,8 +14,10 @@
 // </remarks>
 
 using System.Windows.Forms;
-
+using Avalonia;
 using Backsight.Editor.Forms;
+using Backsight.Editor.Map;
+using Application = System.Windows.Forms.Application;
 
 namespace Backsight.Editor;
 
@@ -34,6 +36,11 @@ static class Program
         //MessageBox.Show("LineTypes.Count="+dd.LineTypes.Count);
         //LineType lt = LineType.Continuous;
         //MessageBox.Show(lt.Name);
+        
+        // Initialize for Avalonia interop
+        AppBuilder.Configure<AvaloniaApp>()
+            .UsePlatformDetect()
+            .SetupWithoutStarting();
 
         try
         {

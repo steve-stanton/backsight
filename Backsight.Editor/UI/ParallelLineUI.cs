@@ -115,8 +115,8 @@ class ParallelLineUI : SimpleCommandUI, IDisposable
     internal ParallelLineUI(IControlContainer cc, IUserAction action)
         : base(cc, action)
     {
-        LineFeature from = EditingController.SelectedLine;
-        if (from == null)
+        LineFeature? from = EditingController.SelectedLine;
+        if (from is null)
             throw new InvalidOperationException("You must initially select the reference line for the parallel.");
 
         // Set initial values.

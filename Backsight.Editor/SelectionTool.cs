@@ -230,7 +230,7 @@ class SelectionTool
         {
             var style = new HighlightStyle { ShowLineEndPoints = false };
             var mapDisplay = new MapDisplay(display, style);
-            new SpatialSelection(m_LimSel).Draw(mapDisplay);
+            new Selection(m_LimSel).Draw(mapDisplay);
         }
     }
 }

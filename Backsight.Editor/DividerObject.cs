@@ -18,7 +18,7 @@ namespace Backsight.Editor;
 /// <written by="Steve Stanton" on="22-NOV-2007" />
 /// <summary>
 /// Wrapper on an instance of <see cref="IDivider"/> that implements <see cref="ISpatialObject"/>.
-/// This makes it possible to include dividers in things like a <see cref="SpatialSelection"/>.
+/// This makes it possible to include dividers in things like a <see cref="Selection"/>.
 /// </summary>
 class DividerObject : ISpatialObject
 {

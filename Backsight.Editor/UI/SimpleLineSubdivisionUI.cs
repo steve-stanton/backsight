@@ -55,8 +55,8 @@ class SimpleLineSubdivisionUI : SimpleCommandUI, IDisposable
     internal SimpleLineSubdivisionUI(IControlContainer cc, IUserAction action)
         : base(cc, action)
     {
-        LineFeature line = EditingController.SelectedLine;
-        if (line == null)
+        LineFeature? line = EditingController.SelectedLine;
+        if (line is null)
             throw new InvalidOperationException("You must initially select the line you want to subdivide.");
 
         SetInitialValues();

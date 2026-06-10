@@ -250,13 +250,13 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
             //CopyMapPanelToSavedDisplay();
 
             // Any selection needs to be drawn too, but after the above
-            ISpatialSelection ss = controller.SpatialSelection;
-            if (ss.Count > 0)
+            var sel = controller.Selection;
+            if (sel.Count > 0)
             {
                 var style = new HighlightStyle(controller.PointHeight);
                 var mapDisplay = new MapDisplay(this, style);
                 
-                foreach(ISpatialObject item in ss.Items)
+                foreach(ISpatialObject item in sel.Items)
                     item.Draw(mapDisplay);
 
                 m_Display.Render(g);

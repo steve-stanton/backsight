@@ -14,8 +14,10 @@
 // </remarks>
 
 using System.Diagnostics;
+using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using Avalonia.Threading;
 using Backsight.Editor.UI;
 using Backsight.Environment;
 using Backsight.Forms;
@@ -608,17 +610,18 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
         // Handle single-item selections...
 
-        if (s.Item!=null)
+        var singleItem = s.SingleOrDefault;
+        if (singleItem is not null)
         {
-            SpatialType t = s.Item.SpatialType;
+            SpatialType t = singleItem.SpatialType;
 
             if (t == SpatialType.Point)
                 return pointContextMenu;
 
             if (t == SpatialType.Line)
             {
-                var line = s.Item as LineFeature;
-                if (line is null && s.Item is DividerObject d)
+                var line = singleItem as LineFeature;
+                if (line is null && singleItem is DividerObject d)
                     line = d.Divider.Line;
 
                 if (line is not null)
@@ -636,7 +639,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
         // Show the default menu, enabling the "Subdivide Polygon" item if a single polygon
         // is currently selected
-        ctxLineSubdividePolygon.Enabled = (s.Item!=null && s.Item.SpatialType==SpatialType.Polygon);
+        ctxLineSubdividePolygon.Enabled = singleItem?.SpatialType == SpatialType.Polygon;
         return noSelectionContextMenu;
     }
 
@@ -650,7 +653,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
         if (vSplitContainer.Panel2Collapsed)
             vSplitContainer.Panel2Collapsed = false;
 
-        ISpatialObject so = m_Controller.SpatialSelection.Item;
+        ISpatialObject? so = m_Controller.Selection.SingleOrDefault;
         propertyDisplay.SetSelectedObject(so);
     }
 
@@ -835,7 +838,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private bool IsEditDeleteEnabled()
     {
-        return (m_Controller.SpatialSelection.Count>0);
+        return m_Controller.Selection.Count > 0;
     }
 
     private void EditDelete(IUserAction action)
@@ -1380,28 +1383,21 @@ else if ( m_Op == ID_LINE_CURVE ) {
     /// The point feature that is currently selected (null if a point is not
     /// selected, or the current selection contains more than one feature).
     /// </summary>
-    PointFeature SelectedPoint
-    {
-        get
-        {
-            ISpatialObject so = m_Controller.SpatialSelection.Item;
-            return (so as PointFeature);
-        }
-    }
+    PointFeature? SelectedPoint => m_Controller.Selection.SingleOrDefault as PointFeature;
 
     /// <summary>
     /// The line feature that is currently selected (null if a point is not
     /// selected, or the current selection contains more than one feature).
     /// </summary>
-    LineFeature SelectedLine
+    LineFeature? SelectedLine
     {
         get
         {
-            ISpatialObject so = m_Controller.SpatialSelection.Item;
-            if (so is DividerObject)
-                return (so as DividerObject).Divider.Line;
+            ISpatialObject? so = m_Controller.Selection.SingleOrDefault;
+            if (so is DividerObject d)
+                return d.Divider.Line;
             else
-                return (so as LineFeature);
+                return so as LineFeature;
         }
     }
 
@@ -1409,14 +1405,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
     /// The text feature that is currently selected (null if a point is not
     /// selected, or the current selection contains more than one feature).
     /// </summary>
-    TextFeature SelectedText
-    {
-        get
-        {
-            ISpatialObject so = m_Controller.SpatialSelection.Item;
-            return (so as TextFeature);
-        }
-    }
+    TextFeature? SelectedText => m_Controller.Selection.SingleOrDefault as TextFeature;
 
     /// <summary>
     /// Displays a control in the container.
@@ -1453,8 +1442,8 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private void PointUpdate(IUserAction action)
     {
-        PointFeature selPoint = this.SelectedPoint;
-        if (selPoint == null)
+        PointFeature? selPoint = this.SelectedPoint;
+        if (selPoint is null)
         {
             MessageBox.Show("You need to select a specific point first.");
             return;
@@ -1711,8 +1700,8 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private void LineUpdate(IUserAction action)
     {
-        LineFeature selLine = this.SelectedLine;
-        if (selLine == null)
+        LineFeature? selLine = this.SelectedLine;
+        if (selLine is null)
         {
             MessageBox.Show("You need to select a specific line first.");
             return;
@@ -1723,15 +1712,15 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private bool IsLinePolygonBoundaryEnabled()
     {
-        LineFeature line = SelectedLine;
-        mnuLinePolygonBoundary.Checked = (line!=null && line.IsTopological);
-        return (line!=null && !m_Controller.IsCommandRunning);
+        LineFeature? line = SelectedLine;
+        mnuLinePolygonBoundary.Checked = line?.IsTopological == true;
+        return line is not null && !m_Controller.IsCommandRunning;
     }
 
     private void LinePolygonBoundary(IUserAction action)
     {
-        LineFeature line = SelectedLine;
-        if (line==null)
+        LineFeature? line = SelectedLine;
+        if (line is null)
         {
             MessageBox.Show("You must select a specific line first.");
             return;
@@ -1844,7 +1833,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private bool IsTextMoveEnabled()
     {
-        return (SelectedText!=null && !m_Controller.IsCommandRunning);
+        return SelectedText is not null && !m_Controller.IsCommandRunning;
     }
 
     private void TextMove(IUserAction action)
@@ -1856,8 +1845,8 @@ else if ( m_Op == ID_LINE_CURVE ) {
             return;
         }
 
-        TextFeature text = SelectedText;
-        if (text == null)
+        TextFeature? text = SelectedText;
+        if (text is null)
         {
             MessageBox.Show("You must first select some text.");
             return;
@@ -1869,8 +1858,8 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private bool IsTextMovePolygonPositionEnabled()
     {
-        TextFeature t = SelectedText;
-        return (t!=null && t.IsTopological && !m_Controller.IsCommandRunning);
+        TextFeature? t = SelectedText;
+        return t?.IsTopological == true && !m_Controller.IsCommandRunning;
     }
 
     private void TextMovePolygonPosition(IUserAction action)
@@ -1882,8 +1871,8 @@ else if ( m_Op == ID_LINE_CURVE ) {
             return;
         }
 
-        TextFeature text = SelectedText;
-        if (text == null)
+        TextFeature? text = SelectedText;
+        if (text is null)
         {
             MessageBox.Show("You must first select some text.");
             return;
@@ -1994,44 +1983,14 @@ else if ( m_Op == ID_LINE_CURVE ) {
         return true; // for test stubs
     }
 
-    private void HelpAbout(IUserAction action)
+    private async void HelpAbout(IUserAction action)
     {
-        /*
-        Stopwatch sw = Stopwatch.StartNew();
-        string wkt = EditingController.Current.GetCoordinateSystemText();
-        sw.Stop();
-        MessageBox.Show(wkt);
-        MessageBox.Show("That took " + sw.ElapsedMilliseconds / 1000.0);
-         */
-
-        /*
-        string cfile = GlobalUserSetting.Read("ControlFile");
-        MessageBox.Show(cfile);
-        ControlPoint control;
-        int nfound = 0;
-        double maxShift = 0.0;
-
-        using (StreamReader sr = File.OpenText(cfile))
+        // TESTING: Launch modeless Avalonia window
+        Dispatcher.UIThread.Post(() =>
         {
-            string str;
-            while ((str = sr.ReadLine()) != null)
-            {
-                if (ControlPoint.TryParse(str, out control))
-                {
-                    nfound++;
-                    IPosition b = new Position(control.X + 100.0, control.Y);
-                    double sfac1 = cmm.CoordinateSystem.GetLineScaleFactor(control, b);
-                    double sfac2 = cs.GetLineScaleFactor(control, b);
-                    double diff = 100.0 * (sfac1 - sfac2);
-                    maxShift = Math.Max(maxShift, Math.Abs(diff));
-                    String msg = String.Format("SF1={0}\t SF2={1}\t diff={2:0.000000}", sfac1, sfac2, diff);
-                }
-            }
-        }
-
-        MessageBox.Show(String.Format("maxShift={0:0.000000}", maxShift));
-        return;
-        */
+            var dial = new Map.MapWindow();
+            dial.Show();
+        });
 
         /*
         // Experiment with recursive query
@@ -2128,7 +2087,7 @@ OPTION (MAXRECURSION 0)
     /// the properties grid is shown).
     /// </summary>
     /// <param name="o"></param>
-    internal void SetSelection(ISpatialObject o)
+    internal void SetSelection(ISpatialObject? o)
     {
         /*
         // TEST...

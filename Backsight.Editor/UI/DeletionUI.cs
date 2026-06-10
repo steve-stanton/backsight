@@ -63,7 +63,7 @@ class DeletionUI : SimpleCommandUI
         {
             SetCommandCursor();
             dop = new DeletionOperation();
-            foreach (ISpatialObject so in c.SpatialSelection.Items)
+            foreach (ISpatialObject so in c.Selection.Items)
             {
                 if (so is Feature)
                     dop.AddDeletion(so as Feature);

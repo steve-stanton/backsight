@@ -67,8 +67,8 @@ class LineExtensionUI : SimpleCommandUI, IDisposable
     internal LineExtensionUI(IControlContainer cc, IUserAction action)
         : base(cc, action)
     {
-        LineFeature line = EditingController.SelectedLine;
-        if (line == null)
+        LineFeature? line = EditingController.SelectedLine;
+        if (line is null)
             throw new InvalidOperationException("You must initially select the line you want to extend.");
 
         // The dialog will be created by Run().

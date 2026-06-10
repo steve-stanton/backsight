@@ -195,7 +195,7 @@ class IntersectUI : SimpleCommandUI, IDisposable
             return false;
 
         // Get the controller to select the intersection point
-        ISpatialSelection ss = new SpatialSelection((ISpatialObject)p);
+        var ss = new Selection(p);
         Controller.SetSelection(ss);
 
         m_Dialog.Dispose();

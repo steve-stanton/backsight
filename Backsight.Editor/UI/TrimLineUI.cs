@@ -56,8 +56,7 @@ class TrimLineUI : SimpleCommandUI
     {
         // Grab the current selection & filter out stuff that can't be trimmed
         EditingController c = Controller;
-        ISpatialSelection ss = c.SpatialSelection;
-        LineFeature[] lines = TrimLineOperation.PreCheck(ss.Items);
+        LineFeature[] lines = TrimLineOperation.PreCheck(c.Selection.Items);
         if (lines.Length==0)
         {
             StringBuilder sb = new StringBuilder(200);

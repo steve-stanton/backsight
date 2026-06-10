@@ -30,7 +30,7 @@ public interface ISpatialSelection
     /// The one and only item in this selection (null if the selection is empty, or
     /// it contains more than one item).
     /// </summary>
-    ISpatialObject Item { get; }
+    ISpatialObject? SingleOrDefault { get; }
 
     /// <summary>
     /// The items in the selection

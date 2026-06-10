@@ -61,7 +61,7 @@ class NewCircularArcUI : NewLineUI
     /// <param name="cc">Object for holding any displayed dialogs</param>
     /// <param name="action">The action that initiated this command</param>
     /// <param name="start">Point initially selected at start of command</param>
-    internal NewCircularArcUI(IControlContainer cc, IUserAction action, PointFeature start)
+    internal NewCircularArcUI(IControlContainer cc, IUserAction action, PointFeature? start)
         : base(cc, action, start)
     {
         m_IsShortArc = true;
@@ -76,7 +76,7 @@ class NewCircularArcUI : NewLineUI
     {
         // If a start point has been specified, confirm that it falls on at least
         // one circle. If NOT on a circle, tell the user and quit the command.
-        if (StartPoint != null)
+        if (StartPoint is not null)
         {
             m_Circles = CadastralMapModel.Current.FindCircles(StartPoint, CircleTolerance);
             if (m_Circles.Count == 0)

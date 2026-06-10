@@ -29,7 +29,7 @@ namespace Backsight.Editor;
 /// <summary>
 /// The controller for the Cadastral Editor application.
 /// </summary>
-class EditingController : SpatialController, ISpatialController
+class EditingController
 {
     #region Statics
 
@@ -47,6 +47,18 @@ class EditingController : SpatialController, ISpatialController
     #endregion
 
     #region Class data
+
+    private ISpatialModel m_Data;
+
+    /// <summary>
+    /// The currently selected elements (may be empty, but never null)
+    /// </summary>
+    private Selection m_Selection;
+
+    /// <summary>
+    /// Map displays that have been registered with this controller (see <c>Register</c> method)
+    /// </summary>
+    private readonly List<ISpatialDisplay> m_Displays;
 
     /// <summary>
     /// Information about the current project
@@ -103,10 +115,19 @@ class EditingController : SpatialController, ISpatialController
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EditingController"/> class.
+    /// Initializes a new instance of the <see cref="EditingController"/> class with a map model
+    /// that's suitable for use at design time.
     /// </summary>
     private EditingController()
     {
+        m_Data = new DesignTimeMapModel();
+        m_Selection = new Selection();
+        m_Displays = new List<ISpatialDisplay>();
+
+        // Initialize map model in case any of the prelim stuff needs it (the
+        // running application needs to replace it with something more appropriate).
+        //SetMapModel(m_Data, null);
+
         m_Project = null;
         m_ActiveLayer = null;
         m_IsAutoSelect = 0;
@@ -117,13 +138,45 @@ class EditingController : SpatialController, ISpatialController
 
     internal void SetMapModel(ISpatialModel model, IWindow initialDrawExtent)
     {
-        InitializeMapModel(model, initialDrawExtent);
+        m_Data = model;
+        SetSelection(null);
+
+        foreach (ISpatialDisplay display in m_Displays)
+            display.ReplaceMapModel(initialDrawExtent);
 
         // Ensure the active display has focus (so that it reacts to any mouse-wheel events)
         ActiveMap?.MapPanel?.Focus();
     }
 
-    public override void Close()
+    public ISpatialModel MapModel => m_Data;
+
+    public void Register(ISpatialDisplay display)
+    {
+        if (!m_Displays.Contains(display))
+            m_Displays.Add(display);
+
+        // Redraw the display now (ensures the background has the expected colour)
+        //display.Redraw();
+    }
+
+    public void Unregister(ISpatialDisplay display)
+    {
+        m_Displays.Remove(display);
+    }
+
+    public void RefreshAllDisplays()
+    {
+        foreach (ISpatialDisplay d in m_Displays)
+            d.Redraw();
+    }
+
+    // TODO: Remove from controller class (replace with ActiveMap property in Backsight.Editor)
+    public ISpatialDisplay ActiveDisplay
+    {
+        get { return (m_Displays.Count==0 ? null : m_Displays[0]); }
+    }
+
+    public void Close()
     {
         // Shut down any inverse calculator
         m_Inverse?.Dispose();
@@ -135,6 +188,9 @@ class EditingController : SpatialController, ISpatialController
             new ProjectDatabase().CloseProject(m_Project);
             m_Project = null;
         }
+
+        m_Data = null;
+        m_Selection = new Selection();
     }
 
     public CadastralMapModel CadastralMapModel => MapModel as CadastralMapModel;
@@ -154,11 +210,10 @@ class EditingController : SpatialController, ISpatialController
     public void MouseDoubleClick(ISpatialDisplay sender, IPosition p)
     {
         // Attempt to select something
-        OnSelect(sender, p, false);
+        OnSelect(sender.MapScale, p, false);
 
         // Update the selected item
-        ISpatialSelection ss = SpatialSelection;
-        RunUpdate(null, ss.Item);
+        RunUpdate(null, m_Selection.SingleOrDefault);
     }
 
     /// <summary>
@@ -168,12 +223,12 @@ class EditingController : SpatialController, ISpatialController
     /// displayed.
     /// </summary>
     /// <param name="so">The item selected for update</param>
-    internal void RunUpdate(IUserAction action, ISpatialObject so)
+    internal void RunUpdate(IUserAction action, ISpatialObject? so)
     {
         if (m_Main is null)
             return;
         
-        if (so==null)
+        if (so is null)
             return;
 
         // There can't be any command currently running.
@@ -234,7 +289,7 @@ class EditingController : SpatialController, ISpatialController
             }
 
             if (m_Sel is null)
-                OnSelect(sender, p, isMultiSelect);
+                OnSelect(sender.MapScale, p, isMultiSelect);
             else
                 m_Sel.CtrlMouseDown(p);
         }
@@ -285,9 +340,10 @@ class EditingController : SpatialController, ISpatialController
     /// <summary>
     /// Tries to select something at the specified position
     /// </summary>
+    /// <param name="mapScale">The current map scale denominator.</param>
     /// <param name="p">The position where a left-click has occurred</param>
     /// <param name="isMultiSelect">True if performing a multi-select (SHIFT key is pressed)</param>
-    void OnSelect(ISpatialDisplay display, IPosition p, bool isMultiSelect)
+    void OnSelect(double mapScale, IPosition p, bool isMultiSelect)
     {
         /*
         // If importing from background, there's no way to select
@@ -300,7 +356,7 @@ class EditingController : SpatialController, ISpatialController
          */
 
         // Try to select something.
-        ISpatialObject? thing = SelectObject(display, p, SpatialType.All);
+        ISpatialObject? thing = SelectObject(mapScale, p, SpatialType.All);
 
         if (thing is not null)
         {
@@ -313,7 +369,7 @@ class EditingController : SpatialController, ISpatialController
             // auto-highlighting is supposed to go away automatically
             // (see OnLButtonDown && OnMouseMove).
 
-            if (m_IsAutoSelect==1 && Object.ReferenceEquals(thing, SpatialSelection.Item))
+            if (m_IsAutoSelect==1 && Object.ReferenceEquals(thing, m_Selection.SingleOrDefault))
                 return;
 
             if (isMultiSelect)
@@ -344,18 +400,20 @@ class EditingController : SpatialController, ISpatialController
         m_Inverse?.Draw();
     }
 
-    public override void Select(ISpatialDisplay display, IPosition p, SpatialType spatialType)
+    public ISpatialObject? Select(double mapScale, IPosition p, SpatialType spatialType)
     {
-        ISpatialObject? so = SelectObject(display, p, spatialType);
+        ISpatialObject? so = SelectObject(mapScale, p, spatialType);
         if (so is not null)
             SetSelection(new Selection(so, p));
         else
             SetSelection(null);
+
+        return so;
     }
 
     void AddOrRemoveFromSelection(ISpatialObject so)
     {
-        Selection sel = new Selection(this.SpatialSelection.Items);
+        Selection sel = new Selection(m_Selection.Items);
         if (!sel.Remove(so))
             sel.Add(so);
 
@@ -379,7 +437,7 @@ class EditingController : SpatialController, ISpatialController
 
             // Auto-highlight option
             if (m_IsAutoSelect > 0)
-                Select(sender, p, SpatialType.All);
+                Select(sender.MapScale, p, SpatialType.All);
 
             m_Command?.MouseMove(p);
         }
@@ -396,7 +454,7 @@ class EditingController : SpatialController, ISpatialController
         if (m_Main is null)
             return;
         
-        if (k.KeyValue == (int)Keys.Delete && !IsCommandRunning && SpatialSelection.Count>0)
+        if (k.KeyValue == (int)Keys.Delete && !IsCommandRunning && m_Selection.Count > 0)
             StartCommand(new DeletionUI(null)); // and finishes!
 
         if (k.KeyValue == (int)Keys.Escape && m_Command?.ActiveMap == sender)
@@ -440,7 +498,7 @@ class EditingController : SpatialController, ISpatialController
             FreeAreaSelectionTool();
             if (s.Count > 0)
             {
-                s.AddRange(this.SpatialSelection.Items);
+                s.AddRange(m_Selection.Items);
                 SetSelection(s);
             }
 
@@ -483,7 +541,7 @@ class EditingController : SpatialController, ISpatialController
         ContextMenuStrip menu = m_Command?.CreateContextMenu();
 
         if (menu==null)
-            menu = m_Main.CreateContextMenu(this.SpatialSelection);
+            menu = m_Main.CreateContextMenu(m_Selection);
 
         if (menu!=null)
             where.ShowContextMenu(p, menu);
@@ -507,7 +565,7 @@ class EditingController : SpatialController, ISpatialController
         get
         {
             var style = new HighlightStyle(PointHeight);
-            style.ShowLineEndPoints = SelectionCount == 1 && m_Sel is null;
+            style.ShowLineEndPoints = m_Selection.Count == 1 && m_Sel is null;
             return style;
         }
     }
@@ -516,20 +574,19 @@ class EditingController : SpatialController, ISpatialController
     {
         return new HighlightStyle(PointHeight)
         {
-            ShowLineEndPoints = SelectionCount == 1 && m_Sel is null
+            ShowLineEndPoints = m_Selection.Count == 1 && m_Sel is null
         };
     }
 
-    private ISpatialObject? SelectObject(ISpatialDisplay display, IPosition p, SpatialType spatialType)
+    internal ISpatialObject? SelectObject(double mapScale, IPosition p, SpatialType spatialType)
     {
         ProjectSettings ps = m_Project.Settings;
         CadastralMapModel cmm = this.CadastralMapModel;
-        ISpatialSelection currentSel = this.SpatialSelection;
-        ISpatialObject? oldItem = currentSel.Item;
+        //ISpatialObject? oldItem = m_Selection.SingleOrDefault;
         ISpatialObject? newItem;
 
         // Try to find a point feature if points are drawn.
-        if ((spatialType & SpatialType.Point) != 0 && display.MapScale <= ps.ShowPointScale)
+        if ((spatialType & SpatialType.Point) != 0 && mapScale <= ps.ShowPointScale)
         {
             ILength size = new Length(ps.PointHeight * 0.5);
             newItem = cmm.QueryClosest(p, size, SpatialType.Point);
@@ -544,7 +601,7 @@ class EditingController : SpatialController, ISpatialController
             return 0;
          */
 
-        ILength tol = new Length(0.001 * display.MapScale);
+        ILength tol = new Length(0.001 * mapScale);
 
         // Try to find a line, using a tolerance of 1mm at the draw scale.
         if ((spatialType & SpatialType.Line)!=0)
@@ -570,7 +627,7 @@ class EditingController : SpatialController, ISpatialController
         // Try for a text string if text is drawn.
         // The old software handles text by checking that the point is inside
         // the outline, not sure whether the new index provides acceptable alternative.
-        if ((spatialType & SpatialType.Text)!=0 && display.MapScale <= ps.ShowLabelScale)
+        if ((spatialType & SpatialType.Text)!=0 && mapScale <= ps.ShowLabelScale)
         {
             newItem = cmm.QueryClosest(p, tol, SpatialType.Text);
             if (newItem is not null)
@@ -649,6 +706,15 @@ class EditingController : SpatialController, ISpatialController
         cmd.ActiveMap.PaintNow();
         m_Command.Dispose();
         m_Command = null;
+    }
+
+    private void RedrawSelection()
+    {
+        if (m_Selection.Count>0)
+        {
+            foreach (ISpatialDisplay d in m_Displays)
+                d.OnSelectionChanged(m_Selection);
+        }
     }
 
     internal void FinishCommand(CommandUI cmd)
@@ -751,7 +817,7 @@ class EditingController : SpatialController, ISpatialController
 
         // Select the point if requested
         if (select)
-            SetSelection(new Selection(p, p));
+            SetSelection(new Selection(p, null));
     }
 
     /// <summary>
@@ -801,39 +867,38 @@ class EditingController : SpatialController, ISpatialController
 
     public void Select(Feature f)
     {
-        SetSelection(new SpatialSelection((ISpatialObject)f));
+        SetSelection(new Selection(f));
     }
 
     /// <summary>
-    /// The currently selected objects, expressed as a <see cref="Selection"/> object.
+    /// The currently selected objects.
     /// </summary>
-    internal Selection Selection
-    {
-        get
-        {
-            ISpatialSelection ss = this.SpatialSelection;
-            if (ss is Selection)
-                return (ss as Selection);
-            else
-                return new Selection(ss.Items);
-        }
-    }
+    internal Selection Selection => m_Selection;
 
-    public override bool SetSelection(ISpatialSelection newSel)
+    /// <summary>
+    /// Remembers a new selection
+    /// </summary>
+    /// <param name="newSel">The new selection (specify null to clear any current selection)</param>
+    /// <returns>True if selection changed. False if the selection matches the current selection</returns>
+    public bool SetSelection(Selection? newSel)
     {
         if (m_Main is null)
             return false;
         
-        ISpatialSelection ss = (newSel==null ? new Selection() : newSel);
-        bool isChanged = base.SetSelection(ss);
-        if (!isChanged)
+        var ss = newSel is null ? new Selection() : newSel;
+        if (m_Selection.Equals(ss))
             return false;
 
-        ISpatialObject item = ss.Item;
+        m_Selection = ss;
+
+        foreach (ISpatialDisplay d in m_Displays)
+            d.OnSelectionChanged(m_Selection);
+
+        ISpatialObject? item = ss.SingleOrDefault;
         m_Main.SetSelection(item);
 
         // If a single item has been selected
-        if (item!=null)
+        if (item is not null)
         {
             if (item is DividerObject)
                 item = (item as DividerObject).Divider.Line;
@@ -944,19 +1009,13 @@ class EditingController : SpatialController, ISpatialController
     }
 
     /// <summary>
-    /// The number of spatial objects that are currently selected
-    /// </summary>
-    internal int SelectionCount => SpatialSelection.Count;
-
-    /// <summary>
     /// Is a single spatial object of a specific type currently selected?
     /// </summary>
     /// <param name="t">The type of interest</param>
     /// <returns>True if one object is currently selected, and it has the spatial type of interest</returns>
     internal bool IsItemSelected(SpatialType t)
     {
-        ISpatialObject so = SpatialSelection.Item;
-        return (so!=null && so.SpatialType==t);
+        return m_Selection.SingleOrDefault?.SpatialType == t;
     }
 
     /// <summary>
@@ -965,13 +1024,7 @@ class EditingController : SpatialController, ISpatialController
     /// <returns>True if the selection refers to at least one line</returns>
     internal bool IsLineSelected()
     {
-        foreach (ISpatialObject so in SpatialSelection.Items)
-        {
-            if (so.SpatialType == SpatialType.Line)
-                return true;
-        }
-
-        return false;
+        return m_Selection.Items.Any(x => x.SpatialType == SpatialType.Line);
     }
 
     /// <summary>
@@ -1015,7 +1068,7 @@ class EditingController : SpatialController, ISpatialController
     /// of a map. This saves the extent as part of the project settings.
     /// </summary>
     /// <param name="sender">The display that has changed</param>
-    public override void OnSetExtent(ISpatialDisplay sender)
+    public void OnSetExtent(ISpatialDisplay sender)
     {
         m_Project.Settings.LastDraw = new DrawInfo(sender.Extent, sender.MapScale);
     }
@@ -1050,10 +1103,9 @@ class EditingController : SpatialController, ISpatialController
         if (m_Sel is not null || m_HasSelectionChanged)
         {
             var mapDisplay = new MapDisplay(ActiveMap, CreateHighlightStyle());
-            SpatialSelection.Draw(mapDisplay);
+            m_Selection.Draw(mapDisplay);
             
-            // TODO: The selection interface should be removed (don't pollute the core project with editor-specific stuff)
-            var divider = (SpatialSelection as Selection)?.Divider;
+            var divider = m_Selection.Divider;
             if (divider is not null)
             {
                 var thinYellow = new DrawStyle(Color.Yellow);
@@ -1205,44 +1257,18 @@ class EditingController : SpatialController, ISpatialController
     }
 
     /// <summary>
-    /// The point feature that is currently selected (null if a point is not
-    /// selected, or the current selection contains more than one feature).
-    /// </summary>
-    internal static PointFeature SelectedPoint
-    {
-        get
-        {
-            ISpatialObject so = EditingController.Current.SpatialSelection.Item;
-            return (so as PointFeature);
-        }
-    }
-
-    /// <summary>
     /// The line feature that is currently selected (null if a point is not
     /// selected, or the current selection contains more than one feature).
     /// </summary>
-    internal static LineFeature SelectedLine
+    internal static LineFeature? SelectedLine
     {
         get
         {
-            ISpatialObject so = EditingController.Current.SpatialSelection.Item;
-            if (so is DividerObject)
-                return (so as DividerObject).Divider.Line;
+            ISpatialObject? so = Current.Selection.SingleOrDefault;
+            if (so is DividerObject d)
+                return d.Divider.Line;
             else
-                return (so as LineFeature);
-        }
-    }
-
-    /// <summary>
-    /// The text feature that is currently selected (null if a point is not
-    /// selected, or the current selection contains more than one feature).
-    /// </summary>
-    internal static TextFeature SelectedText
-    {
-        get
-        {
-            ISpatialObject so = EditingController.Current.SpatialSelection.Item;
-            return (so as TextFeature);
+                return so as LineFeature;
         }
     }
 

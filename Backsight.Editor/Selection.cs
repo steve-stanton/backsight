@@ -33,7 +33,7 @@ class Selection : ISpatialSelection
     /// defined only if the selection refers to a single topological line that has
     /// been divided into a series of sections.
     /// </summary>
-    DividerObject m_Section;
+    private readonly DividerObject? m_Section;
 
     #endregion
 
@@ -47,7 +47,7 @@ class Selection : ISpatialSelection
     /// <param name="searchPosition">A position associated with the selection (null
     /// if a specific position isn't relevant). This is used to determine whether a
     /// topological section is relevant when a line is selected.</param>
-    public Selection(ISpatialObject so, IPosition searchPosition)
+    public Selection(ISpatialObject so, IPosition? searchPosition = null)
     {
         m_Items = new List<ISpatialObject>(1);
         if (so!=null)
@@ -58,14 +58,14 @@ class Selection : ISpatialSelection
 
         m_Section = null;
 
-        if (searchPosition != null)
+        if (searchPosition is not null)
         {
             LineFeature line = (so as LineFeature);
-            if (line != null && line.Topology is SectionTopologyList)
+            if (line?.Topology is SectionTopologyList sections)
             {
-                SectionTopologyList sections = (line.Topology as SectionTopologyList);
+                //SectionTopologyList sections = (line.Topology as SectionTopologyList);
                 IDivider d = sections.FindClosestSection(searchPosition);
-                if (d != null)
+                if (d is not null)
                     m_Section = new DividerObject(d);
             }
         }
@@ -106,11 +106,11 @@ class Selection : ISpatialSelection
     /// The one and only item in this selection (null if the selection is empty, or
     /// it contains more than one item).
     /// </summary>
-    public ISpatialObject Item
+    public ISpatialObject? SingleOrDefault
     {
         get
         {
-            if (m_Section != null)
+            if (m_Section is not null)
                 return m_Section;
 
             return (m_Items.Count==1 ? m_Items[0] : null);
@@ -170,7 +170,7 @@ class Selection : ISpatialSelection
     public bool Equals(ISpatialSelection that)
     {
         // The same spatial objects have to be involved
-        if (!SpatialSelection.Equals(this, that))
+        if (!SameItems(this, that))
             return false;
 
         // If both selections refer to the same divider (or null), they're the same
@@ -178,22 +178,50 @@ class Selection : ISpatialSelection
         if (other == null)
             return false;
 
-        IDivider d1 = (this.m_Section == null ? null : this.m_Section.Divider);
-        IDivider d2 = (other.m_Section == null ? null : other.m_Section.Divider);
+        IDivider? d1 = this.m_Section?.Divider;
+        IDivider? d2 = other.m_Section?.Divider;
         return Object.ReferenceEquals(d1, d2);
     }
 
     /// <summary>
-    /// The topological section that coincides with this selection. This should be
-    /// defined only if the selection refers to a single topological line that has
-    /// been divided into a series of sections.
+    /// Checks whether two selections refer to the same objects
     /// </summary>
-    public IDivider Section
+    /// <param name="a">The 1st selection</param>
+    /// <param name="b">The 2nd selection</param>
+    /// <returns>True if both selections are not null, contain the same number
+    /// of elements, and refer to the same spatial objects (the same instances)</returns>
+    private static bool SameItems(ISpatialSelection? a, ISpatialSelection? b)
     {
-        get { return m_Section.Divider; }
-        set { m_Section = new DividerObject(value); }
+        if (a is null || b is null)
+            return false;
+
+        if (Object.ReferenceEquals(a, b))
+            return true;
+
+        if (a.Count != b.Count)
+            return false;
+
+        foreach (ISpatialObject sob in b.Items)
+        {
+            bool found = false;
+
+            foreach (ISpatialObject soa in a.Items)
+            {
+                if (Object.ReferenceEquals(soa, sob))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                return false;
+        }
+
+        return true;
     }
-    internal DividerObject Divider => m_Section;
+
+    internal DividerObject? Divider => m_Section;
 
     /// <summary>
     /// Adds a spatial object to this selection, given that it is not already

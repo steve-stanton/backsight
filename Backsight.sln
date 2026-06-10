@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.Forms", "Backsigh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.Database", "Backsight.Database\Backsight.Database.csproj", "{2FA1FB8C-A6C0-4411-A994-89822F6FDDE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.Map.Editor", "Backsight.Map.Editor\Backsight.Map.Editor.csproj", "{1AE265D8-E679-475F-9684-E669B39DEEAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,22 @@ Global
 		{2FA1FB8C-A6C0-4411-A994-89822F6FDDE3}.Release|Win32.Build.0 = Release|Any CPU
 		{2FA1FB8C-A6C0-4411-A994-89822F6FDDE3}.Release|x86.ActiveCfg = Release|Any CPU
 		{2FA1FB8C-A6C0-4411-A994-89822F6FDDE3}.Release|x86.Build.0 = Release|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Debug|Win32.Build.0 = Debug|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Debug|x86.Build.0 = Debug|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Release|Win32.ActiveCfg = Release|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Release|Win32.Build.0 = Release|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Release|x86.ActiveCfg = Release|Any CPU
+		{1AE265D8-E679-475F-9684-E669B39DEEAF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

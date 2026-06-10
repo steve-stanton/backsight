@@ -342,19 +342,13 @@ abstract class CommandUI : IDisposable
          */
     }
 
-    internal EditingController Controller
-    {
-        get { return EditingController.Current; }
-    }
+    internal EditingController Controller => EditingController.Current;
 
     /// <summary>
     /// Shortcut to <c>Controller.ActiveLayer</c> (the map layer currently
     /// designated as the editing layer)
     /// </summary>
-    internal ILayer ActiveLayer
-    {
-        get { return Controller.ActiveLayer; }
-    }
+    internal ILayer ActiveLayer => Controller.ActiveLayer;
 
     /// <summary>
     /// Finishes this command.
@@ -438,10 +432,7 @@ abstract class CommandUI : IDisposable
     /// While it is expected that most deribed classes will return a true result, it is
     /// possible that a command only performs painting at certain stages.
     /// </summary>
-    internal virtual bool PerformsPainting
-    {
-        get { return false; }
-    }
+    internal virtual bool PerformsPainting => false;
 
     /// <summary>
     /// Indicates that any painting previously done by a command should be erased. This

@@ -33,18 +33,18 @@ class NewLineUI : SimpleCommandUI
     /// <summary>
     /// The point at the start of the new line.
     /// </summary>
-    PointFeature m_Start;
+    PointFeature? m_Start;
 
     /// <summary>
     /// The point the mouse is currently close to (may end up being either the start or
     /// the end of the new line).
     /// </summary>
-    PointFeature m_CurrentPoint;
+    PointFeature? m_CurrentPoint;
 
     /// <summary>
     /// The last mouse position
     /// </summary>
-    IPointGeometry m_End;
+    IPointGeometry? m_End;
 
     #endregion
 
@@ -56,7 +56,7 @@ class NewLineUI : SimpleCommandUI
     /// <param name="cc">Object for holding any displayed dialogs</param>
     /// <param name="action">The action that initiated this command</param>
     /// <param name="start">Point initially selected at start of command</param>
-    internal NewLineUI(IControlContainer cc, IUserAction action, PointFeature start)
+    internal NewLineUI(IControlContainer cc, IUserAction action, PointFeature? start)
         : base(cc, action)
     {
         m_Start = start;
@@ -86,10 +86,7 @@ class NewLineUI : SimpleCommandUI
     /// controller will periodically call the <see cref="Paint"/> method (probably during
     /// idle time).
     /// </summary>
-    internal override bool PerformsPainting
-    {
-        get { return true; }
-    }
+    internal override bool PerformsPainting => true;
 
     internal override void Paint(PointFeature point)
     {
@@ -264,15 +261,12 @@ class NewLineUI : SimpleCommandUI
     /// <summary>
     /// The point at the start of the new line (null if not yet specified)
     /// </summary>
-    protected PointFeature StartPoint
-    {
-        get { return m_Start; }
-    }
+    protected PointFeature? StartPoint => m_Start;
 
     /// <summary>
     /// The last mouse position
     /// </summary>
-    protected IPointGeometry LastMousePosition
+    protected IPointGeometry? LastMousePosition
     {
         get { return m_End; }
         set { m_End = value; }

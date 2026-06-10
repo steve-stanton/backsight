@@ -48,8 +48,8 @@ class RadialUI : SimpleCommandUI, IDisposable
     internal RadialUI(IControlContainer cc, IUserAction action)
         : base(cc, action)
     {
-        PointFeature from = EditingController.SelectedPoint;
-        if (from == null)
+        PointFeature? from = EditingController.Current.Selection.SingleOrDefault as PointFeature;
+        if (from is null)
             throw new InvalidOperationException("You must initially select the point the sideshot radiates from.");
 
         m_Dialog = null;
