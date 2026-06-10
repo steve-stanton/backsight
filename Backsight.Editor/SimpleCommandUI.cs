@@ -174,7 +174,7 @@ abstract class SimpleCommandUI : CommandUI
     /// Creates any applicable context menu
     /// </summary>
     /// <returns>Null (always), indicating that this command does not utilize a context menu.</returns>
-    internal override ContextMenuStrip CreateContextMenu()
+    internal override ContextMenuStrip? CreateContextMenu()
     {
         return null;
     }

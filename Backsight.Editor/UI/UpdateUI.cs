@@ -746,9 +746,9 @@ class UpdateUI : SimpleCommandUI
     /// Creates any applicable context menu
     /// </summary>
     /// <returns>The context menu (null if the command does not utilize a context menu).</returns>
-    internal override ContextMenuStrip CreateContextMenu()
+    internal override ContextMenuStrip? CreateContextMenu()
     {
-        if (m_Cmd == null)
+        if (m_Cmd is null)
             return null;
         else
             return m_Cmd.CreateContextMenu();

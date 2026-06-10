@@ -92,10 +92,10 @@ class LineSubdivisionUI : SimpleCommandUI
             throw new Exception("LineSubdivisionUI.Run - Command is already running.");
 
         // Are we doing an update?
-        UpdateUI pup = this.Update;
+        UpdateUI? pup = this.Update;
 
         // Create modeless dialog.
-        if (pup != null)
+        if (pup is not null)
         {
             m_UpDial = new LineSubdivisionUpdateForm(pup);
             m_UpDial.Show();
@@ -172,10 +172,10 @@ class LineSubdivisionUI : SimpleCommandUI
         if (m_Dialog==null && m_UpDial==null)
             throw new Exception("LineSubdivisionUI.DialFinish - No dialog!");
 
-        UpdateUI up = this.Update;
+        UpdateUI? up = this.Update;
         bool doAbort = false;
 
-        if (up!=null)
+        if (up is not null)
         {
             // Get the original operation.
             LineSubdivisionOperation pop = (up.GetOp() as LineSubdivisionOperation);

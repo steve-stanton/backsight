@@ -121,9 +121,9 @@ partial class PathForm : Form
 
         // If we are recalling an old operation, fill in the
         // data entry string.
-        PathOperation op = null;
-        if (m_Command != null)
-            op = (m_Command.Recall as PathOperation);
+        PathOperation? op = null;
+        if (m_Command is not null)
+            op = m_Command.Recall as PathOperation;
         ShowInput(op);
 
         // Display the current default units.

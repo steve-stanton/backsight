@@ -127,14 +127,14 @@ class LineExtensionUI : SimpleCommandUI, IDisposable
             throw new InvalidOperationException("LineExtensionUI.Run - Command is already running.");
 
         // Are we doing an update?
-        UpdateUI pup = this.Update;
+        UpdateUI? pup = this.Update;
 
-        if (pup!=null)
+        if (pup is not null)
             m_Dialog = new LineExtensionControl(pup);
         else
             m_Dialog = new LineExtensionControl(this, m_ExtendLine, this.Recall);
 
-        this.Container.Display(m_Dialog);
+        Container.Display(m_Dialog);
         return true;
     }
 
@@ -202,9 +202,9 @@ class LineExtensionUI : SimpleCommandUI, IDisposable
         }
 
         // If we are doing an update, alter the original operation.
-        UpdateUI up = this.Update;
+        UpdateUI? up = this.Update;
 
-        if (up!=null)
+        if (up is not null)
         {
             // Get the original operation.
             LineExtensionOperation pop = (up.GetOp() as LineExtensionOperation);

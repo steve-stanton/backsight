@@ -184,9 +184,9 @@ class ParallelLineUI : SimpleCommandUI, IDisposable
 
         // If we're doing an update, get the reference line from the original op.
         ParallelLineOperation op = null;
-        UpdateUI up = this.Update;
+        UpdateUI? up = this.Update;
 
-        if (up!=null)
+        if (up is not null)
         {
             op = (up.GetOp() as ParallelLineOperation);
             if (op==null)
@@ -456,7 +456,7 @@ class ParallelLineUI : SimpleCommandUI, IDisposable
         // terminal line.
 
         var view = ActiveMap;
-        UpdateUI up = this.Update;
+        UpdateUI? up = this.Update;
 
         if (m_ParDial!=null)
         {
@@ -477,13 +477,13 @@ class ParallelLineUI : SimpleCommandUI, IDisposable
             Draw();
 
             // And start the dialog for the first terminal line.
-            if (up!=null)
+            if (up is not null)
                 m_TermDial1 = new TerminalControl(up, false);
             else
                 m_TermDial1 = new TerminalControl(this, false);
 
             //m_TermDial1.Show();
-            this.Container.Display(m_TermDial1);
+            Container.Display(m_TermDial1);
             return true;
         }
 

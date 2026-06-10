@@ -538,12 +538,12 @@ class EditingController
         if (m_Main is null)
             return;
         
-        ContextMenuStrip menu = m_Command?.CreateContextMenu();
+        ContextMenuStrip? menu = m_Command?.CreateContextMenu();
 
-        if (menu==null)
+        if (menu is null)
             menu = m_Main.CreateContextMenu(m_Selection);
 
-        if (menu!=null)
+        if (menu is not null)
             where.ShowContextMenu(p, menu);
     }
 

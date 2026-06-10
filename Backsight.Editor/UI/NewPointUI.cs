@@ -90,14 +90,14 @@ class NewPointUI : SimpleCommandUI, IDisposable
         if (m_Dialog!=null)
             throw new InvalidOperationException("NewPointUI.Run - Command is already running.");
 
-        UpdateUI pup = this.Update;
+        UpdateUI? pup = this.Update;
 
         // Create the appropriate sort of dialog.
         switch (this.EditId)
         {
             case EditingActionId.NewPoint:
             {
-                if (pup!=null)
+                if (pup is not null)
                     m_Dialog = new NewPointForm(pup, "Update Point", null);
                 else
                     m_Dialog = new NewPointForm(this, "Define New Point", this.Recall);
@@ -107,7 +107,7 @@ class NewPointUI : SimpleCommandUI, IDisposable
 
             case EditingActionId.GetControl:
             {
-                if (pup!=null)
+                if (pup is not null)
                 {
                     m_Dialog = new NewPointForm(pup, "Update Control Point", null);
                     break;

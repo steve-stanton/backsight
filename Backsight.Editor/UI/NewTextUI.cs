@@ -198,7 +198,7 @@ class NewTextUI : AddLabelUI
     /// Creates any applicable context menu
     /// </summary>
     /// <returns>The context menu for this command.</returns>
-    internal override ContextMenuStrip CreateContextMenu()
+    internal override ContextMenuStrip? CreateContextMenu()
     {
         return new NewTextContextMenu(this);
     }

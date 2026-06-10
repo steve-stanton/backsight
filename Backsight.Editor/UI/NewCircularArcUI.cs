@@ -305,7 +305,7 @@ class NewCircularArcUI : NewLineUI
     /// Creates any applioable context menu
     /// </summary>
     /// <returns>The context menu for this command.</returns>
-    internal override ContextMenuStrip CreateContextMenu()
+    internal override ContextMenuStrip? CreateContextMenu()
     {
         NewCircularArcContextMenu result = new NewCircularArcContextMenu(this);
         result.IsShortArc = m_IsShortArc;

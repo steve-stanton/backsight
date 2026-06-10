@@ -125,9 +125,9 @@ partial class IntersectForm : Form
     /// </summary>
     /// <returns>The edit that is being recalled (null if a previous edit is
     /// not being recalled).</returns>
-    internal IntersectOperation GetRecall()
+    internal IntersectOperation? GetRecall()
     {
-        return (m_Cmd.Recall as IntersectOperation);
+        return m_Cmd.Recall as IntersectOperation;
     }
 
     /// <summary>

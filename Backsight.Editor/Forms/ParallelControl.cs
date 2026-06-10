@@ -476,12 +476,11 @@ public partial class ParallelControl : UserControl
 
     bool InitRecall()
     {
-        ParallelLineOperation op = (m_Cmd.Recall as ParallelLineOperation);
-        if (op==null)
+        ParallelLineOperation? op = m_Cmd.Recall as ParallelLineOperation;
+        if (op is null)
             return false;
 
-        // Unlike updates, the reference line can be different
-        // from what it was originally.
+        // Unlike updates, the reference line can be different from what it was originally.
 
         // Initialize the observed stuff.
         InitOp(op);

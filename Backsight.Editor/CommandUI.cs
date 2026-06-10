@@ -13,7 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Drawing;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Backsight.Forms;
@@ -48,19 +47,14 @@ abstract class CommandUI : IDisposable
     private readonly ISpatialGraphics m_Draw;
 
     /// <summary>
-    /// The object (if any) that was selected for update (usually an <c>IFeature</c>)
-    /// </summary>
-    //private ISpatialObject m_Update;
-
-    /// <summary>
     /// The update command that is currently running (null if not an update).
     /// </summary>
-    private UpdateUI m_UpdCmd;
+    private UpdateUI? m_UpdCmd;
 
     /// <summary>
     /// An operation that is being recalled (null if this is an update).
     /// </summary>
-    private readonly Operation m_Recall;
+    private readonly Operation? m_Recall;
 
     #endregion
 
@@ -87,17 +81,16 @@ abstract class CommandUI : IDisposable
     {
         m_Container = cc;
         m_Draw = EditingController.Current.ActiveMap;
-        //m_Update = update;
         m_UpdCmd = null;
         m_Recall = recall;
 
-        if (cmdId is EditingAction)
-            m_EditId = (cmdId as EditingAction).EditId;
+        if (cmdId is EditingAction e)
+            m_EditId = e.EditId;
         else
             m_EditId = EditingActionId.Null;
 
-        if (cmdId is RecalledEditingAction)
-            m_Recall = (cmdId as RecalledEditingAction).RecalledEdit;
+        if (cmdId is RecalledEditingAction r)
+            m_Recall = r.RecalledEdit;
 
         Debug.Assert(m_Draw!=null);
     }
@@ -117,93 +110,52 @@ abstract class CommandUI : IDisposable
         m_EditId = editId;
         m_UpdCmd = updcmd;
         m_Draw = updcmd.ActiveMap;
-        //m_Update = updcmd.SelectedObject;
         m_Recall = null;
-        /*
-        this.Update = update;
-
-        if (update==null)
-        {
-            m_Draw = EditingController.Current.ActiveDisplay;
-            m_Recall = null;
-        }
-         */
 
         Debug.Assert(m_Draw!=null);
     }
 
     #endregion
 
-    abstract internal bool Run();
-    abstract internal void Paint(PointFeature point);
-    abstract internal void MouseMove(IPosition p);
+    internal abstract bool Run();
+    internal abstract void Paint(PointFeature point);
+    internal abstract void MouseMove(IPosition p);
 
     /// <summary>
     /// Handles a mouse down event
     /// </summary>
     /// <param name="p">The position where the click occurred</param>
     /// <returns>True if the command handled the mouse down. False if it did nothing.</returns>
-    abstract internal bool LButtonDown(IPosition p);
+    internal abstract bool LButtonDown(IPosition p);
 
-    abstract internal void LButtonUp(IPosition p);
-    abstract internal void LButtonDblClick(IPosition p);
-    abstract internal void DialAbort(Control wnd);
-    abstract internal bool DialFinish(Control wnd);
+    internal abstract void LButtonUp(IPosition p);
+    internal abstract void LButtonDblClick(IPosition p);
+    internal abstract void DialAbort(Control wnd);
+    internal abstract bool DialFinish(Control wnd);
 
     /// <summary>
     /// Reacts to the selection of a point feature.
     /// </summary>
     /// <param name="point">The point (if any) that has been selected.</param>
-    abstract internal void OnSelectPoint(PointFeature point);
+    internal abstract void OnSelectPoint(PointFeature point);
 
     /// <summary>
     /// Reacts to the selection of a line feature.
     /// </summary>
     /// <param name="line">The line (if any) that has been selected.</param>
-    abstract internal void OnSelectLine(LineFeature line);
+    internal abstract void OnSelectLine(LineFeature line);
 
     /// <summary>
     /// Creates any applicable context menu
     /// </summary>
-    /// <returns>The context menu (null if the command does not utilize a context menu).</returns>
-    abstract internal ContextMenuStrip CreateContextMenu();
+    /// <returns>The context menu (null if the command does not involve a context menu).</returns>
+    internal abstract ContextMenuStrip? CreateContextMenu();
 
     internal ISpatialGraphics ActiveMap => m_Draw;
 
-    internal IControlContainer Container
-    {
-        get { return m_Container; }
-    }
+    internal IControlContainer Container => m_Container;
 
-    // Try UpdateUI.GetUpdate()
-    //internal ISpatialObject SelectedObject
-    //{
-    //    get { return m_Update; }
-    //}
-
-    public UpdateUI Update
-    {
-        get { return m_UpdCmd; }
-
-        // For use by UpdateUI constructor
-        /*
-        protected set
-        {
-            m_UpdCmd = value;
-
-            if (m_UpdCmd==null)
-            {
-                m_Draw = null;
-                m_Update = null;
-            }
-            else
-            {
-                m_Draw = m_UpdCmd.ActiveDisplay;
-                m_Update = m_UpdCmd.SelectedObject;
-            }
-        }
-         */
-    }
+    public UpdateUI? Update => m_UpdCmd;
 
     /// <summary>
     /// Sets any offset that applies to this command. This is a placeholder
@@ -216,41 +168,6 @@ abstract class CommandUI : IDisposable
     {
         throw new NotImplementedException("CommandUI.SetOffset needs to be implemented by "+GetType().Name);
     }
-
-    /// <summary>
-    /// Converts a position from the parent window's logical space into a screen position.
-    /// </summary>
-    /// <param name="pt">The position to convert, in logical units.</param>
-    /// <returns>The position in screen units.</returns>
-    internal Point LPToScreen(Point pt)
-    {
-        throw new NotImplementedException("LPToScreen");
-        // I think this is misplaced
-        /*
-        // Convert into device (client) units.
-        LPToDP(lpt,respt);
-
-        // Convert into screen units.
-        m_pDraw->ClientToScreen(&respt);
-         */
-    }
-
-    /*
-    //	@mfunc	Convert a position from the parent window's logical
-    //			space into a device (client) position.
-    //
-    //	@parm	The position to convert, in logical units.
-    //	@parm	The position to define, in client units.
-
-    void CuiCommand::LPToDP ( const CPoint& lpt
-                            , CPoint& respt ) const {
-
-        CClientDC dc(m_pDraw);
-        m_pDraw->OnPrepareDC(&dc);
-        respt = lpt;
-        dc.LPtoDP(&respt);
-    }
-     */
 
     /// <summary>
     /// Ensures the command cursor (if any) is shown. This version does nothing.
@@ -266,80 +183,6 @@ abstract class CommandUI : IDisposable
     protected void SetNormalCursor()
     {
         Cursor.Current = Cursors.Default;
-    }
-
-    /// <summary>
-    /// Remembers that the map has been changed. 
-    /// </summary>
-    void SetChanged()
-    {
-        /*
-        CEditDoc* pEditDoc = (CEditDoc*)m_pDraw->GetDocument();
-        pEditDoc->SetChanged();
-         */
-    }
-
-    /// <summary>
-    /// Gets a registry setting.
-    /// </summary>
-    /// <param name="name">The name of the setting to get.</param>
-    /// <returns>The value in the registry (null if not found).</returns>
-    string GetSetting(string name)
-    {
-        /*
-        value = AfxGetApp()->GetProfileString("Settings",name);
-        return (!value.IsEmpty());
-         */
-        return null;
-    }
-
-    /// <summary>
-    /// Makes a registry setting.
-    /// </summary>
-    /// <param name="name">The name of the setting to set.</param>
-    /// <param name="value">The value to set (specify an empty string to delete the setting).</param>
-    void SetSetting(string name, string value)
-    {
-        /*
-        if ( value.IsEmpty() )
-            AfxGetApp()->WriteProfileString( "Settings", name, 0 );
-        else
-            AfxGetApp()->WriteProfileString( "Settings", name, LPCTSTR(value) );
-         */
-    }
-
-    /// <summary>
-    /// Gets a registry setting that was set using SetBooleanSetting.
-    /// </summary>
-    /// <param name="name">The name of the setting to get.</param>
-    /// <returns>True if the setting was set, and has a "y" value. False if no
-    /// setting, or the value is not "y".</returns>
-    bool GetBooleanSetting(string name)
-    {
-        /*
-        CString value;
-        return (GetSetting(name,value) && value[0]=='y');
-         */
-        return false;
-    }
-
-    /// <summary>
-    /// Makes a registry setting for a logical variable.
-    /// </summary>
-    /// <param name="name">The name of the setting to set.</param>
-    /// <param name="value">The value to set.</param>
-    void SetBooleanSetting(string name, bool value)
-    {
-        /*
-        if ( value ) {
-            CString str("y");
-            SetSetting(name,str);
-        }
-        else {
-            CString str("n");
-            SetSetting(name,str);
-        }
-         */
     }
 
     internal EditingController Controller => EditingController.Current;
@@ -359,10 +202,10 @@ abstract class CommandUI : IDisposable
         // If this command was invoked by an update command, get
         // the update to clean up. Otherwise tell the controller.
 
-        if (m_UpdCmd!=null)
+        if (m_UpdCmd is not null)
             m_UpdCmd.FinishCommand(this);
         else
-            this.Controller.FinishCommand(this);
+            Controller.FinishCommand(this);
 
         return true;
     }
@@ -376,7 +219,7 @@ abstract class CommandUI : IDisposable
         // If this command was invoked by an update command, get
         // the update to clean up. Otherwise tell the controller.
 
-        if (m_UpdCmd!=null)
+        if (m_UpdCmd is not null)
             m_UpdCmd.AbortCommand(this);
         else
             this.Controller.AbortCommand(this);
@@ -399,15 +242,9 @@ abstract class CommandUI : IDisposable
 
     #endregion
 
-    internal EditingActionId EditId
-    {
-        get { return m_EditId; }
-    }
+    internal EditingActionId EditId => m_EditId;
 
-    internal Operation Recall
-    {
-        get { return m_Recall; }
-    }
+    internal Operation? Recall => m_Recall;
 
     /// <summary>
     /// The diagonal length of a line that spans the active display when it is
@@ -446,32 +283,6 @@ abstract class CommandUI : IDisposable
     }
 
     /// <summary>
-    /// Converts a ground position into screen coordinates.
-    /// </summary>
-    /// <param name="p">The position to convert</param>
-    /// <returns>The corresponding screen position</returns>
-    internal Point GetScreenPoint(IPosition p)
-    {
-        var d = ActiveMap;
-        Control c = d.MapPanel;
-        return c.PointToScreen(d.ToPoint(p));
-    }
-    
-
-    ///// <summary>
-    ///// The background color of the display that's being used for this command.
-    ///// </summary>
-    //internal Color DisplayBackColor
-    //{
-    //    get
-    //    {
-    //        ISpatialDisplay d = ActiveDisplay;
-    //        Control c = d.MapPanel;
-    //        return c.BackColor;
-    //    }
-    //}
-
-    /// <summary>
     /// Reacts to a situation where the user presses the ESC key. This implementation
     /// does nothing. Derived classes may override.
     /// </summary>
@@ -489,9 +300,9 @@ abstract class CommandUI : IDisposable
     /// Highlights the specified line on the command's active display.
     /// </summary>
     /// <param name="line">The line to highlight (ignored if null)</param>
-    protected void Highlight(LineFeature line)
+    protected void Highlight(LineFeature? line)
     {
-        if (line!=null)
+        if (line is not null)
         {
             var style = Controller.HighlightStyle;
             var display = ActiveMap;

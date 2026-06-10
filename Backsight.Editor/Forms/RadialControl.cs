@@ -35,7 +35,7 @@ public partial class RadialControl : UserControl
     /// <summary>
     /// Command being recalled (if any).
     /// </summary>
-    private RadialOperation m_Recall;
+    private RadialOperation? m_Recall;
 
     // Direction related ...
 
@@ -152,7 +152,7 @@ public partial class RadialControl : UserControl
         Zero();
         m_Cmd = cmd;
         m_From = from;
-        m_Recall = (RadialOperation)cmd.Recall;
+        m_Recall = cmd.Recall as RadialOperation;
         m_PointId = new IdHandle();
         InitOp(m_Recall);
     }
@@ -241,9 +241,9 @@ public partial class RadialControl : UserControl
         m_PointId = null;
     }
 
-    bool InitOp(RadialOperation pop)
+    bool InitOp(RadialOperation? pop)
     {
-        if (pop==null)
+        if (pop is null)
             return false;
 
         // Get the point the sideshot was observed from (unless
@@ -1347,7 +1347,7 @@ public partial class RadialControl : UserControl
 
     bool ShowRecall()
     {
-        if ( m_Recall==null)
+        if (m_Recall is null)
             return false;
 
         // Ensure OnChange handlers do nothing when we set the

@@ -108,14 +108,14 @@ class SimpleLineSubdivisionUI : SimpleCommandUI, IDisposable
         if (m_Dialog!=null)
             throw new InvalidOperationException("SimpleLineSubdivisionUI.Run - Command is already running.");
 
-        UpdateUI pup = this.Update;
+        UpdateUI? pup = this.Update;
 
-        if (pup!=null)
+        if (pup is not null)
             m_Dialog = new SimpleLineSubdivisionControl(pup);
         else
             m_Dialog = new SimpleLineSubdivisionControl(this, m_Line, this.Recall);
 
-        this.Container.Display(m_Dialog);
+        Container.Display(m_Dialog);
         return true;
     }
 
@@ -189,9 +189,9 @@ class SimpleLineSubdivisionUI : SimpleCommandUI, IDisposable
         m_Length = m_Dialog.Length;
 
         // If we are doing an update, alter the original operation.
-        UpdateUI up = this.Update;
+        UpdateUI? up = this.Update;
 
-        if (up!=null)
+        if (up is not null)
         {
             // Get the original operation.
             SimpleLineSubdivisionOperation pop = (up.GetOp() as SimpleLineSubdivisionOperation);

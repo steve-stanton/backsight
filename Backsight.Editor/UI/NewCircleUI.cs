@@ -78,9 +78,9 @@ class NewCircleUI : SimpleCommandUI, IDisposable
             throw new InvalidOperationException("NewCircleUI.Run - Command is already running.");
 
         // Are we doing an update?
-        UpdateUI pup = this.Update;
+        UpdateUI? pup = this.Update;
 
-        if (pup!=null)
+        if (pup is not null)
             m_Dialog = new NewCircleForm(pup);
         else
             m_Dialog = new NewCircleForm(this, this.Recall);
@@ -173,9 +173,9 @@ class NewCircleUI : SimpleCommandUI, IDisposable
         }
 
         // If we are doing an update, alter the original operation.
-        UpdateUI pup = this.Update;
+        UpdateUI? pup = this.Update;
 
-        if (pup!=null)
+        if (pup is not null)
         {
             // Get the original operation.
             NewCircleOperation pop = (pup.GetOp() as NewCircleOperation);

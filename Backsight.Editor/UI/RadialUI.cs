@@ -91,9 +91,9 @@ class RadialUI : SimpleCommandUI, IDisposable
         if (m_Dialog!=null)
             throw new InvalidOperationException("RadialUI.Run - Command is already running.");
 
-        UpdateUI pup = this.Update;
+        UpdateUI? pup = this.Update;
 
-        if (pup!=null)
+        if (pup is not null)
             m_Dialog = new RadialControl(pup);
         else
         {
@@ -193,9 +193,9 @@ class RadialUI : SimpleCommandUI, IDisposable
             return m_Dialog.DialFinish(wnd);
 
         // If we are doing an update, remember the changes
-        UpdateUI up = this.Update;
+        UpdateUI? up = this.Update;
 
-        if (up!=null)
+        if (up is not null)
         {
             RadialOperation pop = (up.GetOp() as RadialOperation);
             if (pop==null)

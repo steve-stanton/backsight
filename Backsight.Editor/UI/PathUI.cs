@@ -292,8 +292,8 @@ class PathUI : SimpleCommandUI, IDisposable
     bool StartUpdate()
     {
         // Return if we're not doing an update.
-        UpdateUI up = this.Update;
-        if (up==null)
+        UpdateUI? up = this.Update;
+        if (up is null)
             return false;
 
         m_DialUp = new UpdatePathForm(up);
