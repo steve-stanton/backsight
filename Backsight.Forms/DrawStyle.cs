@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Drawing.Drawing2D;
+using Backsight.Editor.Forms;
 using Backsight.Geometry;
 
 namespace Backsight.Forms;
@@ -176,9 +177,7 @@ public class DrawStyle : IDrawStyle
 
         for (int i=0; i<line.Length; i++)
         {
-            IPosition gp = line[i];
-            pts[i].X = display.EastingToDisplay(gp.X);
-            pts[i].Y = display.NorthingToDisplay(gp.Y);
+            pts[i] = display.ToPointF(line[i]);
         }
 
         return pts;
@@ -189,12 +188,7 @@ public class DrawStyle : IDrawStyle
         var result = new List<PointF>();
 
         foreach (var position in line)
-        {
-            result.Add(
-                new PointF(
-                    display.EastingToDisplay(position.X),
-                    display.NorthingToDisplay(position.Y)));
-        }
+            result.Add(display.ToPointF(position));
 
         return result.ToArray();
     }
@@ -209,8 +203,8 @@ public class DrawStyle : IDrawStyle
     {
         try
         {
-            var sp = new PointF(display.EastingToDisplay(start.X), display.NorthingToDisplay(start.Y));
-            var ep = new PointF(display.EastingToDisplay(end.X), display.NorthingToDisplay(end.Y));
+            var sp = display.ToPointF(start);
+            var ep = display.ToPointF(end);
             m_Path.AddLine(sp, ep);
             display.Graphics.DrawPath(m_Pen, m_Path);
         }
@@ -287,8 +281,7 @@ public class DrawStyle : IDrawStyle
     {
         ICircleGeometry circle = arc.Circle;
         IWindow extent = CircleGeometry.GetExtent(circle);
-        float topLeftX = display.EastingToDisplay(extent.Min.X);
-        float topLeftY = display.NorthingToDisplay(extent.Max.Y);
+        var (topLeftX, topLeftY) = display.GroundToDisplay(extent.Min.X, extent.Max.Y);
         float size = 2.0f * display.LengthToDisplay(circle.Radius);
         float startAngle = (float)(arc.StartBearingInRadians * MathConstants.RADTODEG - 90.0);
         float sweepAngle = (float)(arc.SweepAngleInRadians * MathConstants.RADTODEG);
@@ -377,9 +370,7 @@ public class DrawStyle : IDrawStyle
 
     PointF CreatePoint(ISpatialDisplay display, IPosition p)
     {
-        float x = display.EastingToDisplay(p.X);
-        float y = display.NorthingToDisplay(p.Y);
-        return new PointF(x, y);
+        return display.ToPointF(p);
     }
 
     /// <summary>
@@ -399,8 +390,7 @@ public class DrawStyle : IDrawStyle
     /// <param name="radius">The radius of the circle, in meters on the ground</param>
     public void Render(ISpatialGraphics display, IPosition center, double radius)
     {
-        float xc = display.EastingToDisplay(center.X);
-        float yc = display.NorthingToDisplay(center.Y);
+        var (xc, yc) = display.GroundToDisplay(center.X, center.Y);
         float r = display.LengthToDisplay(radius);
         float sz = r+r;
         display.Graphics.DrawEllipse(m_Pen, xc-r, yc-r, sz, sz);

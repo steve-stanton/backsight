@@ -35,21 +35,15 @@ public interface ISpatialDisplay
     /// a scale of 1:100)
     /// </summary>
     double MapScale { get; set; }
-
+    
     /// <summary>
-    /// Converts an easting into display units
+    /// Converts a position (in ground units) into display units
     /// </summary>
-    /// <param name="x">The easting to convert</param>
-    /// <returns>The corresponding position on the display</returns>
-    float EastingToDisplay(double x);
-
-    /// <summary>
-    /// Converts a northing into display units
-    /// </summary>
-    /// <param name="y">The northing to convert</param>
-    /// <returns>The corresponding position on the display</returns>
-    float NorthingToDisplay(double y);
-
+    /// <param name="easting">The easting.</param>
+    /// <param name="northing">The northing.</param>
+    /// <returns>The corresponding (X,Y) position on the display</returns>
+    (float, float) GroundToDisplay(double easting, double northing);
+    
     /// <summary>
     /// Converts a length on the ground into display units.
     /// </summary>

@@ -784,26 +784,23 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
          */
     }
 
-    private void GroundToDisplay(double x, double y, ref PointF p)
+    private void GroundToDisplay(double easting, double northing, ref PointF p)
     {
-        p.X = EastingToDisplay(x);
-        p.Y = NorthingToDisplay(y);
+        var (px, py) = GroundToDisplay(easting, northing);
+
+        p.X = px;
+        p.Y = py;
     }
 
-    public float EastingToDisplay(double x)
+    public (float, float) GroundToDisplay(double easting, double northing)
     {
         if (m_MapPanelExtent is null)
-            return 0;
+            return (0, 0);
         
-        return (float)((x - m_MapPanelExtent.Min.X) * m_GroundToDisplay);
-    }
-
-    public float NorthingToDisplay(double y)
-    {
-        if (m_MapPanelExtent is null)
-            return 0;
-
-        return (float)((m_MapPanelExtent.Max.Y - y) * m_GroundToDisplay);
+        var x = (float)((easting - m_MapPanelExtent.Min.X) * m_GroundToDisplay);
+        var y = (float)((m_MapPanelExtent.Max.Y - northing) * m_GroundToDisplay);
+        
+        return (x, y);
     }
 
     /// <summary>
@@ -1248,11 +1245,10 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     public Rectangle DrawReversibleFrame(IWindow x)
     {
-        int topLeftX = (int)EastingToDisplay(x.Min.X);
-        int topLeftY = (int)NorthingToDisplay(x.Max.Y);
-        int width = (int)LengthToDisplay(x.Width);
-        int height = (int)LengthToDisplay(x.Height);
-        Rectangle rect = new Rectangle(topLeftX, topLeftY, width, height);
+        var (topLeftX, topLeftY) = GroundToDisplay(x.Min.X, x.Max.Y);
+        float width = LengthToDisplay(x.Width);
+        float height = LengthToDisplay(x.Height);
+        Rectangle rect = new Rectangle((int)topLeftX, (int)topLeftY, (int)width, (int)height);
         Rectangle screenRect = mapPanel.RectangleToScreen(rect);
         DrawReversibleFrame(screenRect);
         return screenRect;
@@ -1279,9 +1275,8 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     {
         if (menu!=null)
         {
-            int x = (int)EastingToDisplay(p.X);
-            int y = (int)NorthingToDisplay(p.Y);
-            Point display = new Point(x, y);
+            //var (x, y) = GroundToDisplay(p.X, p.Y);
+            var display = (this as ISpatialDisplay).ToPoint(p);
             Point screen = mapPanel.PointToScreen(display);
 
             // Remember the displayed menu (in case something needs to explicitly hide the menu)

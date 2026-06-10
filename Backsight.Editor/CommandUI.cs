@@ -453,11 +453,10 @@ abstract class CommandUI : IDisposable
     internal Point GetScreenPoint(IPosition p)
     {
         var d = ActiveMap;
-        int x = (int)d.EastingToDisplay(p.X);
-        int y = (int)d.NorthingToDisplay(p.Y);
         Control c = d.MapPanel;
-        return c.PointToScreen(new Point(x,y));
+        return c.PointToScreen(d.ToPoint(p));
     }
+    
 
     ///// <summary>
     ///// The background color of the display that's being used for this command.
