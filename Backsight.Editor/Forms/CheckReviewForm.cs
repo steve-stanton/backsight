@@ -168,13 +168,13 @@ partial class CheckReviewForm : Form
         }
 
         // Get the current draw window, and shrink it by 10% all the way round.
-        ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-        Window win = new Window(display.Extent);
+        var map = EditingController.Current.ActiveMap;
+        Window win = new Window(map.Extent);
         win.Expand(-0.1);
 
         // If necessary, re-center the draw on the position we've got.
         if (!win.IsOverlap(pos))
-            display.Center = pos;
+            map.Center = pos;
 
         // Select the object involved, so long as it hasn't been de-activated (selecting
         // the object will highlight it and shift the focus to the main map window).

@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Backsight.Editor.Observations;
@@ -835,20 +836,20 @@ public partial class RadialControl : UserControl
 
             // Get the circle involved. If there's more than one, we need
             // to ask the user which one.
-            Circle circle;
+            Circle circle = m_Circles[0];
 
-            if (ncircle==1)
-                circle = m_Circles[0];
-            else
+            if (ncircle > 1)
             {
                 // Ask the user to select a circle.
-                GetCircleForm dial = new GetCircleForm(m_Circles);
+                var dial = new GetCircleForm(m_Circles);
                 if (dial.ShowDialog() != DialogResult.OK)
                 {
                     centreOfCurveCheckBox.Checked = false;
+                    dial.Dispose();
                     return;
                 }
 
+                Debug.Assert(dial.Circle is not null);
                 circle = dial.Circle;
                 dial.Dispose();
             }

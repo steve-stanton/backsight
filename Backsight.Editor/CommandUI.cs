@@ -44,7 +44,7 @@ abstract class CommandUI : IDisposable
     /// <summary>
     /// The active display at the time the command was started.
     /// </summary>
-    private readonly ISpatialGraphics m_Draw;
+    private readonly MapControl m_Draw;
 
     /// <summary>
     /// The update command that is currently running (null if not an update).
@@ -151,7 +151,7 @@ abstract class CommandUI : IDisposable
     /// <returns>The context menu (null if the command does not involve a context menu).</returns>
     internal abstract ContextMenuStrip? CreateContextMenu();
 
-    internal ISpatialGraphics ActiveMap => m_Draw;
+    internal MapControl ActiveMap => m_Draw;
 
     internal IControlContainer Container => m_Container;
 

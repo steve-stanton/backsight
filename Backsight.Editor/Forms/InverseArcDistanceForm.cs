@@ -32,12 +32,12 @@ partial class InverseArcDistanceForm : InverseForm
     /// <summary>
     /// The first point for the distance calculation.
     /// </summary>
-    PointFeature m_Point1;
+    PointFeature? m_Point1;
 
     /// <summary>
     /// The second point for the distance calculation.
     /// </summary>
-    PointFeature m_Point2;
+    PointFeature? m_Point2;
 
     /// <summary>
     /// Circles for first point
@@ -146,7 +146,7 @@ partial class InverseArcDistanceForm : InverseForm
     {
         // If we have two points, get the distance between them,
         // format the result, and display it.
-        if (m_Point1!=null && m_Point2!=null && m_CommCir!=null)
+        if (m_Point1 is not null && m_Point2 is not null && m_CommCir is not null)
         {
             // It's conceivable that the two points share more than
             // one common circle. For now, just pick off the first
@@ -185,24 +185,15 @@ partial class InverseArcDistanceForm : InverseForm
         }
     }
 
-    protected PointFeature Point1
-    {
-        get { return m_Point1; }
-    }
+    protected PointFeature? Point1 => m_Point1;
 
-    protected PointFeature Point2
-    {
-        get { return m_Point2; }
-    }
+    protected PointFeature? Point2 => m_Point2;
 
-    protected Circle FirstCommonCircle
-    {
-        get { return (m_CommCir==null ? null : m_CommCir[0]); }
-    }
+    protected Circle? FirstCommonCircle => m_CommCir is null ? null : m_CommCir[0];
 
     internal override void Draw()
     {
-        var display = EditingController.Current.ActiveMap;
+        var map = EditingController.Current.ActiveMap;
 
         // Redraw the arcs that are suitable for the next pointing operation.
         DrawCurves();
@@ -212,21 +203,21 @@ partial class InverseArcDistanceForm : InverseForm
         {
             var style = new DrawStyle(Color.Magenta);
             style.Pen.Width = 3.0F;
-            style.Render(display, m_CurrentDistanceArc);
+            style.Render(map, m_CurrentDistanceArc);
         }
 
         // Draw the points.
-        if (m_Point1!=null)
-            m_Point1.Draw(display, InverseColors[0]);
+        if (m_Point1 is not null)
+            m_Point1.Draw(map, InverseColors[0]);
 
-        if (m_Point2!=null)
-            m_Point2.Draw(display, InverseColors[1]);
+        if (m_Point2 is not null)
+            m_Point2.Draw(map, InverseColors[1]);
     }
 
     internal override void OnSelectPoint(PointFeature point)
     {
         // Ignore undefined points.
-        if (point==null)
+        if (point is null)
             return;
 
         // Get a list of the circles related to the incoming point
@@ -241,7 +232,7 @@ partial class InverseArcDistanceForm : InverseForm
         Debug.Assert(circles.Length>0);
 
         // If we have a list of circles from a previous point
-        if (m_Point1!=null)
+        if (m_Point1 is not null)
         {
             // If BOTH points were previously defined, compare the circles
             // for the selected point with the circles for the second point
@@ -266,16 +257,15 @@ partial class InverseArcDistanceForm : InverseForm
         }
 
         // Hold on to the new point, along with its associated circles.
-        if (m_Point1==null)
+        if (m_Point1 is null)
         {
             m_Point1 = point;
             m_Cir1 = circles;
         }
         else
         {
-            // If we have a second point, shift it back to occupy
-            // the first slot
-            if (m_Point2!=null)
+            // If we have a second point, shift it back to occupy the first slot
+            if (m_Point2 is not null)
             {
                 m_Point1 = m_Point2;
                 m_Cir1 = m_Cir2;
@@ -313,7 +303,7 @@ partial class InverseArcDistanceForm : InverseForm
 
         // Highlight the arcs associated with each circle
 
-        var display = EditingController.Current.ActiveMap;
+        var map = EditingController.Current.ActiveMap;
         var dottedBlack = new DottedStyle(Color.Black);
         var white = new DrawStyle(Color.White);
 
@@ -323,8 +313,8 @@ partial class InverseArcDistanceForm : InverseForm
             {
                 if (!arc.IsInactive)
                 {
-                    arc.Render(display, white);
-                    arc.Render(display, dottedBlack);
+                    arc.Render(map, white);
+                    arc.Render(map, dottedBlack);
                 }
             }
         }

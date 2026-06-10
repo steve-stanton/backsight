@@ -25,17 +25,17 @@ partial class InverseDistanceAngleForm : InverseForm
     /// <summary>
     /// The first point for the distance-angle calculation.
     /// </summary>
-    PointFeature m_Point1;
+    PointFeature? m_Point1;
 
     /// <summary>
     /// The second point for the distance-angle calculation.
     /// </summary>
-    PointFeature m_Point2;
+    PointFeature? m_Point2;
 
     /// <summary>
     /// The third point for the distance-angle calculation.
     /// </summary>
-    PointFeature m_Point3;
+    PointFeature? m_Point3;
 
     /// <summary>
     /// True for clockwise angle
@@ -78,7 +78,7 @@ partial class InverseDistanceAngleForm : InverseForm
     {
         if (mRadioButton.Checked)
         {
-            base.SetMeters();
+            SetMeters();
             ShowResult();
         }
     }
@@ -87,7 +87,7 @@ partial class InverseDistanceAngleForm : InverseForm
     {
         if (fRadioButton.Checked)
         {
-            base.SetFeet();
+            SetFeet();
             ShowResult();
         }
     }
@@ -96,7 +96,7 @@ partial class InverseDistanceAngleForm : InverseForm
     {
         if (cRadioButton.Checked)
         {
-            base.SetChains();
+            SetChains();
             ShowResult();
         }
     }
@@ -121,37 +121,37 @@ partial class InverseDistanceAngleForm : InverseForm
 
     internal override void Draw()
     {
-        var display = EditingController.Current.ActiveMap;
+        var map = EditingController.Current.ActiveMap;
 
-        if (m_Point1!=null)
-            m_Point1.Draw(display, InverseColors[0]);
+        if (m_Point1 is not null)
+            m_Point1.Draw(map, InverseColors[0]);
 
-        if (m_Point2!=null)
-            m_Point2.Draw(display, InverseColors[1]);
+        if (m_Point2 is not null)
+            m_Point2.Draw(map, InverseColors[1]);
 
-        if (m_Point3!=null)
-            m_Point3.Draw(display, InverseColors[2]);
+        if (m_Point3 is not null)
+            m_Point3.Draw(map, InverseColors[2]);
     }
 
     void ShowResult()
     {
         // If we have the first two points, get the distance between
         // them, format the result, and display it.
-        if (m_Point1!=null && m_Point2!=null)
+        if (m_Point1 is not null && m_Point2 is not null)
         {
             double metric = Geom.Distance(m_Point1, m_Point2);
             distance1TextBox.Text = Format(metric, m_Point1, m_Point2);
         }
 
         // Same for the second pair of points.
-        if (m_Point2!=null && m_Point3!=null)
+        if (m_Point2 is not null && m_Point3 is not null)
         {
             double metric = Geom.Distance(m_Point2, m_Point3);
             distance2TextBox.Text = Format(metric, m_Point2, m_Point3);
         }
 
         // If we have all 3 points, display the angle.
-        if (m_Point1!=null && m_Point2!=null && m_Point3!=null)
+        if (m_Point1 is not null && m_Point2 is not null && m_Point3 is not null)
         {
             // Get the clockwise angle.
             Turn reft = new Turn(m_Point2, m_Point1);
@@ -173,7 +173,7 @@ partial class InverseDistanceAngleForm : InverseForm
 
         // If all 3 points are already defined, shift back the 2nd 
         // and 3rd points
-        if (m_Point3!=null)
+        if (m_Point3 is not null)
         {
             m_Point1 = m_Point2;
             m_Point2 = m_Point3;
@@ -181,9 +181,9 @@ partial class InverseDistanceAngleForm : InverseForm
 
         // Stick the point into the appropriate slot (always the
         // last slot if the first 2 were previously defined).
-        if (m_Point1==null)
+        if (m_Point1 is null)
             m_Point1 = point;
-        else if (m_Point2==null)
+        else if (m_Point2 is null)
             m_Point2 = point;
         else
             m_Point3 = point;

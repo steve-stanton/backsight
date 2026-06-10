@@ -100,7 +100,7 @@ public partial class MapWindow : Avalonia.Controls.Window
         MapControl.Map = _map;
         MapControl.PointerPressed += OnPointerPressed;
 
-        var extent = EditingController.Current.ActiveMap?.Extent;
+        var extent = EditingController.Current.ActiveMap.Extent;
         if (extent is not null)
         {
             var msExtent = new MRect(extent.Min.X, extent.Min.Y, extent.Max.X, extent.Max.Y);

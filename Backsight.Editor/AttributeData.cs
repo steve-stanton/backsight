@@ -198,8 +198,7 @@ static class AttributeData
             // Re-display the text if any changes have been saved
             if (isChanged)
             {
-                ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-                display.Redraw();
+                EditingController.Current.ActiveMap.Redraw();
             }
         }
 

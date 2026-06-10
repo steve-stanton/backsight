@@ -174,7 +174,6 @@ partial class InverseForm : Form
     /// </summary>
     protected void ErasePainting()
     {
-        ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-        display.RestoreLastDraw();
+        EditingController.Current.ActiveMap.RestoreLastDraw();
     }
 }

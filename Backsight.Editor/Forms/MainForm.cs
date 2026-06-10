@@ -906,7 +906,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
         // Ensure KeyDown handler gets called if user hasn't clicked on the map (not
         // really sure why this is needed here)
         if (e.Control && e.KeyValue == (int)Keys.F)
-            m_Controller.KeyDown(m_Controller.ActiveDisplay, e.KeySelection);
+            m_Controller.KeyDown(m_Controller.ActiveMap, e.KeySelection);
     }
 
     /// <summary>
@@ -1514,9 +1514,9 @@ else if ( m_Op == ID_LINE_CURVE ) {
         // to match the current scale, and set the size to be 1mm at scale.
         if (!this.ArePointsDrawn)
         {
-            ISpatialDisplay display = m_Controller.ActiveDisplay;
-            Debug.Assert(display!=null);
-            double scale = display.MapScale;
+            var map = m_Controller.ActiveMap;
+            Debug.Assert(map!=null);
+            double scale = map.MapScale;
             ps.ShowPointScale = (scale + 1.0);
             double height = 0.001 * scale;
             ps.PointHeight = Math.Max(0.01, height);
@@ -1543,9 +1543,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
         if (ps is null)
             return;
         
-        ISpatialDisplay display = m_Controller.ActiveDisplay;
-        if (display==null)
-            return;
+        var map = m_Controller.ActiveMap;
 
         // Reduce the current size of points by a metre. 
         double height = ps.PointHeight;
@@ -1556,7 +1554,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
         // What's the new size at the current draw scale? If it ends
         // up below 0.1mm at the current draw scale, turn them off.
-        double size = height / display.MapScale;
+        double size = height / map.MapScale;
         if (size < 0.0001)
             ps.ShowPointScale = 0.01; // not sure why 0.01 rather than 0.0
         else

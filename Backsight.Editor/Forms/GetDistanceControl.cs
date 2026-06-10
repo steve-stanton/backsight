@@ -632,7 +632,7 @@ partial class GetDistanceControl : UserControl
     /// </summary>
     internal void ErasePainting()
     {
-        EditingController.Current.ActiveDisplay.RestoreLastDraw();
+        EditingController.Current.ActiveMap.RestoreLastDraw();
     }
 
     IntersectOperation GetUpdateOp()

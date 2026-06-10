@@ -319,7 +319,7 @@ class RingCheck : CheckItem
 
             // Calculate the position for a label that has the same size as an icon. If that fails for
             // any reason, use the east point of the polygon.
-            double size = IconSize(EditingController.Current.ActiveDisplay);
+            double size = IconSize(EditingController.Current.ActiveMap);
             IPosition p = (m_Ring as Polygon).GetLabelPosition(size, size);
             return (p==null ? m_Ring.GetEastPoint() : p);
         }

@@ -151,7 +151,7 @@ class SelectionTool
     /// </summary>
     void ErasePainting()
     {
-        m_Controller.ActiveDisplay.RestoreLastDraw();
+        m_Controller.ActiveMap.RestoreLastDraw();
     }
 
     /// <summary>

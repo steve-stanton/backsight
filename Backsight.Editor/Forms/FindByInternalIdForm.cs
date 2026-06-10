@@ -35,8 +35,8 @@ public partial class FindByInternalIdForm : Form
             CadastralMapModel mapModel = CadastralMapModel.Current;
             string s = idTextBox.Text;
             uint idValue = UInt32.Parse(s);
-            Feature f = mapModel.Find<Feature>(new InternalIdValue(idValue));
-            if (f == null)
+            Feature? f = mapModel.Find<Feature>(new InternalIdValue(idValue));
+            if (f is null)
             {
                 MessageBox.Show("Cannot find feature with ID=" + idValue);
                 return;
@@ -45,27 +45,27 @@ public partial class FindByInternalIdForm : Form
             EditingController.Current.Select(f);
             Position p = null;
 
-            if (f is PointFeature)
-                p = new Position((f as PointFeature).PointGeometry);
-            else if (f is LineFeature)
-                p = new Position((f as LineFeature).StartPoint);
-            else if (f is TextFeature)
-                p = new Position((f as TextFeature).Position);
+            if (f is PointFeature point)
+                p = new Position(point.PointGeometry);
+            else if (f is LineFeature line)
+                p = new Position(line.StartPoint);
+            else if (f is TextFeature text)
+                p = new Position(text.Position);
 
-            if (p == null)
+            if (p is null)
             {
                 MessageBox.Show("Cannot determine position for selected feature");
                 return;
             }
 
-            ISpatialDisplay d = EditingController.Current.ActiveDisplay;
+            var map = EditingController.Current.ActiveMap;
 
-            if (d.MapScale > 2000.0)
-                d.MapScale = 2000.0;
+            if (map.MapScale > 2000.0)
+                map.MapScale = 2000.0;
 
-            d.Center = p;
+            map.Center = p;
 
-            this.DialogResult = DialogResult.Cancel;
+            DialogResult = DialogResult.Cancel;
             Close();
         }
 

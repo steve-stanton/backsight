@@ -1387,6 +1387,7 @@ partial class GetDirectionControl : UserControl
                     return;
                 }
 
+                Debug.Assert(dial.Circle is not null);
                 circle = dial.Circle;
                 dial.Dispose();
             }
@@ -1504,7 +1505,7 @@ partial class GetDirectionControl : UserControl
     /// </summary>
     internal void ErasePainting()
     {
-        EditingController.Current.ActiveDisplay.RestoreLastDraw();
+        EditingController.Current.ActiveMap.RestoreLastDraw();
     }
 
     IntersectOperation GetUpdateOp()

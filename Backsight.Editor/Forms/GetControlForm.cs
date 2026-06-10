@@ -541,7 +541,7 @@ partial class GetControlForm : Form
                 MessageBoxButtons.YesNo) != DialogResult.Yes) return false;
 
         // Get the current display window.
-        IWindow drawin = EditingController.Current.ActiveDisplay.Extent;
+        IWindow drawin = EditingController.Current.ActiveMap.Extent;
 
         try
         {

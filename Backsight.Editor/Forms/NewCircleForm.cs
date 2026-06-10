@@ -568,6 +568,6 @@ partial class NewCircleForm : Form
     /// </summary>
     internal void ErasePainting()
     {
-        EditingController.Current.ActiveDisplay.RestoreLastDraw();
+        EditingController.Current.ActiveMap.RestoreLastDraw();
     }
 }

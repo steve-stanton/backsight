@@ -212,8 +212,8 @@ public partial class NewPointForm : Form
 
         // Check whether the position is on screen. If not, issue a warning
         // message, and let the user cancel if desired.
-        ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-        IWindow extent = display.Extent;
+        var map = EditingController.Current.ActiveMap;
+        IWindow extent = map.Extent;
         if (extent==null || !extent.IsOverlap(m_Position))
         {
             if (MessageBox.Show("Specified position does not overlap current draw window. Continue?",
@@ -222,17 +222,17 @@ public partial class NewPointForm : Form
         }
 
         // Are we doing an update?
-        PointFeature pupt = this.UpdatePoint;
+        PointFeature pupt = UpdatePoint;
 
         // Confirm that there is no selectable point already at the specified position. Allow
         // a tolerance of 1cm on the ground. Only check in 2D.
         // The seatch should be restricted to those points that are currently visible.
 
-        CadastralMapModel map = CadastralMapModel.Current;
+        CadastralMapModel cmm = CadastralMapModel.Current;
         ILength tol = new Length(0.01);
-        PointFeature close = (PointFeature)map.QueryClosest(m_Position, tol, SpatialType.Point);
+        PointFeature? close = cmm.QueryClosest(m_Position, tol, SpatialType.Point) as PointFeature;
 
-        if (close!=null)
+        if (close is not null)
         {
             // Get the ground distance between the existing point & the new one.
             double dist = Geom.Distance(m_Position, close);

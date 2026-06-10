@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -54,11 +55,11 @@ class EditingController
     /// The currently selected elements (may be empty, but never null)
     /// </summary>
     private Selection m_Selection;
-
+    
     /// <summary>
-    /// Map displays that have been registered with this controller (see <c>Register</c> method)
+    /// The legacy map display (defined when it becomes visible, cleared when it's disposed).
     /// </summary>
-    private readonly List<ISpatialDisplay> m_Displays;
+    private MapControl? m_MapControl;
 
     /// <summary>
     /// Information about the current project
@@ -122,7 +123,6 @@ class EditingController
     {
         m_Data = new DesignTimeMapModel();
         m_Selection = new Selection();
-        m_Displays = new List<ISpatialDisplay>();
 
         // Initialize map model in case any of the prelim stuff needs it (the
         // running application needs to replace it with something more appropriate).
@@ -140,40 +140,22 @@ class EditingController
     {
         m_Data = model;
         SetSelection(null);
-
-        foreach (ISpatialDisplay display in m_Displays)
-            display.ReplaceMapModel(initialDrawExtent);
+        m_MapControl?.ReplaceMapModel(initialDrawExtent);
 
         // Ensure the active display has focus (so that it reacts to any mouse-wheel events)
-        ActiveMap?.MapPanel?.Focus();
+        ActiveMap.MapPanel?.Focus();
     }
 
     public ISpatialModel MapModel => m_Data;
 
-    public void Register(ISpatialDisplay display)
+    internal void SetMapControl(MapControl? mapControl)
     {
-        if (!m_Displays.Contains(display))
-            m_Displays.Add(display);
-
-        // Redraw the display now (ensures the background has the expected colour)
-        //display.Redraw();
-    }
-
-    public void Unregister(ISpatialDisplay display)
-    {
-        m_Displays.Remove(display);
+        m_MapControl = mapControl;
     }
 
     public void RefreshAllDisplays()
     {
-        foreach (ISpatialDisplay d in m_Displays)
-            d.Redraw();
-    }
-
-    // TODO: Remove from controller class (replace with ActiveMap property in Backsight.Editor)
-    public ISpatialDisplay ActiveDisplay
-    {
-        get { return (m_Displays.Count==0 ? null : m_Displays[0]); }
+        m_MapControl?.Redraw();
     }
 
     public void Close()
@@ -503,7 +485,7 @@ class EditingController
             }
 
             // Ensure everything is back to normal
-            ActiveDisplay.RestoreLastDraw();
+            ActiveMap.RestoreLastDraw();
 
             // Force any prior selection to show
             m_HasSelectionChanged = true;
@@ -711,10 +693,7 @@ class EditingController
     private void RedrawSelection()
     {
         if (m_Selection.Count>0)
-        {
-            foreach (ISpatialDisplay d in m_Displays)
-                d.OnSelectionChanged(m_Selection);
-        }
+            m_MapControl?.OnSelectionChanged(m_Selection);
     }
 
     internal void FinishCommand(CommandUI cmd)
@@ -751,7 +730,7 @@ class EditingController
         if (m_Check is not null)
         {
             m_Check.OnFinishOp();
-            ActiveDisplay.PaintNow();
+            ActiveMap.PaintNow();
         }
 
         // Re-enable auto-highlighting if it was on before.
@@ -775,9 +754,7 @@ class EditingController
     /// </summary>
     void SetNormalCursor()
     {
-        var display = ActiveMap;
-        if (display!=null)
-            display.MapPanel.Cursor = Cursors.Default;
+        ActiveMap.MapPanel.Cursor = Cursors.Default;
     }
 
     /// <summary>
@@ -807,13 +784,13 @@ class EditingController
     internal void EnsureVisible(PointFeature p, bool select)
     {
         // Ensure the draw window shows the point.
-        ISpatialDisplay display = ActiveDisplay;
-        IWindow drawExtent = display.Extent;
+        var map = ActiveMap;
+        IWindow drawExtent = map.Extent;
 
         if (drawExtent==null || drawExtent.IsEmpty)
-            display.DrawOverview();
+            map.DrawOverview();
         else if (!drawExtent.IsOverlap(p))
-            display.Center = p;
+            map.Center = p;
 
         // Select the point if requested
         if (select)
@@ -890,9 +867,7 @@ class EditingController
             return false;
 
         m_Selection = ss;
-
-        foreach (ISpatialDisplay d in m_Displays)
-            d.OnSelectionChanged(m_Selection);
+        m_MapControl?.OnSelectionChanged(m_Selection);
 
         ISpatialObject? item = ss.SingleOrDefault;
         m_Main.SetSelection(item);
@@ -977,12 +952,10 @@ class EditingController
     /// <returns>True if the scale of the active display is such that the items would be drawn</returns>
     bool IsVisible(double thresholdScale)
     {
-        var display = m_Command?.ActiveMap ?? ActiveMap;
-        if (display is null)
-            return false;
-
-        double displayScale = display.MapScale;
-        return (displayScale < thresholdScale);
+        var map = m_Command?.ActiveMap ?? ActiveMap;
+        Debug.Assert(map is not null);
+        double displayScale = map.MapScale;
+        return displayScale < thresholdScale;
     }
 
     /// <summary>
@@ -1055,9 +1028,9 @@ class EditingController
     {
         m_Inverse = null;
 
-        ISpatialDisplay display = EditingController.Current.ActiveDisplay;
-        display.RestoreLastDraw();
-        display.PaintNow();
+        var map = Current.ActiveMap;
+        map.RestoreLastDraw();
+        map.PaintNow();
     }
 
     /// <summary>
@@ -1078,7 +1051,7 @@ class EditingController
     internal void OnIdle()
     {
         bool repaint = false;
-        ISpatialGraphics display = ActiveMap;
+        var map = ActiveMap;
 
         if (m_Inverse is not null)
         {
@@ -1088,19 +1061,19 @@ class EditingController
 
         if (m_Check is not null)
         {
-            m_Check.Render(display, DrawStyle);
+            m_Check.Render(map, DrawStyle);
             repaint = true;
         }
 
         if (m_Sel is not null)
         {
-            m_Sel.Render(ActiveMap);
+            m_Sel.Render(map);
             repaint = true;
         }
 
         if (m_Sel is not null || m_HasSelectionChanged)
         {
-            var mapDisplay = new MapDisplay(ActiveMap, CreateHighlightStyle());
+            var mapDisplay = new MapDisplay(map, CreateHighlightStyle());
             m_Selection.Draw(mapDisplay);
             
             var divider = m_Selection.Divider;
@@ -1108,7 +1081,7 @@ class EditingController
             {
                 var thinYellow = new DrawStyle(Color.Yellow);
                 thinYellow.Pen.Width = 3;
-                mapDisplay = new MapDisplay(ActiveMap, thinYellow);
+                mapDisplay = new MapDisplay(map, thinYellow);
                 divider.Draw(mapDisplay);
             }
             
@@ -1129,7 +1102,7 @@ class EditingController
         }
 
         if (repaint)
-            display.PaintNow();
+            map.PaintNow();
     }
 
     /// <summary>
@@ -1313,6 +1286,12 @@ class EditingController
         m_Main = mainForm;
     }
     
-    // TODO: Should tighten this up (should ActiveDisplay even be part of the SpatialController xlass)
-    internal MapControl ActiveMap => (ActiveDisplay as MapControl)!;
+    /// <summary>
+    /// The current map display.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The map display has not been displayed.</exception>
+    /// <remarks>
+    /// This should be called in a situation where the application is well underway.
+    /// </remarks>
+    internal MapControl ActiveMap => m_MapControl ?? throw new InvalidOperationException("No map control");
 }

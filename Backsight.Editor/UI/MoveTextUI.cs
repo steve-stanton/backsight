@@ -81,7 +81,7 @@ class MoveTextUI : SimpleCommandUI
     internal override void MouseMove(IPosition p)
     {
         // Erase the text at its previous position, and draw it at the new position.
-        Controller.ActiveDisplay.RestoreLastDraw();
+        Controller.ActiveMap.RestoreLastDraw();
 
         // Remember the mouse position. We'll draw at this new position when
         // the Paint method gets called

@@ -37,8 +37,15 @@ public partial class GetCircleForm : Form
 		}
 	}
 
+	/// <summary>
+	/// The circles that can be used to make a selection.
+	/// </summary>
 	private readonly List<Circle> m_Circles;
-	private Circle m_Select;
+	
+	/// <summary>
+	/// The currently selected circle.
+	/// </summary>
+	private Circle? m_Select;
 
 	internal GetCircleForm(List<Circle> circles)
 	{
@@ -47,7 +54,7 @@ public partial class GetCircleForm : Form
 		m_Select = null;
 	}
 
-	internal Circle Circle { get { return m_Select; } }
+	internal Circle? Circle => m_Select;
 
 	private void GetCircleForm_Shown(object sender, EventArgs e)
 	{
@@ -74,47 +81,36 @@ public partial class GetCircleForm : Form
 	private void cancelButton_Click(object sender, EventArgs e)
 	{
 		// Erase the circle and redraw the curves (current theme).
-		if (m_Select!=null)
+		if (m_Select is not null)
 		{
-			EditingController.Current.ActiveDisplay.PaintNow();
+			EditingController.Current.ActiveMap.PaintNow();
 			m_Select = null;
-
-			/*
-	m_pSelect->Erase();
-	CeLayerList curlayer;
-	m_pSelect->DrawCurves(curlayer);
-			 */
 		}
 
-		this.DialogResult = DialogResult.Cancel;
+		DialogResult = DialogResult.Cancel;
 	}
 
 	private void okButton_Click(object sender, EventArgs e)
 	{
 		// Ensure something is selected.
-		if (m_Select==null)
+		if (m_Select is null)
 			m_Select = GetSel();
 
-		if (m_Select==null)
+		if (m_Select is null)
 		{
 			MessageBox.Show("You have not selected a circle.");
 			return;
 		}
 
 		// Erase the circle and redraw the curves (current theme only).
-		EditingController.Current.ActiveDisplay.PaintNow();
-		/*
-CeLayerList curlayer;
-m_pSelect->Erase();
-m_pSelect->DrawCurves(curlayer);
-		 */
+		EditingController.Current.ActiveMap.PaintNow();
 
-		this.DialogResult = DialogResult.OK;
+		DialogResult = DialogResult.OK;
 	}
 
-	Circle GetSel()
+	Circle? GetSel()
 	{
-		if (listBox.SelectedItem==null)
+		if (listBox.SelectedItem is null)
 		{
 			MessageBox.Show("Nothing is currently selected.");
 			return null;
@@ -127,9 +123,9 @@ m_pSelect->DrawCurves(curlayer);
 	private void listBox_SelectedValueChanged(object sender, EventArgs e)
 	{
 		// If we previously had a selected circle, erase it.
-		var display = EditingController.Current.ActiveMap;
-		if (m_Select!=null)
-			display.PaintNow();
+		var map = EditingController.Current.ActiveMap;
+		if (m_Select is not null)
+			map.PaintNow();
 		/*
 // If we previously had a selected circle, erase it. Then
 // redraw any attached curved (erasing the highlighting
@@ -144,11 +140,11 @@ if ( m_pSelect ) {
 
 		// Get the new selection.
 		m_Select = GetSel();
-		if (m_Select==null)
+		if (m_Select is null)
 			return;
 
 		// ... and highlight it.
 		var style = new DottedStyle();
-		style.Render(display, m_Select.Center, m_Select.Radius);
+		style.Render(map, m_Select.Center, m_Select.Radius);
 	}
 }

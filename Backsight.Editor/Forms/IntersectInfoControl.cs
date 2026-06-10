@@ -272,7 +272,7 @@ partial class IntersectInfoControl : UserControl
 
             m_Intersect = other;
             ShowIntersection();
-            EditingController.Current.ActiveDisplay.RestoreLastDraw();
+            EditingController.Current.ActiveMap.RestoreLastDraw();
         }
 
         catch (Exception ex)

@@ -22,12 +22,12 @@ partial class InverseDistanceForm : InverseForm
     /// <summary>
     /// The first point for the distance calculation.
     /// </summary>
-    PointFeature m_Point1;
+    PointFeature? m_Point1;
 
     /// <summary>
     /// The second point for the distance calculation.
     /// </summary>
-    PointFeature m_Point2;
+    PointFeature? m_Point2;
 
     #endregion
 
@@ -59,7 +59,7 @@ partial class InverseDistanceForm : InverseForm
     {
         if (mRadioButton.Checked)
         {
-            base.SetMeters();
+            SetMeters();
             ShowResult();
         }
     }
@@ -68,7 +68,7 @@ partial class InverseDistanceForm : InverseForm
     {
         if (fRadioButton.Checked)
         {
-            base.SetFeet();
+            SetFeet();
             ShowResult();
         }
     }
@@ -77,7 +77,7 @@ partial class InverseDistanceForm : InverseForm
     {
         if (cRadioButton.Checked)
         {
-            base.SetChains();
+            SetChains();
             ShowResult();
         }
     }
@@ -86,7 +86,7 @@ partial class InverseDistanceForm : InverseForm
     {
         // If we have two points, get the distance between them,
         // format the result, and display it.
-        if (m_Point1!=null && m_Point2!=null)
+        if (m_Point1 is not null && m_Point2 is not null)
         {
             // Get the distance on the mapping plane.
             double metric = Geom.Distance(m_Point1, m_Point2);
@@ -94,25 +94,19 @@ partial class InverseDistanceForm : InverseForm
         }
     }
 
-    protected PointFeature Point1
-    {
-        get { return m_Point1; }
-    }
+    protected PointFeature? Point1 => m_Point1;
 
-    protected PointFeature Point2
-    {
-        get { return m_Point2; }
-    }
+    protected PointFeature? Point2 => m_Point2;
 
     internal override void Draw()
     {
-        var display = EditingController.Current.ActiveMap;
+        var map = EditingController.Current.ActiveMap;
 
-        if (m_Point1!=null)
-            m_Point1.Draw(display, InverseColors[0]);
+        if (m_Point1 is not null)
+            m_Point1.Draw(map, InverseColors[0]);
 
-        if (m_Point2!=null)
-            m_Point2.Draw(display, InverseColors[1]);
+        if (m_Point2 is not null)
+            m_Point2.Draw(map, InverseColors[1]);
     }
 
     internal override void OnSelectPoint(PointFeature point)
@@ -122,7 +116,7 @@ partial class InverseDistanceForm : InverseForm
             return;
 
         // If both points are already defined, shift back the 2nd point
-        if (m_Point2!=null)
+        if (m_Point2 is not null)
         {
             m_Point1 = m_Point2;
             m_Point2 = point;
@@ -130,7 +124,7 @@ partial class InverseDistanceForm : InverseForm
 
         // If we already know the first point, the new point
         // always goes into the 2nd slot.
-        if (m_Point1!=null)
+        if (m_Point1 is not null)
             m_Point2 = point;
         else
             m_Point1 = point;

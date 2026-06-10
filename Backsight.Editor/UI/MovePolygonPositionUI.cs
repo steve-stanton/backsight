@@ -91,7 +91,7 @@ class MovePolygonPositionUI : SimpleCommandUI
 
             if (pol != null || (m_LastPolygon != null && pol == null))
             {
-                Controller.ActiveDisplay.RestoreLastDraw();
+                Controller.ActiveMap.RestoreLastDraw();
                 m_LastPolygon = pol;
             }
         }

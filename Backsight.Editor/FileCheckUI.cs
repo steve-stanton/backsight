@@ -172,20 +172,20 @@ class FileCheckUI : IDisposable
         KillResults();
 
         // Return if the map has an active operation.
-        CadastralMapModel map = CadastralMapModel.Current;
-        if (map.IsCommittingEdit)
+        CadastralMapModel cmm = CadastralMapModel.Current;
+        if (cmm.IsCommittingEdit)
         {
             MessageBox.Show("Cannot make check because an edit appears to be in progress.");
             return -1;
         }
 
-        var display = EditingController.Current.ActiveMap;
-        Control c = display.MapPanel;
+        var map = EditingController.Current.ActiveMap;
+        Control c = map.MapPanel;
 
         try
         {
             c.Cursor = Cursors.WaitCursor;
-            FileCheckQuery check = new FileCheckQuery(map, m_Options, OnCheck);
+            FileCheckQuery check = new FileCheckQuery(cmm, m_Options, OnCheck);
             m_Results = check.Result;
             return check.NumChecked;
         }
@@ -251,7 +251,7 @@ class FileCheckUI : IDisposable
     /// </summary>
     internal void OnFinishOp()
     {
-        var display = EditingController.Current.ActiveMap;
+        var map = EditingController.Current.ActiveMap;
         var style = EditingController.Current.DrawStyle;
         bool doPost = false;    // Need to post-process the list?
 
@@ -272,7 +272,7 @@ class FileCheckUI : IDisposable
 
             if (newTypes != oldTypes)
             {
-                check.PaintOut(display, style, newTypes);
+                check.PaintOut(map, style, newTypes);
                 check.Types = newTypes;
 
                 // If we just fixed a polygon with no enclosing polygon, remember to post-process
@@ -294,7 +294,7 @@ class FileCheckUI : IDisposable
             m_Status.OnFinishOp();
 
         // Ensure screen immediately reflects any changes
-        Render(display, style);
+        Render(map, style);
     }
 
     /// <summary>

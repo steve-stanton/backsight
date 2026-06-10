@@ -432,8 +432,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     new public void Dispose()
     {
-        //MessageBox.Show("un-registering map control");
-        EditingController.Current.Unregister(this);
+        EditingController.Current.SetMapControl(null);
         DropBufferedGraphics();
         base.Dispose();
     }
@@ -755,7 +754,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         }
     }
 
-    public IWindow Extent => m_MapPanelExtent;
+    public IWindow? Extent => m_MapPanelExtent;
 
     public IWindow MaxExtent => m_OverviewExtent;
 
@@ -1279,7 +1278,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     {
         if (this.Visible)
         {
-            EditingController.Current.Register(this);
+            EditingController.Current.SetMapControl(this);
             InitializeBufferedGraphics();
             SetParentResizeHandlers();
 
