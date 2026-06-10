@@ -73,12 +73,12 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     /// <summary>
     /// The current display navigation tool (null if nothing has been started)
     /// </summary>
-    private ISpatialDisplayTool m_Tool = null;
+    private ISpatialDisplayTool? m_Tool;
 
     /// <summary>
     /// Info about previous draw extents
     /// </summary>
-    private List<DrawInfo> m_Extents = new List<DrawInfo>();
+    private List<DrawInfo> m_Extents = [];
 
     /// <summary>
     /// Index of the draw that's currently on screen ((-1 if there is no draw info).
@@ -719,29 +719,18 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     void mapPanel_MouseWheel(object sender, MouseEventArgs e)
     {
-        if (this.IsInitialized)
+        if (this.IsInitialized && m_Tool is null)
         {
-            // If we don't have a display tool, just zoom in or out. Otherwise
-            // pass it down to the tool (only the MagnifyTool currently does anything
-            // about it).
-
-            if (m_Tool==null)
-            {
-                double currentScale = this.MapScale;
-                double newScale = (e.Delta < 0 ? 0.95*currentScale : 1.05*currentScale);
-                IPosition mousePosition = DisplayToGround(e.Location);
-                IPosition c = Center;
-                double dx = (mousePosition.X - c.X) / currentScale;
-                double dy = (mousePosition.Y - c.Y) / currentScale;
-                double newCenterX = mousePosition.X - (dx * newScale);
-                double newCenterY = mousePosition.Y - (dy * newScale);
-                c = new Position(newCenterX, newCenterY);
-                SetCenterAndScale(c, newScale, false);
-            }
-            else
-            {
-                m_Tool.MouseWheel(e.Delta, Control.ModifierKeys);
-            }
+            double currentScale = this.MapScale;
+            double newScale = (e.Delta < 0 ? 0.95*currentScale : 1.05*currentScale);
+            IPosition mousePosition = DisplayToGround(e.Location);
+            IPosition c = Center;
+            double dx = (mousePosition.X - c.X) / currentScale;
+            double dy = (mousePosition.Y - c.Y) / currentScale;
+            double newCenterX = mousePosition.X - (dx * newScale);
+            double newCenterY = mousePosition.Y - (dy * newScale);
+            c = new Position(newCenterX, newCenterY);
+            SetCenterAndScale(c, newScale, false);
         }
     }
 
@@ -1299,13 +1288,5 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         }
     }
 
-    protected void SetMapBackground(Color col)
-    {
-        mapPanel.BackColor = col;
-    }
-
-    public Control MapPanel
-    {
-        get { return mapPanel; }
-    }
+    public Control MapPanel => mapPanel;
 }

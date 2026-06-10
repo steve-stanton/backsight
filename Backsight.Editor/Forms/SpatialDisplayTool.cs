@@ -13,8 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Windows.Forms;
-
 namespace Backsight.Editor.Forms;
 
 abstract class SpatialDisplayTool : ISpatialDisplayTool
@@ -49,10 +47,6 @@ abstract class SpatialDisplayTool : ISpatialDisplayTool
     }
 
     public virtual void MouseMove(IPosition p, MouseButton b)
-    {
-    }
-
-    public virtual void MouseWheel(int delta, Keys k)
     {
     }
 

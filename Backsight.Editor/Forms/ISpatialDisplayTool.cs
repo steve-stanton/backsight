@@ -13,8 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Windows.Forms;
-
 namespace Backsight.Editor.Forms;
 
 public interface ISpatialDisplayTool
@@ -60,13 +58,4 @@ public interface ISpatialDisplayTool
     /// </summary>
     /// <param name="p">The position the mouse has moved to</param>
     void MouseMove(IPosition p, MouseButton b);
-
-    /// <summary>
-    /// Handles a mouse wheel event
-    /// </summary>
-    /// <param name="delta">The amount of wheel movement (as returned by
-    /// the <c>MouseEventArgs.Delta</c> property)</param>
-    /// <param name="k">Any modifier keys pressed during the wheel (as returned
-    /// by <c>Control.ModifierKeys</c>)</param>
-    void MouseWheel(int delta, Keys k);
 }
