@@ -269,8 +269,6 @@ public partial class MainForm : Form, IControlContainer
         AddAction(new ToolStripItem[] { mnuViewDrawScale
             , ctxViewDrawScale
             , toolViewDrawScale }, DisplayToolId.DrawScale);
-        AddAction(new ToolStripItem[] { mnuViewMagnify
-            , ctxViewMagnify }, DisplayToolId.Magnify);
         AddAction(new ToolStripItem[] { mnuViewNewCentre
             , ctxViewNewCenter
             , toolViewNewCenter }, DisplayToolId.NewCentre);

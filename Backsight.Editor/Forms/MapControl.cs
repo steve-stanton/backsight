@@ -957,13 +957,6 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         return m_Tool.Start();
     }
 
-    bool Magnify()
-    {
-        mapPanel.Focus();
-        m_Tool = new MagnifyTool(this);
-        return m_Tool.Start();
-    }
-
     /// <summary>
     /// Redraws at a new centre point
     /// </summary>
@@ -1076,7 +1069,6 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
             case DisplayToolId.ZoomOut:
             case DisplayToolId.ZoomRectangle:
             case DisplayToolId.DrawScale:
-            case DisplayToolId.Magnify:
             case DisplayToolId.NewCentre:
             case DisplayToolId.Pan:
             case DisplayToolId.MapRefresh:
@@ -1136,9 +1128,6 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
             case DisplayToolId.Next:
                 return Next();
-
-            case DisplayToolId.Magnify:
-                return Magnify();
         }
 
         return false;
@@ -1315,9 +1304,6 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     {
         if (this.Visible)
         {
-            //if (this.Text=="MagnifyForm")
-            //    MessageBox.Show("registering map control");
-
             EditingController.Current.Register(this);
             InitializeBufferedGraphics();
             SetParentResizeHandlers();

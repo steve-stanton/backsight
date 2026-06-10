@@ -30,6 +30,5 @@ public enum DisplayToolId
     Pan,
     MapRefresh,
     Previous,
-    Next,
-    Magnify,
+    Next
 }

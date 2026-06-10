@@ -83,7 +83,6 @@ namespace Backsight.Editor.Forms
             this.mnuViewZoomOut = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuViewZoomRectangle = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuViewDrawScale = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuViewMagnify = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuViewNewCentre = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuViewPan = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuViewRefresh = new System.Windows.Forms.ToolStripMenuItem();
@@ -214,7 +213,6 @@ namespace Backsight.Editor.Forms
             this.ctxViewZoomOut = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxViewZoomRectangle = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxViewDrawScale = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxViewMagnify = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxViewNewCenter = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxViewPan = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxViewMapRefresh = new System.Windows.Forms.ToolStripMenuItem();
@@ -584,7 +582,6 @@ namespace Backsight.Editor.Forms
             this.mnuViewZoomOut,
             this.mnuViewZoomRectangle,
             this.mnuViewDrawScale,
-            this.mnuViewMagnify,
             this.mnuViewNewCentre,
             this.mnuViewPan,
             this.mnuViewRefresh,
@@ -638,13 +635,6 @@ namespace Backsight.Editor.Forms
             this.mnuViewDrawScale.Size = new System.Drawing.Size(163, 22);
             this.mnuViewDrawScale.Text = "Draw Scal&e...";
             this.mnuViewDrawScale.ToolTipText = "Draw map at a specific scale";
-            // 
-            // mnuViewMagnify
-            // 
-            this.mnuViewMagnify.Name = "mnuViewMagnify";
-            this.mnuViewMagnify.Size = new System.Drawing.Size(163, 22);
-            this.mnuViewMagnify.Text = "&Magnify";
-            this.mnuViewMagnify.ToolTipText = "Use magnified window to examine small details";
             // 
             // mnuViewNewCentre
             // 
@@ -1698,7 +1688,6 @@ namespace Backsight.Editor.Forms
             this.ctxViewZoomOut,
             this.ctxViewZoomRectangle,
             this.ctxViewDrawScale,
-            this.ctxViewMagnify,
             this.ctxViewNewCenter,
             this.ctxViewPan,
             this.ctxViewMapRefresh,
@@ -1749,12 +1738,6 @@ namespace Backsight.Editor.Forms
             this.ctxViewDrawScale.Name = "ctxViewDrawScale";
             this.ctxViewDrawScale.Size = new System.Drawing.Size(180, 22);
             this.ctxViewDrawScale.Text = "Draw Scale...";
-            // 
-            // ctxViewMagnify
-            // 
-            this.ctxViewMagnify.Name = "ctxViewMagnify";
-            this.ctxViewMagnify.Size = new System.Drawing.Size(180, 22);
-            this.ctxViewMagnify.Text = "Magnify";
             // 
             // ctxViewNewCenter
             // 
@@ -2575,8 +2558,6 @@ namespace Backsight.Editor.Forms
         private System.Windows.Forms.ToolStripMenuItem ctxNewText25;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator37;
         private System.Windows.Forms.ToolStripMenuItem ctxNewTextCancel;
-        private System.Windows.Forms.ToolStripMenuItem mnuViewMagnify;
-        private System.Windows.Forms.ToolStripMenuItem ctxViewMagnify;
         private System.Windows.Forms.ToolStripStatusLabel activeLayerStatusLabel;
         private System.Windows.Forms.ToolStripMenuItem mnuViewPropertiesWindow;
         private System.Windows.Forms.ToolStripStatusLabel unitsStatusLabel;
