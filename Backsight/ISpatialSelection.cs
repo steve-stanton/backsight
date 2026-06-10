@@ -38,23 +38,6 @@ public interface ISpatialSelection
     IEnumerable<ISpatialObject> Items { get; }
 
     /// <summary>
-    /// Checks whether this selection refers to the same spatial objects as
-    /// another selection.
-    /// </summary>
-    /// <param name="that">The selection to compare with</param>
-    /// <returns>True if the two selections refer to the same spatial objects (not
-    /// necessarily in the same order)</returns>
-    bool Equals(ISpatialSelection that);
-
-    /// <summary>
-    /// Checks whether this selection refers to one specific spatial object.
-    /// </summary>
-    /// <param name="o">The object to compare with</param>
-    /// <returns>True if this selection refers to a single item that corresponds
-    /// to the specified spatial object</returns>
-    bool Equals(ISpatialObject o);
-
-    /// <summary>
     /// Draws the content of this selection
     /// </summary>
     /// <param name="mapDisplay">The display to draw to</param>

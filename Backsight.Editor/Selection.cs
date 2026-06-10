@@ -144,43 +144,22 @@ class Selection : ISpatialSelection
     }
 
     /// <summary>
-    /// Checks whether this selection refers to one specific spatial object.
-    /// </summary>
-    /// <param name="so">The object to compare with</param>
-    /// <returns>True if this selection refers to a single item that corresponds
-    /// to the specified spatial object</returns>
-    public bool Equals(ISpatialObject so)
-    {
-        if (so==null)
-            return false;
-
-        if (this.Count!=1)
-            return false;
-
-        return Object.ReferenceEquals(so, m_Items[0]);
-    }
-
-    /// <summary>
     /// Checks whether this selection refers to the same spatial objects as
     /// another selection, and has the same reference position.
     /// </summary>
     /// <param name="that">The selection to compare with</param>
     /// <returns>True if the two selections refer to the same spatial objects (not
     /// necessarily in the same order)</returns>
-    public bool Equals(ISpatialSelection that)
+    internal bool IsEqual(Selection that)
     {
         // The same spatial objects have to be involved
         if (!SameItems(this, that))
             return false;
 
         // If both selections refer to the same divider (or null), they're the same
-        Selection other = (that as Selection);
-        if (other == null)
-            return false;
-
         IDivider? d1 = this.m_Section?.Divider;
-        IDivider? d2 = other.m_Section?.Divider;
-        return Object.ReferenceEquals(d1, d2);
+        IDivider? d2 = that.m_Section?.Divider;
+        return ReferenceEquals(d1, d2);
     }
 
     /// <summary>

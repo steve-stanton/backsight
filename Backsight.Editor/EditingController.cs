@@ -886,7 +886,7 @@ class EditingController
             return false;
         
         var ss = newSel is null ? new Selection() : newSel;
-        if (m_Selection.Equals(ss))
+        if (m_Selection.IsEqual(ss))
             return false;
 
         m_Selection = ss;
@@ -900,24 +900,21 @@ class EditingController
         // If a single item has been selected
         if (item is not null)
         {
-            if (item is DividerObject)
-                item = (item as DividerObject).Divider.Line;
+            if (item is DividerObject d)
+                item = d.Divider.Line;
 
-            if (item is PointFeature)
+            if (item is PointFeature selPoint)
             {
                 if (ArePointsDrawn)
                 {
-                    PointFeature selPoint = (item as PointFeature);
-
                     m_Inverse?.OnSelectPoint(selPoint);
                     m_Command?.OnSelectPoint(selPoint);
                 }
             }
-            else if (item is LineFeature)
+            else if (item is LineFeature selLine)
             {
                 if (m_Command is not null)
                 {
-                    LineFeature selLine = (item as LineFeature);
                     m_Command.OnSelectLine(selLine);
                 }
             }
