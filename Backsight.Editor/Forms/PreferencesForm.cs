@@ -48,14 +48,18 @@ public partial class PreferencesForm : Form
     /// need to be drawn smaller than they were).
     /// </summary>
     //private bool m_IsEraseRequired = false;
+    
+    private readonly ProjectSettings _settings;
 
     public PreferencesForm()
     {
         InitializeComponent();
 
+        _settings = EditingController.Current.Project?.Settings ?? throw new ApplicationException("No project");
+
         CadastralMapModel cmm = EditingController.Current.CadastralMapModel;
 
-        ShowPointsPage(cmm);
+        ShowPointsPage();
         ShowLabelsPage(cmm);
         ShowUnitsPage(cmm);
         ShowLineAnnotationPage();
@@ -164,18 +168,15 @@ if ( dial.DoModal()==IDOK ) {
         }
     }
 
-    void ShowPointsPage(CadastralMapModel cmm)
+    void ShowPointsPage()
     {
-        ProjectSettings ps = EditingController.Current.Project.Settings;
-        pointScaleTextBox.Text = String.Format("{0:F0}", ps.ShowPointScale);
-        pointSizeTextBox.Text = String.Format("{0:F2}", ps.PointHeight);
-        showIntersectionsCheckBox.Checked = ps.AreIntersectionsDrawn;
+        pointScaleTextBox.Text = String.Format("{0:F0}", _settings.ShowPointScale);
+        pointSizeTextBox.Text = String.Format("{0:F2}", _settings.PointHeight);
+        showIntersectionsCheckBox.Checked = _settings.AreIntersectionsDrawn;
     }
 
     bool SavePointsPage(CadastralMapModel cmm)
     {
-        ProjectSettings ps = EditingController.Current.Project.Settings;
-
         // Point threshold scale
 
         double pointScale;
@@ -187,9 +188,9 @@ if ( dial.DoModal()==IDOK ) {
             return false;
         }
 
-        if (Math.Abs(pointScale - ps.ShowPointScale) > 0.001)
+        if (Math.Abs(pointScale - _settings.ShowPointScale) > 0.001)
         {
-            ps.ShowPointScale = pointScale;
+            _settings.ShowPointScale = pointScale;
         }
 
         // Point size
@@ -203,27 +204,24 @@ if ( dial.DoModal()==IDOK ) {
             return false;
         }
 
-        if (Math.Abs(pointSize - ps.PointHeight) > 0.001)
-            ps.PointHeight = pointSize;
+        if (Math.Abs(pointSize - _settings.PointHeight) > 0.001)
+            _settings.PointHeight = pointSize;
 
         // Should intersections be drawn?
-        ps.AreIntersectionsDrawn = showIntersectionsCheckBox.Checked;
+        _settings.AreIntersectionsDrawn = showIntersectionsCheckBox.Checked;
         return true;
     }
 
     void ShowLabelsPage(CadastralMapModel cmm)
     {
-        ProjectSettings ps = EditingController.Current.Project.Settings;
-        labelScaleTextBox.Text = String.Format("{0:F0}", ps.ShowLabelScale);
+        labelScaleTextBox.Text = String.Format("{0:F0}", _settings.ShowLabelScale);
         textRotationAngleLabel.Text = RadianValue.AsShortString(cmm.DefaultTextRotation);
-        nominalScaleTextBox.Text = ps.NominalMapScale.ToString();
+        nominalScaleTextBox.Text = _settings.NominalMapScale.ToString();
         ShowFont();
     }
 
     bool SaveLabelsPage(CadastralMapModel cmm)
     {
-        ProjectSettings ps = EditingController.Current.Project.Settings;
-
         // Label threshold scale
 
         double labelScale;
@@ -235,8 +233,8 @@ if ( dial.DoModal()==IDOK ) {
             return false;
         }
 
-        if (Math.Abs(labelScale - ps.ShowLabelScale) > 0.001)
-            ps.ShowLabelScale = labelScale;
+        if (Math.Abs(labelScale - _settings.ShowLabelScale) > 0.001)
+            _settings.ShowLabelScale = labelScale;
 
         // Rotation angle (can't be changed via this dialog)
 
@@ -250,8 +248,8 @@ if ( dial.DoModal()==IDOK ) {
             return false;
         }
 
-        if (nominalScale != ps.NominalMapScale)
-            ps.NominalMapScale = (uint)nominalScale;
+        if (nominalScale != _settings.NominalMapScale)
+            _settings.NominalMapScale = (uint)nominalScale;
 
         // TODO: Font
 
@@ -314,23 +312,21 @@ if ( dial.DoModal()==IDOK ) {
 
     bool SaveUnitsPage(CadastralMapModel cmm)
     {
-        ProjectSettings ps = EditingController.Current.Project.Settings;
-
         if (enterMetersRadioButton.Checked)
-            ps.EntryUnitType = DistanceUnitType.Meters;
+            _settings.EntryUnitType = DistanceUnitType.Meters;
         else if (enterFeetRadioButton.Checked)
-            ps.EntryUnitType = DistanceUnitType.Feet;
+            _settings.EntryUnitType = DistanceUnitType.Feet;
         else if (enterChainsRadioButton.Checked)
-            ps.EntryUnitType = DistanceUnitType.Chains;
+            _settings.EntryUnitType = DistanceUnitType.Chains;
 
         if (displayMetersRadioButton.Checked)
-            ps.DisplayUnitType = DistanceUnitType.Meters;
+            _settings.DisplayUnitType = DistanceUnitType.Meters;
         else if (displayFeetRadioButton.Checked)
-            ps.DisplayUnitType = DistanceUnitType.Feet;
+            _settings.DisplayUnitType = DistanceUnitType.Feet;
         else if (displayChainsRadioButton.Checked)
-            ps.DisplayUnitType = DistanceUnitType.Chains;
+            _settings.DisplayUnitType = DistanceUnitType.Chains;
         else if (displayAsEnteredRadioButton.Checked)
-            ps.DisplayUnitType = DistanceUnitType.AsEntered;
+            _settings.DisplayUnitType = DistanceUnitType.AsEntered;
 
         return true;
     }

@@ -204,7 +204,7 @@ public partial class MainForm : Form, IControlContainer
         }
 
         // If the user double-clicked on a file, it may not be in the MRU list, so add it now.
-        string projectName = m_Controller.Project.Name;
+        string projectName = m_Controller.Project?.Name ?? String.Empty;
         m_MruMenu.AddFile(projectName, projectName);
 
         // Don't define the model until the screen gets shown for the first time. Otherwise
@@ -491,8 +491,8 @@ public partial class MainForm : Form, IControlContainer
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
         // Should probably do this when project is opened
-        Project p = m_Controller.Project;
-        if (p != null)
+        Project? p = m_Controller.Project;
+        if (p is not null)
             AddRecentProject(p.Name);
 
         m_Controller.CheckSave();
@@ -522,11 +522,11 @@ public partial class MainForm : Form, IControlContainer
             ILayer layer = m_Controller.ActiveLayer;
             activeLayerStatusLabel.Text = (layer==null ? "No active layer" : layer.Name);
             unitsStatusLabel.Text = m_Controller.EntryUnit.ToString();
-            IEntity ent = m_Controller.Project.DefaultPointType;
-            pointEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);
+            IEntity? ent = m_Controller.Project?.DefaultPointType;
+            pointEntityStatusLabel.Text = ent is null ? "No default" : ent.Name;
             ent = map.DefaultLineType;
-            lineEntityStatusLabel.Text = (ent==null ? "No default" : ent.Name);
-            string name = m_Controller.Project.Name;
+            lineEntityStatusLabel.Text = ent is null ? "No default" : ent.Name;
+            string name = m_Controller.Project?.Name;
             this.Text = (String.IsNullOrEmpty(name) ? "(Untitled map)" : name);
         }
 
@@ -1506,7 +1506,9 @@ else if ( m_Op == ID_LINE_CURVE ) {
     private void PointEnlarge(IUserAction action)
     {
         CadastralMapModel cmm = m_Controller.CadastralMapModel;
-        ProjectSettings ps = m_Controller.Project.Settings;
+        ProjectSettings? ps = m_Controller.Project?.Settings;
+        if (ps is null)
+            return;
 
         // If points are not currently drawn, set the scale threshold
         // to match the current scale, and set the size to be 1mm at scale.
@@ -1517,13 +1519,12 @@ else if ( m_Op == ID_LINE_CURVE ) {
             double scale = display.MapScale;
             ps.ShowPointScale = (scale + 1.0);
             double height = 0.001 * scale;
-            m_Controller.Project.Settings.PointHeight = Math.Max(0.01, height);
+            ps.PointHeight = Math.Max(0.01, height);
         }
         else
         {
             // Increase by a meter on the ground.
-            double oldHeight = m_Controller.Project.Settings.PointHeight;
-            ps.PointHeight = oldHeight + 1.0;
+            ps.PointHeight += 1.0;
         }
 
         // Redraw (no need for erase).
@@ -1538,7 +1539,10 @@ else if ( m_Op == ID_LINE_CURVE ) {
     private void PointReduce(IUserAction action)
     {
         CadastralMapModel cmm = m_Controller.CadastralMapModel;
-        ProjectSettings ps = m_Controller.Project.Settings;
+        ProjectSettings? ps = m_Controller.Project?.Settings;
+        if (ps is null)
+            return;
+        
         ISpatialDisplay display = m_Controller.ActiveDisplay;
         if (display==null)
             return;

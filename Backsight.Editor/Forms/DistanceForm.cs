@@ -291,7 +291,7 @@ partial class DistanceForm : Form
 
         // Change the default units if required
         if (m_NewUnit)
-            EditingController.Current.Project.Settings.EntryUnitType = m_Unit.UnitType;
+            EditingController.Current.Project!.Settings.EntryUnitType = m_Unit.UnitType;
 
         DialogResult = DialogResult.OK;
         Close();

@@ -196,7 +196,7 @@ partial class GetControlForm : Form
 
             // Tell the user the draw scale that has been defined, and ensure points are drawn
             // at that scale.
-            ProjectSettings ps = EditingController.Current.Project.Settings;
+            ProjectSettings ps = EditingController.Current.Project!.Settings;
             double scale = GetSensibleScale(display.MapScale);
             display.MapScale = scale;
             if (!m_Cmd.ArePointsDrawn())

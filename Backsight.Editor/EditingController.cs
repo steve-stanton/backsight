@@ -63,7 +63,7 @@ class EditingController
     /// <summary>
     /// Information about the current project
     /// </summary>
-    Project m_Project;
+    Project? m_Project;
 
     /// <summary>
     /// Information about the editing layer
@@ -183,7 +183,7 @@ class EditingController
         m_Inverse = null;
 
         // Write out the project settings
-        if (m_Project != null)
+        if (m_Project is not null)
         {
             new ProjectDatabase().CloseProject(m_Project);
             m_Project = null;
@@ -196,7 +196,7 @@ class EditingController
     public CadastralMapModel CadastralMapModel => MapModel as CadastralMapModel;
 
     /// <summary>
-    /// Information about the current project
+    /// Information about the current project (null if a project is not currently open).
     /// </summary>
     internal Project Project => m_Project;
 
@@ -944,14 +944,14 @@ class EditingController
     /// the display in question is the command display. Otherwise it's the currently
     /// active display.
     /// </summary>
-    internal bool ArePointsDrawn => IsVisible(m_Project.Settings.ShowPointScale);
+    internal bool ArePointsDrawn => m_Project is not null && IsVisible(m_Project.Settings.ShowPointScale);
 
     /// <summary>
     /// Are labels drawn in the display. If an editing command is currently running,
     /// the display in question is the command display. Otherwise it's the currently
     /// active display.
     /// </summary>
-    internal bool AreLabelsDrawn => IsVisible(m_Project.Settings.ShowLabelScale);
+    internal bool AreLabelsDrawn => m_Project is not null && IsVisible(m_Project.Settings.ShowLabelScale);
 
     /// <summary>
     /// Are line annotations drawn in the display. If an editing command is currently running,
@@ -1067,6 +1067,7 @@ class EditingController
     /// <param name="sender">The display that has changed</param>
     public void OnSetExtent(ISpatialDisplay sender)
     {
+        Debug.Assert(m_Project is not null);
         m_Project.Settings.LastDraw = new DrawInfo(sender.Extent, sender.MapScale);
     }
 
@@ -1203,7 +1204,7 @@ class EditingController
     internal void CheckSave()
     {
         // Always save project settings
-        if (m_Project != null)
+        if (m_Project is not null)
             m_Project.SaveSettings();
 
         if (IsSaved)

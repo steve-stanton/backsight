@@ -132,8 +132,8 @@ public partial class NewPointForm : Form
             m_PointId = new IdHandle();
 
             // Pick any default entity type (the change handler for the entity type combo will go on to load the ID combo)
-            IEntity defEnt = m_Cmd.Controller.Project.DefaultPointType;
-            if (defEnt!=null)
+            IEntity? defEnt = m_Cmd.Controller.Project?.DefaultPointType;
+            if (defEnt is not null)
             {
                 entityTypeComboBox.SelectedItem = defEnt;
 
