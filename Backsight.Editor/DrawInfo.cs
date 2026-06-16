@@ -13,7 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-namespace Backsight.Forms;
+namespace Backsight.Editor;
 
 /// <written by="Steve Stanton" on="14-SEP-2006" />
 /// <summary>The center and scale used for a map display</summary>
@@ -23,14 +23,14 @@ public struct DrawInfo
     public double CenterY;
     public double MapScale;
 
-    public DrawInfo(double centerX, double centerY, double mapScale)
+    internal DrawInfo(double centerX, double centerY, double mapScale)
     {
         CenterX = centerX;
         CenterY = centerY;
         MapScale = mapScale;
     }
 
-    public DrawInfo(IWindow extent, double mapScale)
+    internal DrawInfo(IWindow extent, double mapScale)
     {
         IPosition c = extent.Center;
         CenterX = c.X;

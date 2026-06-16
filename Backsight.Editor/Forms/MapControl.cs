@@ -78,13 +78,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     /// <summary>
     /// Info about previous draw extents
     /// </summary>
-    private List<DrawInfo> m_Extents = [];
-
-    /// <summary>
-    /// Index of the draw that's currently on screen ((-1 if there is no draw info).
-    /// Refers to an element in <c>m_Extents</c>
-    /// </summary>
-    private int m_CurrentExtentIndex = -1;
+    private DrawHistory m_DrawHistory = new();
 
     public MapControl()
     {
@@ -1005,29 +999,18 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     bool Previous()
     {
-        if (m_CurrentExtentIndex>0)
-        {
-            m_CurrentExtentIndex--;
+        if (m_DrawHistory.SetPrevious())
             DrawExtent();
-        }
-        return true;
-    }
 
-    bool IsPreviousEnabled()
-    {
-        return (m_CurrentExtentIndex>0);
+        return true;
     }
 
     bool Next()
     {
-        m_CurrentExtentIndex++;
-        DrawExtent();
-        return true;
-    }
+        if (m_DrawHistory.SetNext())
+            DrawExtent();
 
-    bool IsNextEnabled()
-    {
-        return ((m_CurrentExtentIndex+1) < m_Extents.Count);
+        return true;
     }
 
     public bool IsEnabled(DisplayToolId id)
@@ -1051,10 +1034,10 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
                 return true;
 
             case DisplayToolId.Previous:
-                return IsPreviousEnabled();
+                return m_DrawHistory.IsPreviousEnabled;
 
             case DisplayToolId.Next:
-                return IsNextEnabled();
+                return m_DrawHistory.IsNextEnabled;
         }
 
         return false;
@@ -1141,15 +1124,10 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     {
         if (m_MapPanelExtent is null)
             return;
-        
-        // If we currently have 32 extents, drop the head.
-        if (m_Extents.Count==32)
-            m_Extents.RemoveAt(0);
 
         // Remember a new extent, add make it the current one
         DrawInfo info = new DrawInfo(m_MapPanelExtent, m_MapScale);
-        m_Extents.Add(info);
-        m_CurrentExtentIndex = m_Extents.Count-1;
+        m_DrawHistory.AddDraw(info);
 
         // Notify the controller (may want to remember the extent elsewhere)
         EditingController.Current.OnSetExtent(this);            
@@ -1160,11 +1138,11 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     /// </summary>
     void DrawExtent()
     {
-        if(m_CurrentExtentIndex<0 || m_CurrentExtentIndex>=m_Extents.Count)
+        var info = m_DrawHistory.GetCurrentDraw();
+        if (info is null)
             return;
 
-        DrawInfo info = m_Extents[m_CurrentExtentIndex];
-        SetCenterAndScale(info.CenterX, info.CenterY, info.MapScale, false);
+        SetCenterAndScale(info.Value.CenterX, info.Value.CenterY, info.Value.MapScale, false);
     }
 
     /// <summary>
@@ -1198,16 +1176,8 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
 
     void ResetContent()
     {
-        KillExtents();
-    }
-
-    /// <summary>
-    /// Gets rid of all draw extents that may have been stored. 
-    /// </summary>
-    void KillExtents()
-    {
-        m_Extents = new List<DrawInfo>();
-        m_CurrentExtentIndex = -1;
+        // Get rid of all draw extents that may have been stored.
+        m_DrawHistory.RemoveAllDraws();
     }
 
     private void hScrollBar_Scroll(object sender, ScrollEventArgs e)
