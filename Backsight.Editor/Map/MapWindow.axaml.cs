@@ -1,13 +1,8 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
-using Backsight.Environment;
-using Backsight.Forms;
+using Backsight.Editor.Forms;
 using Backsight.Geometry;
 using Mapsui;
 using Mapsui.Extensions;
@@ -23,13 +18,25 @@ namespace Backsight.Editor.Map;
 
 public partial class MapWindow : Avalonia.Controls.Window
 {
+    private readonly EditingController _controller;
     private readonly CadastralMapProvider _provider = new();
     private readonly Mapsui.Map _map;
 
     /// <summary>
+    /// The viewport prior to execution of a display tool (null if there is no active display tool).
+    /// </summary>
+    private Viewport? _previousViewport;
+
+    /// <summary>
+    /// The ID of the current display tool (if any).
+    /// </summary>
+    private DisplayToolId? _displayToolId;
+    
+    /// <summary>
     /// The size to draw point features (in pixels).
     /// </summary>
     private float _pointSize = 10f;
+
 /*
     public static readonly StyledProperty<bool> IsContextVisibleProperty =
         AvaloniaProperty.Register<MapEditor, bool>(
@@ -43,13 +50,17 @@ public partial class MapWindow : Avalonia.Controls.Window
     }
     */
     public bool IsContextVisible { get; set; }
-    
+
     //SKFontManager FontManager { get; } = SKFontManager.Default;
 
-    public MapWindow()
+    internal MapWindow(EditingController controller)
     {
         InitializeComponent();
         DataContext = this;
+
+        _controller = controller;
+        _controller.SetMapWindow(this);
+        Closing += (_, _) => _controller.SetMapWindow(null);
 
         _map = new Mapsui.Map()
         {
@@ -65,19 +76,23 @@ public partial class MapWindow : Avalonia.Controls.Window
         MapRenderer.RegisterLayerRenderer("backsight-renderer", DrawMap);
 
         // Logging to map window
+        /*
         LoggingWidget.ShowLoggingInMap = ActiveMode.Yes;
         Logger.Settings.LogMapEvents = true;
         Logger.Settings.LogWidgetEvents = true;
-        
+        */
+
+        /*
         // The PerformanceWidget is created as part of the map.
         var performanceWidget = _map.Widgets.OfType<PerformanceWidget>().First();
         // The default is ActiveMode.OnlyInDebugMode, which is usually the best option.
         performanceWidget.Performance.IsActive = ActiveMode.Yes;
         performanceWidget.BackColor = Mapsui.Styles.Color.WhiteSmoke;
         performanceWidget.Opacity = 1;
+        */
 
         /*
-        // Try a custom widget        
+        // Try a custom widget
         MapRenderer.RegisterWidgetRenderer(typeof(TestWidget), new TestWidgetSkiaRenderer());
 
         var testWidget = new TestWidget
@@ -86,26 +101,32 @@ public partial class MapWindow : Avalonia.Controls.Window
             HorizontalAlignment = Mapsui.Widgets.HorizontalAlignment.Left
         };
         _map.Widgets.Add(testWidget);
-        
+
         // Hide it
         testWidget.Enabled = false;
         */
 
         // Ensure the map stays in position on a mouse drag (user needs to explicitly say they want to drag)
         _map.Navigator.PanLock = true;
-        
+
         _map.Navigator.ViewportChanged += NavigatorOnViewportChanged;
         //_map.Tapped += MapOnTapped;
-        
+
         MapControl.Map = _map;
         MapControl.PointerPressed += OnPointerPressed;
 
-        var extent = EditingController.Current.ActiveMap.Extent;
+        var extent = GetCurrentExtent();
         if (extent is not null)
-        {
-            var msExtent = new MRect(extent.Min.X, extent.Min.Y, extent.Max.X, extent.Max.Y);
-            _map.Navigator.ZoomToBox(msExtent);
-        }
+            _map.Navigator.ZoomToBox(extent);
+    }
+
+    private MRect? GetCurrentExtent()
+    {
+        var extent = EditingController.Current.ActiveMap.Extent;
+        if (extent is null)
+            return null;
+
+        return new MRect(extent.Min.X, extent.Min.Y, extent.Max.X, extent.Max.Y);
     }
 
     // This gets called a lot on mouse wheels, and the change in map scale is often tiny...
@@ -124,27 +145,37 @@ public partial class MapWindow : Avalonia.Controls.Window
 
         var groundRect = e.Viewport.ToExtent();
         var screenRect = e.Viewport.ToSkiaRect();
-        
+
         const double inchesToMeters = 0.0254;
-        var width = (screenRect.Width/96.0) * inchesToMeters;
+        var width = (screenRect.Width / 96.0) * inchesToMeters;
         var scale = groundRect.Width / width;
         Console.WriteLine($"Scale={scale}");
 
         _provider.MapScale = scale;
-        
+
         // The viewport.Width adds 10% all round, whereas ToExtent and ToSkiaRect appear to be tight fitting
         // Either way, you end up with the same map scale
+
+        // If the change event was in response to a display request, remember it in the draw history
+        if (_displayToolId is not null && _previousViewport is not null && e.PreviousViewport == _previousViewport)
+        {
+            Console.WriteLine($"{_displayToolId} done");
+            _previousViewport = null;
+            _displayToolId = null;
+
+            // TODO: add to history
+        }
     }
 
     // Custom layer renderer
     void DrawMap(SKCanvas canvas, Viewport viewport, Mapsui.Layers.ILayer layer, RenderService renderService)
     {
-         var sel = EditingController.Current.Selection;
-         var selIds = new HashSet<uint>(sel.Items
-             .Where(x => x is Feature)
-             .Cast<Feature>()
-             .Select(x => x.InternalId.ItemSequence));
-         
+        var sel = EditingController.Current.Selection;
+        var selIds = new HashSet<uint>(sel.Items
+            .Where(x => x is Feature)
+            .Cast<Feature>()
+            .Select(x => x.InternalId.ItemSequence));
+
         int n = 0;
 
         // Draws happen much more frequently than fetches from the provider. So it wouldn't be a good
@@ -174,7 +205,7 @@ public partial class MapWindow : Avalonia.Controls.Window
         }
 
         var pointOffset = _pointSize * 0.5f;
-        
+
         foreach (var feature in layer.GetFeatures(viewport.ToExtent(), viewport.Resolution))
         {
             n++;
@@ -199,11 +230,11 @@ public partial class MapWindow : Avalonia.Controls.Window
                 var isSelected = selIds.Contains(line.InternalId.ItemSequence);
                 var color = isSelected ? SKColors.Red : SKColors.Black;
                 var width = isSelected ? 5f : 1f;
-                
+
                 var geom = line.LineGeometry;
                 if (geom is SectionGeometry section)
                     geom = section.Make();
-                
+
                 if (geom is SegmentGeometry seg)
                 {
                     var ps = ToScreenPoint(seg.Start);
@@ -221,7 +252,7 @@ public partial class MapWindow : Avalonia.Controls.Window
                 {
                     using var path = new SKPath();
                     path.MoveTo(ToScreenPoint(multiSeg.Start));
-                    
+
                     foreach (var p in multiSeg.Data.Skip(1))
                         path.LineTo(ToScreenPoint(p));
 
@@ -258,17 +289,17 @@ public partial class MapWindow : Avalonia.Controls.Window
                 var color = isSelected ? SKColors.Red : SKColors.Black;
 
                 using var paint = new SKPaint { Color = color, IsAntialias = true };
-                
+
                 // Create the font
                 var geom = text.TextGeometry;
                 var t = geom.Text;
                 using var font = CreateFont(geom);
                 ScaleFontToRequiredDimensions(font, t, geom, viewport);
-                
+
                 // The text position is the top-left corner, but DrawText wants a Y position
                 // on the baseline of the text.
                 // TODO: The geom.Height may not be exactly equivalent to font.Metrics.Ascent
-                
+
                 double topToBottomBearing = geom.Rotation.Radians + MathConstants.PI;
                 var bottomLeft = Geom.Polar(geom.Position, topToBottomBearing, geom.Height);
                 var screenPosition = viewport.WorldToScreen(bottomLeft.X, bottomLeft.Y);
@@ -291,26 +322,26 @@ public partial class MapWindow : Avalonia.Controls.Window
         // Should have extension method for this...
         var drawExtent = viewport.ToExtent();
         var drawWindow = new Window(drawExtent.MinX, drawExtent.MinY, drawExtent.MaxX, drawExtent.MaxY);
-        
+
         // Highlight any selected polygons
         foreach (var pol in EditingController.Current.Selection.Items.Where(x => x is Polygon).Cast<Polygon>())
         {
             // While SKPath does have an ArcTo method that lets you include circular arcs in the
             // path, that tends to complicate things here - just approximate arcs on each ring
             // (since that's the way it worked in the past).
-            
-            var outlines = pol.GetRingOutlines(_provider.MapScale, drawWindow); 
-            
+
+            var outlines = pol.GetRingOutlines(_provider.MapScale, drawWindow);
+
             using var path = new SKPath();
 
             foreach (var outline in outlines)
             {
                 path.MoveTo(ToScreenPoint(outline[0]));
-                    
+
                 foreach (var p in outline.Skip(1))
                     path.LineTo(ToScreenPoint(p));
             }
-            
+
             using var paint = new SKPaint
             {
                 Color = SKColors.LightSalmon,
@@ -330,7 +361,7 @@ public partial class MapWindow : Avalonia.Controls.Window
         var font = textGeom.Font;
         if (font is null)
             return new SKFont();
-        
+
         var typeface = SKFontManager.Default.MatchFamily(font.TypeFace);
         return new SKFont(typeface);
     }
@@ -338,7 +369,8 @@ public partial class MapWindow : Avalonia.Controls.Window
     private void ScaleFontToRequiredDimensions(SKFont font, string text, TextGeometry textGeom, Viewport viewport)
     {
         // Work with an arbitrary size of 100 (while documentation says this is in "points" (1/72nd of an inch),
-        // AI suggests that Skia really expects pixel size)
+        // AI suggests that Skia really expects pixel size). It doesn't actually matter since the required
+        // dimensions are in ground units, so we can use the viewport resolution to scale things.
         font.Size = 100f;
 
         // How big would that make the text (in screen units)
@@ -346,7 +378,7 @@ public partial class MapWindow : Avalonia.Controls.Window
         font.MeasureText(text, out skBounds);
         if (skBounds.Height <= 0)
             throw new NotImplementedException("SKFont.MeasureText() returned unexpected height");
-        
+
         // What's that in ground units?
         var ght = skBounds.Height * viewport.Resolution;
         var gwd = skBounds.Width * viewport.Resolution;
@@ -357,11 +389,11 @@ public partial class MapWindow : Avalonia.Controls.Window
 
         // Assuming that the calculated size will alter the width proportionally, what width (on the ground) would we get?
         gwd *= scaleY;
-        
+
         // So how much do we need to scale in X to give us the required width?
         font.ScaleX = (float)(textGeom.Width / gwd);
     }
-    
+
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (e.Properties.IsRightButtonPressed)
@@ -378,7 +410,7 @@ public partial class MapWindow : Avalonia.Controls.Window
                 _map.RefreshGraphics();
             }
             */
-            
+
             //MapControl.ContextMenu?.Open(MapControl);
             //MapControl.ContextFlyout?.ShowAt(MapControl);
             //IsContextVisible = !IsContextVisible;
@@ -393,10 +425,7 @@ public partial class MapWindow : Avalonia.Controls.Window
             {
                 Items = { new MenuItem { Header = "Command 1" }, new MenuItem { Header = "Command 2" } }
             };
-            Dispatcher.UIThread.Post(() =>
-            {
-                MapControl.ContextFlyout.ShowAt(MapControl);
-            });
+            Dispatcher.UIThread.Post(() => { MapControl.ContextFlyout.ShowAt(MapControl); });
 
 /*
             if (MapControl.ContextMenu is { } menu)
@@ -437,6 +466,7 @@ public partial class MapWindow : Avalonia.Controls.Window
             //e.Map.Refresh();
             _map.RefreshGraphics();
         }
+
         e.Handled = true;
 
     }
@@ -449,5 +479,91 @@ public partial class MapWindow : Avalonia.Controls.Window
     private void OnClick2(object? sender, RoutedEventArgs e)
     {
         Console.WriteLine("Click2");
+    }
+
+    private bool ZoomIn()
+    {
+        return Zoom(-0.2);
+    }
+
+    private bool ZoomOut()
+    {
+        return Zoom(0.2);
+    }
+
+    private bool Zoom(double factor)
+    {
+        var extent = EditingController.Current.ActiveMap.Extent;
+        if (extent is null)
+            return false;
+
+        var newExtent = new Window(extent);
+        newExtent.Expand(factor);
+
+        _previousViewport = _map.Navigator.Viewport;
+        _map.Navigator.ZoomToBox(ToMRect(newExtent));
+        return true;
+    }
+
+
+    // TODO: Probably better as extension method
+    private static MRect ToMRect(IWindow extent)
+    {
+        return new MRect(extent.Min.X, extent.Min.Y, extent.Max.X, extent.Max.Y);
+    }
+
+    private bool MapRefresh()
+    {
+        _map.Refresh();
+        return true;
+    }
+        
+    internal bool Do(DisplayToolId id)
+    {
+        //EscapeCurrentTool();
+        _displayToolId = id;
+
+        switch (id)
+        {
+            case DisplayToolId.Overview:
+            {
+                var extent = _provider.GetExtent();
+                if (extent is null)
+                    return false;
+
+                _previousViewport = _map.Navigator.Viewport;
+                _map.Navigator.ZoomToBox(extent);
+                return true;
+            }
+
+            case DisplayToolId.ZoomIn:
+                return ZoomIn();
+
+            case DisplayToolId.ZoomOut:
+                return ZoomOut();
+
+            case DisplayToolId.ZoomRectangle:
+                return false; // ZoomRectangle();
+
+            case DisplayToolId.DrawScale:
+                return false; // DrawScale();
+
+            case DisplayToolId.NewCentre:
+                return false; // NewCenter();
+
+            case DisplayToolId.Pan:
+                return false; // Pan();
+
+            case DisplayToolId.MapRefresh:
+                return MapRefresh();
+
+            case DisplayToolId.Previous:
+                return false; // Previous();
+
+            case DisplayToolId.Next:
+                return false; // Next();
+        }
+
+        return false;
     }
 }

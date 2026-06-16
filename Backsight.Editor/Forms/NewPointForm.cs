@@ -327,8 +327,8 @@ public partial class NewPointForm : Form
     /// Creates a new point, based on the information stored in the
     /// dialog. It is assumed that validation has already been done (see OnOK).
     /// </summary>
-    /// <returns></returns>
-    internal PointFeature Save()
+    /// <returns>The new point (null if an error was reported).</returns>
+    internal PointFeature? Save()
     {
         // Handle 3D points some other day
         if (Math.Abs(m_Elevation) > Double.Epsilon)

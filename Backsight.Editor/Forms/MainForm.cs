@@ -1988,10 +1988,17 @@ else if ( m_Op == ID_LINE_CURVE ) {
     private async void HelpAbout(IUserAction action)
     {
         // TESTING: Launch modeless Avalonia window
+
+        if (m_Controller.MapWindow is not null)
+        {
+            MessageBox.Show("Experimental map window already launched");
+            return;
+        }
+        
         Dispatcher.UIThread.Post(() =>
         {
-            var dial = new Map.MapWindow();
-            dial.Show();
+            var map = new Map.MapWindow(m_Controller);
+            map.Show();
         });
 
         /*

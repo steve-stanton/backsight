@@ -156,8 +156,8 @@ class NewPointUI : SimpleCommandUI, IDisposable
         else
         {
             // Save the new point.
-            PointFeature p = m_Dialog.Save();
-            if (p == null)
+            PointFeature? p = m_Dialog.Save();
+            if (p is null)
                 return false;
 
             // Ensure the point is on screen, and select it.

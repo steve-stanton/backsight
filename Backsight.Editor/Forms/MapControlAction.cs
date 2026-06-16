@@ -43,6 +43,10 @@ public class MapControlAction : IUserAction
     private void Do(object sender, EventArgs e)
     {
         m_Control.Do(m_ToolId);
+        
+        var mapWindow = EditingController.Current.MapWindow;
+        if (mapWindow is not null)
+            mapWindow.Do(m_ToolId);
     }
 
     public string Title { get { return m_Elements.Title; } }

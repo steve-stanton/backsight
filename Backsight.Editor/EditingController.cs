@@ -24,6 +24,7 @@ using Backsight.Editor.UI;
 using Backsight.Environment;
 using Backsight.Forms;
 using Backsight.Database;
+using Backsight.Editor.Map;
 
 namespace Backsight.Editor;
 
@@ -61,6 +62,11 @@ class EditingController
     /// </summary>
     private MapControl? m_MapControl;
 
+    /// <summary>
+    /// Experimental: The new modeless map display (if opened).
+    /// </summary>
+    private MapWindow? m_MapWindow;
+    
     /// <summary>
     /// Information about the current project
     /// </summary>
@@ -152,6 +158,13 @@ class EditingController
     {
         m_MapControl = mapControl;
     }
+
+    internal void SetMapWindow(MapWindow? mapWindow)
+    {
+        m_MapWindow = mapWindow;
+    }
+    
+    internal MapWindow? MapWindow => m_MapWindow;
 
     public void RefreshAllDisplays()
     {
@@ -785,16 +798,16 @@ class EditingController
     {
         // Ensure the draw window shows the point.
         var map = ActiveMap;
-        IWindow drawExtent = map.Extent;
+        IWindow? drawExtent = map.Extent;
 
-        if (drawExtent==null || drawExtent.IsEmpty)
+        if (drawExtent is null || drawExtent.IsEmpty)
             map.DrawOverview();
         else if (!drawExtent.IsOverlap(p))
             map.Center = p;
 
         // Select the point if requested
         if (select)
-            SetSelection(new Selection(p, null));
+            SetSelection(new Selection(p));
     }
 
     /// <summary>

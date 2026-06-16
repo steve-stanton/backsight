@@ -32,6 +32,8 @@ public class CadastralMapProvider : IProvider
     // Also see GeoJsonProvider, which has a static spatial index on a collection of IFeature
     public Task<IEnumerable<Mapsui.IFeature>> GetFeaturesAsync(FetchInfo fetchInfo)
     {
+        var ec = EditingController.Current;
+        
         var extent = new Window(
             new Position(fetchInfo.Extent.MinX, fetchInfo.Extent.MinY),
             new Position(fetchInfo.Extent.MaxX, fetchInfo.Extent.MaxY));
@@ -53,24 +55,15 @@ public class CadastralMapProvider : IProvider
         var lineStyles = new List<IStyle>();
         lineStyles.Add(lineStyle);
 
-        // Should polygons even be fetched? If I click inside a polygon to select it, the app
-        // should use the usual selection logic (the Mapsui control doesn't do selections by itself).
-        // We only really need to render selected polygons.
-        /*
-        CadastralMapModel.Current.Index.QueryWindow(extent, SpatialType.Polygon, item =>
-        {
-            var pol = item as Polygon ?? throw new ApplicationException("Unexpected feature type");
-            result.Add(new Map.Area(pol));
-        });
-*/
+        // There seems to be no reason to fetch polygons. If I click inside a polygon to select it, the
+        // app should use the usual selection logic (the Mapsui control doesn't do selections by itself).
+        // We only really need to render selected polygons, which will be done as part of the
+        // custom renderer.
+
         CadastralMapModel.Current.Index.QueryWindow(extent, SpatialType.Line, item =>
         {
             var line = item as LineFeature ?? throw new ApplicationException("Unexpected feature type");
             result.Add(new Map.Line(line));
-            
-            // Could perhaps tag the IFeature with a Data object that says whether the feature
-            // is currently selected. Or set IFeature.Styles so that it can be used on the draw
-            // without having to make a further check
             
             /*
             var geom = line.LineGeometry;
@@ -117,28 +110,14 @@ public class CadastralMapProvider : IProvider
             return true;
         });
         
-        CadastralMapModel.Current.Index.QueryWindow(extent, SpatialType.Point, item =>
+        if (ec.ArePointsDrawn) CadastralMapModel.Current.Index.QueryWindow(extent, SpatialType.Point, item =>
         {
-            if (item is PointFeature point)
-            {
-                // The model has an index of all features, indexed by InternalId.
-                // So is it worth holding that as a property of the MS feature?
-                // Would it hurt just to hold the entire BS feature in the dictionary?
-                
-                /*
-                var msPoint = new Mapsui.Layers.PointFeature(point.X, point.Y);
-                msPoint["InternalId"] = point.InternalId.ItemSequence;
-                msPoint["Key"] = point.FeatureId?.FormattedKey;
-                msPoint.Data = point;
-                result.Add(msPoint);
-*/
-                result.Add(new Map.Point(point));
-            }
-            
+            var point = item as PointFeature ?? throw new ApplicationException("Unexpected feature type");
+            result.Add(new Map.Point(point));
             return true;
         });
 
-        CadastralMapModel.Current.Index.QueryWindow(extent, SpatialType.Text, item =>
+        if (ec.AreLabelsDrawn) CadastralMapModel.Current.Index.QueryWindow(extent, SpatialType.Text, item =>
         {
             var text = item as TextFeature ?? throw new ApplicationException("Unexpected feature type");
             result.Add(new Map.Text(text));
