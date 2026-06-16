@@ -6,12 +6,9 @@ using Backsight.Editor.Forms;
 using Backsight.Geometry;
 using Mapsui;
 using Mapsui.Extensions;
-using Mapsui.Logging;
 using Mapsui.Rendering;
 using Mapsui.Rendering.Skia;
 using Mapsui.Rendering.Skia.Extensions;
-using Mapsui.Widgets;
-using Mapsui.Widgets.InfoWidgets;
 using SkiaSharp;
 
 namespace Backsight.Editor.Map;
@@ -31,6 +28,11 @@ public partial class MapWindow : Avalonia.Controls.Window
     /// The ID of the current display tool (if any).
     /// </summary>
     private DisplayToolId? _displayToolId;
+    
+    /// <summary>
+    /// History of explicit user-initiated draws (excludes redraws driven by mouse wheels).
+    /// </summary>
+    private readonly DrawHistory _drawHistory = new();
     
     /// <summary>
     /// The size to draw point features (in pixels).
@@ -160,10 +162,16 @@ public partial class MapWindow : Avalonia.Controls.Window
         if (_displayToolId is not null && _previousViewport is not null && e.PreviousViewport == _previousViewport)
         {
             Console.WriteLine($"{_displayToolId} done");
+
+            if (_displayToolId is not (DisplayToolId.MapRefresh or DisplayToolId.Next or DisplayToolId.Previous))
+            {
+                Console.WriteLine($"Adding draw to history with scale {scale:f1}");
+                var drawInfo = new DrawInfo(e.Viewport.CenterX, e.Viewport.CenterY, scale);
+                _drawHistory.AddDraw(drawInfo);
+            }
+
             _previousViewport = null;
             _displayToolId = null;
-
-            // TODO: add to history
         }
     }
 
@@ -517,7 +525,56 @@ public partial class MapWindow : Avalonia.Controls.Window
         _map.Refresh();
         return true;
     }
+
+    private bool Previous()
+    {
+        if (_drawHistory.SetPrevious())
+            DrawExtent();
+
+        return true;
+    }
+
+    private bool Next()
+    {
+        if (_drawHistory.SetNext())
+            DrawExtent();
+
+        return true;
+    }
+
+    /// <summary>
+    /// Redraws the current draw extent.
+    /// </summary>
+    private void DrawExtent()
+    {
+        var info = _drawHistory.GetCurrentDraw();
+        if (info is null)
+            return;
+
+        SetCenterAndScale(info.Value);
+    }
+
+    private void SetCenterAndScale(DrawInfo info)
+    {
+        var xc = info.CenterX;
+        var yc = info.CenterY;
+        var scale = info.MapScale;
         
+        // Get the screen dimensions of the client area, in meters
+        var extent = _map.Navigator.Viewport.ToExtent();
+        var width = extent.Width / _provider.MapScale;
+        var height = extent.Height / _provider.MapScale;
+
+        // Figure out the ground dimension based on the supplied scale.
+        var dx = 0.5 * (width * scale);
+        var dy = 0.5 * (height * scale);
+
+        // Define a window based on the supplied centre.
+        _previousViewport = _map.Navigator.Viewport;
+        var newExtent = new MRect(xc - dx, yc - dy, xc + dx, yc + dy);
+        _map.Navigator.ZoomToBox(newExtent);
+    }
+    
     internal bool Do(DisplayToolId id)
     {
         //EscapeCurrentTool();
@@ -558,10 +615,10 @@ public partial class MapWindow : Avalonia.Controls.Window
                 return MapRefresh();
 
             case DisplayToolId.Previous:
-                return false; // Previous();
+                return Previous();
 
             case DisplayToolId.Next:
-                return false; // Next();
+                return Next();
         }
 
         return false;
