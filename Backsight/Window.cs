@@ -171,7 +171,7 @@ public class Window : IEditWindow, IEquatable<Window>
     /// <summary>
     /// The position at the center of this window (null if the <see cref="IsEmpty"/> property is true).
     /// </summary>
-    public IPosition Center
+    public IPosition? Center
     {
         get { return (this.IsEmpty ? null : new Position((m_Min.X+m_Max.X)*0.5, (m_Min.Y+m_Max.Y)*0.5)); }
     }

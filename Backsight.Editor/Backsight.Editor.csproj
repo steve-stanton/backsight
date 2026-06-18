@@ -843,6 +843,10 @@
       <EmbeddedResource Include="Resources\NewCenterCursor.cur" />
       <EmbeddedResource Include="Resources\CarCursor.cur" />
       <None Remove="Resources\Test.png" />
+      <None Remove="Resources\OpenHand.png" />
+      <EmbeddedResource Include="Resources\OpenHand.png" />
+      <None Remove="Resources\ClosedHand.png" />
+      <EmbeddedResource Include="Resources\ClosedHand.png" />
     </ItemGroup>
 
     <ItemGroup>

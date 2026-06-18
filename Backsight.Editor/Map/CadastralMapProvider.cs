@@ -3,11 +3,14 @@ using Mapsui.Layers;
 using Mapsui.Providers;
 using Mapsui.Styles;
 
-namespace Backsight.Editor;
+namespace Backsight.Editor.Map;
 
 public class CadastralMapProvider : IProvider
 {
     internal double MapScale { get; set; } = 1000.0;
+    internal long FetchCount { get; private set; }
+
+    internal event EventHandler<FetchWindowChangedEventArgs>? FetchWindowChanged; 
     
     private Window _lastWindow = new();
 
@@ -38,10 +41,16 @@ public class CadastralMapProvider : IProvider
             new Position(fetchInfo.Extent.MinX, fetchInfo.Extent.MinY),
             new Position(fetchInfo.Extent.MaxX, fetchInfo.Extent.MaxY));
 
+        FetchCount++;
         if (extent.Equals(_lastWindow))
-            Console.WriteLine("Fetch same as last");
+        {
+            //Console.WriteLine("Fetch same as last");
+        }
         else
-            Console.WriteLine("New fetch");
+        {
+            FetchWindowChanged?.Invoke(this, new FetchWindowChangedEventArgs(extent, MapScale));
+            Console.WriteLine("Fetch " + FetchCount);
+        }
         
         _lastWindow = extent;
         

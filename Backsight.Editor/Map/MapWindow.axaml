@@ -6,18 +6,23 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Backsight.Editor.Map.MapWindow"
         Title="MapWindow">
-    <mapsui:MapControl x:Name="MapControl">
-        <mapsui:MapControl.ContextFlyout>
-            <MenuFlyout>
-                <MenuItem Header="Command 1" Click="OnClick1" />
-                <MenuItem Header="Command 2" Click="OnClick2" />
-            </MenuFlyout>
-        </mapsui:MapControl.ContextFlyout>
-        <mapsui:MapControl.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Command 1a" Click="OnClick1" />
-                <MenuItem Header="Command 2a" Click="OnClick2" />
-            </ContextMenu>
-        </mapsui:MapControl.ContextMenu>
-    </mapsui:MapControl>
+    <Grid>
+        <mapsui:MapControl x:Name="MapControl">
+            <mapsui:MapControl.ContextFlyout>
+                <MenuFlyout>
+                    <MenuItem Header="Command 1" Click="OnClick1" />
+                    <MenuItem Header="Command 2" Click="OnClick2" />
+                </MenuFlyout>
+            </mapsui:MapControl.ContextFlyout>
+            <mapsui:MapControl.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Command 1a" Click="OnClick1" />
+                    <MenuItem Header="Command 2a" Click="OnClick2" />
+                </ContextMenu>
+            </mapsui:MapControl.ContextMenu>
+        </mapsui:MapControl>
+        <Canvas x:Name="MapOverlay"
+                Background="Transparent"
+                IsHitTestVisible="False"/>
+    </Grid>
 </Window>

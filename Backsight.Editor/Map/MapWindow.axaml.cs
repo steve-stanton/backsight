@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -6,10 +7,15 @@ using Backsight.Editor.Forms;
 using Backsight.Geometry;
 using Mapsui;
 using Mapsui.Extensions;
+using Mapsui.Manipulations;
 using Mapsui.Rendering;
 using Mapsui.Rendering.Skia;
 using Mapsui.Rendering.Skia.Extensions;
 using SkiaSharp;
+using ContextMenu = Avalonia.Controls.ContextMenu;
+using Cursor = Avalonia.Input.Cursor;
+using KeyEventArgs = Avalonia.Input.KeyEventArgs;
+using MenuItem = Avalonia.Controls.MenuItem;
 
 namespace Backsight.Editor.Map;
 
@@ -21,17 +27,28 @@ public partial class MapWindow : Avalonia.Controls.Window
 
     /// <summary>
     /// The viewport prior to execution of a display tool (null if there is no active display tool).
+    /// TODO: should now be obs
     /// </summary>
     private Viewport? _previousViewport;
 
     /// <summary>
-    /// The ID of the current display tool (if any).
+    /// The ID of the last display tool (if any).
+    /// TODO: Is this needed?
     /// </summary>
-    private DisplayToolId? _displayToolId;
+    private DisplayToolId? _mapToolId;
+
+    /// <summary>
+    /// A long-lived display tool (involving the cursor). 
+    /// </summary>
+    private MapWindowTool? _mapTool;
     
     /// <summary>
-    /// History of explicit user-initiated draws (excludes redraws driven by mouse wheels).
+    /// History of explicit user-initiated draws.
     /// </summary>
+    /// <remarks>
+    /// This should exclude draws done while mouse wheeling (a record of the draw should
+    /// only get appended after mouse wheeling has stopped).
+    /// </remarks>
     private readonly DrawHistory _drawHistory = new();
     
     /// <summary>
@@ -39,7 +56,10 @@ public partial class MapWindow : Avalonia.Controls.Window
     /// </summary>
     private float _pointSize = 10f;
 
-/*
+    private readonly DispatcherTimer _mouseWheelStoppedTimer;
+    private bool _isMouseWheeling;
+
+    /*
     public static readonly StyledProperty<bool> IsContextVisibleProperty =
         AvaloniaProperty.Register<MapEditor, bool>(
             nameof(IsContextVisible),
@@ -60,6 +80,33 @@ public partial class MapWindow : Avalonia.Controls.Window
         InitializeComponent();
         DataContext = this;
 
+        // Using a DispatcherTimer because it runs on the UI thread
+        _mouseWheelStoppedTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(1000)
+        };
+
+        _mouseWheelStoppedTimer.Tick += (_, _) =>
+        {
+            _mouseWheelStoppedTimer.Stop();
+
+            if (_isMouseWheeling)
+            {
+                _isMouseWheeling = false;
+                OnMouseWheelStopped();
+            }
+        };
+        
+        //new OverlayLayer()
+        //new AdornerLayer();
+        //VisualLayerManager.
+/*
+        AddHandler(
+            KeyDownEvent,
+            OnKeyDown,
+            RoutingStrategies.Tunnel | RoutingStrategies.Bubble,
+            handledEventsToo: true);
+*/
         _controller = controller;
         _controller.SetMapWindow(this);
         Closing += (_, _) => _controller.SetMapWindow(null);
@@ -111,20 +158,111 @@ public partial class MapWindow : Avalonia.Controls.Window
         // Ensure the map stays in position on a mouse drag (user needs to explicitly say they want to drag)
         _map.Navigator.PanLock = true;
 
+        _provider.FetchWindowChanged += OnFetchWindowChanged;
         _map.Navigator.ViewportChanged += NavigatorOnViewportChanged;
+
         //_map.Tapped += MapOnTapped;
 
         MapControl.Map = _map;
         MapControl.PointerPressed += OnPointerPressed;
+        MapControl.PointerReleased += OnPointerReleased;
+        MapControl.PointerWheelChanged += OnPointerWheelChanged;
+        MapControl.PointerMoved += OnPointerMoved;
 
+        // The default is false. When you zoom out, the exposed area is briefly blank.
+        // When true, the provider gets asked to do a fetch on each mousewheel increment.
+        //MapControl.UseContinuousMouseWheelZoom = true;
+        
+        KeyDown += OnKeyDown;
+        
         var extent = GetCurrentExtent();
         if (extent is not null)
             _map.Navigator.ZoomToBox(extent);
     }
 
+    private void OnMouseWheelStopped()
+    {
+        Console.WriteLine("Mouse wheel stopped");
+        
+        // Record the current viewport
+        // The MapScale should have been set by the NavigatorOnViewportChanged handler 
+        var v = _map.Navigator.Viewport;
+        var drawInfo = new DrawInfo(v.CenterX, v.CenterY, _provider.MapScale);
+        _drawHistory.AddDraw(drawInfo);
+    }
+
+    private void OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+    {
+        _isMouseWheeling = true;
+        _mouseWheelStoppedTimer.Stop();
+        _mouseWheelStoppedTimer.Start();
+    }
+
+    private void OnFetchWindowChanged(object? sender, FetchWindowChangedEventArgs e)
+    {
+        var c = e.NewExtent.Center;
+        if (c is null)
+            return;
+        
+        // Do nothing when mouse wheeling (we'll record the viewport extent via OnMouseWheelStopped)
+        if (_isMouseWheeling)
+        {
+            Console.WriteLine("Ignoring fetch window change while mouse wheeling");
+            return;
+        }
+
+        // If the user has went back to an old draw, then IsNextEnabled will be true - so we shouldn't
+        // record the same draw history again.
+        // TODO: But what if the user went to an old draw, then did a ZoomIn or ZoomOut? In that case,
+        // we DO want to append to the history. Probably need to set something when the user initiates
+        // a map display action (though mouse wheels should be handled already)
+ 
+        if (_drawHistory.IsNextEnabled)
+        {
+            Console.WriteLine("Ignoring fetch window change because it's an old draw");
+        }
+        else
+        {
+            Console.WriteLine("adding draw history");
+            var drawInfo = new DrawInfo(c.X, c.Y, e.MapScale);
+            _drawHistory.AddDraw(drawInfo);
+        }
+        /*
+        if (_mapToolId is null)
+            Console.WriteLine("FetchExtentChanged with fetch count " + _provider.FetchCount);
+        else
+            Console.WriteLine($"{_mapToolId}: FetchExtentChanged with fetch count " + _provider.FetchCount);
+            */
+    }
+
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        // TODO: The Esc key doesn't work in a WinForms+Avalonia app (but it does in a pure Avalonia app)
+        //const Key escapeKey = Key.Escape;
+        const Key escapeKey = Key.LeftCtrl;
+        
+        Console.WriteLine($"MapWindow Key={e.Key} {e.KeyModifiers}");
+
+        if (e.KeyModifiers == KeyModifiers.Alt)
+        {
+            bool redraw = false;
+            
+            if (e.Key == Key.Left)
+                redraw = _drawHistory.SetPrevious();
+            else if (e.Key == Key.Right)
+                redraw = _drawHistory.SetNext();
+
+            if (redraw)
+                DrawExtent();
+        }
+
+        if (e.Key == escapeKey && _mapTool is not null)
+            _mapTool.Escape();
+    }
+
     private MRect? GetCurrentExtent()
     {
-        var extent = EditingController.Current.ActiveMap.Extent;
+        var extent = _controller.ActiveMap.Extent;
         if (extent is null)
             return null;
 
@@ -143,7 +281,7 @@ public partial class MapWindow : Avalonia.Controls.Window
         // (depending on the platform)
         // assume 1 pixel = 0.28mm (approx 90 DPI)
 
-        _pointSize = (float)(EditingController.Current.PointHeight.Meters / e.Viewport.Resolution);
+        _pointSize = (float)(_controller.PointHeight.Meters / e.Viewport.Resolution);
 
         var groundRect = e.Viewport.ToExtent();
         var screenRect = e.Viewport.ToSkiaRect();
@@ -151,34 +289,47 @@ public partial class MapWindow : Avalonia.Controls.Window
         const double inchesToMeters = 0.0254;
         var width = (screenRect.Width / 96.0) * inchesToMeters;
         var scale = groundRect.Width / width;
-        Console.WriteLine($"Scale={scale}");
+        //Console.WriteLine($"Scale={scale}");
 
         _provider.MapScale = scale;
 
         // The viewport.Width adds 10% all round, whereas ToExtent and ToSkiaRect appear to be tight fitting
         // Either way, you end up with the same map scale
 
-        // If the change event was in response to a display request, remember it in the draw history
-        if (_displayToolId is not null && _previousViewport is not null && e.PreviousViewport == _previousViewport)
+        if (_mapToolId is not null)
         {
-            Console.WriteLine($"{_displayToolId} done");
-
-            if (_displayToolId is not (DisplayToolId.MapRefresh or DisplayToolId.Next or DisplayToolId.Previous))
+            // The viewport changes MANY times during a pan. If you move just a little, the MapControl
+            // doesn't reach out to the provider to do a new fetch - presumably because the original
+            // fetch included a small buffer around the viewport. But if you pan a lot, the exposed
+            // map area remains blank until you release the mouse - and it does a fetch at that time.
+            
+            // ...The fetch happens sometime after the viewport has been changed, so I need to listen
+            // for something like a FetchExtentChanged event.
+            
+            //Console.WriteLine($"{_mapToolId}: viewport changed with fetch count " + _provider.FetchCount);
+        }
+        
+        // If the change event was in response to a display request, remember it in the draw history
+        if (_mapToolId is not null && _previousViewport is not null && e.PreviousViewport == _previousViewport)
+        {
+            Console.WriteLine($"{_mapToolId} done");
+/*
+            if (_mapToolId is not (DisplayToolId.MapRefresh or DisplayToolId.Next or DisplayToolId.Previous))
             {
                 Console.WriteLine($"Adding draw to history with scale {scale:f1}");
                 var drawInfo = new DrawInfo(e.Viewport.CenterX, e.Viewport.CenterY, scale);
                 _drawHistory.AddDraw(drawInfo);
             }
-
+*/
             _previousViewport = null;
-            _displayToolId = null;
+            _mapToolId = null; // we could be in the middle of a pan
         }
     }
 
     // Custom layer renderer
     void DrawMap(SKCanvas canvas, Viewport viewport, Mapsui.Layers.ILayer layer, RenderService renderService)
     {
-        var sel = EditingController.Current.Selection;
+        var sel = _controller.Selection;
         var selIds = new HashSet<uint>(sel.Items
             .Where(x => x is Feature)
             .Cast<Feature>()
@@ -332,7 +483,7 @@ public partial class MapWindow : Avalonia.Controls.Window
         var drawWindow = new Window(drawExtent.MinX, drawExtent.MinY, drawExtent.MaxX, drawExtent.MaxY);
 
         // Highlight any selected polygons
-        foreach (var pol in EditingController.Current.Selection.Items.Where(x => x is Polygon).Cast<Polygon>())
+        foreach (var pol in _controller.Selection.Items.Where(x => x is Polygon).Cast<Polygon>())
         {
             // While SKPath does have an ArcTo method that lets you include circular arcs in the
             // path, that tends to complicate things here - just approximate arcs on each ring
@@ -361,7 +512,7 @@ public partial class MapWindow : Avalonia.Controls.Window
             canvas.DrawPath(path, paint);
         }
 
-        Console.WriteLine("Draw " + n);
+        //Console.WriteLine("Draw " + n);
     }
 
     private static SKFont CreateFont(TextGeometry textGeom)
@@ -467,16 +618,46 @@ public partial class MapWindow : Avalonia.Controls.Window
             var (gx, gy) = _map.Navigator.Viewport.ScreenToWorldXY(screenPosition.X, screenPosition.Y);
             var p = new Position(gx, gy);
 
-            var ec = EditingController.Current;
-            ec.Select(_provider.MapScale, p, SpatialType.All);
+            if (_mapTool is not null)
+            {
+                _mapTool.MouseDown(p, MouseButton.Left);
+            }
+            else
+            {
+                //EditingController.Current.MouseDown(this, p, MouseButton.Left);
+                
+                _controller.Select(_provider.MapScale, p, SpatialType.All);
 
-            // Refresh goes back to fetch from the provider, RefreshGraphics just goes to the custom renderer
-            //e.Map.Refresh();
-            _map.RefreshGraphics();
+                // Refresh goes back to fetch from the provider, RefreshGraphics just goes to the custom renderer
+                //e.Map.Refresh();
+                _map.RefreshGraphics();
+            }
         }
 
         e.Handled = true;
 
+    }
+
+    private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (_mapTool is not null)
+        {
+            var screenPosition = e.GetPosition(MapControl);
+            var (gx, gy) = _map.Navigator.Viewport.ScreenToWorldXY(screenPosition.X, screenPosition.Y);
+            var p = new Position(gx, gy);
+            _mapTool.MouseUp(p, MouseButton.Left);
+        }
+    }
+
+    private void OnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (_mapTool is not null)
+        {
+            var screenPosition = e.GetPosition(MapControl);
+            var (gx, gy) = _map.Navigator.Viewport.ScreenToWorldXY(screenPosition.X, screenPosition.Y);
+            var p = new Position(gx, gy);
+            _mapTool.MouseMove(p, MouseButton.Left);
+        }
     }
 
     private void OnClick1(object? sender, RoutedEventArgs e)
@@ -501,7 +682,8 @@ public partial class MapWindow : Avalonia.Controls.Window
 
     private bool Zoom(double factor)
     {
-        var extent = EditingController.Current.ActiveMap.Extent;
+        //var extent = _map.Navigator.Viewport.ToExtent();
+        var extent = _controller.ActiveMap.Extent;
         if (extent is null)
             return false;
 
@@ -513,11 +695,80 @@ public partial class MapWindow : Avalonia.Controls.Window
         return true;
     }
 
-
+    bool ZoomRectangle()
+    {
+        //	If we are currently auto-highlighting, temporarily disable
+        //	for the duration of the zoom, and ensure that any currently
+        //	highlighted features are drawn normally.
+        //if ( m_AutoHighlight>0 ) m_AutoHighlight = -m_AutoHighlight;
+        //m_Sel.RemoveSel();
+        
+        _mapTool = new ZoomRectangleMapTool(this);
+        return _mapTool.Start();
+    }    
     // TODO: Probably better as extension method
     private static MRect ToMRect(IWindow extent)
     {
         return new MRect(extent.Min.X, extent.Min.Y, extent.Max.X, extent.Max.Y);
+    }
+
+    private bool NewCenter()
+    {
+        _mapTool = new NewCenterMapTool(this);
+        return _mapTool.Start();
+    }
+    
+    internal void SetCursor(Cursor cursor)
+    {
+        // Ensure we have focus, since we may need to recognize a key
+        // stroke (the ESC key) to subsequently cancel the current display tool.
+        //Focusable = true;
+        //Dispatcher.UIThread.Post(() => Focus());
+        
+        //MapControl.Focus();
+
+        Cursor = cursor;
+    }
+
+    /// <summary>
+    /// Redraws at a new center point.
+    /// </summary>
+    /// <param name="p">The position for the new center.</param>
+    public void SetCenter(IPosition p)
+    {
+        var draw = new DrawInfo(p.X, p.Y, _provider.MapScale);
+        SetCenterAndScale(draw);
+    }
+
+    public void Finish(ISpatialDisplayTool tool)
+    {
+        // Don't clear _displayToolId until NavigatorOnViewportChanged 
+        //Debug.Assert(_mapToolId is not null && tool.Id == (int)_mapToolId);
+        //_displayToolId = null;
+        //Cursor = Cursor.Default;
+        Escape(tool);
+    }
+
+    public void Escape(ISpatialDisplayTool tool)
+    {
+        if (ReferenceEquals(_mapTool, tool))
+        {
+            Cursor = Cursor.Default;
+            _mapToolId = null;
+            _mapTool = null;
+        }
+    }
+
+    bool Pan()
+    {
+        _mapTool = new PanMapTool(this);
+        return _mapTool.Start();
+    }
+
+    internal bool PanLock
+    {
+        get => _map.Navigator.PanLock;
+        set => _map.Navigator.PanLock = value;
     }
 
     private bool MapRefresh()
@@ -574,11 +825,28 @@ public partial class MapWindow : Avalonia.Controls.Window
         var newExtent = new MRect(xc - dx, yc - dy, xc + dx, yc + dy);
         _map.Navigator.ZoomToBox(newExtent);
     }
+
+    internal void ZoomTo(IWindow extent)
+    {
+        _previousViewport = _map.Navigator.Viewport;
+        _map.Navigator.ZoomToBox(ToMRect(extent));
+    }
+
+    private void EscapeCurrentTool()
+    {
+        if (_mapTool is not null)
+        {
+            _mapTool.Escape();
+            _mapTool = null;
+        }
+
+        _mapToolId = null;
+    }
     
     internal bool Do(DisplayToolId id)
     {
-        //EscapeCurrentTool();
-        _displayToolId = id;
+        EscapeCurrentTool();
+        _mapToolId = id;
 
         switch (id)
         {
@@ -600,16 +868,16 @@ public partial class MapWindow : Avalonia.Controls.Window
                 return ZoomOut();
 
             case DisplayToolId.ZoomRectangle:
-                return false; // ZoomRectangle();
+                return ZoomRectangle();
 
             case DisplayToolId.DrawScale:
                 return false; // DrawScale();
 
             case DisplayToolId.NewCentre:
-                return false; // NewCenter();
+                return NewCenter();
 
             case DisplayToolId.Pan:
-                return false; // Pan();
+                return Pan();
 
             case DisplayToolId.MapRefresh:
                 return MapRefresh();
@@ -622,5 +890,10 @@ public partial class MapWindow : Avalonia.Controls.Window
         }
 
         return false;
+    }
+    
+    internal ScreenPosition WorldToScreen(IPosition p)
+    {
+        return _map.Navigator.Viewport.WorldToScreen(p.X, p.Y);
     }
 }
