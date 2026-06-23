@@ -277,7 +277,7 @@ abstract class CommandUI : IDisposable
     /// the way it was at the end of the last draw from the map model. Given that a command
     /// supports painting, it's <c>Paint</c> method will be called during idle time.
     /// </summary>
-    internal void ErasePainting()
+    internal virtual void ErasePainting()
     {
         m_Draw.RestoreLastDraw();
     }

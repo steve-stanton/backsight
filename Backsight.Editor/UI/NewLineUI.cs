@@ -66,6 +66,10 @@ class NewLineUI : SimpleCommandUI
 
     #endregion
 
+    protected PointFeature? CurrentPoint => m_CurrentPoint;
+    protected IPointGeometry? End => m_End;
+    protected PointFeature? Start => m_Start;
+    
     internal override bool Run()
     {
         // Ensure any initial selection has been cleared (if the user clicks in space
@@ -145,7 +149,7 @@ class NewLineUI : SimpleCommandUI
     /// Is the line that's being added going to form a polygon boundary?
     /// </summary>
     /// <returns></returns>
-    bool AddingTopology()
+    protected bool AddingTopology()
     {
         CadastralMapModel map = CadastralMapModel.Current;
         IEntity ent = map.DefaultLineType;
@@ -213,7 +217,7 @@ class NewLineUI : SimpleCommandUI
             return true;
         }
 
-        // Confirm the point is  different from the start.
+        // Confirm the point is different from the start.
         if (p.IsCoincident(m_Start))
         {
             MessageBox.Show("End point cannot match the start point.");
@@ -273,7 +277,7 @@ class NewLineUI : SimpleCommandUI
     }
 
     /// <summary>
-    /// Creates any applioable context menu
+    /// Creates any applicable context menu
     /// </summary>
     /// <returns>The context menu for this command.</returns>
     internal override ContextMenuStrip? CreateContextMenu()

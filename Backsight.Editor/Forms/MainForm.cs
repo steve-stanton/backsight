@@ -18,6 +18,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using Avalonia.Threading;
+using Backsight.Editor.Map;
 using Backsight.Editor.UI;
 using Backsight.Environment;
 using Backsight.Forms;
@@ -1575,7 +1576,12 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private void LineAddStraightLine(IUserAction action)
     {
-        CommandUI cmd = new NewLineUI(this, action, SelectedPoint);
+        var mapWindow = EditingController.Current.MapWindow;
+
+        CommandUI cmd = mapWindow is null
+                ? new NewLineUI(this, action, SelectedPoint)
+                : new NewLineUIa(mapWindow, action, SelectedPoint);
+        
         m_Controller.StartCommand(cmd);
     }
 
