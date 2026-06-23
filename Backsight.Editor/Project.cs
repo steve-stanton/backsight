@@ -34,9 +34,9 @@ class Project
     readonly ProjectDatabase m_Container;
 
     /// <summary>
-    /// The unique ID for the project
+    /// The name of the project
     /// </summary>
-    readonly Guid m_Id;
+    readonly string m_Name;
 
     /// <summary>
     /// The data for the original project creation event.
@@ -67,16 +67,13 @@ class Project
     /// upon creation of a brand new project.
     /// </summary>
     /// <param name="container">The container for this project (not null).</param>
-    /// <param name="projectId">The unique ID for the project.</param>
+    /// <param name="projectName">The name of the project.</param>
     /// <param name="ps">The initial project settings (not null).</param>
-    internal Project(ProjectDatabase container, Guid projectId, ProjectSettings ps)
+    internal Project(ProjectDatabase container, string projectName, ProjectSettings ps)
     {
-        if (container == null || ps == null)
-            throw new ArgumentNullException();
-
-        m_Container = container;
-        m_Id = projectId;
-        m_Settings = ps;
+        m_Container = container ?? throw new ArgumentNullException(nameof(container));
+        m_Name = projectName;
+        m_Settings = ps ?? throw new ArgumentNullException(nameof(ps));
         m_MapModel = new CadastralMapModel();
     }
 
@@ -146,10 +143,7 @@ class Project
     /// <summary>
     /// The last internal ID value assigned by the project.
     /// </summary>
-    internal uint LastItemId
-    {
-        get { return m_LastItemId; }
-    }
+    internal uint LastItemId => m_LastItemId;
 
     /// <summary>
     /// The current user's project settings.
@@ -161,7 +155,7 @@ class Project
     /// </summary>
     internal void SaveSettings()
     {
-        string dataFolder = m_Container.CreateDataFolder(m_Id);
+        string dataFolder = m_Container.CreateDataFolder(m_Name);
         string settingsFileName = Path.Combine(dataFolder, "settings.txt");
         m_Settings.WriteXML(settingsFileName);
     }
@@ -170,11 +164,6 @@ class Project
     /// The user-perceived project name
     /// </summary>
     internal string Name => m_ProjectInfo?.ProjectName ?? "Unknown";
-
-    /// <summary>
-    /// A unique ID for the project.
-    /// </summary>
-    internal Guid Id => m_Id;
 
     /// <summary>
     /// The ID of the map layer the project is associated with.
@@ -266,12 +255,12 @@ class Project
     /// <summary>
     /// The data folder for this project.
     /// </summary>
-    internal string ProjectFolder => Path.Combine(m_Container.FolderName, m_Id.ToString().ToUpper());
+    internal string ProjectFolder => Path.Combine(m_Container.ProjectsFolderPath, m_Name);
 
     /// <summary>
     /// The project undo folder (may not exist).
     /// </summary>
-    internal string UndoFolder => Path.Combine(ProjectFolder, "undo");
+    private string UndoFolder => Path.Combine(ProjectFolder, "undo");
 
     /// <summary>
     /// Obtains the path of the project undo folder (creating it if it does not already exist).
@@ -303,7 +292,7 @@ class Project
     /// <param name="c">The change to write</param>
     internal void WriteChange(Change c)
     {
-        string dataFolder = Path.Combine(m_Container.FolderName, m_Id.ToString().ToUpper());
+        string dataFolder = Path.Combine(m_Container.ProjectsFolderPath, m_Name);
         string dataFile = Path.Combine(dataFolder, ProjectDatabase.GetDataFileName(c.EditSequence));
         string changeText = EditSerializer.GetSerializedString<Change>(DataField.Edit, c);
         File.WriteAllText(dataFile, changeText);

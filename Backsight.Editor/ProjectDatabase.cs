@@ -23,99 +23,49 @@ namespace Backsight.Editor;
 /// </summary>
 class ProjectDatabase
 {
-    #region Class data
-
     /// <summary>
     /// The path for the root folder (should always refers to a folder that exists).
     /// </summary>
-    readonly string m_FolderName;
-
-    #endregion
-
-    #region Constructors
+    readonly string m_ProjectsFolderPath;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectDatabase"/> class with a root folder
-    /// of C:\ProgramData\Backsight. If the folder does not already exist, an attempt to create it will be made.
+    /// of C:\ProgramData\Backsight\Projects. If the folder does not already exist, an attempt to create it will be made.
     /// </summary>
     internal ProjectDatabase()
     {
         var appData = System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
-        m_FolderName = Path.Combine(appData, "Backsight");
-
-        // Ensure the folder structure is complete
-        if (!Directory.Exists(IndexFolderName))
-            Directory.CreateDirectory(IndexFolderName);
+        m_ProjectsFolderPath = Path.Combine(appData, "Backsight", "Projects");
     }
-
-    #endregion
 
     /// <summary>
     /// The path for the root folder of this database.
     /// </summary>
-    internal string FolderName
-    {
-        get { return m_FolderName; }
-    }
+    internal string ProjectsFolderPath => m_ProjectsFolderPath;
 
     /// <summary>
-    /// The path for the directory holding project index entries.
-    /// </summary>
-    string IndexFolderName
-    {
-        get { return Path.Combine(m_FolderName, "index"); }
-    }
-
-    /// <summary>
-    /// Obtains a list of all previously created editing projects.
+    /// Gets a list of all previously created editing projects.
     /// </summary>
     /// <returns>The names of all editing projects in this database.</returns>
-    /// <remarks>The result relates to projects that exist on the local file system. It excludes
-    /// any published projects that have not been downloaded.</remarks>
+    /// <remarks>The result relates to projects that exist on the local file system.</remarks>
     internal string[] FindAllProjectNames()
     {
-        List<string> result = new List<string>();
+        var result = new List<string>();
 
-        foreach (string s in Directory.GetFiles(IndexFolderName, "*.txt"))
-            result.Add(Path.GetFileNameWithoutExtension(s));
-
-        result.Sort();
+        foreach (var dir in  Directory.EnumerateDirectories(m_ProjectsFolderPath).OrderBy(s => s))
+            result.Add(Path.GetFileName(dir));
+        
         return result.ToArray();
-    }
-
-    /// <summary>
-    /// Attempts to obtain the internal ID for a project
-    /// </summary>
-    /// <param name="projectName">The user-perceived name of the project</param>
-    /// <returns>The corresponding GUID string for the project (null if not found)</returns>
-    internal string FindProjectId(string projectName)
-    {
-        string indexFileName = Path.Combine(IndexFolderName, projectName + ".txt");
-        if (File.Exists(indexFileName))
-            return File.ReadAllText(indexFileName);
-        else
-            return null;
-    }
-
-    /// <summary>
-    /// Creates an index entry for a new project.
-    /// </summary>
-    /// <param name="projectName">The user-perceived name for the new project.</param>
-    /// <param name="projectId">The unique ID for the project.</param>
-    internal void CreateIndexEntry(string projectName, Guid projectId)
-    {
-        string fileName = Path.Combine(IndexFolderName, projectName + ".txt");
-        File.WriteAllText(fileName, projectId.ToString().ToUpper());
     }
 
     /// <summary>
     /// Creates a data folder for a project.
     /// </summary>
-    /// <param name="projectId">The internal ID for the project</param>
+    /// <param name="projectName">The name of the project</param>
     /// <returns>The corresponding data folder (created if necessary)</returns>
-    internal string CreateDataFolder(Guid projectId)
+    internal string CreateDataFolder(string projectName)
     {
-        string folderName = Path.Combine(m_FolderName, projectId.ToString().ToUpper());
+        string folderName = Path.Combine(m_ProjectsFolderPath, projectName);
         if (!Directory.Exists(folderName))
             Directory.CreateDirectory(folderName);
 
@@ -130,15 +80,15 @@ class ProjectDatabase
     /// <param name="layer">The map layer the project is for (not null)</param>
     internal void CreateProject(string projectName, ILayer layer)
     {
-        if (String.IsNullOrWhiteSpace(projectName) || layer == null)
+        if (String.IsNullOrWhiteSpace(projectName) || layer is null)
             throw new ArgumentNullException();
 
         // Confirm that the project name is unique
-        if (FindProjectId(projectName) != null)
+        if (Directory.Exists(Path.Combine(m_ProjectsFolderPath, projectName)))
             throw new ArgumentException("Specified project already exists");
 
         // Define the event data
-        NewProjectEvent e = new NewProjectEvent()
+        var e = new NewProjectEvent
         {
             ProjectId = Guid.NewGuid(),
             ProjectName = projectName,
@@ -148,11 +98,8 @@ class ProjectDatabase
             MachineName = System.Environment.MachineName
         };
 
-        // Create the index entry
-        CreateIndexEntry(projectName, e.ProjectId);
-
         // Create the data folder
-        string dataFolder = CreateDataFolder(e.ProjectId);
+        string dataFolder = CreateDataFolder(projectName);
 
         // Serialize the event data to the data folder. Specify <Change> so that
         // the class name will be included in the output file.
@@ -161,7 +108,7 @@ class ProjectDatabase
         File.WriteAllText(fileName, s);
 
         // Write initial project settings to the data folder
-        ProjectSettings ps = new ProjectSettings();
+        var ps = new ProjectSettings();
 
         // Remember default entity types for points, lines, text, polygons
         ps.SetEntityTypeDefaults(layer);
@@ -172,7 +119,7 @@ class ProjectDatabase
     }
 
     /// <summary>
-    /// Obtains the name of the data file that corresponds to a file number.
+    /// Gets the name of the data file that corresponds to a file number.
     /// </summary>
     /// <param name="fileNumber">The file number</param>
     /// <returns>The corresponding file name (without any directory specification).</returns>
@@ -187,18 +134,13 @@ class ProjectDatabase
     /// </summary>
     /// <param name="projectName">The user-perceived name for the project</param>
     /// <returns>The local settings for the specified project (null if the project could not be found).</returns>
-    internal ProjectSettings GetProjectSettings(string projectName)
+    internal ProjectSettings? GetProjectSettings(string projectName)
     {
         if (String.IsNullOrWhiteSpace(projectName))
             return null;
 
-        // Obtain the project ID
-        string projectGuid = FindProjectId(projectName);
-        if (projectGuid == null)
-            return null;
-
         // Load local project settings
-        string settingsFolderName = Path.Combine(m_FolderName, projectGuid);
+        string settingsFolderName = Path.Combine(m_ProjectsFolderPath, projectName);
         if (!Directory.Exists(settingsFolderName))
             return null;
 
@@ -216,18 +158,8 @@ class ProjectDatabase
         if (String.IsNullOrWhiteSpace(projectName))
             throw new ArgumentNullException();
 
-        // Obtain the project ID
-        string projectGuid = FindProjectId(projectName);
-        if (projectGuid == null)
-            throw new ApplicationException();
-
-        // Load the project creation event
-        Guid projectId = Guid.Parse(projectGuid);
-        string dataFolder = CreateDataFolder(projectId);
-        string creationFileName = Path.Combine(dataFolder, NewProjectEvent.FileName);
-
         // Read current project settings
-        dataFolder = CreateDataFolder(projectId);
+        string dataFolder = CreateDataFolder(projectName);
         string settingsFileName = Path.Combine(dataFolder, "settings.txt");
         ProjectSettings ps = ProjectSettings.CreateInstance(settingsFileName);
 
@@ -235,7 +167,7 @@ class ProjectDatabase
         Settings.Default.Save();
 
         // Now load the data
-        Project result = new Project(this, projectId, ps);
+        var result = new Project(this, projectName, ps);
 
         // Get rid of any undo folder that may be left over from a crashed editing session
         result.DeleteUndoFolder();
@@ -260,7 +192,7 @@ class ProjectDatabase
 
         // Create a new editing session
         uint sessionId = result.AllocateId();
-        NewSessionEvent s = new NewSessionEvent(sessionId)
+        var s = new NewSessionEvent(sessionId)
         {
             UserName = System.Environment.UserName,
             MachineName = System.Environment.MachineName,
@@ -388,8 +320,7 @@ class ProjectDatabase
     /// <returns>True if the project appears to exist. False if it cannot be found on the local machine.</returns>
     internal bool CanOpen(string projectName)
     {
-        string projectId = FindProjectId(projectName);
-        return (projectId != null);
+        return Directory.Exists(Path.Combine(m_ProjectsFolderPath, projectName));
     }
 
     /// <summary>
