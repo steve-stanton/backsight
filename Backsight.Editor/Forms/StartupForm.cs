@@ -15,6 +15,7 @@
 
 using System.Diagnostics;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using Backsight.Database;
 using Backsight.Editor.Properties;
@@ -41,9 +42,19 @@ partial class StartupForm : Form
 
     private void StartupForm_Load(object sender, EventArgs e)
     {
-        GlobalConfiguration.Setup().UseSqlite();
-        var repo = new EnvironmentRepository(@"Data Source=C:\ProgramData\Backsight\Manitoba.db;Mode=ReadWrite");
-        repo.Load();
+        try
+        {
+            GlobalConfiguration.Setup().UseSqlite();
+            var connectionString = GetConnectionString("Manitoba.db");
+            Console.WriteLine($"Loading environment database from {connectionString}");
+            var repo = new EnvironmentRepository(connectionString);
+            repo.Load();
+        }
+        catch
+        {
+            MessageBox.Show("Error loading environment database");
+            return;
+        }
         
         /*
         // Pick up a canned environment from embedded resource file
@@ -75,6 +86,23 @@ partial class StartupForm : Form
             openLastButton.BackColor = SystemColors.Control;
             openLastButton.Enabled = false;
         }
+    }
+
+    private static string GetConnectionString(string dbName)
+    {
+        var appData = System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
+        var dbFolder = Path.Combine(appData, "Backsight");
+
+        // If we don't already have a dedicated folder under ProgramData, use the location of the entry assembly
+        if (!Directory.Exists(dbFolder))
+            dbFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? throw new ApplicationException());
+
+        var dbPath = Path.Combine(dbFolder, dbName);
+        
+        if (!File.Exists(dbPath))
+            throw new FileNotFoundException("Database file not found: ", dbPath);
+
+        return $"Data Source={dbPath};Mode=ReadWrite";
     }
 
     void ShowDatabaseName()

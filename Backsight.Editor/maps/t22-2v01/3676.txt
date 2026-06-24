@@ -1,0 +1,7 @@
+Edit=NewSessionEvent
+{
+	Id=3676
+	When=2026-06-01T12:50:10
+	UserName=Steve Stanton
+	MachineName=DESKTOP-IK6HEFA
+}

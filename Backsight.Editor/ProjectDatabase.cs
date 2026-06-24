@@ -13,6 +13,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
+using System.Reflection;
 using Backsight.Editor.Properties;
 using Backsight.Environment;
 
@@ -30,12 +31,19 @@ class ProjectDatabase
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectDatabase"/> class with a root folder
-    /// of C:\ProgramData\Backsight\Projects. If the folder does not already exist, an attempt to create it will be made.
+    /// of C:\ProgramData\Backsight\maps. If the folder does not already exist, an attempt to create it will be made.
     /// </summary>
     internal ProjectDatabase()
     {
         var appData = System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
-        m_ProjectsFolderPath = Path.Combine(appData, "Backsight", "Projects");
+        m_ProjectsFolderPath = Path.Combine(appData, "Backsight", "maps");
+
+        if (!Directory.Exists(m_ProjectsFolderPath))
+        {
+            var entryFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? throw new ApplicationException());
+            m_ProjectsFolderPath = Path.Combine(entryFolder, "maps");
+            Console.WriteLine("Backsight: Using assembly location as project database location: " + m_ProjectsFolderPath);
+        }
     }
 
     /// <summary>

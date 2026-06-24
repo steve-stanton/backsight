@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <LastDraw>
+    <CenterX>630446.4513723808</CenterX>
+    <CenterY>5534464.1386953555</CenterY>
+    <MapScale>564.7208947548921</MapScale>
+  </LastDraw>
+  <DisplayUnit>AsEntered</DisplayUnit>
+  <EntryUnit>Meters</EntryUnit>
+  <AutoNumber>true</AutoNumber>
+  <LabelScale>2000</LabelScale>
+  <PointScale>2068</PointScale>
+  <PointHeight>5.07</PointHeight>
+  <IntersectionsDrawn>true</IntersectionsDrawn>
+  <NominalMapScale>2000</NominalMapScale>
+  <LineAnnotation ShowScale="2000" Height="2" ShowAdjustedLengths="false" ShowObservedLengths="false" ShowObservedAngles="false" />
+  <DefaultPointType>27</DefaultPointType>
+  <DefaultLineType>30</DefaultLineType>
+  <DefaultPolygonType>31</DefaultPolygonType>
+  <DefaultTextType>32</DefaultTextType>
+  <SplashIncrement>.200000</SplashIncrement>
+  <SplashPercents>0.0016 0.3772 0.3937 0.5078 0.5654 0.6756 0.7736 0.8337 0.868 </SplashPercents>
+</ProjectSettings>
