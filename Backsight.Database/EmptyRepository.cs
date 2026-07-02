@@ -4,6 +4,11 @@ namespace Backsight.Database;
 
 public class EmptyRepository : IEnvironmentRepository
 {
+    public void Load()
+    {
+        throw new NotImplementedException();
+    }
+
     public string Name => "";
     public IEnumerable<string> QueryTableNames()
     {

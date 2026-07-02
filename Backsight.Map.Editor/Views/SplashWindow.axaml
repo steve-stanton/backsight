@@ -1,0 +1,16 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="430"
+        x:Class="Backsight.Map.Editor.Views.SplashWindow"
+        Width="400" Height="430"
+        WindowStartupLocation="CenterScreen"
+        WindowDecorations="None"
+        CanResize="False"
+        Title="SplashWindow">
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <!-- The photo image comes from http://www.old-picture.com/old-west/Surveying-Corps.htm -->
+        <Image Source="avares://Backsight.Map.Editor/Assets/Splash.png"/>
+    </StackPanel>
+</Window>

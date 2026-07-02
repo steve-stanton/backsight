@@ -4,6 +4,8 @@ namespace Backsight.Database;
 
 public interface IEnvironmentRepository
 {
+    void Load();
+    
     string Name { get; }
 
     IEnumerable<string> QueryTableNames();

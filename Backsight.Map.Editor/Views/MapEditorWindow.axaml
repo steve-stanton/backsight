@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Backsight.Map.Editor.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mapsui="clr-namespace:Mapsui.UI.Avalonia;assembly=Mapsui.UI.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Backsight.Map.Editor.Views.MapEditorWindow"
+        x:DataType="vm:MapEditorViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Cadastral Map Editor">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MapEditorViewModel/>
+    </Design.DataContext>
+
+    <Grid>
+        <mapsui:MapControl x:Name="MapControl" Background="Khaki"/>
+        <Canvas x:Name="MapOverlay"
+                Background="Transparent"
+                IsHitTestVisible="False"/>
+    </Grid>
+
+</Window>

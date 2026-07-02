@@ -45,9 +45,10 @@ partial class StartupForm : Form
         try
         {
             GlobalConfiguration.Setup().UseSqlite();
-            var connectionString = GetConnectionString("Manitoba.db");
-            Console.WriteLine($"Loading environment database from {connectionString}");
-            var repo = new EnvironmentRepository(connectionString);
+            //var connectionString = GetConnectionString("Manitoba.db");
+            //Console.WriteLine($"Loading environment database from {connectionString}");
+            //var repo = new EnvironmentRepository(connectionString);
+            var repo = new EnvironmentRepository();
             repo.Load();
         }
         catch
@@ -87,7 +88,7 @@ partial class StartupForm : Form
             openLastButton.Enabled = false;
         }
     }
-
+/*
     private static string GetConnectionString(string dbName)
     {
         var appData = System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
@@ -104,7 +105,7 @@ partial class StartupForm : Form
 
         return $"Data Source={dbPath};Mode=ReadWrite";
     }
-
+*/
     void ShowDatabaseName()
     {
         lastDatabaseLabel.Text = EnvironmentRepository.Current?.Name ?? "No database";

@@ -102,152 +102,151 @@ public class SplashScreen : System.Windows.Forms.Form
 	}
 
 	#region Windows Form Designer generated code
+
 	/// <summary>
 	/// Required method for Designer support - do not modify
 	/// the contents of this method with the code editor.
 	/// </summary>
 	private void InitializeComponent()
 	{
-		this.components = new System.ComponentModel.Container();
+		components = new System.ComponentModel.Container();
 		System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SplashScreen));
-		this.lblStatus = new System.Windows.Forms.Label();
-		this.pnlStatus = new System.Windows.Forms.Panel();
-		this.lblTimeRemaining = new System.Windows.Forms.Label();
-		this.timer1 = new System.Windows.Forms.Timer(this.components);
-		this.label2 = new System.Windows.Forms.Label();
-		this.label1 = new System.Windows.Forms.Label();
-		this.pictureBox = new System.Windows.Forms.PictureBox();
-		this.panel1 = new System.Windows.Forms.Panel();
-		this.label3 = new System.Windows.Forms.Label();
-		this.panel2 = new System.Windows.Forms.Panel();
-		((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
-		this.panel1.SuspendLayout();
-		this.SuspendLayout();
+		lblStatus = new System.Windows.Forms.Label();
+		pnlStatus = new System.Windows.Forms.Panel();
+		lblTimeRemaining = new System.Windows.Forms.Label();
+		timer1 = new System.Windows.Forms.Timer(components);
+		label2 = new System.Windows.Forms.Label();
+		label1 = new System.Windows.Forms.Label();
+		pictureBox = new System.Windows.Forms.PictureBox();
+		panel1 = new System.Windows.Forms.Panel();
+		label3 = new System.Windows.Forms.Label();
+		panel2 = new System.Windows.Forms.Panel();
+		((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
+		panel1.SuspendLayout();
+		SuspendLayout();
 		// 
 		// lblStatus
 		// 
-		this.lblStatus.BackColor = System.Drawing.Color.Transparent;
-		this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-		this.lblStatus.Location = new System.Drawing.Point(17, 345);
-		this.lblStatus.Name = "lblStatus";
-		this.lblStatus.Size = new System.Drawing.Size(321, 14);
-		this.lblStatus.TabIndex = 0;
-		this.lblStatus.DoubleClick += new System.EventHandler(this.SplashScreen_DoubleClick);
+		lblStatus.BackColor = System.Drawing.Color.Transparent;
+		lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)0));
+		lblStatus.Location = new System.Drawing.Point(24, 531);
+		lblStatus.Name = "lblStatus";
+		lblStatus.Size = new System.Drawing.Size(449, 21);
+		lblStatus.TabIndex = 0;
+		lblStatus.DoubleClick += SplashScreen_DoubleClick;
 		// 
 		// pnlStatus
 		// 
-		this.pnlStatus.BackColor = System.Drawing.Color.Transparent;
-		this.pnlStatus.Location = new System.Drawing.Point(17, 362);
-		this.pnlStatus.Name = "pnlStatus";
-		this.pnlStatus.Size = new System.Drawing.Size(321, 24);
-		this.pnlStatus.TabIndex = 1;
-		this.pnlStatus.DoubleClick += new System.EventHandler(this.SplashScreen_DoubleClick);
-		this.pnlStatus.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlStatus_Paint);
+		pnlStatus.BackColor = System.Drawing.Color.Transparent;
+		pnlStatus.Location = new System.Drawing.Point(24, 557);
+		pnlStatus.Name = "pnlStatus";
+		pnlStatus.Size = new System.Drawing.Size(449, 37);
+		pnlStatus.TabIndex = 1;
+		pnlStatus.Paint += pnlStatus_Paint;
+		pnlStatus.DoubleClick += SplashScreen_DoubleClick;
 		// 
 		// lblTimeRemaining
 		// 
-		this.lblTimeRemaining.BackColor = System.Drawing.Color.Transparent;
-		this.lblTimeRemaining.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-		this.lblTimeRemaining.Location = new System.Drawing.Point(14, 389);
-		this.lblTimeRemaining.Name = "lblTimeRemaining";
-		this.lblTimeRemaining.Size = new System.Drawing.Size(324, 16);
-		this.lblTimeRemaining.TabIndex = 2;
-		this.lblTimeRemaining.Text = "Time remaining";
-		this.lblTimeRemaining.Visible = false;
-		this.lblTimeRemaining.DoubleClick += new System.EventHandler(this.SplashScreen_DoubleClick);
+		lblTimeRemaining.BackColor = System.Drawing.Color.Transparent;
+		lblTimeRemaining.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)0));
+		lblTimeRemaining.Location = new System.Drawing.Point(20, 598);
+		lblTimeRemaining.Name = "lblTimeRemaining";
+		lblTimeRemaining.Size = new System.Drawing.Size(453, 25);
+		lblTimeRemaining.TabIndex = 2;
+		lblTimeRemaining.Text = "Time remaining";
+		lblTimeRemaining.Visible = false;
+		lblTimeRemaining.DoubleClick += SplashScreen_DoubleClick;
 		// 
 		// timer1
 		// 
-		this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+		timer1.Tick += timer1_Tick;
 		// 
 		// label2
 		// 
-		this.label2.AutoSize = true;
-		this.label2.Font = new System.Drawing.Font("Arial Black", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-		this.label2.ForeColor = System.Drawing.Color.Black;
-		this.label2.Location = new System.Drawing.Point(13, 39);
-		this.label2.Name = "label2";
-		this.label2.Size = new System.Drawing.Size(153, 23);
-		this.label2.TabIndex = 4;
-		this.label2.Text = "Cadastral Editor";
+		label2.AutoSize = true;
+		label2.Font = new System.Drawing.Font("Arial Black", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)0));
+		label2.ForeColor = System.Drawing.Color.Black;
+		label2.Location = new System.Drawing.Point(18, 60);
+		label2.Name = "label2";
+		label2.Size = new System.Drawing.Size(189, 28);
+		label2.TabIndex = 4;
+		label2.Text = "Cadastral Editor";
 		// 
 		// label1
 		// 
-		this.label1.AutoSize = true;
-		this.label1.Font = new System.Drawing.Font("Arial Black", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-		this.label1.ForeColor = System.Drawing.Color.Firebrick;
-		this.label1.Location = new System.Drawing.Point(14, 21);
-		this.label1.Name = "label1";
-		this.label1.Size = new System.Drawing.Size(81, 18);
-		this.label1.TabIndex = 3;
-		this.label1.Text = "Backsight";
+		label1.AutoSize = true;
+		label1.Font = new System.Drawing.Font("Arial Black", 9.75F, ((System.Drawing.FontStyle)(System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic)), System.Drawing.GraphicsUnit.Point, ((byte)0));
+		label1.ForeColor = System.Drawing.Color.Firebrick;
+		label1.Location = new System.Drawing.Point(20, 32);
+		label1.Name = "label1";
+		label1.Size = new System.Drawing.Size(102, 24);
+		label1.TabIndex = 3;
+		label1.Text = "Backsight";
 		// 
 		// pictureBox
 		// 
-		this.pictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-		this.pictureBox.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox.Image")));
-		this.pictureBox.Location = new System.Drawing.Point(17, 83);
-		this.pictureBox.Name = "pictureBox";
-		this.pictureBox.Size = new System.Drawing.Size(281, 201);
-		this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-		this.pictureBox.TabIndex = 6;
-		this.pictureBox.TabStop = false;
+		pictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+		pictureBox.Image = ((System.Drawing.Image)resources.GetObject("pictureBox.Image"));
+		pictureBox.Location = new System.Drawing.Point(24, 128);
+		pictureBox.Name = "pictureBox";
+		pictureBox.Size = new System.Drawing.Size(393, 309);
+		pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+		pictureBox.TabIndex = 6;
+		pictureBox.TabStop = false;
 		// 
 		// panel1
 		// 
-		this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-		this.panel1.Controls.Add(this.label3);
-		this.panel1.Location = new System.Drawing.Point(53, 128);
-		this.panel1.Name = "panel1";
-		this.panel1.Size = new System.Drawing.Size(285, 204);
-		this.panel1.TabIndex = 7;
+		panel1.BackColor = System.Drawing.Color.FromArgb(((int)((byte)192)), ((int)((byte)64)), ((int)((byte)0)));
+		panel1.Controls.Add(label3);
+		panel1.Location = new System.Drawing.Point(74, 197);
+		panel1.Name = "panel1";
+		panel1.Size = new System.Drawing.Size(399, 314);
+		panel1.TabIndex = 7;
 		// 
 		// label3
 		// 
-		this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-		this.label3.AutoSize = true;
-		this.label3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-		this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-		this.label3.ForeColor = System.Drawing.Color.DarkKhaki;
-		this.label3.Location = new System.Drawing.Point(162, 173);
-		this.label3.Name = "label3";
-		this.label3.Size = new System.Drawing.Size(109, 16);
-		this.label3.TabIndex = 3;
-		this.label3.Text = "by Steve Stanton";
+		label3.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+		label3.AutoSize = true;
+		label3.BackColor = System.Drawing.Color.FromArgb(((int)((byte)192)), ((int)((byte)64)), ((int)((byte)0)));
+		label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)0));
+		label3.ForeColor = System.Drawing.Color.DarkKhaki;
+		label3.Location = new System.Drawing.Point(227, 266);
+		label3.Name = "label3";
+		label3.Size = new System.Drawing.Size(135, 20);
+		label3.TabIndex = 3;
+		label3.Text = "by Steve Stanton";
 		// 
 		// panel2
 		// 
-		this.panel2.BackColor = System.Drawing.Color.DimGray;
-		this.panel2.Location = new System.Drawing.Point(17, 65);
-		this.panel2.Name = "panel2";
-		this.panel2.Size = new System.Drawing.Size(325, 5);
-		this.panel2.TabIndex = 8;
+		panel2.BackColor = System.Drawing.Color.DimGray;
+		panel2.Location = new System.Drawing.Point(24, 100);
+		panel2.Name = "panel2";
+		panel2.Size = new System.Drawing.Size(455, 8);
+		panel2.TabIndex = 8;
 		// 
 		// SplashScreen
 		// 
-		this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-		this.BackColor = System.Drawing.Color.DarkKhaki;
-		this.ClientSize = new System.Drawing.Size(377, 428);
-		this.Controls.Add(this.panel2);
-		this.Controls.Add(this.pictureBox);
-		this.Controls.Add(this.label2);
-		this.Controls.Add(this.label1);
-		this.Controls.Add(this.lblTimeRemaining);
-		this.Controls.Add(this.pnlStatus);
-		this.Controls.Add(this.lblStatus);
-		this.Controls.Add(this.panel1);
-		this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-		this.Name = "SplashScreen";
-		this.ShowInTaskbar = false;
-		this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-		this.Text = "SplashScreen";
-		this.DoubleClick += new System.EventHandler(this.SplashScreen_DoubleClick);
-		((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
-		this.panel1.ResumeLayout(false);
-		this.panel1.PerformLayout();
-		this.ResumeLayout(false);
-		this.PerformLayout();
-
+		AutoScaleBaseSize = new System.Drawing.Size(7, 20);
+		BackColor = System.Drawing.Color.DarkKhaki;
+		ClientSize = new System.Drawing.Size(506, 552);
+		Controls.Add(panel2);
+		Controls.Add(pictureBox);
+		Controls.Add(label2);
+		Controls.Add(label1);
+		Controls.Add(lblTimeRemaining);
+		Controls.Add(pnlStatus);
+		Controls.Add(lblStatus);
+		Controls.Add(panel1);
+		FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+		ShowInTaskbar = false;
+		StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+		Text = "SplashScreen";
+		DoubleClick += SplashScreen_DoubleClick;
+		((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
+		panel1.ResumeLayout(false);
+		panel1.PerformLayout();
+		ResumeLayout(false);
+		PerformLayout();
 	}
 	#endregion
 

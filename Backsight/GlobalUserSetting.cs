@@ -14,6 +14,7 @@
 // </remarks>
 
 using System.Diagnostics;
+using System.Reflection;
 using System.Text.Json;
 
 namespace Backsight;
@@ -37,8 +38,12 @@ public static class GlobalUserSetting
         {
             var appData = System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
             var folder = Path.Combine(appData, "Backsight");
-            Directory.CreateDirectory(folder);
+            
+            if (!Directory.Exists(folder))
+                folder = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? throw new ApplicationException());
+            
             s_SettingsPath = Path.Combine(folder, "Settings.json");
+            Console.WriteLine($"Settings path: {s_SettingsPath}");
         }
 
         if (File.Exists(s_SettingsPath))

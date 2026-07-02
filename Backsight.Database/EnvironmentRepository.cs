@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using Backsight.Environment;
 using Microsoft.Data.Sqlite;
 using RepoDb;
@@ -60,6 +61,10 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         { nameof(ITheme), typeof(ThemeRow) },
     };
 
+    public EnvironmentRepository() : this(GetConnectionString("Manitoba.db"))
+    {
+    }
+
     public EnvironmentRepository(string connectionString) :
         base(connectionString,
             commandTimeout: null,
@@ -70,6 +75,24 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
         _repository = this;
     }
 
+    private static string GetConnectionString(string dbName)
+    {
+        var appData = System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData);
+        var dbFolder = Path.Combine(appData, "Backsight");
+
+        // If we don't already have a dedicated folder under ProgramData, use the location of the entry assembly
+        if (!Directory.Exists(dbFolder))
+            dbFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? throw new ApplicationException());
+
+        var dbPath = Path.Combine(dbFolder, dbName);
+        Console.WriteLine($"Environment database: {dbPath}");
+        
+        if (!File.Exists(dbPath))
+            throw new FileNotFoundException("Database file not found: ", dbPath);
+
+        return $"Data Source={dbPath};Mode=ReadWrite";
+    }
+    
     public void Load()
     {
         LoadIndex<IDomainTable, DomainTableRow>();

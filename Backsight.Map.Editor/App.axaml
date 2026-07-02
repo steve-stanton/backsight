@@ -1,0 +1,25 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Backsight.Map.Editor.App"
+             xmlns:local="using:Backsight.Map.Editor"
+             RequestedThemeVariant="Light">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+  
+    <Application.Styles>
+        <FluentTheme />
+
+        <Style Selector="Button:disabled">
+            <Setter Property="Opacity" Value="0.6"/>
+        </Style>
+
+        <Style Selector="Button:disabled /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="DarkGray"/>
+            <Setter Property="BorderBrush" Value="DarkGray"/>
+        </Style>
+    </Application.Styles>
+             
+</Application>

@@ -861,7 +861,7 @@
       <PackageReference Include="Avalonia.Win32.Interoperability" Version="12.0.4" />
       <PackageReference Include="Mapsui" Version="5.1.0" />
       <PackageReference Include="Mapsui.Avalonia12" Version="5.1.0" />
-      <PackageReference Include="RepoDb.Sqlite.Microsoft" Version="1.13.1" />
+      <PackageReference Include="RepoDb.Sqlite.Microsoft" Version="1.14.0" />
     </ItemGroup>
   
     <ItemGroup>
@@ -878,15 +878,6 @@
       <Content Include="maps\t22-1v01\5940.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <Content Include="maps\t22-1v01\5941.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="maps\t22-1v01\5942.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="maps\t22-1v01\5943.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <Content Include="maps\t22-1v01\settings.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
@@ -894,9 +885,6 @@
 
   <ItemGroup>
     <Content Include="maps\t22-2v01\3675.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="maps\t22-2v01\3676.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="maps\t22-2v01\settings.txt">
