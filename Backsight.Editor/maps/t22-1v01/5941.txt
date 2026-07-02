@@ -1,7 +1,0 @@
-Edit=NewSessionEvent
-{
-	Id=5941
-	When=2026-06-16T13:23:29
-	UserName=Steve Stanton
-	MachineName=DESKTOP-IK6HEFA
-}
