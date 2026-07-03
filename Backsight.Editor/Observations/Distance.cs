@@ -21,30 +21,25 @@ namespace Backsight.Editor.Observations;
 /// </summary>
 class Distance : Observation, ILength, IEquatable<Distance>
 {
-    #region Static
-
     /// <summary>
     /// Attempts to parse the supplied string.
     /// </summary>
     /// <param name="s">The string to parse</param>
+    /// <param name="defaultEntryUnit">The default data entry units</param>
     /// <param name="d">The result of the parse attempt (null if the string cannot
     /// be parsed as a distance)</param>
     /// <returns>True if <paramref name="d"/> was successfully defined</returns>
-    internal static bool TryParse(string s, out Distance d)
+    internal static bool TryParse(string s, DistanceUnit defaultEntryUnit, out Distance d)
     {
-        Distance t = new Distance(s);
+        Distance t = new Distance(s, defaultEntryUnit);
         d = (t.IsDefined ? t : null);
         return t.IsDefined;
     }
 
-    #endregion
-
-    #region Class data
-
     /// <summary>
-    /// The way the distance was originally specified by the user.
+    /// The way the distance was specified by the user.
     /// </summary>
-    DistanceUnit m_EnteredUnit;
+    DistanceUnit? m_EnteredUnit;
 
     /// <summary>
     /// Observed distance, in meters on the ground.
@@ -61,10 +56,6 @@ class Distance : Observation, ILength, IEquatable<Distance>
     /// associated line feature?
     /// </summary>
     internal bool IsAnnotationFlipped { get; set; }
-
-    #endregion
-
-    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Distance"/> class
@@ -87,7 +78,7 @@ class Distance : Observation, ILength, IEquatable<Distance>
     {
         double distance = editDeserializer.ReadDouble(DataField.Value);
         DistanceUnitType unitType = (DistanceUnitType)editDeserializer.ReadByte(DataField.Unit);
-        m_EnteredUnit = EditingController.GetUnits(unitType);
+        m_EnteredUnit = DistanceUnit.GetUnit(unitType);
         m_ObservedMetric = m_EnteredUnit.ToMetric(distance);
 
         if (editDeserializer.IsNextField(DataField.Fixed))
@@ -160,9 +151,8 @@ class Distance : Observation, ILength, IEquatable<Distance>
         // entered distance in those. Otherwise save in the supplied data entry units.
         if (abbr.Length > 0)
         {
-            EditingController ec = EditingController.Current;
-            m_EnteredUnit = ec.GetUnit(abbr);
-            if (m_EnteredUnit != null)
+            m_EnteredUnit = DistanceUnit.GetUnit(abbr);
+            if (m_EnteredUnit is not null)
                 m_ObservedMetric = m_EnteredUnit.ToMetric(dval);
         }
         else
@@ -171,21 +161,6 @@ class Distance : Observation, ILength, IEquatable<Distance>
             m_EnteredUnit = defaultEntryUnit;
         }
     }
-
-    /// <summary>
-    /// Constructor that accepts a string. Use the <c>IsDefined</c> property to check
-    /// whether the string was parsed ok. Also see <see cref="TryParse"/>.
-    /// </summary>
-    /// <param name="s">The string to parse. It should look like a floating
-    ///	point number, but may have a units abbreviation stuck on the end (like that
-    ///	produced by a call to <see cref="Format"/>).</param>
-    [Obsolete("Use the version that accepts the default entry unit")]
-    internal Distance(string str)
-        : this(str, EditingController.Current.EntryUnit)
-    {
-    }
-
-    #endregion
 
     /// <summary>
     /// Breaks a distance string into two parts (the numeric part, and optional abbreviation).
@@ -216,10 +191,7 @@ class Distance : Observation, ILength, IEquatable<Distance>
     /// <summary>
     /// Is the distance fixed? (if so, the distance cannot be adjusted in any way).
     /// </summary>
-    internal bool IsFixed
-    {
-        get { return m_IsFixed; }
-    }
+    internal bool IsFixed => m_IsFixed;
 
     /// <summary>
     /// Marks this as a fixed distance (not to be adjusted).
@@ -233,34 +205,22 @@ class Distance : Observation, ILength, IEquatable<Distance>
     /// Has this distance been defined properly? (meaning the value
     /// for <c>EntryUnit</c> is not null).
     /// </summary>
-    internal bool IsDefined
-    {
-        get { return (m_EnteredUnit!=null); }
-    }
+    internal bool IsDefined => m_EnteredUnit is not null;
 
     /// <summary>
     /// The way the distance was originally specified by the user.
     /// </summary>
-    internal DistanceUnit EntryUnit
-    {
-        get { return m_EnteredUnit; }
-    }
+    internal DistanceUnit? EntryUnit => m_EnteredUnit;
 
     /// <summary>
     /// Observed distance, in meters on the ground.
     /// </summary>
-    public double Meters
-    {
-        get { return m_ObservedMetric; }
-    }
+    public double Meters => m_ObservedMetric;
 
     /// <summary>
     /// Observed distance, in microns on the ground.
     /// </summary>
-    public long Microns
-    {
-        get { return Backsight.Length.ToMicrons(m_ObservedMetric); }
-    }
+    public long Microns => Length.ToMicrons(m_ObservedMetric);
 
     /// <summary>
     /// Formats this distance in a specific unit of measurement.
@@ -290,8 +250,7 @@ class Distance : Observation, ILength, IEquatable<Distance>
     /// <returns></returns>
     internal string Format(bool appendAbbrev)
     {
-        return (m_EnteredUnit==null ?
-            String.Empty : m_EnteredUnit.Format(m_ObservedMetric, appendAbbrev));
+        return m_EnteredUnit?.Format(m_ObservedMetric, appendAbbrev) ?? String.Empty;
     }
 
     /// <summary>
@@ -299,9 +258,9 @@ class Distance : Observation, ILength, IEquatable<Distance>
     /// </summary>
     /// <param name="unit">The desired unit of measurement.</param>
     /// <returns></returns>
-    double GetDistance(DistanceUnit unit)
+    private double GetDistance(DistanceUnit? unit)
     {
-        return unit.FromMetric(m_ObservedMetric);
+        return unit?.FromMetric(m_ObservedMetric) ?? 0.0;
     }
 
     /// <summary>
@@ -310,7 +269,7 @@ class Distance : Observation, ILength, IEquatable<Distance>
     /// <returns></returns>
     double GetDistance()
     {
-        return (m_EnteredUnit==null ? 0.0 : m_EnteredUnit.FromMetric(m_ObservedMetric));
+        return m_EnteredUnit?.FromMetric(m_ObservedMetric) ?? 0.0;
     }
 
     /// <summary>
@@ -358,7 +317,7 @@ class Distance : Observation, ILength, IEquatable<Distance>
 
         // Calculate approximation for the terminal position (treating
         // this distance as a planar distance).
-        IPosition to = Geom.Polar(from, bearing, m_ObservedMetric);
+        IPosition to = BasicGeom.Polar(from, bearing, m_ObservedMetric);
 
         // Use the approximate location to determine line scale factor
         double sfac = sys.GetLineScaleFactor(from,to);
@@ -435,10 +394,7 @@ class Distance : Observation, ILength, IEquatable<Distance>
     /// <summary>
     /// The observed distance value (in data entry units)
     /// </summary>
-    internal double ObservedValue
-    {
-        get { return GetDistance(m_EnteredUnit); }
-    }
+    internal double ObservedValue => GetDistance(m_EnteredUnit);
 
     /// <summary>
     /// Returns a <see cref="System.String"/> that represents this instance.

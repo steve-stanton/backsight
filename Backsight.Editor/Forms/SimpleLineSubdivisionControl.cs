@@ -131,7 +131,7 @@ public partial class SimpleLineSubdivisionControl : UserControl
         if (d.Length==0)
             m_Length = new Distance();
         else
-            m_Length = new Distance(d);
+            m_Length = new Distance(d, EditingController.Current.EntryUnit);
 
         // If the observed length is greater than the max, reveal warning.
         warningLabel.Visible = (m_Length.Meters > m_MaxLength);

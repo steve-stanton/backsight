@@ -78,7 +78,7 @@ class Island : Ring
             return;
 
         // Attempt to locate an enclosing polygon.
-        ISpatialIndex index = CadastralMapModel.Current.Index;
+        var index = CadastralMapModel.Current.Index;
         Polygon enc = new FindIslandContainerQuery(index, this).Result;
 
         // If there aren't any, just mark this polygon as floating. Otherwise

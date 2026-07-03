@@ -27,15 +27,10 @@ public delegate bool ProcessItem(ISpatialObject item);
 
 /// <written by="Steve Stanton" on="31-OCT-2006" />
 /// <summary>
-/// A spatial index.
+/// Retrieval from a spatial index.
 /// </summary>
 public interface ISpatialIndex
 {
-    /// <summary>
-    /// Is the index empty (containing nothing)?
-    /// </summary>
-    bool IsEmpty { get; }
-
     /// <summary>
     /// Locates the feature closest to a specific position. Ignores polygons.
     /// </summary>
@@ -44,7 +39,7 @@ public interface ISpatialIndex
     /// <param name="types">The type(s) of object to look for (if you include polygons as
     /// an applicable type, they will be quietly ignored).</param>
     /// <returns>The closest feature of the requested type (null if nothing found)</returns>
-    ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types);
+    ISpatialObject? QueryClosest(IPosition p, ILength radius, SpatialType types);
 
     /// <summary>
     /// Process items with a covering rectangle that overlaps a query window.

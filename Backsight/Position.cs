@@ -75,7 +75,7 @@ public class Position : IEditPosition
         return Position.IsCoincident(this, p, tol);
     }
 
-    public static bool IsCoincident(IPosition p, IPosition q, double tol)
+    public static bool IsCoincident(IPosition? p, IPosition? q, double tol)
     {
         if (p==null || q==null)
             return false;

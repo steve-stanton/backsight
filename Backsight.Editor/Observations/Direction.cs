@@ -1,4 +1,5 @@
 // <remarks>
+// <remarks>
 // Copyright 2007 - Steve Stanton. This file is part of Backsight
 //
 // Backsight is free software; you can redistribute it and/or modify it under the terms
@@ -15,7 +16,6 @@
 
 using System.Diagnostics;
 using Backsight.Environment;
-using Backsight.Forms;
 
 namespace Backsight.Editor.Observations;
 
@@ -25,20 +25,13 @@ namespace Backsight.Editor.Observations;
 /// </summary>
 abstract class Direction : Observation
 {
-	#region Class data
-
 	/// <summary>
 	/// Offset for the direction (if any)
 	/// </summary>
-	Offset m_Offset;
-
-	#endregion
-
-	#region Constructors
+	Offset? m_Offset;
 
 	protected Direction()
 	{
-		m_Offset = null;
 	}
 
 	/// <summary>
@@ -51,22 +44,20 @@ abstract class Direction : Observation
 		ReadData(editDeserializer, out m_Offset);
 	}
 
-	#endregion
-
 	/// <summary>
 	/// The observed direction, in radians
 	/// </summary>
-	abstract internal double ObservationInRadians { get; }
+	internal abstract double ObservationInRadians { get; }
 
 	/// <summary>
 	/// The observed direction, as a bearing.
 	/// </summary>
-	abstract internal IAngle Bearing { get; }
+	internal abstract IAngle Bearing { get; }
 
 	/// <summary>
 	/// The point the direction was measured from (also see the <c>StartPosition</c> property).
 	/// </summary>
-	abstract internal PointFeature From { get; set; }
+	internal abstract PointFeature From { get; set; }
 
 	/*
 //	Draw the direction angle.
@@ -92,21 +83,11 @@ virtual void CreateAngleText ( CPtrList& text
 							 , const CePoint* const pTo ) const = 0;
 	 */
 
-	internal Offset Offset
+	internal Offset? Offset
 	{
-		get { return m_Offset; }
-		set { m_Offset = value; }
+		get => m_Offset;
+		set => m_Offset = value;
 	}
-
-	/// <summary>
-	/// This direction's offset (if any), in meters on the ground. Negated offsets
-	/// mean that the offset is to the left of the direction.
-	/// </summary>
-	double MetricOffset
-	{
-		get { return (m_Offset==null ? 0.0 : m_Offset.GetMetric(this)); }
-	}
-
 
 	/// <summary>
 	/// Relational equality test. When comparing any offsets, it's the actual ground
@@ -187,18 +168,18 @@ virtual void CreateAngleText ( CPtrList& text
 		{
 			// If there is no offset, the start position corresponds to the point
 			// that the direction starts from.
-			if (m_Offset==null)
+			if (m_Offset is null)
 				return this.From;
 
 			// If the offset is an offset point, that's the position we want
-			if (m_Offset is OffsetPoint)
-				return (m_Offset as OffsetPoint).Point;
+			if (m_Offset is OffsetPoint opt)
+				return opt.Point;
 
 			// This leaves us with an offset distance, so get it. The value is signed (left<0 right>0).
 			double offset = m_Offset.GetMetric(this);
 
 			// Get the bearing of the direction & add 90 degrees clockwise rotation).
-			double bearing = this.Bearing.Radians + Constants.PIDIV2;
+			double bearing = this.Bearing.Radians + MathConstants.PIDIV2;
 
 			// Get the origin of the direction (it SHOULD be defined).
 			PointFeature from = this.From;
@@ -207,14 +188,14 @@ virtual void CreateAngleText ( CPtrList& text
 			// Figure out the approximate perpendicular point (treating the
 			// offset as a distance on the mapping plane, even though
 			// it's actually a distance on the ground).
-			IPosition approx = Geom.Polar(from, bearing, offset);
+			IPosition approx = BasicGeom.Polar(from, bearing, offset);
 
 			// Calculate the line scale factor between the from-point and the approximate position.
 			ISpatialSystem sys = CadastralMapModel.Current.SpatialSystem;
 			double sfac = sys.GetLineScaleFactor(from, approx);
 
 			// Figure out the exact offset position.
-			return Geom.Polar(from, bearing, offset*sfac);
+			return BasicGeom.Polar(from, bearing, offset*sfac);
 		}
 	}
 
@@ -315,7 +296,7 @@ virtual void CreateAngleText ( CPtrList& text
 		double root = radius*radius*fgsq - fygx*fygx;
 
 		// Check for no intersection.
-		if (root < -Constants.TINY )
+		if (root < -MathConstants.TINY )
 			return 0;
 
 		// Check for tangential intersection (but don't count a
@@ -324,7 +305,7 @@ virtual void CreateAngleText ( CPtrList& text
 		double fxgy = f*dx + g*dy;
 		double prat;
 
-		if (root < Constants.TINY)
+		if (root < MathConstants.TINY)
 		{
 			prat = fxgy/fgsq;
 			if (prat<0.0)
@@ -381,7 +362,7 @@ virtual void CreateAngleText ( CPtrList& text
 	/// direction refers to.
 	/// </summary>
 	/// <param name="op">The operation that should no longer be referred to.</param>
-	abstract internal void CutReferences(Operation op);
+	private protected abstract void CutReferences(Operation op);
 
 	/// <summary>
 	/// Cut references to an operation that are made by the features the direction refers to.
@@ -412,12 +393,12 @@ virtual void CreateAngleText ( CPtrList& text
 
 		//	Get the max distance. It has to be defined to be SOMETHING.
 		double dist = maxdist.GetDistance(this.From).Meters;
-		if (Math.Abs(dist) < Constants.TINY)
+		if (Math.Abs(dist) < MathConstants.TINY)
 			return false;
 
 		//	Define the position of the direction line.
 		IPosition from = this.StartPosition;
-		IPosition to = Geom.Polar(from, this.Bearing.Radians, dist);
+		IPosition to = BasicGeom.Polar(from, this.Bearing.Radians, dist);
 
 		throw new NotImplementedException("Direction.Intersect");
 
@@ -498,6 +479,7 @@ return gotone;
 	/// <summary>
 	/// Intersects this direction with a line.
 	/// </summary>
+	/// <param name="maxLength">The maximum length to use for the direction line.</param>
 	/// <param name="line">The line to intersect with.</param>
 	/// <param name="closeTo">The point that the intersection should be closest to.
 	/// Specify null if you don't care. In that case, if there are multiple intersections,
@@ -507,38 +489,28 @@ return gotone;
 	/// <param name="closest">The default point that is closest to the intersection. Null if
 	/// intersection wasn't found.</param>
 	/// <returns>True if intersection was found.</returns>
-	internal bool Intersect( LineFeature line
-		, PointFeature closeTo
-		, out IPosition xsect
-		, out PointFeature closest )
+	internal bool Intersect(double maxLength
+		, LineFeature line
+		, PointFeature? closeTo
+		, out IPosition? xsect
+		, out PointFeature? closest )
 	{
 		// Initialize results
 		xsect = null;
 		closest = null;
 
-		// Define the length of the direction line as the length
-		// of a diagonal that crosses the map's extent.
-		IWindow mapWin = EditingController.Current.MapModel.Extent;
-		Debug.Assert(mapWin!=null);
-
-		// If the window is currently undefined (e.g. during deserialization),
-		// just use a really big distance.
-		// TODO: This is a hack, but hopefully it may be shortlived, because
-		// new logic is in the works for handling updates.
-		double dist = (mapWin.IsEmpty ? 100000.0 : Geom.Distance(mapWin.Min, mapWin.Max));
-
-		// Define the position of the direction line. DON'T use the from-
-		// point, because there may be an offset to the direction.
+		// Define the position of the direction line. DON'T use the from-point,
+		// because there may be an offset to the direction.
 		IPosition fromPos = this.StartPosition;
-		IPosition toPos = Geom.Polar(fromPos, this.Bearing.Radians, dist);
+		IPosition toPos = BasicGeom.Polar(fromPos, this.Bearing.Radians, maxLength);
 
 		// Construct a corresponding line segment.
 		ITerminal start = new FloatingTerminal(fromPos);
 		ITerminal end = new FloatingTerminal(toPos);
-		SegmentGeometry seg = new SegmentGeometry(start, end);
+		var seg = new SegmentGeometry(start, end);
 
 		// Intersect the line segment with the other one.
-		IntersectionResult xres = new IntersectionResult(line);
+		var xres = new IntersectionResult(line);
 		uint nx = seg.Intersect(xres);
 		if (nx==0)
 			return false;
@@ -589,7 +561,7 @@ return gotone;
 	/// <returns>True if this direction refers to the feature (via the direction's offset)</returns>
 	internal override bool HasReference(Feature feature)
 	{
-		return (m_Offset==null ? false : m_Offset.HasReference(feature));
+		return m_Offset?.HasReference(feature) ?? false;
 	}
 
 	/// <summary>
@@ -617,33 +589,7 @@ return gotone;
 		else
 			return m_Offset.GetReferences();
 	}
-
-	/// <summary>
-	/// Renders this direction as a dotted magenta line.
-	/// </summary>
-	/// <param name="display"></param>
-	internal void Render(ISpatialGraphics display)
-	{
-		// Figure out where the direction line is
-		IPosition from = this.StartPosition;
-		double len = GetMaxDiagonal(display);
-		IPosition to = Geom.Polar(from, this.Bearing.Radians, len);
-
-		new DottedStyle().Render(display, from, to);
-	}
-
-	/// <summary>
-	/// The diagonal length of a line that spans the display when it is
-	/// drawn at the overview scale.
-	/// </summary>
-	/// <param name="display"></param>
-	/// <returns></returns>
-	double GetMaxDiagonal(ISpatialDisplay display)
-	{
-		IWindow x = display.MaxExtent;
-		return Geom.Distance(x.Min, x.Max);
-	}
-
+	
 	/// <summary>
 	/// Writes the content of this instance to a persistent storage area.
 	/// </summary>

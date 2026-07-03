@@ -63,10 +63,10 @@ class PointFeature : Feature, IPoint, ITerminal, IPersistent
     /// </summary>
     /// <param name="f">Basic information about the feature.</param>
     /// <param name="g">The geometry for the point (may be null)</param>
-    internal PointFeature(IFeature f, PointGeometry g)
+    internal PointFeature(IFeature f, PointGeometry? g)
         : base(f)
     {
-        if (g == null)
+        if (g is null)
             m_Geom = null;
         else
             m_Geom = new Node(this, g);
@@ -80,24 +80,17 @@ class PointFeature : Feature, IPoint, ITerminal, IPersistent
     internal PointFeature(EditDeserializer editDeserializer)
         : base(editDeserializer)
     {
-        long x, y;
-        ReadData(editDeserializer, out x, out y);
+        ReadData(editDeserializer, out long x, out long y);
         m_Geom = new Node(this, new PointGeometry(x, y));
     }
 
     #endregion
 
-    public double X
-    {
-        get { return m_Geom.X; }
-    }
+    public double X => m_Geom.X;
 
-    public double Y
-    {
-        get { return m_Geom.Y; }
-    }
+    public double Y => m_Geom.Y;
 
-    public bool IsAt(IPosition p, double tol)
+    public bool IsAt(IPosition? p, double tol)
     {
         return Position.IsCoincident(this, p, tol);
     }
@@ -107,10 +100,7 @@ class PointFeature : Feature, IPoint, ITerminal, IPersistent
         return m_Geom.IsCoincident(p.Geometry);
     }
 
-    public override SpatialType SpatialType
-    {
-        get { return SpatialType.Point; }
-    }
+    public override SpatialType SpatialType => SpatialType.Point;
 
     /// <summary>
     /// Try to find an attached circle that has a specific radius.
@@ -121,7 +111,7 @@ class PointFeature : Feature, IPoint, ITerminal, IPersistent
     /// search for ANY circle). A fixed tolerance of 0.001 meters on
     /// the ground is used.</param>
     /// <returns>The attached circle (null if no such circle).</returns>
-    internal Circle GetCircle(double radius)
+    internal Circle? GetCircle(double radius)
     {
         List<IFeatureDependent> deps = this.Dependents;
         if (deps == null)

@@ -86,7 +86,7 @@ class MovePolygonPositionUI : SimpleCommandUI
         if (m_LastPolygon == null || !m_LastPolygon.IsEnclosing(p))
         {
             IPointGeometry pg = PointGeometry.Create(p);
-            ISpatialIndex index = CadastralMapModel.Current.Index;
+            var index = CadastralMapModel.Current.Index;
             Polygon pol = new FindPointContainerQuery(index, pg).Result;
 
             if (pol != null || (m_LastPolygon != null && pol == null))

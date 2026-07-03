@@ -28,219 +28,214 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.distancesTextBox = new System.Windows.Forms.TextBox();
-            this.lengthLeftTextBox = new System.Windows.Forms.TextBox();
-            this.totalEnteredTextBox = new System.Windows.Forms.TextBox();
-            this.lengthTextBox = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.chainsRadioButton = new System.Windows.Forms.RadioButton();
-            this.feetRadioButton = new System.Windows.Forms.RadioButton();
-            this.metersRadioButton = new System.Windows.Forms.RadioButton();
-            this.okButton = new System.Windows.Forms.Button();
-            this.cancelButton = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.groupBox1.SuspendLayout();
-            this.SuspendLayout();
+            distancesTextBox = new System.Windows.Forms.TextBox();
+            lengthLeftTextBox = new System.Windows.Forms.TextBox();
+            totalEnteredTextBox = new System.Windows.Forms.TextBox();
+            lengthTextBox = new System.Windows.Forms.TextBox();
+            label3 = new System.Windows.Forms.Label();
+            label2 = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            chainsRadioButton = new System.Windows.Forms.RadioButton();
+            feetRadioButton = new System.Windows.Forms.RadioButton();
+            metersRadioButton = new System.Windows.Forms.RadioButton();
+            okButton = new System.Windows.Forms.Button();
+            cancelButton = new System.Windows.Forms.Button();
+            label4 = new System.Windows.Forms.Label();
+            groupBox1.SuspendLayout();
+            SuspendLayout();
             // 
             // distancesTextBox
             // 
-            this.distancesTextBox.AcceptsReturn = true;
-            this.distancesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.distancesTextBox.Location = new System.Drawing.Point(16, 16);
-            this.distancesTextBox.Margin = new System.Windows.Forms.Padding(4);
-            this.distancesTextBox.Multiline = true;
-            this.distancesTextBox.Name = "distancesTextBox";
-            this.distancesTextBox.Size = new System.Drawing.Size(150, 159);
-            this.distancesTextBox.TabIndex = 17;
-            this.distancesTextBox.WordWrap = false;
-            this.distancesTextBox.TextChanged += new System.EventHandler(this.distancesTextBox_TextChanged);
+            distancesTextBox.AcceptsReturn = true;
+            distancesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right));
+            distancesTextBox.Location = new System.Drawing.Point(16, 16);
+            distancesTextBox.Margin = new System.Windows.Forms.Padding(4);
+            distancesTextBox.Multiline = true;
+            distancesTextBox.Name = "distancesTextBox";
+            distancesTextBox.Size = new System.Drawing.Size(188, 159);
+            distancesTextBox.TabIndex = 17;
+            distancesTextBox.WordWrap = false;
+            distancesTextBox.TextChanged += distancesTextBox_TextChanged;
             // 
             // lengthLeftTextBox
             // 
-            this.lengthLeftTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lengthLeftTextBox.Location = new System.Drawing.Point(150, 116);
-            this.lengthLeftTextBox.Margin = new System.Windows.Forms.Padding(4);
-            this.lengthLeftTextBox.Name = "lengthLeftTextBox";
-            this.lengthLeftTextBox.ReadOnly = true;
-            this.lengthLeftTextBox.Size = new System.Drawing.Size(99, 22);
-            this.lengthLeftTextBox.TabIndex = 23;
-            this.lengthLeftTextBox.TabStop = false;
+            lengthLeftTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            lengthLeftTextBox.Location = new System.Drawing.Point(175, 116);
+            lengthLeftTextBox.Margin = new System.Windows.Forms.Padding(4);
+            lengthLeftTextBox.Name = "lengthLeftTextBox";
+            lengthLeftTextBox.ReadOnly = true;
+            lengthLeftTextBox.Size = new System.Drawing.Size(99, 26);
+            lengthLeftTextBox.TabIndex = 23;
+            lengthLeftTextBox.TabStop = false;
             // 
             // totalEnteredTextBox
             // 
-            this.totalEnteredTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.totalEnteredTextBox.Location = new System.Drawing.Point(150, 86);
-            this.totalEnteredTextBox.Margin = new System.Windows.Forms.Padding(4);
-            this.totalEnteredTextBox.Name = "totalEnteredTextBox";
-            this.totalEnteredTextBox.ReadOnly = true;
-            this.totalEnteredTextBox.Size = new System.Drawing.Size(99, 22);
-            this.totalEnteredTextBox.TabIndex = 22;
-            this.totalEnteredTextBox.TabStop = false;
+            totalEnteredTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            totalEnteredTextBox.Location = new System.Drawing.Point(175, 86);
+            totalEnteredTextBox.Margin = new System.Windows.Forms.Padding(4);
+            totalEnteredTextBox.Name = "totalEnteredTextBox";
+            totalEnteredTextBox.ReadOnly = true;
+            totalEnteredTextBox.Size = new System.Drawing.Size(99, 26);
+            totalEnteredTextBox.TabIndex = 22;
+            totalEnteredTextBox.TabStop = false;
             // 
             // lengthTextBox
             // 
-            this.lengthTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lengthTextBox.Location = new System.Drawing.Point(150, 56);
-            this.lengthTextBox.Margin = new System.Windows.Forms.Padding(4);
-            this.lengthTextBox.Name = "lengthTextBox";
-            this.lengthTextBox.ReadOnly = true;
-            this.lengthTextBox.Size = new System.Drawing.Size(99, 22);
-            this.lengthTextBox.TabIndex = 21;
-            this.lengthTextBox.TabStop = false;
+            lengthTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            lengthTextBox.Location = new System.Drawing.Point(175, 56);
+            lengthTextBox.Margin = new System.Windows.Forms.Padding(4);
+            lengthTextBox.Name = "lengthTextBox";
+            lengthTextBox.ReadOnly = true;
+            lengthTextBox.Size = new System.Drawing.Size(99, 26);
+            lengthTextBox.TabIndex = 21;
+            lengthTextBox.TabStop = false;
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(17, 118);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(115, 16);
-            this.label3.TabIndex = 20;
-            this.label3.Text = "Length left to enter";
+            label3.AutoSize = true;
+            label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)0));
+            label3.Location = new System.Drawing.Point(17, 118);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(150, 20);
+            label3.TabIndex = 20;
+            label3.Text = "Length left to enter";
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(44, 88);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(88, 16);
-            this.label2.TabIndex = 19;
-            this.label2.Text = "Total entered";
+            label2.AutoSize = true;
+            label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)0));
+            label2.Location = new System.Drawing.Point(60, 88);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(107, 20);
+            label2.TabIndex = 19;
+            label2.Text = "Total entered";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(48, 58);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(84, 16);
-            this.label1.TabIndex = 18;
-            this.label1.Text = "Length of leg";
+            label1.AutoSize = true;
+            label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)0));
+            label1.Location = new System.Drawing.Point(60, 58);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(106, 20);
+            label1.TabIndex = 18;
+            label1.Text = "Length of leg";
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.chainsRadioButton);
-            this.groupBox1.Controls.Add(this.feetRadioButton);
-            this.groupBox1.Controls.Add(this.metersRadioButton);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.lengthTextBox);
-            this.groupBox1.Controls.Add(this.lengthLeftTextBox);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.totalEnteredTextBox);
-            this.groupBox1.Location = new System.Drawing.Point(202, 16);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(308, 159);
-            this.groupBox1.TabIndex = 24;
-            this.groupBox1.TabStop = false;
+            groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Right));
+            groupBox1.Controls.Add(chainsRadioButton);
+            groupBox1.Controls.Add(feetRadioButton);
+            groupBox1.Controls.Add(metersRadioButton);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Controls.Add(lengthTextBox);
+            groupBox1.Controls.Add(lengthLeftTextBox);
+            groupBox1.Controls.Add(label2);
+            groupBox1.Controls.Add(label3);
+            groupBox1.Controls.Add(totalEnteredTextBox);
+            groupBox1.Location = new System.Drawing.Point(240, 16);
+            groupBox1.Margin = new System.Windows.Forms.Padding(4);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Padding = new System.Windows.Forms.Padding(4);
+            groupBox1.Size = new System.Drawing.Size(308, 159);
+            groupBox1.TabIndex = 24;
+            groupBox1.TabStop = false;
             // 
             // chainsRadioButton
             // 
-            this.chainsRadioButton.AutoSize = true;
-            this.chainsRadioButton.Location = new System.Drawing.Point(213, 22);
-            this.chainsRadioButton.Name = "chainsRadioButton";
-            this.chainsRadioButton.Size = new System.Drawing.Size(67, 20);
-            this.chainsRadioButton.TabIndex = 2;
-            this.chainsRadioButton.TabStop = true;
-            this.chainsRadioButton.Text = "Chains";
-            this.chainsRadioButton.UseVisualStyleBackColor = true;
-            this.chainsRadioButton.CheckedChanged += new System.EventHandler(this.chainsRadioButton_CheckedChanged);
+            chainsRadioButton.AutoSize = true;
+            chainsRadioButton.Location = new System.Drawing.Point(213, 22);
+            chainsRadioButton.Name = "chainsRadioButton";
+            chainsRadioButton.Size = new System.Drawing.Size(82, 24);
+            chainsRadioButton.TabIndex = 2;
+            chainsRadioButton.TabStop = true;
+            chainsRadioButton.Text = "Chains";
+            chainsRadioButton.UseVisualStyleBackColor = true;
+            chainsRadioButton.CheckedChanged += chainsRadioButton_CheckedChanged;
             // 
             // feetRadioButton
             // 
-            this.feetRadioButton.AutoSize = true;
-            this.feetRadioButton.Location = new System.Drawing.Point(130, 22);
-            this.feetRadioButton.Name = "feetRadioButton";
-            this.feetRadioButton.Size = new System.Drawing.Size(53, 20);
-            this.feetRadioButton.TabIndex = 1;
-            this.feetRadioButton.TabStop = true;
-            this.feetRadioButton.Text = "Feet";
-            this.feetRadioButton.UseVisualStyleBackColor = true;
-            this.feetRadioButton.CheckedChanged += new System.EventHandler(this.feetRadioButton_CheckedChanged);
+            feetRadioButton.AutoSize = true;
+            feetRadioButton.Location = new System.Drawing.Point(130, 22);
+            feetRadioButton.Name = "feetRadioButton";
+            feetRadioButton.Size = new System.Drawing.Size(63, 24);
+            feetRadioButton.TabIndex = 1;
+            feetRadioButton.TabStop = true;
+            feetRadioButton.Text = "Feet";
+            feetRadioButton.UseVisualStyleBackColor = true;
+            feetRadioButton.CheckedChanged += feetRadioButton_CheckedChanged;
             // 
             // metersRadioButton
             // 
-            this.metersRadioButton.AutoSize = true;
-            this.metersRadioButton.Location = new System.Drawing.Point(32, 22);
-            this.metersRadioButton.Name = "metersRadioButton";
-            this.metersRadioButton.Size = new System.Drawing.Size(67, 20);
-            this.metersRadioButton.TabIndex = 0;
-            this.metersRadioButton.TabStop = true;
-            this.metersRadioButton.Text = "Meters";
-            this.metersRadioButton.UseVisualStyleBackColor = true;
-            this.metersRadioButton.CheckedChanged += new System.EventHandler(this.metersRadioButton_CheckedChanged);
+            metersRadioButton.AutoSize = true;
+            metersRadioButton.Location = new System.Drawing.Point(32, 22);
+            metersRadioButton.Name = "metersRadioButton";
+            metersRadioButton.Size = new System.Drawing.Size(82, 24);
+            metersRadioButton.TabIndex = 0;
+            metersRadioButton.TabStop = true;
+            metersRadioButton.Text = "Meters";
+            metersRadioButton.UseVisualStyleBackColor = true;
+            metersRadioButton.CheckedChanged += metersRadioButton_CheckedChanged;
             // 
             // okButton
             // 
-            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(352, 194);
-            this.okButton.Margin = new System.Windows.Forms.Padding(4);
-            this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(100, 28);
-            this.okButton.TabIndex = 25;
-            this.okButton.Text = "OK";
-            this.okButton.UseVisualStyleBackColor = true;
-            this.okButton.Click += new System.EventHandler(this.okButton_Click);
+            okButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+            okButton.Location = new System.Drawing.Point(390, 194);
+            okButton.Margin = new System.Windows.Forms.Padding(4);
+            okButton.Name = "okButton";
+            okButton.Size = new System.Drawing.Size(100, 28);
+            okButton.TabIndex = 25;
+            okButton.Text = "OK";
+            okButton.UseVisualStyleBackColor = true;
+            okButton.Click += okButton_Click;
             // 
             // cancelButton
             // 
-            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(234, 194);
-            this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
-            this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(100, 28);
-            this.cancelButton.TabIndex = 26;
-            this.cancelButton.TabStop = false;
-            this.cancelButton.Text = "Cancel";
-            this.cancelButton.UseVisualStyleBackColor = true;
-            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+            cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+            cancelButton.Location = new System.Drawing.Point(272, 194);
+            cancelButton.Margin = new System.Windows.Forms.Padding(4);
+            cancelButton.Name = "cancelButton";
+            cancelButton.Size = new System.Drawing.Size(100, 28);
+            cancelButton.TabIndex = 26;
+            cancelButton.TabStop = false;
+            cancelButton.Text = "Cancel";
+            cancelButton.UseVisualStyleBackColor = true;
+            cancelButton.Click += cancelButton_Click;
             // 
             // label4
             // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(13, 194);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(153, 56);
-            this.label4.TabIndex = 27;
-            this.label4.Text = "Specify one distance per line, followed by Enter";
+            label4.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
+            label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)0));
+            label4.Location = new System.Drawing.Point(13, 194);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(153, 56);
+            label4.TabIndex = 27;
+            label4.Text = "Specify one distance per line, followed by Enter";
             // 
             // LegForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(533, 246);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.okButton);
-            this.Controls.Add(this.cancelButton);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.distancesTextBox);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "LegForm";
-            this.Text = "Specify distances for the new face ...";
-            this.TopMost = true;
-            this.Shown += new System.EventHandler(this.LegForm_Shown);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(571, 246);
+            Controls.Add(label4);
+            Controls.Add(okButton);
+            Controls.Add(cancelButton);
+            Controls.Add(groupBox1);
+            Controls.Add(distancesTextBox);
+            Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)0));
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            Margin = new System.Windows.Forms.Padding(4);
+            Text = "Specify distances for the new face ...";
+            TopMost = true;
+            Shown += LegForm_Shown;
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

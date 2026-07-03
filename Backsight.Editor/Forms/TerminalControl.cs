@@ -216,7 +216,7 @@ public partial class TerminalControl : UserControl
         // and selectable.
         CadastralMapModel map = CadastralMapModel.Current;
         //m_Line = map.FindClosestLine(parpos, tol, true);
-        m_Line = (map.Index.QueryClosest(parpos, tol, SpatialType.Line) as LineFeature);
+        m_Line = map.Index.QueryClosest(parpos, tol, SpatialType.Line) as LineFeature;
 
         // If we found something, highlight it (after confirming that
         // it really does intersect the parallel).

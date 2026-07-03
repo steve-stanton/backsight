@@ -227,7 +227,7 @@ class NewLabelUI : AddLabelUI
 
         // Find the polygon (if any) that encloses the mouse position.
         CadastralMapModel map = CadastralMapModel.Current;
-        ISpatialIndex index = map.Index;
+        var index = map.Index;
         IPointGeometry pg = PointGeometry.Create(pos);
         Polygon enc = new FindPointContainerQuery(index, pg).Result;
 
@@ -758,8 +758,7 @@ class NewLabelUI : AddLabelUI
 
         // Get the map to find the closest line
         CadastralMapModel map = CadastralMapModel.Current;
-        ISpatialIndex index = map.Index;
-        return (index.QueryClosest(posn, new Length(tol), SpatialType.Line) as LineFeature);
+        return map.Index.QueryClosest(posn, new Length(tol), SpatialType.Line) as LineFeature;
     }
 
     /// <summary>

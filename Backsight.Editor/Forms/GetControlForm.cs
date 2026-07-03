@@ -67,12 +67,8 @@ partial class GetControlForm : Form
 
     private void GetControlForm_Shown(object sender, EventArgs e)
     {
-        // Remember whether the map starts out empty. We do this here because
-        // CadastralMapModel.IsEmpty works by checking whether the map's
-        // window is defined. Since we may also set the extent, we could not
-        // subsequently get a correct answer as to whether the map already
-        // contains data.
-        m_NewMap = CadastralMapModel.Current.IsEmpty;
+        // Remember whether the map starts out empty
+        m_NewMap = CadastralMapModel.Current.Extent.IsEmpty;
 
         // Initialize the file spec of the control file, based on the corresponding registry entry.
         // (formerly environment variable CED$ControlFile)
@@ -434,7 +430,7 @@ partial class GetControlForm : Form
     ControlPoint[] GetSavePoints()
     {
         List<ControlPoint> result = new List<ControlPoint>();
-        ISpatialIndex index = CadastralMapModel.Current.EditingIndex;
+        var index = CadastralMapModel.Current.Index;
 
         foreach (ControlRange r in m_Ranges)
         {
@@ -445,7 +441,7 @@ partial class GetControlForm : Form
                 if (p.IsDefined)
                 {
                     // Ignore the point if it already exists as part of the map (same position, same foreign ID).
-                    PointFeature xp = (index.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature);
+                    PointFeature xp = index.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature;
                     bool isExisting = (xp!=null && xp.IsForeignId && xp.FormattedKey==p.ControlId.ToString());
                     if (!isExisting)
                         result.Add(p);

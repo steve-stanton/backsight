@@ -425,7 +425,7 @@ public partial class ParallelControl : UserControl
         string str = offsetTextBox.Text.Trim();
 
         // Try to parse it.
-        Distance offdist = new Distance(str);
+        Distance offdist = new Distance(str, EditingController.Current.EntryUnit);
         if (!offdist.IsDefined)
         {
             MessageBox.Show("Invalid offset distance");

@@ -21,8 +21,6 @@ namespace Backsight.Editor.Observations;
 /// </summary>
 class BearingDirection : Direction, IFeatureRef
 {
-    #region Class data
-
     /// <summary>
     /// Angle from grid north, in range [0,2*PI].
     /// </summary>
@@ -32,17 +30,6 @@ class BearingDirection : Direction, IFeatureRef
     /// The point from which the bearing was taken.
     /// </summary>
     PointFeature m_From;
-
-    #endregion
-
-    #region Constructors
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BearingDirection"/> class.
-    /// </summary>
-    internal BearingDirection()
-    {
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BearingDirection"/> class
@@ -70,27 +57,14 @@ class BearingDirection : Direction, IFeatureRef
         m_From = from;
     }
 
-    #endregion
+    internal override IAngle Bearing => m_Observation;
 
-    internal override IAngle Bearing
-    {
-        get { return m_Observation; }
-    }
-
-    internal override double ObservationInRadians
-    {
-        get { return m_Observation.Radians; }
-    }
-
-    internal void SetObservationInRadians(double value)
-    {
-        m_Observation = new RadianValue(value);
-    }
+    internal override double ObservationInRadians => m_Observation.Radians;
 
     internal override PointFeature From
     {
-        get { return m_From; }
-        set { m_From = value; }
+        get => m_From;
+        set => m_From = value;
     }
 
     /// <summary>
@@ -111,7 +85,7 @@ class BearingDirection : Direction, IFeatureRef
     /// direction refers to.
     /// </summary>
     /// <param name="op">The operation that should no longer be referred to.</param>
-    internal override void CutReferences(Operation op)
+    private protected override void CutReferences(Operation op)
     {
         if (m_From!=null)
             m_From.CutOp(op);
@@ -123,7 +97,7 @@ class BearingDirection : Direction, IFeatureRef
     /// <returns>The referenced features (never null, but may be an empty array).</returns>
     internal override Feature[] GetReferences()
     {
-        List<Feature> result = new List<Feature>(base.GetReferences());
+        var result = new List<Feature>(base.GetReferences());
         result.Add(m_From);
         return result.ToArray();
     }

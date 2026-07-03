@@ -140,7 +140,7 @@ class EditingIndex : SpatialIndex
     /// <param name="p">The position of interest</param>
     /// <remarks>The corresponding terminal (null if nothing found). This should either
     /// be an instance of <see cref="PointFeature"/> or <see cref="Intersection"/>.</remarks>
-    internal ITerminal FindTerminal(IPointGeometry p)
+    internal ITerminal? FindTerminal(IPointGeometry p)
     {
         // Search the base index for a real point feature
         PointFeature pf = (base.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature);

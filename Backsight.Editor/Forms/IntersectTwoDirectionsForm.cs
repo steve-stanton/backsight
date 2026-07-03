@@ -178,8 +178,8 @@ partial class IntersectTwoDirectionsForm : IntersectForm
     private void finishPage_ShowFromNext(object sender, EventArgs e)
     {
         // Enable finish button only if we have an intersection
-        IPosition x = CalculateIntersect();
-        wizard.NextEnabled = (x!=null);
+        IPosition? x = CalculateIntersect();
+        wizard.NextEnabled = x is not null;
     }
 
     /// <summary>
@@ -187,14 +187,14 @@ partial class IntersectTwoDirectionsForm : IntersectForm
     /// entered information.
     /// </summary>
     /// <returns>The position of the intersect (null if there isn't one)</returns>
-    internal override IPosition CalculateIntersect()
+    internal override IPosition? CalculateIntersect()
     {
         Direction d1 = getDirection1.Direction;
-        if (d1==null)
+        if (d1 is null)
             return null;
 
         Direction d2 = getDirection2.Direction;
-        if (d2==null)
+        if (d2 is null)
             return null;
 
         return d1.Intersect(d2);

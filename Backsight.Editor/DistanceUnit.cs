@@ -13,8 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System.Drawing;
-
 namespace Backsight.Editor;
 
 /// <summary>
@@ -24,7 +22,46 @@ namespace Backsight.Editor;
 /// </summary>
 class DistanceUnit : IEquatable<DistanceUnit>
 {
-    #region Class data
+    internal static readonly DistanceUnit Meters = new (DistanceUnitType.Meters);
+    internal static readonly DistanceUnit Feet = new (DistanceUnitType.Feet);
+    internal static readonly DistanceUnit Chains = new (DistanceUnitType.Chains);
+    internal static readonly DistanceUnit AsEntered = new (DistanceUnitType.AsEntered);
+
+    internal static DistanceUnit GetUnit(DistanceUnitType unitType)
+    {
+        return unitType switch
+        {
+            DistanceUnitType.Meters => Meters,
+            DistanceUnitType.Feet => Feet,
+            DistanceUnitType.Chains => Chains,
+            DistanceUnitType.AsEntered => AsEntered,
+            _ => throw new ArgumentException("Unexpected unit type") 
+        };
+    }
+
+    /// <summary>
+    /// Converts a string that represents a distance unit abbreviation into one
+    /// of the <c>DistanceUnit</c> instances known to the map.
+    /// </summary>
+    /// <param name="abbrev">The abbreviation to look for (not case-sensitive)</param>
+    /// <returns>The corresponding unit (null if the unit cannot be determined)</returns>
+    internal static DistanceUnit? GetUnit(string abbrev)
+    {
+        string a = abbrev.ToUpper().Trim();
+        if (a.Length == 0)
+            return null;
+
+        if (Meters.Abbreviation.ToUpper().StartsWith(a))
+            return Meters;
+
+        if (Feet.Abbreviation.ToUpper().StartsWith(a))
+            return Feet;
+
+        if (Chains.Abbreviation.ToUpper().StartsWith(a))
+            return Chains;
+
+        return null;
+    }
 
     /// <summary>
     /// Numeric identitifer for the distance unit.
@@ -34,33 +71,24 @@ class DistanceUnit : IEquatable<DistanceUnit>
     /// <summary>
     /// A name for the unit of measurement.
     /// </summary>
-    private string m_UnitName;
+    private readonly string m_UnitName;
 
     /// <summary>
     /// Accepted abbreviation (e.g. "ft"). May be an empty string (not null).
     /// </summary>
-    private string m_Abbreviation;
+    private readonly string m_Abbreviation;
 
     /// <summary>
     /// Scaling factor to convert an entered unit of this type to meters (i.e. 0.3048
     /// for feet to meters).
     /// </summary>
-    private double m_Multiplier;
-
-    /// <summary>
-    /// The display colour.
-    /// </summary>
-    private Color m_Colour;
-
-    #endregion
-
-    #region Constructors
+    private readonly double m_Multiplier;
 
     /// <summary>
     /// Create a distance unit with the specified type.
     /// </summary>
     /// <param name="unitType">The type of unit to create.</param>
-    internal DistanceUnit(DistanceUnitType unitType)
+    private DistanceUnit(DistanceUnitType unitType)
     {
         switch (unitType)
         {
@@ -70,7 +98,6 @@ class DistanceUnit : IEquatable<DistanceUnit>
                 m_UnitName = String.Empty;
                 m_Abbreviation = String.Empty;
                 m_Multiplier = 1.0;
-                m_Colour = Color.White;
                 break;
             }
 
@@ -80,7 +107,6 @@ class DistanceUnit : IEquatable<DistanceUnit>
                 m_UnitName = "Feet";
                 m_Abbreviation = "ft";
                 m_Multiplier = 0.3048;
-                m_Colour = Color.Red;
                 break;
             }
 
@@ -90,7 +116,6 @@ class DistanceUnit : IEquatable<DistanceUnit>
                 m_UnitName = "Chains";
                 m_Abbreviation = "ch";
                 m_Multiplier = 20.1168;
-                m_Colour = Color.Green;
                 break;
             }
 
@@ -101,28 +126,25 @@ class DistanceUnit : IEquatable<DistanceUnit>
                 m_UnitName = "Meters";
                 m_Abbreviation = "m";
                 m_Multiplier = 1.0;
-                m_Colour = Color.Black;
                 break;
             }
         }
     }
 
-    #endregion
-
     /// <summary>
     /// The numeric code identifying this distance unit.
     /// </summary>
-    public DistanceUnitType UnitType { get { return m_UnitCode; } }
+    public DistanceUnitType UnitType => m_UnitCode;
 
     /// <summary>
     /// The name for the unit of measurement.
     /// </summary>
-    public string Name { get { return m_UnitName; } }
+    public string Name => m_UnitName;
 
     /// <summary>
     /// The accepted abbreviation (e.g. "ft"). May be an empty string (not null).
     /// </summary>
-    public string Abbreviation { get { return m_Abbreviation; } }
+    public string Abbreviation => m_Abbreviation;
 
     /// <summary>
     /// Converts a value in this distance unit to a metric value.

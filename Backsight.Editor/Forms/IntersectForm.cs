@@ -179,7 +179,7 @@ partial class IntersectForm : Form
     /// of the base class).
     /// </summary>
     /// <returns>The position of the intersect (null if there isn't one)</returns>
-    internal virtual IPosition CalculateIntersect()
+    internal virtual IPosition? CalculateIntersect()
     {
         if (DesignMode)
             return null;

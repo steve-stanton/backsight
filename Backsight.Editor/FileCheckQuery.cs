@@ -72,7 +72,7 @@ class FileCheckQuery
         m_NumCheck = 0;
         m_Result = new List<CheckItem>(100);
 
-        ISpatialIndex index = model.Index;
+        var index = model.Index;
         index.QueryWindow(null, SpatialType.Line, CheckLine);
         index.QueryWindow(null, SpatialType.Text, CheckText);
         index.QueryWindow(null, SpatialType.Polygon, CheckPolygon);

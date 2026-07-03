@@ -27,24 +27,11 @@ namespace Backsight.Editor.Observations;
 /// </summary>
 class OffsetPoint : Offset, IFeatureRef
 {
-    #region Class data
-
     /// <summary>
     /// The point that defines the offset position (the actual distance to it
     /// depends on some reference object not known to this class).
     /// </summary>
     PointFeature m_Point;
-
-    #endregion
-
-    #region Constructors
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="OffsetPoint"/> class.
-    /// </summary>
-    internal OffsetPoint()
-    {
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OffsetPoint"/> class
@@ -74,23 +61,15 @@ class OffsetPoint : Offset, IFeatureRef
         m_Point = copy.m_Point;
     }
 
-    #endregion
-
     /// <summary>
     /// The easting of the offset point (0 if the point is undefined).
     /// </summary>
-    double Easting
-    {
-        get { return (m_Point==null ? 0.0 : m_Point.X); }
-    }
+    double Easting => m_Point?.X ?? 0.0;
 
     /// <summary>
     /// The northing of the offset point (0 if the point is undefined).
     /// </summary>
-    double Northing
-    {
-        get { return (m_Point==null ? 0.0 : m_Point.Y); }
-    }
+    private double Northing => m_Point?.Y ?? 0.0;
 
     /// <summary>
     /// Obtains the features that are referenced by this observation.
@@ -98,7 +77,7 @@ class OffsetPoint : Offset, IFeatureRef
     /// <returns>The referenced features (never null, but may be an empty array).</returns>
     internal override Feature[] GetReferences()
     {
-        return new Feature[] { m_Point };
+        return [m_Point];
     }
 
     /// <summary>
@@ -135,10 +114,7 @@ class OffsetPoint : Offset, IFeatureRef
     /// <summary>
     /// The offset point.
     /// </summary>
-    internal override PointFeature Point
-    {
-        get { return m_Point; }
-    }
+    internal override PointFeature Point => m_Point;
 
     /// <summary>
     /// Checks whether this offset makes reference to a specific feature.

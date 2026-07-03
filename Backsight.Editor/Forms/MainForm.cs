@@ -1093,7 +1093,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private bool IsEditAutoHighlightEnabled()
     {
-        return !m_Controller.MapModel.IsEmpty;
+        return !m_Controller.MapModel.Extent.IsEmpty;
     }
 
     private void EditAutoHighlight(IUserAction action)
@@ -1120,7 +1120,7 @@ else if ( m_Op == ID_LINE_CURVE ) {
 
     private bool IsViewPositionEnabled()
     {
-        return !m_Controller.MapModel.IsEmpty;
+        return !m_Controller.MapModel.Extent.IsEmpty;
     }
 
     private void ViewPosition(IUserAction action)

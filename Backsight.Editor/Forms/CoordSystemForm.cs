@@ -27,8 +27,11 @@ namespace Backsight.Editor.Forms;
 partial class CoordSystemForm : Form
 {
     #region Class data
-
-    // none
+    
+    /// <summary>
+    /// The default units for entered distances.
+    /// </summary>
+    private readonly DistanceUnit m_DefaultEntryUnit;
 
     #endregion
 
@@ -37,6 +40,8 @@ partial class CoordSystemForm : Form
     internal CoordSystemForm()
     {
         InitializeComponent();
+        
+        m_DefaultEntryUnit = EditingController.Current.EntryUnit;
     }
 
     #endregion
@@ -52,7 +57,7 @@ partial class CoordSystemForm : Form
         // Display mean elevation and geoid separation in the current data entry units.
         EditingController ec = EditingController.Current;
         DistanceUnit eUnit = ec.EntryUnit;
-        DistanceUnit meters = EditingController.GetUnits(DistanceUnitType.Meters);
+        DistanceUnit meters = DistanceUnit.Meters;
 
         // The mean elevation & geoid separation fields are always editable (even
         // if the map contains stuff). The values are used to calculate the ground
@@ -74,13 +79,13 @@ partial class CoordSystemForm : Form
         // assumes the current data entry units.
         double meanElev = sys.MeanElevation.Meters;
         Distance elev;
-        if (Distance.TryParse(meanElevationTextBox.Text, out elev))
+        if (Distance.TryParse(meanElevationTextBox.Text, m_DefaultEntryUnit, out elev))
             meanElev = elev.Meters;
 
         // Geoid separation
         double gSep = sys.GeoidSeparation.Meters;
         Distance sep;
-        if (Distance.TryParse(geoidSeparationTextBox.Text, out sep))
+        if (Distance.TryParse(geoidSeparationTextBox.Text, m_DefaultEntryUnit, out sep))
             gSep = sep.Meters;
 
         if (Math.Abs(meanElev - sys.MeanElevation.Meters) > 0.0001 ||

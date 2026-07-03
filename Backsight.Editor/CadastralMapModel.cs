@@ -45,10 +45,9 @@ class CadastralMapModel : ISpatialModel
     #region Class data
 
     /// <summary>
-    /// Spatial index for the data in this model. This will be null while the model
-    /// is being deserialized from the database.
+    /// Spatial index for the data in this model.
     /// </summary>
-    EditingIndex m_Index;
+    private EditingIndex m_Index;
 
     /// <summary>
     /// Default rotation angle for text (in radians).
@@ -63,7 +62,7 @@ class CadastralMapModel : ISpatialModel
     /// <summary>
     /// Window of all data in the map.
     /// </summary>
-    Window m_Window;
+    readonly Window m_Window;
 
     /// <summary>
     /// Editing sessions.
@@ -117,7 +116,7 @@ class CadastralMapModel : ISpatialModel
         m_Window = new Window();
         m_Sessions = new List<Session>();
         m_Edits = new Dictionary<InternalIdValue, Operation>();
-        m_Index = null; // new EditingIndex();
+        m_Index = new EditingIndex();
         m_IdManager = new IdManager();
         m_Features = new Dictionary<InternalIdValue, Feature>(1000);
         m_NativeIds = new Dictionary<uint, NativeId>(1000);
@@ -134,49 +133,19 @@ class CadastralMapModel : ISpatialModel
 
     public override string ToString()
     {
-        string name = Name;
+        string name = EditingController.Current.Project.Name;;
         return (String.IsNullOrEmpty(name) ? "(Untitled)" : name);
     }
 
     /// <summary>
-    /// The user-name of the model
-    /// </summary>
-    public string Name => EditingController.Current.Project.Name;
-
-    /// <summary>
     /// The spatial index for this model (in a form that's suitable for typical queries).
     /// </summary>
-    /// <remarks>The result may be null, since some older software may rely on
-    /// a null result to determine the course of events. Where appropriate, use the
-    /// <see cref="EditingIndex"/> property instead.</remarks>
-    internal ISpatialIndex Index
-    {
-        get
-        {
-            /*
-            // The index may be null if the model has just been deserialized
-            if (m_Index==null)
-                m_Index = new EditingIndex();
-            */
-            return m_Index;
-        }
-    }
+    internal ISpatialIndex Index => m_Index;
 
     /// <summary>
-    /// The spatial index for this model (in a form that's suitable for editing).
-    /// If it doesn't already exist, it will be created.
+    /// The spatial index for this model.
     /// </summary>
-    internal EditingIndex EditingIndex
-    {
-        get
-        {
-            // The index may be null if the model has just been deserialized
-            //if (m_Index==null)
-            //    m_Index = new EditingIndex();
-
-            return m_Index;
-        }
-    }
+    internal EditingIndex EditingIndex => m_Index;
 
     /// <summary>
     /// Default rotation angle for text (in radians).
@@ -214,23 +183,12 @@ class CadastralMapModel : ISpatialModel
         return emptySessions.Count;
     }
 
-    #region ISpatialModel Members
-
-    public bool IsEmpty => m_Window.IsEmpty;
-
+    /// <inheritdoc cref="ISpatialModel.Extent"/>
     public IWindow Extent => m_Window;
 
-    public ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types)
+    public ISpatialObject? QueryClosest(IPosition p, ILength radius, SpatialType types)
     {
         return m_Index.QueryClosest(p, radius, types);
-    }
-
-    #endregion
-
-    /// <inheritdoc cref="ISpatialModel.Draw"/>
-    public void Draw(IMapDisplay mapDisplay)
-    {
-        
     }
 
     /// <summary>
@@ -239,10 +197,6 @@ class CadastralMapModel : ISpatialModel
     /// <param name="display">The display to render to</param>
     public void Render(MapControl display)
     {
-        // Do nothing if the index hasn't been created yet
-        if (m_Index==null)
-            return;
-
         // Default to draw all defined feature types
         SpatialType types = SpatialType.Feature;
 
@@ -264,79 +218,15 @@ class CadastralMapModel : ISpatialModel
         if (ps.AreIntersectionsDrawn && (types & SpatialType.Point) != 0)
         {
             style.FillColor = Color.Transparent;
-            (m_Index as EditingIndex).DrawIntersections(mapDisplay);
+            m_Index.DrawIntersections(mapDisplay);
         }
-    }
-
-    internal uint MakeBackup()
-    {
-        return 0;
-        /*
-        IDataController dc = DataRoot.Controller;
-        if (dc==null)
-            return 0;
-
-        // If it's a new file that has NEVER been saved, it'll
-        // have a temporary file name. So in that case, just
-        // get the user to do a regular Save-As.
-        if ( !m_IsSaved ) {
-            OnFileSaveAs();
-            return 0;
-        }
-
-        // Get the highest operation sequence number from the map.
-        UINT4 maxop = m_pMap->GetMaxOp();
-
-        // Get the file spec for the backup file.
-        CString spec;
-        spec.Format("%s%010d",GetMapSpec(),maxop);
-
-        // Return if we've already made the backup.
-        CFileStatus fstatus;
-        if ( CFile::GetStatus((LPCTSTR)spec,fstatus) ) return 0;
-
-        // Display a message to say what's happening.
-        CString msg;
-        msg.Format("Saving backup %s",spec);
-        CdMessage* pMess = new CdMessage(msg);
-        pMess->Create(CdMessage::IDD);
-
-        // Copy the PSE database.
-        m_osdb->copy((LPCTSTR)spec,0664,0);
-
-        // Sleep for 1 second so the user can see the message
-        // when dealing with small files.
-        Sleep(1000);
-        delete pMess;
-
-        // If it got copied ok, return the sequence number.
-        if ( CFile::GetStatus((LPCTSTR)spec,fstatus) ) return maxop;
-
-        // Tell the user something screwed up.
-        msg.Format("Failed to create backup file %s",spec);
-        AfxMessageBox(msg);
-        return 0;
-         */
     }
 
     /// <summary>
     /// The sequence number of the last edit in the working session (0 if no edits have
     /// been performed)
     /// </summary>
-    internal uint LastOpSequence
-    {
-        get
-        {
-            if (m_WorkingSession is null)
-                return 0;
-
-            Operation o = m_WorkingSession.LastOperation;
-            if (o is null)
-                return 0;
-
-            return o.EditSequence;
-        }
-    }
+    internal uint LastOpSequence => m_WorkingSession?.LastOperation?.EditSequence ?? 0;
 
     /// <summary>
     /// The last editing session in this model (null if this is a freshly created model,
@@ -347,14 +237,11 @@ class CadastralMapModel : ISpatialModel
         get
         {
             int numSession = m_Sessions.Count;
-            return (numSession==0 ? null : m_Sessions[numSession-1]);
+            return numSession==0 ? null : m_Sessions[numSession-1];
         }
     }
 
-    public ISpatialSystem SpatialSystem
-    {
-        get { return m_CS; }
-    }
+    public ISpatialSystem SpatialSystem => m_CS;
 
     /// <summary>
     /// Creates a new point feature as part of this model.
@@ -451,28 +338,25 @@ class CadastralMapModel : ISpatialModel
         {
             FeatureId fid = f.FeatureId;
 
-            if (fid is not null)
+            if (fid is ForeignId foreignId)
             {
-                if (fid is ForeignId foreignId)
-                {
-                    ForeignId? existingId = FindForeignId(foreignId.FormattedKey);
-                    if (existingId is null)
-                        AddForeignId(foreignId);
-                    else if (!object.ReferenceEquals(foreignId, existingId))
-                        throw new Exception("More than one foreign ID object for: "+foreignId.FormattedKey);
-                }
-                else if (fid is NativeId nativeId)
-                {
-                    NativeId? existingId = FindNativeId(nativeId.RawId);
-                    if (existingId is null)
-                        m_NativeIds.Add(nativeId.RawId, nativeId);
-                    else if (!object.ReferenceEquals(nativeId, existingId))
-                        throw new Exception("More than one native ID object for: "+nativeId.RawId);
-                }
-                else
-                {
-                    throw new NotImplementedException("Unsupported ID type: " + fid.GetType().Name);
-                }
+                ForeignId? existingId = FindForeignId(foreignId.FormattedKey);
+                if (existingId is null)
+                    AddForeignId(foreignId);
+                else if (!object.ReferenceEquals(foreignId, existingId))
+                    throw new Exception("More than one foreign ID object for: "+foreignId.FormattedKey);
+            }
+            else if (fid is NativeId nativeId)
+            {
+                NativeId? existingId = FindNativeId(nativeId.RawId);
+                if (existingId is null)
+                    m_NativeIds.Add(nativeId.RawId, nativeId);
+                else if (!object.ReferenceEquals(nativeId, existingId))
+                    throw new Exception("More than one native ID object for: "+nativeId.RawId);
+            }
+            else
+            {
+                throw new NotImplementedException("Unsupported ID type: " + fid.GetType().Name);
             }
         }
     }
@@ -485,31 +369,33 @@ class CadastralMapModel : ISpatialModel
     static List<Circle> GetCreatedCircles(Feature[] fa)
     {
         if (fa.Length==0)
-            return new List<Circle>();
+            return [];
 
         // The following will be overkill in most cases, but not for things like
         // bulk data imports...
 
-        // The circles found so far will be noted in an index that's keyed by the
+        // The circles found so far will be noted in an index keyed by the
         // internal ID of the point at the center of the circle.
-        Dictionary<InternalIdValue, List<Circle>> dic = new Dictionary<InternalIdValue, List<Circle>>();
+        var dic = new Dictionary<InternalIdValue, List<Circle>>();
 
         List<Circle> result = new List<Circle>(100);
 
         foreach (Feature f in fa)
         {
-            if (f is ArcFeature)
+            if (f is ArcFeature feature)
             {
-                Circle c = (f as ArcFeature).Circle;
+                Circle c = feature.Circle;
 
-                if (c.Creator == f.Creator)
+                if (c.Creator == feature.Creator)
                 {
                     InternalIdValue centerPointId = c.CenterPoint.InternalId;
                     bool addToResult = false;
-                    List<Circle> circles;
+                    List<Circle>? circles;
 
                     if (dic.TryGetValue(centerPointId, out circles))
                     {
+                        Debug.Assert(circles is not null);
+                        
                         if (circles.IndexOf(c)<0)
                         {
                             circles.Add(c);
@@ -700,7 +586,7 @@ class CadastralMapModel : ISpatialModel
             SpatialType.Line => DefaultLineType,
             SpatialType.Polygon => DefaultPolygonType,
             SpatialType.Text => DefaultTextType,
-            _ => throw new NotImplementedException("GetDefaultEntity")
+            _ => throw new NotImplementedException(nameof(GetDefaultEntity))
         };
     }
 
@@ -711,12 +597,9 @@ class CadastralMapModel : ISpatialModel
     /// <param name="t">The geometric type</param>
     /// <param name="e">The default entity type for any new features that
     /// are created with the specified geometric type (null for the blank type)</param>
-    internal void SetDefaultEntity(SpatialType t, IEntity e)
+    internal void SetDefaultEntity(SpatialType t, IEntity? e)
     {
-        if (e == null)
-            SetDefaultEntity(t, 0);
-        else
-            SetDefaultEntity(t, e.Id);
+        SetDefaultEntity(t, e?.Id ?? 0);
     }
 
     /// <summary>
@@ -948,8 +831,8 @@ class CadastralMapModel : ISpatialModel
     {
         // Check whether we have an existing point feature or intersection
         PointGeometry pg = PointGeometry.Create(p);
-        ITerminal t = m_Index.FindTerminal(pg);
-        if (t!=null)
+        ITerminal? t = m_Index.FindTerminal(pg);
+        if (t is not null)
             return t;
 
         // Create an intersection and return that
@@ -1551,9 +1434,6 @@ class CadastralMapModel : ISpatialModel
     /// any question about the completeness of the index.</remarks>
     internal void EnsureFeaturesAreIndexed()
     {
-        if (m_Index == null)
-            throw new InvalidOperationException();
-
         foreach (Feature f in m_Features.Values)
         {
             if (!f.IsInactive)

@@ -24,12 +24,12 @@ public class Window : IEditWindow, IEquatable<Window>
     /// <summary>
     /// The position of the south-west corner.
     /// </summary>
-    Position m_Min;
+    Position? m_Min;
 
     /// <summary>
     /// The position of the north-east corner.
     /// </summary>
-    Position m_Max;
+    Position? m_Max;
 
     /// <summary>
     /// Creates an empty (undefined) window.
@@ -67,10 +67,12 @@ public class Window : IEditWindow, IEquatable<Window>
     {
     }
 
-    public Window(IWindow copy)
+    public Window(IWindow? copy)
     {
-        if (copy==null || copy.IsEmpty)
+        if (copy is null || copy.IsEmpty)
+        {
             SetEmpty();
+        }
         else
         {
             m_Min = new Position(copy.Min);
@@ -154,10 +156,7 @@ public class Window : IEditWindow, IEquatable<Window>
     /// Is this window empty. An empty window is an undefined window.
     /// </summary>
     /// <seealso cref="IsPoint"/>
-    public bool IsEmpty
-    {
-        get { return (m_Min==null); }
-    }
+    public bool IsEmpty => m_Min is null;
 
     /// <summary>
     /// Does this window only cover a point in space?

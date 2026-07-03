@@ -356,7 +356,7 @@ partial class GetDirectionControl : UserControl
         string value = GlobalUserSetting.Read(DEFAULT_OFFSET_KEY);
         if (value.Length > 0)
         {
-            m_DefaultOffset = new Distance(value);
+            m_DefaultOffset = new Distance(value, EditingController.Current.EntryUnit);
             if (m_DefaultOffset.IsDefined)
                 m_DefaultOffset.SetFixed();
             else
@@ -999,7 +999,7 @@ partial class GetDirectionControl : UserControl
         }
 
         // Parse the distance.
-        Distance dist = new Distance(str);
+        Distance dist = new Distance(str, EditingController.Current.EntryUnit);
         if (!dist.IsDefined)
         {
             MessageBox.Show("Offset distance contains extraneous characters.");
@@ -1490,7 +1490,7 @@ partial class GetDirectionControl : UserControl
 
         // Remember the new default (it's different from m_OffsetDistance if
         // it's an offset to the left)
-        m_DefaultOffset = new Distance(value);
+        m_DefaultOffset = new Distance(value, EditingController.Current.EntryUnit);
         m_DefaultOffset.SetFixed();
 
         // Disable the button (the user has to change it in order to re-enable)

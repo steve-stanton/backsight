@@ -397,7 +397,7 @@ class EditDeserializer
     internal DistanceUnit ReadDistanceUnit(DataField field)
     {
         DistanceUnitType unitType = (DistanceUnitType)m_Reader.ReadInt32(field.ToString());
-        return EditingController.GetUnits(unitType);
+        return DistanceUnit.GetUnit(unitType);
     }
 
     /// <summary>

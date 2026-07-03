@@ -144,10 +144,7 @@ partial class AdjustmentForm : Form
 
     void ShowResults(DistanceUnitType type)
     {
-        DistanceUnit unit = EditingController.GetUnits(type);
-        if (unit==null)
-            return;
-
+        var unit = DistanceUnit.GetUnit(type);
         lengthLabel.Text = unit.Format(m_Length, false, -1);
         deltaNorthingLabel.Text = unit.Format(m_DeltaN, false, -1);
         deltaEastingLabel.Text = unit.Format(m_DeltaE, false, -1);

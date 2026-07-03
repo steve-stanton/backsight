@@ -145,8 +145,8 @@ class AttachPointUI : SimpleCommandUI
         }
 
         // Ask the map to find the closest line (if any)
-        ISpatialIndex index = CadastralMapModel.Current.Index;
-        m_Line = (index.QueryClosest(p, tol, SpatialType.Line) as LineFeature);
+        var index = CadastralMapModel.Current.Index;
+        m_Line = index.QueryClosest(p, tol, SpatialType.Line) as LineFeature;
         Highlight(m_Line);
     }
 

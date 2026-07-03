@@ -21,8 +21,6 @@ namespace Backsight.Editor.Observations;
 /// </summary>
 class OffsetDistance : Offset
 {
-    #region Class data
-
     /// <summary>
     /// The offset
     /// </summary>
@@ -32,10 +30,6 @@ class OffsetDistance : Offset
     /// True if the offset is left of the object that acts as the reference for the offset.
     /// </summary>
     bool m_IsLeft;
-
-    #endregion
-
-    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OffsetDistance"/> class.
@@ -69,8 +63,6 @@ class OffsetDistance : Offset
         m_IsLeft = copy.m_IsLeft;
     }
 
-    #endregion
-
     /// <summary>
     /// Relational equality test. 
     /// </summary>
@@ -102,19 +94,12 @@ class OffsetDistance : Offset
     /// <summary>
     /// Is the offset to the right of whatever.
     /// </summary>
-    internal bool IsRight
-    {
-        get { return !m_IsLeft; }
-    }
+    internal bool IsRight => !m_IsLeft;
 
     /// <summary>
     /// The offset observation.
     /// </summary>
-    internal Distance Offset
-    {
-        get { return m_Offset; }
-        set { m_Offset = value; }
-    }
+    internal Distance Offset => m_Offset;
 
     /// <summary>
     /// Returns the offset distance with respect to a reference direction, in meters
@@ -152,10 +137,7 @@ class OffsetDistance : Offset
     /// <summary>
     /// Associated point is always null for an offset distance.
     /// </summary>
-    internal override PointFeature Point
-    {
-        get { return null; }
-    }
+    internal override PointFeature Point => null;
 
     internal override void CutRef(Operation op)
     {

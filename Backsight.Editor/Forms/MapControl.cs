@@ -285,9 +285,9 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
     /// </summary>
     /// <param name="w">The window to use for initializing the overview extent</param>
     /// <returns>True if overview extent defined. False if the supplied window is null or empty.</returns>
-    bool SetOverviewExtent(IWindow w)
+    bool SetOverviewExtent(IWindow? w)
     {
-        if (w==null || w.IsEmpty)
+        if (w is null || w.IsEmpty)
             return false;
 
         Window window = new Window(w);
@@ -612,7 +612,7 @@ public partial class MapControl : UserControl, ISpatialGraphics, IDisposable
         this.Dispose();
     }
 
-    private bool IsInitialized => m_MapPanelExtent is not null && MapModel?.IsEmpty == false;
+    private bool IsInitialized => m_MapPanelExtent is not null && MapModel?.Extent.IsEmpty == false;
 
     private void mapPanel_KeyPress(object sender, KeyPressEventArgs e)
     {

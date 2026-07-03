@@ -65,8 +65,6 @@ class PolygonBuilder
     /// </summary>
     internal void Build()
     {
-        //return; // debug
-
         Trace.Write("Building network");
         m_Model.Index.QueryWindow(null, SpatialType.Line, ProcessLine);
 

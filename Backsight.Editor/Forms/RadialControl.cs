@@ -855,8 +855,8 @@ public partial class RadialControl : UserControl
             }
 
             // Get the point at the centre.
-            ISpatialModel map = CadastralMapModel.Current;
-            ISpatialObject so = map.QueryClosest(circle.Center, Backsight.Length.Zero, SpatialType.Point);
+            var map = CadastralMapModel.Current;
+            var so = map.QueryClosest(circle.Center, Backsight.Length.Zero, SpatialType.Point);
             m_Backsight = (so as PointFeature);
 
             // Confirm that we got something.
@@ -1049,7 +1049,7 @@ public partial class RadialControl : UserControl
         string str = lengthTextBox.Text.Trim();
 
         // Try to parse it.
-        Distance length = new Distance(str);
+        Distance length = new Distance(str, EditingController.Current.EntryUnit);
         if (!length.IsDefined)
         {
             MessageBox.Show("Invalid length");

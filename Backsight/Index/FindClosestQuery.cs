@@ -48,7 +48,7 @@ class FindClosestQuery
     /// <summary>
     /// The closest feature (null if nothing has been found).
     /// </summary>
-    ISpatialObject m_Result;
+    ISpatialObject? m_Result;
 
     /// <summary>
     /// Creates a new <c>FindClosestQuery</c> (and executes it). The result of the query
@@ -104,8 +104,5 @@ class FindClosestQuery
     /// <summary>
     /// The result of the query (null if no features were found within the query region).
     /// </summary>
-    internal ISpatialObject Result
-    {
-        get { return m_Result; }
-    }
+    internal ISpatialObject? Result => m_Result;
 }

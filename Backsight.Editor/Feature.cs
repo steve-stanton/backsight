@@ -73,7 +73,7 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
     /// referenced both to the new line, and to the editing operation that defined the line. This seems
     /// a bit verbose.
     /// </remarks>
-    List<IFeatureDependent> m_References;
+    List<IFeatureDependent>? m_References;
 
     /// <summary>
     /// The ID of this feature (may be shared by multiple features).
@@ -146,7 +146,7 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
     protected Feature(EditDeserializer editDeserializer)
     {
         m_Creator = editDeserializer.CurrentEdit;
-        Debug.Assert(m_Creator != null);
+        Debug.Assert(m_Creator is not null);
         ReadData(editDeserializer, out m_InternalId, out m_What, out m_Id);
         m_References = null;
         m_Flag = 0;
@@ -211,19 +211,13 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
     /// </summary>
     [DisplayName("Coordinate system")]
     [Description("Spatial reference for the geometry")]
-    public ISpatialSystem SpatialSystem
-    {
-        get { return (m_Creator == null ? null : m_Creator.SpatialSystem); }
-    }
+    public ISpatialSystem SpatialSystem => m_Creator.SpatialSystem;
 
     /// <summary>
     /// The map model of this feature (is the model that contains the editing session
     /// in which this feature was created).
     /// </summary>
-    internal CadastralMapModel MapModel
-    {
-        get { return (m_Creator==null ? null : (CadastralMapModel)m_Creator.Session.MapModel); }
-    }
+    internal CadastralMapModel MapModel => m_Creator.Session.MapModel;
 
     public void RemoveIndex(Row row)
     {
@@ -342,10 +336,7 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
     /// <summary>
     /// The editing operation that created this feature.
     /// </summary>
-    public Operation Creator
-    {
-        get { return m_Creator; }
-    }
+    public Operation Creator => m_Creator;
 
     /// <summary>
     /// The type of real-world object that the feature corresponds to.
@@ -571,26 +562,17 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
     /// indirectly through some sort of <c>Observation</c> object).
     /// May be null.
     /// </summary>
-    public List<IFeatureDependent> Dependents
-    {
-        get { return m_References; }
-    }
+    public List<IFeatureDependent>? Dependents => m_References;
 
     /// <summary>
     /// Does this feature have any dependents?
     /// </summary>
-    internal bool HasDependents
-    {
-        get { return (m_References!=null && m_References.Count>0); }
-    }
+    internal bool HasDependents => m_References?.Count > 0;
 
     /// <summary>
     /// The number of dependents for this feature.
     /// </summary>
-    public int DependentCount
-    {
-        get { return (m_References==null ? 0 : m_References.Count); }
-    }
+    public int DependentCount => m_References?.Count ?? 0;
 
     /// <inheritdoc cref="ISpatialObject.Draw"/>
     public virtual void Draw(IMapDisplay mapDisplay)
@@ -603,19 +585,19 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
         Render(display.Display, display.Style);
     }
     
-    abstract public void Render(ISpatialGraphics display, IDrawStyle style);
+    public abstract void Render(ISpatialGraphics display, IDrawStyle style);
 
     /// <summary>
     /// The covering rectangle that encloses this feature.
     /// </summary>
-    abstract public IWindow Extent { get; }
+    public abstract IWindow Extent { get; }
 
     /// <summary>
     /// The shortest distance between this object and the specified position.
     /// </summary>
     /// <param name="point">The position of interest</param>
     /// <returns>The shortest distance between the specified position and this object</returns>
-    abstract public ILength Distance(IPosition point);
+    public abstract ILength Distance(IPosition point);
 
     /// <summary>
     /// Performs any processing that needs to be done just before the position of

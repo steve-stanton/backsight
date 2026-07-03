@@ -22,8 +22,6 @@ namespace Backsight.Editor.Observations;
 /// </summary>
 class AngleDirection : Direction, IFeatureRef
 {
-    #region Class data
-
     /// <summary>
     /// The angle in radians. A negated value indicates an anticlockwise angle.
     /// </summary>
@@ -38,17 +36,6 @@ class AngleDirection : Direction, IFeatureRef
     /// The occupied station.
     /// </summary>
     PointFeature m_From;
-
-    #endregion
-
-    #region Constructors
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AngleDirection"/> class.
-    /// </summary>
-    internal AngleDirection()
-    {
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AngleDirection"/> class
@@ -78,17 +65,7 @@ class AngleDirection : Direction, IFeatureRef
         m_Observation = new RadianValue(observation.Radians);
     }
 
-    #endregion
-
-    internal override double ObservationInRadians
-    {
-        get { return m_Observation.Radians; }
-    }
-
-    internal void SetObservationInRadians(double value)
-    {
-        m_Observation = new RadianValue(value);
-    }
+    internal override double ObservationInRadians => m_Observation.Radians;
 
     /// <summary>
     /// The angle as a bearing
@@ -98,25 +75,21 @@ class AngleDirection : Direction, IFeatureRef
         get
         {
             // Get the bearing to the backsight
-            double bb = Geom.BearingInRadians(m_From, m_Backsight);
+            double bb = BasicGeom.BearingInRadians(m_From, m_Backsight);
 
             // Add on the observed angle, and restrict to [0,2*PI]
             double a = bb + m_Observation.Value;
-            return new RadianValue(Direction.Normalize(a));
+            return new RadianValue(Normalize(a));
         }
     }
 
     internal override PointFeature From
     {
-        get { return m_From; }
-        set { m_From = value; }
+        get => m_From;
+        set => m_From = value;
     }
 
-    internal PointFeature Backsight
-    {
-        get { return m_Backsight; }
-        set { m_Backsight = value; }
-    }
+    internal PointFeature Backsight => m_Backsight;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features
@@ -125,7 +98,7 @@ class AngleDirection : Direction, IFeatureRef
     /// <returns>The referenced features (never null, but may be an empty array).</returns>
     internal override Feature[] GetReferences()
     {
-        List<Feature> result = new List<Feature>(base.GetReferences());
+        var result = new List<Feature>(base.GetReferences());
 
         if (m_From != null)
             result.Add(m_From);
@@ -141,7 +114,7 @@ class AngleDirection : Direction, IFeatureRef
     /// direction refers to.
     /// </summary>
     /// <param name="op">The operation that should no longer be referred to.</param>
-    internal override void CutReferences(Operation op)
+    private protected override void CutReferences(Operation op)
     {
         if (m_From!=null)
             m_From.CutOp(op);
@@ -226,7 +199,6 @@ class AngleDirection : Direction, IFeatureRef
             case DataField.From:
                 m_From = (PointFeature)feature;
                 return true;
-
         }
 
         return false;

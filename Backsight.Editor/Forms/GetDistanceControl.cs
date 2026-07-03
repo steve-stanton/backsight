@@ -76,6 +76,11 @@ partial class GetDistanceControl : UserControl
     /// The field that last had the focus.
     /// </summary>
     Control m_Focus;
+    
+    /// <summary>
+    /// The default units for entered distances.
+    /// </summary>
+    private readonly DistanceUnit m_DefaultEntryUnit;
 
     #endregion
 
@@ -93,6 +98,7 @@ partial class GetDistanceControl : UserControl
         m_Distance = null;
         m_OffsetPoint = null;
         m_Focus = null;
+        m_DefaultEntryUnit = EditingController.Current.EntryUnit;
     }
 
     #endregion
@@ -442,7 +448,7 @@ partial class GetDistanceControl : UserControl
         }
 
         // Parse the distance.
-        if (!Distance.TryParse(str, out m_Distance))
+        if (!Distance.TryParse(str, m_DefaultEntryUnit, out m_Distance))
         {
             MessageBox.Show("Invalid distance.");
             distanceTextBox.Focus();

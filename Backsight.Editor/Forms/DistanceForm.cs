@@ -152,19 +152,19 @@ partial class DistanceForm : Form
 
     private void fRadioButton_CheckedChanged(object sender, EventArgs e)
     {
-        m_Unit = EditingController.GetUnits(DistanceUnitType.Feet);
+        m_Unit = DistanceUnit.Feet;
         SetNewDefault();
     }
 
     private void mRadioButton_CheckedChanged(object sender, EventArgs e)
     {
-        m_Unit = EditingController.GetUnits(DistanceUnitType.Meters);
+        m_Unit = DistanceUnit.Meters;
         SetNewDefault();
     }
 
     private void cRadioButton_CheckedChanged(object sender, EventArgs e)
     {
-        m_Unit = EditingController.GetUnits(DistanceUnitType.Chains);
+        m_Unit = DistanceUnit.Chains;
         SetNewDefault();
     }
 

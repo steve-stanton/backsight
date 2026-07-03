@@ -62,7 +62,7 @@ class PolygonSubdivisionUI : SimpleCommandUI
     {
         // Find out what polygon we need to subdivide
         IPointGeometry pg = PointGeometry.Create(p);
-        ISpatialIndex index = CadastralMapModel.Current.Index;
+        var index = CadastralMapModel.Current.Index;
         Polygon pol = new FindPointContainerQuery(index, pg).Result;
         if (pol==null)
         {

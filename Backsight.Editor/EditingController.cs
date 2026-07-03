@@ -13,7 +13,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 // </remarks>
 
-using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -40,11 +39,6 @@ class EditingController
     /// </summary>
     private static EditingController s_Controller = new ();
     internal static EditingController Current => s_Controller;
-
-    static readonly DistanceUnit s_Meters = new (DistanceUnitType.Meters);
-    static readonly DistanceUnit s_Feet = new (DistanceUnitType.Feet);
-    static readonly DistanceUnit s_Chains = new (DistanceUnitType.Chains);
-    static readonly DistanceUnit s_AsEntered = new (DistanceUnitType.AsEntered);
 
     #endregion
 
@@ -652,8 +646,7 @@ class EditingController
             */
 
             IPointGeometry pg = PointGeometry.Create(p);
-            ISpatialIndex index = cmm.Index;
-            Polygon pol = new FindPointContainerQuery(index, pg).Result;
+            Polygon pol = new FindPointContainerQuery(cmm.Index, pg).Result;
             if (pol is not null)
                 return pol;
         }
@@ -1125,8 +1118,8 @@ class EditingController
     {
         get
         {
-            DistanceUnitType du = m_Project.Settings.DisplayUnitType;
-            return GetUnits(du);
+            DistanceUnitType du = m_Project?.Settings.DisplayUnitType ?? DistanceUnitType.Meters;
+            return DistanceUnit.GetUnit(du);
         }
     }
 
@@ -1134,50 +1127,9 @@ class EditingController
     {
         get
         {
-            DistanceUnitType du = m_Project.Settings.EntryUnitType;
-            return GetUnits(du);
+            DistanceUnitType du = m_Project?.Settings.EntryUnitType ?? DistanceUnitType.Meters;
+            return DistanceUnit.GetUnit(du);
         }
-    }
-
-    internal static DistanceUnit GetUnits(DistanceUnitType unitType)
-    {
-        switch (unitType)
-        {
-            case DistanceUnitType.Meters:
-                return s_Meters;
-            case DistanceUnitType.Feet:
-                return s_Feet;
-            case DistanceUnitType.Chains:
-                return s_Chains;
-            case DistanceUnitType.AsEntered:
-                return s_AsEntered;
-        }
-
-        throw new ArgumentException("Unexpected unit type");
-    }
-
-    /// <summary>
-    /// Converts a string that represents a distance unit abbreviation into one
-    /// of the <c>DistanceUnit</c> instances known to the map.
-    /// </summary>
-    /// <param name="abbr">The abbreviation to look for (not case-sensitive)</param>
-    /// <returns>The corresponding unit (null if the unit cannot be determined)</returns>
-    internal DistanceUnit GetUnit(string abbrev)
-    {
-        string a = abbrev.ToUpper().Trim();
-        if (a.Length == 0)
-            return null;
-
-        if (s_Meters.Abbreviation.ToUpper().StartsWith(a))
-            return s_Meters;
-
-        if (s_Feet.Abbreviation.ToUpper().StartsWith(a))
-            return s_Feet;
-
-        if (s_Chains.Abbreviation.ToUpper().StartsWith(a))
-            return s_Chains;
-
-        return null;
     }
 
     /// <summary>

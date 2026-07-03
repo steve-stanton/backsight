@@ -179,7 +179,7 @@ public partial class LineExtensionControl : UserControl
 
     private void lengthTextBox_TextChanged(object sender, EventArgs e)
     {
-        m_Length = new Distance(lengthTextBox.Text);
+        m_Length = new Distance(lengthTextBox.Text, EditingController.Current.EntryUnit);
         m_Cmd.ErasePainting();
     }
 

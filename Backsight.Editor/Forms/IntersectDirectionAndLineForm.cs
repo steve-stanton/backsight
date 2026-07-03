@@ -161,13 +161,13 @@ internal partial class IntersectDirectionAndLineForm : IntersectForm
             IdHandle pointId = intersectInfo.PointId;
             PointFeature closeTo = intersectInfo.ClosestPoint;
 
-            if (closeTo == null)
+            if (closeTo is null)
             {
-                IPosition xsect;
-                if (!dir.Intersect(line, closeTo, out xsect, out closeTo))
+                var maxLength = dir.GetMaxLength();
+                if (!dir.Intersect(maxLength, line, closeTo, out _, out closeTo))
                     throw new Exception("Cannot calculate intersection point");
 
-                Debug.Assert(closeTo != null);
+                Debug.Assert(closeTo is not null);
             }
 
             op = new IntersectDirectionAndLineOperation(dir, line, wantSplit, closeTo);
@@ -186,8 +186,8 @@ internal partial class IntersectDirectionAndLineForm : IntersectForm
     private void finishPage_ShowFromNext(object sender, EventArgs e)
     {
         // Enable finish button only if we have an intersection
-        IPosition x = CalculateIntersect();
-        wizard.NextEnabled = (x!=null);
+        IPosition? x = CalculateIntersect();
+        wizard.NextEnabled = x is not null;
     }
 
     /// <summary>
@@ -195,21 +195,20 @@ internal partial class IntersectDirectionAndLineForm : IntersectForm
     /// entered information.
     /// </summary>
     /// <returns>The position of the intersect (null if there isn't one)</returns>
-    internal override IPosition CalculateIntersect()
+    internal override IPosition? CalculateIntersect()
     {
         Direction dir = getDirection.Direction;
-        if (dir==null)
+        if (dir is null)
             return null;
 
         LineFeature line = getLine.Line;
-        if (line==null)
+        if (line is null)
             return null;
 
         // The closest point may be null if the finish page has never been shown
         PointFeature closeTo = intersectInfo.ClosestPoint;
-        IPosition xsect;
-        PointFeature closest;
-        dir.Intersect(line, closeTo, out xsect, out closest);
+        var maxLength = dir.GetMaxLength();
+        dir.Intersect(maxLength, line, closeTo, out IPosition? xsect, out _);
         return xsect;
         /*
 
@@ -224,25 +223,24 @@ internal partial class IntersectDirectionAndLineForm : IntersectForm
     }
 
     /// <summary>
-    /// Returns the point feature closest to an intersection involving one or more line features.
+    /// Returns the point feature closest to an intersection involving a direction and a line.
     /// </summary>
-    /// <returns>Null (always). Dialogs that involve instances of <see cref="GetLineControl"/>
-    /// are expected to override.</returns>
-    internal override PointFeature GetDefaultClosestPoint()
+    /// <returns>The point closest to an intersection (null if the direction or the line are undefined,
+    /// or there's no intersection).</returns>
+    internal override PointFeature? GetDefaultClosestPoint()
     {
         Direction dir = getDirection.Direction;
-        if (dir==null)
+        if (dir is null)
             return null;
 
         LineFeature line = getLine.Line;
-        if (line==null)
+        if (line is null)
             return null;
 
         // The closest point may be null if the finish page has never been shown
         PointFeature closeTo = intersectInfo.ClosestPoint;
-        IPosition xsect;
-        PointFeature closest;
-        dir.Intersect(line, closeTo, out xsect, out closest);
+        var maxLength = dir.GetMaxLength();
+        dir.Intersect(maxLength, line, closeTo, out _, out PointFeature? closest);
         return closest;
     }
 

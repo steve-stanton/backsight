@@ -162,8 +162,8 @@ partial class IntersectTwoLinesForm : IntersectForm
     private void finishPage_ShowFromNext(object sender, EventArgs e)
     {
         // Enable finish button only if we have an intersection
-        IPosition x = CalculateIntersect();
-        wizard.NextEnabled = (x != null);
+        IPosition? x = CalculateIntersect();
+        wizard.NextEnabled = x is not null;
     }
 
     /// <summary>
@@ -171,21 +171,19 @@ partial class IntersectTwoLinesForm : IntersectForm
     /// entered information.
     /// </summary>
     /// <returns>The position of the intersect (null if there isn't one)</returns>
-    internal override IPosition CalculateIntersect()
+    internal override IPosition? CalculateIntersect()
     {
         LineFeature line1 = getLine1.Line;
-        if (line1 == null)
+        if (line1 is null)
             return null;
 
         LineFeature line2 = getLine2.Line;
-        if (line2 == null)
+        if (line2 is null)
             return null;
 
         // The closest point may be null if the finish page has never been shown
         PointFeature closeTo = intersectInfo.ClosestPoint;
-        IPosition xsect;
-        PointFeature closest;
-        line1.Intersect(line2, closeTo, out xsect, out closest);
+        line1.Intersect(line2, closeTo, out IPosition? xsect, out _);
         return xsect;
     }
 

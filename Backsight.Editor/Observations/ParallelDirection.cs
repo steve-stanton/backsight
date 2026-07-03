@@ -23,8 +23,6 @@ namespace Backsight.Editor.Observations;
 /// </summary>
 class ParallelDirection : Direction, IFeatureRef
 {
-    #region Class data
-
     /// <summary>
     /// The origin of the direction.
     /// </summary>
@@ -39,17 +37,6 @@ class ParallelDirection : Direction, IFeatureRef
     /// Point defining end of parallel.
     /// </summary>
     PointFeature m_Par2;
-
-    #endregion
-
-    #region Constructors
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ParallelDirection"/> class.
-    /// </summary>
-    internal ParallelDirection()
-    {
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ParallelDirection"/> class
@@ -71,40 +58,26 @@ class ParallelDirection : Direction, IFeatureRef
     /// <param name="par1">The first point in the definition of the parallel line.</param>
     /// <param name="par2">The second point defining the parallel line.</param>
     internal ParallelDirection(PointFeature from, PointFeature par1, PointFeature par2)
-        : base()
     {
         m_From = from;
         m_Par1 = par1;
         m_Par2 = par2;
     }
 
-    #endregion
-
     internal override PointFeature From
     {
-        get { return m_From; }
-        set { m_From = value; }
+        get => m_From;
+        set => m_From = value;
     }
 
-    internal PointFeature Start
-    {
-        get { return m_Par1; }
-        set { m_Par1 = value; }
-    }
+    internal PointFeature Start => m_Par1;
 
-    internal PointFeature End
-    {
-        get { return m_Par2; }
-        set { m_Par2 = value; }
-    }
+    internal PointFeature End => m_Par2;
 
     /// <summary>
     /// Returns the "observed" angle as a bearing. 
     /// </summary>
-    internal override double ObservationInRadians
-    {
-        get { return this.Bearing.Radians; }
-    }
+    internal override double ObservationInRadians => this.Bearing.Radians;
 
     /// <summary>
     /// The bearing of this direction.
@@ -155,7 +128,7 @@ class ParallelDirection : Direction, IFeatureRef
     /// direction refers to.
     /// </summary>
     /// <param name="op">The operation that should no longer be referred to.</param>
-    internal override void CutReferences(Operation op)
+    private protected override void CutReferences(Operation op)
     {
         if (m_From!=null)
             m_From.CutOp(op);

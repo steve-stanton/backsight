@@ -178,8 +178,8 @@ partial class IntersectTwoDistancesForm : IntersectForm
     private void finishPage_ShowFromNext(object sender, EventArgs e)
     {
         // Enable finish button only if we have an intersection
-        IPosition x = CalculateIntersect();
-        wizard.NextEnabled = (x!=null);
+        IPosition? x = CalculateIntersect();
+        wizard.NextEnabled = x is not null;
     }
 
     /// <summary>
@@ -187,16 +187,16 @@ partial class IntersectTwoDistancesForm : IntersectForm
     /// entered information.
     /// </summary>
     /// <returns>The position of the intersect (null if there isn't one)</returns>
-    internal override IPosition CalculateIntersect()
+    internal override IPosition? CalculateIntersect()
     {
         Observation dist1 = getDistance1.ObservedDistance;
         PointFeature from1 = getDistance1.From;
-        if (from1==null || dist1==null)
+        if (from1 is null || dist1 is null)
             return null;
 
         Observation dist2 = getDistance2.ObservedDistance;
         PointFeature from2 = getDistance2.From;
-        if (from2==null || dist2==null)
+        if (from2 is null || dist2 is null)
             return null;
 
         bool isdefault = intersectInfo.IsDefault;

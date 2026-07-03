@@ -596,18 +596,17 @@ class PathParser
 
             // Try to match the abbreviation to one of the unit
             // types known to the map.
-            DistanceUnit match = MatchUnits(abbrev);
+            DistanceUnit? match = MatchUnits(abbrev);
 
             // Issue message if there was no match.
-            if (match == null)
+            if (match is null)
             {
                 string msg = String.Format("No units with abbreviation '{0}'", abbrev);
                 throw new ApplicationException(msg);
             }
 
-            // If the units should be made the new default, do it so
-            // long as the units were obtained.
-            if (makedef && match != null)
+            // Make the units the new default when required
+            if (makedef)
                 m_Units = match;
 
             // Return the units (if any)
@@ -630,10 +629,9 @@ class PathParser
     /// </summary>
     /// <param name="abbrev">The units abbreviation.</param>
     /// <returns>The corresponding units (null if the abbreviation was not found).</returns>
-    DistanceUnit MatchUnits(string abbrev)
+    DistanceUnit? MatchUnits(string abbrev)
     {
-        EditingController ec = EditingController.Current;
-        return ec.GetUnit(abbrev);
+        return DistanceUnit.GetUnit(abbrev);
     }
 
     /// <summary>

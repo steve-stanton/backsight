@@ -154,12 +154,12 @@ class Session
     /// <summary>
     /// The last editing operation in this session (null if no edits have been performed)
     /// </summary>
-    internal Operation LastOperation
+    internal Operation? LastOperation
     {
         get
         {
             int numOp = m_Operations.Count;
-            return (numOp==0 ? null : m_Operations[numOp-1]);
+            return numOp==0 ? null : m_Operations[numOp-1];
         }
     }
 

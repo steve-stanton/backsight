@@ -177,7 +177,7 @@ public class SpatialIndex : IEditSpatialIndex
     /// <returns>
     /// The closest feature of the requested type (null if nothing found)
     /// </returns>
-    public virtual ISpatialObject QueryClosest(IPosition p, ILength radius, SpatialType types)
+    public ISpatialObject? QueryClosest(IPosition p, ILength radius, SpatialType types)
     {
         return new FindClosestQuery(this, p, radius, types).Result;           
     }
@@ -205,14 +205,6 @@ public class SpatialIndex : IEditSpatialIndex
 
         if ((types & SpatialType.Polygon)!=0)
             m_Polygons.Query(w, itemHandler);
-    }
-
-    /// <summary>
-    /// Is the index empty (containing nothing)?
-    /// </summary>
-    public bool IsEmpty
-    {
-        get { return (m_Points.IsEmpty && m_Lines.IsEmpty && m_Text.IsEmpty && m_Polygons.IsEmpty); }
     }
 
     /// <summary>

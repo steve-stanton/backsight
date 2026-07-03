@@ -190,7 +190,7 @@ class TextFeature : Feature
             IPointGeometry posn = GetPolPosition();
 
             // Try to find enclosing polygon
-            ISpatialIndex index = CadastralMapModel.Current.Index;
+            var index = CadastralMapModel.Current.Index;
             Polygon enc = new FindPointContainerQuery(index, posn).Result;
             if (enc!=null)
                 enc.ClaimLabel(this);
@@ -260,7 +260,7 @@ class TextFeature : Feature
         }
 
         // Figure out which polygon now encloses this label (if any)
-        ISpatialIndex index = CadastralMapModel.Current.Index;
+        var index = CadastralMapModel.Current.Index;
         Polygon enc = new FindPointContainerQuery(index, p).Result;
         if (enc!=null)
             enc.ClaimLabel(this);

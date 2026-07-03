@@ -41,6 +41,6 @@ public interface IPosition
     /// <param name="tol">Tolerance to use for comparison</param>
     /// <returns>True if this position is at the same position (within
     /// the specified tolerance)</returns>
-    bool IsAt(IPosition p, double tol);
+    bool IsAt(IPosition? p, double tol);
 }
 

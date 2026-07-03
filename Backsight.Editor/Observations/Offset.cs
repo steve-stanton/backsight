@@ -29,23 +29,17 @@ abstract class Offset : Observation
     /// </summary>
     /// <param name="dir">The direction that the offset was observed with respect to.</param>
     /// <returns>The signed offset distance, in meters on the ground</returns>
-    abstract internal double GetMetric(Direction dir);
+    internal abstract double GetMetric(Direction dir);
 
     /// <summary>
     /// The offset point (if this is an instance of <see cref="OffsetPoint"/>), or
     /// null for any other type of offset.
     /// </summary>
-    abstract internal PointFeature Point { get; }
+    internal abstract PointFeature Point { get; }
 
     /// <summary>
     /// Cuts references to an operation that are made by any features this offset refers to.
     /// </summary>
     /// <param name="op">The operation that should no longer be referred to.</param>
-    abstract internal void CutRef(Operation op);
-
-    /// <summary>
-    /// Writes the content of this instance to a persistent storage area.
-    /// </summary>
-    /// <param name="editSerializer">The mechanism for storing content.</param>
-    //abstract public void WriteData(EditSerializer editSerializer);
+    internal abstract void CutRef(Operation op);
 }

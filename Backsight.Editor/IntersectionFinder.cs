@@ -59,7 +59,7 @@ class IntersectionFinder
     internal IntersectionFinder(LineFeature line, bool wantEndEnd)
     {
         m_Line = line;
-        ISpatialIndex index = CadastralMapModel.Current.Index;
+        var index = CadastralMapModel.Current.Index;
         m_Intersects = new FindIntersectionsQuery(index, line, wantEndEnd).Result;
     }
 
@@ -72,7 +72,7 @@ class IntersectionFinder
     internal IntersectionFinder(LineGeometry geom, bool wantEndEnd)
     {
         m_Line = geom;
-        ISpatialIndex index = CadastralMapModel.Current.Index;
+        var index = CadastralMapModel.Current.Index;
         m_Intersects = new FindIntersectionsQuery(index, geom, wantEndEnd).Result;
     }
 

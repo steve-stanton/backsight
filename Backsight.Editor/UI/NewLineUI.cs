@@ -162,7 +162,7 @@ class NewLineUI : SimpleCommandUI
         CadastralMapModel map = CadastralMapModel.Current;
         EditingController ec = EditingController.Current;
         ILength size = new Length(ec.Project.Settings.PointHeight * 0.5);
-        m_CurrentPoint = (map.QueryClosest(p, size, SpatialType.Point) as PointFeature);
+        m_CurrentPoint = map.QueryClosest(p, size, SpatialType.Point) as PointFeature;
 
         if (m_Start==null)
         {

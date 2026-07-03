@@ -19,22 +19,6 @@ namespace Backsight.Editor.Observations;
 /// <summary>A deflection angle.</summary>
 class DeflectionDirection : AngleDirection
 {
-    #region Class data
-
-    // no data
-
-    #endregion
-
-    #region Constructors
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DeflectionDirection"/> class.
-    /// </summary>
-    internal DeflectionDirection()
-        : base()
-    {
-    }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="DeflectionDirection"/> class
     /// using the data read from persistent storage.
@@ -59,8 +43,6 @@ class DeflectionDirection : AngleDirection
         : base(backsight, occupied, observation)
     {
     }
-
-    #endregion
 
     /// <summary>
     /// The angle as a bearing

@@ -40,6 +40,11 @@ partial class DistForm : Form
     /// Does the user want a line?
     /// </summary>
     bool m_WantLine;
+    
+    /// <summary>
+    /// The default units for entered distances.
+    /// </summary>
+    private readonly DistanceUnit m_DefaultEntryUnit;
 
     #endregion
 
@@ -55,6 +60,7 @@ partial class DistForm : Form
         m_Dist = null;
         m_ShowWantLine = true;
         m_WantLine = false;
+        m_DefaultEntryUnit = EditingController.Current.EntryUnit;
     }
 
     /// <summary>
@@ -98,7 +104,7 @@ partial class DistForm : Form
         }
 
         Distance dist;
-        if (!Distance.TryParse(dstr, out dist))
+        if (!Distance.TryParse(dstr, m_DefaultEntryUnit, out dist))
         {
             MessageBox.Show("Don't understand entered distance.");
             return;

@@ -47,6 +47,11 @@ partial class CulDeSacForm : Form
     /// True if arc defined
     /// </summary>
     bool m_IsDefined;
+    
+    /// <summary>
+    /// The default units for entered distances.
+    /// </summary>
+    private readonly DistanceUnit m_DefaultEntryUnit;
 
     #endregion
 
@@ -63,6 +68,7 @@ partial class CulDeSacForm : Form
         m_Radius = null;
         m_IsClockwise = true;
         m_IsDefined = false;
+        m_DefaultEntryUnit = EditingController.Current.EntryUnit;
     }
 
     /// <summary>
@@ -210,7 +216,7 @@ partial class CulDeSacForm : Form
             
         // Parse the distance
         Distance radius;
-        if (!Distance.TryParse(str, out radius))
+        if (!Distance.TryParse(str, m_DefaultEntryUnit, out radius))
         {
             MessageBox.Show("Invalid radius.");
             return false;

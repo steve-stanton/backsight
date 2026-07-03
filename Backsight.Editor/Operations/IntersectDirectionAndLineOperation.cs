@@ -146,69 +146,45 @@ class IntersectDirectionAndLineOperation : IntersectOperation, IRecallable, IRev
     /// <summary>
     /// The direction observation.
     /// </summary>
-    internal Direction Direction
-    {
-        get { return m_Direction; }
-    }
+    internal Direction Direction => m_Direction;
 
     /// <summary>
     /// Line (if any) that was added along the direction line. Should always be null
     /// if the direction has an offset.
     /// </summary>
-    internal LineFeature CreatedDirectionLine // was GetpDirArc
-    {
-        get { return m_DirLine; }
-    }
+    internal LineFeature CreatedDirectionLine => m_DirLine;
 
     /// <summary>
     /// The line the direction needs to intersect.
     /// </summary>
-    internal LineFeature Line // was GetpArc
-    {
-        get { return m_Line; }
-    }
+    internal LineFeature Line => m_Line;
 
     /// <summary>
     /// True if the line needs to be split at the intersection.
     /// </summary>
-    internal bool IsSplit
-    {
-        get { return m_IsSplit; }
-    }
+    internal bool IsSplit => m_IsSplit;
 
     /// <summary>
     /// The point feature at the intersection created by this edit.
     /// </summary>
-    internal override PointFeature IntersectionPoint
-    {
-        get { return m_Intersection; }
-    }
+    internal override PointFeature IntersectionPoint => m_Intersection;
 
     /// <summary>
     /// Was the intersection created at it's default position? Always true.
     /// </summary>
-    internal override bool IsDefault
-    {
-        get { return true; }
-    }
+    internal override bool IsDefault => true;
 
     /// <summary>
     /// The point closest to the intersection (usually defaulted to one of the end
     /// points for the lines, or the origin of the direction).
     /// For use when relocating the intersection as part of rollforward processing).
     /// </summary>
-    internal override PointFeature ClosePoint
-    {
-        get { return m_CloseTo; }
-    }
+    internal override PointFeature ClosePoint => m_CloseTo;
 
     /// <summary>
     /// A user-perceived title for this operation.
     /// </summary>
-    public override string Name
-    {
-        get { return "Direction and line intersection"; }
-    }
+    public override string Name => "Direction and line intersection";
 
     /// <summary>
     /// The features created by this editing operation.
@@ -239,10 +215,7 @@ class IntersectDirectionAndLineOperation : IntersectOperation, IRecallable, IRev
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId
-    {
-        get { return EditingActionId.DirLineIntersect; }
-    }
+    internal override EditingActionId EditId => EditingActionId.DirLineIntersect;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features
@@ -332,11 +305,12 @@ class IntersectDirectionAndLineOperation : IntersectOperation, IRecallable, IRev
     /// Calculates the position of the intersection
     /// </summary>
     /// <returns>The calculated position (null if the direction doesn't intersect the line)</returns>
-    IPosition Calculate()
+    IPosition? Calculate()
     {
-        IPosition xsect;
-        PointFeature closest;
-        if (m_Direction.Intersect(m_Line, m_CloseTo, out xsect, out closest))
+        // TODO: This is an extension method that may be specific to the old map editor
+        var maxLength = m_Direction.GetMaxLength();
+        
+        if (m_Direction.Intersect(maxLength, m_Line, m_CloseTo, out var xsect, out _))
             return xsect;
         else
             return null;

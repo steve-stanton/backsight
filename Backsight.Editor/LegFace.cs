@@ -247,8 +247,7 @@ class LegFace : IPersistent
 
                 // If this is a cul-de-sac that had no observed spans, get the
                 // circular leg to define the distance (in meters on the ground).
-                DistanceUnit mUnit = EditingController.GetUnits(DistanceUnitType.Meters);
-                distances.Add(new Distance(this.Leg.Length.Meters, mUnit));
+                distances.Add(new Distance(this.Leg.Length.Meters, DistanceUnit.Meters));
             }
             else
                 distances.Add(d);

@@ -28,7 +28,7 @@ abstract class Observation : IPersistent
     /// </summary>
     /// <param name="feature">The feature to check for.</param>
     /// <returns>True if this direction refers to the feature</returns>
-    abstract internal bool HasReference(Feature feature);
+    internal abstract bool HasReference(Feature feature);
 
     /// <summary>
     /// Performs actions when the operation that uses this observation is marked
@@ -37,7 +37,7 @@ abstract class Observation : IPersistent
     /// calls made to AddOp).
     /// </summary>
     /// <param name="op">The operation that makes use of this observation.</param>
-    abstract internal void OnRollback(Operation op);
+    internal abstract void OnRollback(Operation op);
 
     /// <summary>
     /// Attempts to make a distance out of this observation and a from-point.
@@ -56,24 +56,22 @@ abstract class Observation : IPersistent
     /// other objects which won't be able to return a distance). Re-arranging the class
     /// hierarchy would be better.
     /// </devnote>
-    internal ILength GetDistance(PointFeature from)
+    internal ILength GetDistance(PointFeature? from)
     {
         // It's easy if the observation is a distance object.
-        Distance dist = (this as Distance);
-        if (dist!=null)
+        if (this is Distance dist)
             return dist;
 
         // Can't do anything if the from point is undefined.
-        if (from==null)
+        if (from is null)
             return Length.Zero;
 
         // See if we have an offset point. If so, the distance is the
         // distance from the from-point to the offset-point.
-        OffsetPoint offset = (OffsetPoint)this;
-        if (offset==null)
+        if (this is not OffsetPoint offset)
             return Length.Zero;
 
-        return new Length(Geom.Distance(offset.Point, from));
+        return new Length(BasicGeom.Distance(offset.Point, from));
     }
 
     /// <summary>
@@ -99,12 +97,12 @@ abstract class Observation : IPersistent
     /// <returns>The referenced features (never null, but may be an empty array).</returns>
     internal virtual Feature[] GetReferences()
     {
-        return new Feature[0];
+        return [];
     }
 
     /// <summary>
     /// Writes the content of this instance to a persistent storage area.
     /// </summary>
     /// <param name="editSerializer">The mechanism for storing content.</param>
-    abstract public void WriteData(EditSerializer editSerializer);
+    public abstract void WriteData(EditSerializer editSerializer);
 }

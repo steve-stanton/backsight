@@ -37,7 +37,7 @@ partial class IntersectInfoControl : UserControl
     /// <summary>
     /// The intersection (if any)
     /// </summary>
-    IPosition m_Intersect; // was also transient m_pPoint object
+    IPosition? m_Intersect; // was also transient m_pPoint object
 
     /// <summary>
     /// Does the intersection correspond to the default position? Has no meaning
@@ -102,36 +102,24 @@ partial class IntersectInfoControl : UserControl
     /// <summary>
     /// The displayed location of the intersection (null if nothing is showing)
     /// </summary>
-    internal IPosition Intersection
-    {
-        get { return m_Intersect; }
-    }
+    internal IPosition? Intersection => m_Intersect;
 
     /// <summary>
     /// ID and entity type for the intersection point (null when doing an update)
     /// </summary>
-    internal IdHandle PointId
-    {
-        get { return m_PointId; }
-    }
+    internal IdHandle PointId => m_PointId;
 
     /// <summary>
     /// Does the intersection correspond to the default position? Has no meaning
     /// if the <see cref="CanHaveTwoIntersections"/> property is false.
     /// </summary>
-    internal bool IsDefault
-    {
-        get { return m_IsDefault; }
-    }
+    internal bool IsDefault => m_IsDefault;
 
     /// <summary>
     /// The point nearest to the intersection. Has no meaning
     /// if the <see cref="CanHaveClosestPoint"/> property is false.
     /// </summary>
-    internal PointFeature ClosestPoint
-    {
-        get { return m_CloseTo; }
-    }
+    internal PointFeature ClosestPoint => m_CloseTo;
 
     internal void InitializeControl(IntersectForm parent)
     {
@@ -247,7 +235,7 @@ partial class IntersectInfoControl : UserControl
 
     void ShowIntersection()
     {
-        if (m_Intersect == null)
+        if (m_Intersect is null)
         {
             northingLabel.Text = eastingLabel.Text = "<undefined>";
         }
@@ -266,8 +254,8 @@ partial class IntersectInfoControl : UserControl
         {
             IntersectForm parent = GetIntersectForm();
             m_IsDefault = !m_IsDefault;
-            IPosition other = parent.CalculateIntersect();
-            if (other==null || other.IsAt(m_Intersect, Constants.TINY))
+            IPosition? other = parent.CalculateIntersect();
+            if (other is null || other.IsAt(m_Intersect, MathConstants.TINY))
                 throw new Exception("There isn't another intersection");
 
             m_Intersect = other;
@@ -299,7 +287,7 @@ partial class IntersectInfoControl : UserControl
         }
 
         // Draw the intersection point in magenta
-        if (m_Intersect!=null)
+        if (m_Intersect is not null)
         {
             var style = EditingController.Current.Style(Color.Magenta);
             style.Render(display, m_Intersect);

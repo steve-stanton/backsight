@@ -115,7 +115,7 @@ partial class InverseForm : Form
 
     void SetUnit (DistanceUnitType type)
     {
-        m_Unit = EditingController.GetUnits(type);
+        m_Unit = DistanceUnit.GetUnit(type);
     }
 
     /// <summary>

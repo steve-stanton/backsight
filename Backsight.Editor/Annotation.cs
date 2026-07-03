@@ -92,44 +92,29 @@ class Annotation : IString
     /// <summary>
     /// The annotation text.
     /// </summary>
-    public string Text
-    {
-        get { return m_Text; }
-    }
+    public string Text => m_Text;
 
     /// <summary>
     /// A reference position for the annotation (center-baseline aligned).
     /// </summary>
-    public IPointGeometry Position
-    {
-        get { return m_Position; }
-    }
+    public IPointGeometry Position => m_Position;
 
     /// <summary>
     /// The height of the text (in meters on the ground).
     /// </summary>
-    internal double Height
-    {
-        get { return m_Height; }
-    }
+    internal double Height => m_Height;
 
     /// <summary>
     /// The rotation (clockwise from horizontal).
     /// </summary>
-    public IAngle Rotation
-    {
-        get { return m_Rotation; }
-    }
+    public IAngle Rotation => m_Rotation;
 
     /// <summary>
     /// A closed outline that surrounds the string (could be null if the implementing
     /// class doesn't care).
     /// </summary>
     /// <value>Null (always)</value>
-    public IPosition[] Outline
-    {
-        get { return null; }
-    }
+    public IPosition[] Outline => null;
 
     /// <summary>
     /// Font modifiers to use on a call to <see cref="CreateFont"/>.
@@ -157,8 +142,5 @@ class Annotation : IString
     /// Any special layout information for the string (used for specifying special
     /// text alignment options).
     /// </summary>
-    public StringFormat Format
-    {
-        get { return s_AnnotationFormat; }
-    }
+    public StringFormat Format => s_AnnotationFormat;
 }

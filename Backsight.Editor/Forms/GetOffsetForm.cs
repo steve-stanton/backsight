@@ -179,7 +179,7 @@ public partial class GetOffsetForm : Form
                 return;
 
             // Get the entered text and parse it.
-            Distance dist = new Distance(str);
+            Distance dist = new Distance(str, EditingController.Current.EntryUnit);
             if (!dist.IsDefined)
                 return;
 

@@ -82,6 +82,11 @@ partial class NewCircleForm : Form
     /// </summary>
     Distance m_RadiusDistance; // was m_Radius
 
+    /// <summary>
+    /// The default units for entered distances.
+    /// </summary>
+    private readonly DistanceUnit m_DefaultEntryUnit;
+
     #endregion
 
     #region Constructors
@@ -115,6 +120,7 @@ partial class NewCircleForm : Form
         m_RadiusPoint = null;
         m_RadiusDistance = null;
         m_Focus = null;
+        m_DefaultEntryUnit = EditingController.Current.EntryUnit;
     }
 
     #endregion
@@ -339,8 +345,7 @@ partial class NewCircleForm : Form
         }
 
         // Parse the radius
-        Distance d;
-        if (Distance.TryParse(str, out d))
+        if (Distance.TryParse(str, m_DefaultEntryUnit, out Distance d))
         {
             m_RadiusDistance = d;
             OnChange();
@@ -468,7 +473,7 @@ partial class NewCircleForm : Form
         }
 
         // Ask the map to locate the address of the specified point.
-        ISpatialIndex index = CadastralMapModel.Current.Index;
+        var index = CadastralMapModel.Current.Index;
         point = new FindPointByIdQuery(index, str).Result;
         if (point==null)
         {

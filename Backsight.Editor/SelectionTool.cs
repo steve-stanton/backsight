@@ -184,7 +184,7 @@ class SelectionTool
             SpatialType types = (m_Limit.Count==2 ? SpatialType.Line : m_Controller.VisibleFeatureTypes);
 
             // Make the selection.
-            ISpatialIndex index = CadastralMapModel.Current.Index;
+            var index = CadastralMapModel.Current.Index;
             List<ISpatialObject> res = new FindOverlapsQuery(index, m_Limit.ToArray(), types).Result;
             m_LimSel.AddRange(res);
         }

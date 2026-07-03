@@ -63,14 +63,15 @@ class CleanupQuery
         m_Deletions = new List<ISpatialObject>(100);
         m_Moves = new List<Feature>(100);
 
+        EditingIndex index = model.EditingIndex;
+
         // Cleanup features
-        model.Index.QueryWindow(null, SpatialType.Feature, CleanupFeature);
+        index.QueryWindow(null, SpatialType.Feature, CleanupFeature);
 
         // Cleanup polygons
-        model.Index.QueryWindow(null, SpatialType.Polygon, CleanupPolygon);
+        index.QueryWindow(null, SpatialType.Polygon, CleanupPolygon);
 
         // Remove stuff from spatial index if it's been deleted
-        EditingIndex index = model.EditingIndex;
         foreach (ISpatialObject o in m_Deletions)
         {
             m_UpdateWindow.Union(o.Extent);

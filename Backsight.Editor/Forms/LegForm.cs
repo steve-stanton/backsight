@@ -45,6 +45,11 @@ public partial class LegForm : Form
     /// </summary>
     Distance[] m_Distances;
 
+    /// <summary>
+    /// The default units for entered distances.
+    /// </summary>
+    private readonly DistanceUnit m_DefaultEntryUnit;
+
     #endregion
 
     #region Constructors
@@ -60,6 +65,7 @@ public partial class LegForm : Form
         m_Length = len;
         m_Entered = 0.0;
         m_Distances = null;
+        m_DefaultEntryUnit = EditingController.Current.EntryUnit;
     }
 
     #endregion
@@ -121,7 +127,7 @@ public partial class LegForm : Form
 
     void ShowResults (DistanceUnitType dunit)
     {
-        DistanceUnit unit = EditingController.GetUnits(dunit);
+        var unit = DistanceUnit.GetUnit(dunit);
 
         lengthTextBox.Text = unit.Format(m_Length);
         totalEnteredTextBox.Text = unit.Format(m_Entered);
@@ -136,7 +142,7 @@ public partial class LegForm : Form
         // Confirm that the entered length is exact. If not,
         // ask the user to confirm.
         Distance lengthLeft;
-        if (!Distance.TryParse(lengthLeftTextBox.Text, out lengthLeft))
+        if (!Distance.TryParse(lengthLeftTextBox.Text, m_DefaultEntryUnit, out lengthLeft))
         {
             MessageBox.Show("Cannot decode length left text box");
             return;

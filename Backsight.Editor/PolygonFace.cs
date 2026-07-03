@@ -142,7 +142,7 @@ class PolygonFace
 
         // Get any points along the divider (excluding end points)
         LineGeometry line = m_Divider.LineGeometry;
-        ISpatialIndex index = CadastralMapModel.Current.Index;
+        var index = CadastralMapModel.Current.Index;
         ILength tol = new Length(Constants.XYTOL);
         List<PointFeature> xp = new FindPointsOnLineQuery(index, line, false, tol).Result;
         if (xp.Count==0)
@@ -210,7 +210,7 @@ class PolygonFace
         Debug.Assert(Object.ReferenceEquals(prev.Polygon, m_Polygon));
 
         // Try to obtain a point feature at the beginning of this face.
-        ISpatialIndex index = CadastralMapModel.Current.Index;
+        var index = CadastralMapModel.Current.Index;
         PointFeature beginPoint = new FindPointQuery(index, m_Begin).Result;
 
         // If the polygon to the left of the this face? (if so, curve-related
