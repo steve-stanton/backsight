@@ -29,5 +29,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Backsight.Database\Backsight.Database.csproj" />
+      <ProjectReference Include="..\Backsight.Model\Backsight.Model.csproj" />
     </ItemGroup>
 </Project>

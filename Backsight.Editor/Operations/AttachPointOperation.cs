@@ -115,26 +115,17 @@ class AttachPointOperation : Operation
     /// <summary>
     /// A user-perceived title for this operation.
     /// </summary>
-    public override string Name
-    {
-        get { return "Attach point to line"; }
-    }
+    public override string Name => "Attach point to line";
 
     /// <summary>
     /// The features created by this editing operation.
     /// </summary>
-    internal override Feature[] Features
-    {
-        get { return new Feature[] { m_Point }; }
-    }
+    internal override Feature[] Features => [m_Point];
 
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId
-    {
-        get { return EditingActionId.AttachPoint; }
-    }
+    internal override EditingActionId EditId => EditingActionId.AttachPoint;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features
@@ -143,10 +134,10 @@ class AttachPointOperation : Operation
     /// <returns>The referenced features (never null, but may be an empty array).</returns>
     public override Feature[] GetRequiredFeatures()
     {
-        if (m_Line == null)
-            return new Feature[0];
+        if (m_Line is null)
+            return [];
         else
-            return new Feature[] { m_Line };
+            return [m_Line];
     }
 
     /// <summary>
@@ -203,28 +194,22 @@ class AttachPointOperation : Operation
     /// <summary>
     /// The line the point should appear on 
     /// </summary>
-    internal LineFeature Line
-    {
-        get { return m_Line; }
-    }
+    internal LineFeature Line => m_Line;
 
     /// <summary>
     /// The position ratio of the attached point. A point coincident with the start
     /// of the line is a value of 0. A point at the end of the line is a value of
     /// 1 billion  (1,000,000,000).
     /// </summary>
-    internal uint PositionRatio
-    {
-        get { return m_PositionRatio; }
-    }
+    internal uint PositionRatio => m_PositionRatio;
 
     /// <summary>
     /// The point that was created (defined on a call to <see cref="Execute"/>)
     /// </summary>
     internal PointFeature NewPoint
     {
-        get { return m_Point; }
-        set { m_Point = value; }
+        get => m_Point;
+        set => m_Point = value;
     }
 
     /// <summary>

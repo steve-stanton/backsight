@@ -129,13 +129,13 @@ public class LineStringGeometry : ILineGeometry, IMultiSegmentGeometry
     /// <param name="tol">The tolerance for matching <c>asFarAs</c> with the line. Ignored
     /// if <c>asFarAs</c> is null.</param>
     /// <returns>The length of the specified line geometry</returns>
-    public static ILength GetLength(IMultiSegmentGeometry g, IPosition asFarAs, ILength tol)
+    public static ILength GetLength(IMultiSegmentGeometry g, IPosition? asFarAs, ILength tol)
     {
         IPosition[] line = g.Data;
         double tsq = (tol==null ? 0.0 : (tol.Meters * tol.Meters));
 
-        double tx = (asFarAs==null ? 0.0 : asFarAs.X);
-        double ty = (asFarAs==null ? 0.0 : asFarAs.Y);
+        double tx = asFarAs?.X ?? 0.0;
+        double ty = asFarAs?.Y ?? 0.0;
 
         double x1 = line[0].X;
         double y1 = line[0].Y;
@@ -148,7 +148,7 @@ public class LineStringGeometry : ILineGeometry, IMultiSegmentGeometry
             double x2 = line[i].X;
             double y2 = line[i].Y;
 
-            if (asFarAs!=null && IsCoincident(tx, ty, x1, y1, x2, y2, tsq))
+            if (asFarAs is not null && IsCoincident(tx, ty, x1, y1, x2, y2, tsq))
             {
                 x2 = tx;
                 y2 = ty;

@@ -30,19 +30,22 @@ class DeletionOperation : Operation, IFeatureRefArray
     /// <summary>
     /// The features that were deleted.
     /// </summary>
-    List<Feature> m_Deletions;
+    Feature[] m_Deletions;
 
     #endregion
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DeletionOperation"/> class
-    /// that refers to nothing.
+    /// Initializes a new instance of the <see cref="DeletionOperation"/> class.
     /// </summary>
-    internal DeletionOperation()
-        : base()
+    /// <param name="deletions">The features to be deleted.</param>
+    internal DeletionOperation(Feature[] deletions)
     {
+        if (deletions.Length == 0)
+            throw new ArgumentException("Nothing to delete.");
+        
+        m_Deletions = deletions;
     }
 
     /// <summary>
@@ -55,8 +58,7 @@ class DeletionOperation : Operation, IFeatureRefArray
     {
         try
         {
-            Feature[] dels = editDeserializer.ReadFeatureRefArray<Feature>(this, DataField.Delete);
-            m_Deletions = new List<Feature>(dels);
+            m_Deletions = editDeserializer.ReadFeatureRefArray<Feature>(this, DataField.Delete);
 
             // Deactivate features (means they will never make it into the spatial index, and
             // any lines will be invisible as far as intersection tests are concerned).
@@ -92,18 +94,7 @@ class DeletionOperation : Operation, IFeatureRefArray
     /// <summary>
     /// The deleted features
     /// </summary>
-    internal Feature[] Deletions
-    {
-        get
-        {
-            if (m_Deletions==null)
-                return new Feature[0];
-
-            List<Feature> result = new List<Feature>(m_Deletions.Count);
-            result.AddRange(m_Deletions);
-            return result.ToArray();
-        }
-    }
+    internal Feature[] Deletions => m_Deletions;
 
     /// <summary>
     /// The unique identifier for this edit.
@@ -126,27 +117,11 @@ class DeletionOperation : Operation, IFeatureRefArray
     }
 
     /// <summary>
-    /// Adds an additional feature to the things to be deleted.
-    /// </summary>
-    /// <param name="f">The feature to add to the deletions list</param>
-    internal void AddDeletion(Feature f)
-    {
-        if (m_Deletions==null)
-            m_Deletions = new List<Feature>(1);
-
-        m_Deletions.Add(f);
-    }
-
-    /// <summary>
     /// Executes this operation. Before calling this function, you must make at
     /// least one call to <see cref="AddDeletion"/>.
     /// </summary>
     internal void Execute()
     {
-        // Confirm that at least one call to AddDeletion has been made.
-        if (m_Deletions==null)
-            throw new Exception("Deletion.Execute - Nothing to delete.");
-
         // Stick the features that were explicitly noted into the complete list
         List<Feature> all = new List<Feature>(m_Deletions);
 
@@ -178,8 +153,8 @@ class DeletionOperation : Operation, IFeatureRefArray
         }
 
         // Refresh the list if we added in anything extra
-        if (all.Count > m_Deletions.Count)
-            m_Deletions = all;
+        if (all.Count > m_Deletions.Length)
+            m_Deletions = all.ToArray();
 
         FeatureFactory ff = new FeatureFactory(this);
         base.Execute(ff);
@@ -218,7 +193,7 @@ class DeletionOperation : Operation, IFeatureRefArray
     /// the number of feature involved in each edit.</remarks>
     public override uint FeatureCount
     {
-        get { return (uint)m_Deletions.Count; }
+        get { return (uint)m_Deletions.Length; }
     }
 
     /// <summary>
@@ -271,7 +246,7 @@ class DeletionOperation : Operation, IFeatureRefArray
 
         foreach (var item in featureRefs)
         {
-            if (item.ArrayIndex < 0 || item.ArrayIndex >= m_Deletions.Count)
+            if (item.ArrayIndex < 0 || item.ArrayIndex >= m_Deletions.Length)
                 throw new IndexOutOfRangeException();
 
             m_Deletions[item.ArrayIndex] = item.Feature;

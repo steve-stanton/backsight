@@ -225,26 +225,6 @@ class ControlRange
         return result.ToArray();
     }
 
-
-    /// <summary>
-    /// Draws this control range.
-    /// </summary>
-    /// <param name="display">The display to draw to</param>
-    /// <param name="style">The style for the drawing</param>
-    internal void Render(ISpatialGraphics display, IDrawStyle style)
-    {
-        // Return if there is nothing to draw.
-        if (m_Control==null)
-            return;
-
-        // Draw each control point.
-        foreach (ControlPoint cp in m_Control)
-        {
-            if (cp!=null)
-                cp.Render(display, style);
-        }
-    }
-
     /// <summary>
     /// Confirms that a control point can be appended to this control range. This
     /// should be called before making a call to <see cref="Append"/>

@@ -7,7 +7,16 @@ namespace Backsight.Editor.Map;
 
 public class CadastralMapProvider : IProvider
 {
-    internal double MapScale { get; set; } = 1000.0;
+    internal double MapScale
+    {
+        get;
+        set
+        {
+            Console.WriteLine("Provider.MapScale = " + value);
+            field = value;
+        }
+        
+    } = 1000.0;
     internal long FetchCount { get; private set; }
 
     internal event EventHandler<FetchWindowChangedEventArgs>? FetchWindowChanged; 
@@ -35,6 +44,12 @@ public class CadastralMapProvider : IProvider
     // Also see GeoJsonProvider, which has a static spatial index on a collection of IFeature
     public Task<IEnumerable<Mapsui.IFeature>> GetFeaturesAsync(FetchInfo fetchInfo)
     {
+        // Determine the map scale for the fetch, assuming 96 DPI (pixels per inch)
+        const double pixelsToMeters = 0.0254 / 96.0;
+        var width = fetchInfo.Section.ScreenWidth * pixelsToMeters;
+        var scale = fetchInfo.Extent.Width / width;
+        //Console.WriteLine($"Screen width={width} => Fetch scale = {scale}");
+            
         var ec = EditingController.Current;
         
         var extent = new Window(
@@ -69,67 +84,31 @@ public class CadastralMapProvider : IProvider
         // We only really need to render selected polygons, which will be done as part of the
         // custom renderer.
 
+        // The QueryWindow method could return constructs that aren't user-perceived map "features"
+        // (e.g. a Circle object is regarded as a line, but it doesn't extend from LineFeature).
+        // As far as the map display is concerned, we're only interested in the user-perceived features.
+        
         CadastralMapModel.Current.Index.QueryWindow(extent, SpatialType.Line, item =>
         {
-            var line = item as LineFeature ?? throw new ApplicationException("Unexpected feature type");
-            result.Add(new Map.Line(line));
-            
-            /*
-            var geom = line.LineGeometry;
-            if (geom is SectionGeometry section)
-                geom = section.Make();
-
-            NetTopologySuite.Geometries.Geometry? ntsGeom = null;
-
-            if (geom is SegmentGeometry seg)
-            {
-                var ps = new Coordinate(seg.Start.X, seg.Start.Y);
-                var pe = new Coordinate(seg.End.X, seg.End.Y);
-                ntsGeom = new LineString([ps, pe]);
-            }
-            else if (geom is MultiSegmentGeometry multiSeg)
-            {
-                var coords = multiSeg.Data.Select(p => new Coordinate(p.X, p.Y));
-                ntsGeom = new LineString(coords.ToArray());
-            }
-            else if (geom is ArcGeometry arc)
-            {
-                // Draw an approximation of the curve (such that the chord-to-circumference
-                // distance does not exceed 0.2mm at draw scale).
-                var tol = new Length(MapScale * 0.0002);
-                IPointGeometry[] pts = CircularArcGeometry.GetApproximation(arc, tol);
-                var coords = pts.Select(p => new Coordinate(p.X, p.Y));
-                ntsGeom = new LineString(coords.ToArray());
-                //Console.WriteLine($"Approximated arc: {pts.Length} points");
-            }
-            
-            if (ntsGeom is not null)
-                result.Add(new Mapsui.Nts.GeometryFeature(ntsGeom)
-                {
-                    Data = line,
-                    Styles = lineStyles
-                });
-
-            result.Add(new Mapsui.Nts.GeometryFeature()
-            {
-                Data = line
-            });
-            */
-            
+            if (item is LineFeature line)
+                result.Add(new Map.Line(line));
+                
             return true;
         });
         
         if (ec.ArePointsDrawn) CadastralMapModel.Current.Index.QueryWindow(extent, SpatialType.Point, item =>
         {
-            var point = item as PointFeature ?? throw new ApplicationException("Unexpected feature type");
-            result.Add(new Map.Point(point));
+            if (item is PointFeature point)
+                result.Add(new Map.Point(point));
+            
             return true;
         });
 
         if (ec.AreLabelsDrawn) CadastralMapModel.Current.Index.QueryWindow(extent, SpatialType.Text, item =>
         {
-            var text = item as TextFeature ?? throw new ApplicationException("Unexpected feature type");
-            result.Add(new Map.Text(text));
+            if (item is TextFeature text)
+                result.Add(new Map.Text(text));
+            
             return true;
         });
 

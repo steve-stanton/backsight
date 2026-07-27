@@ -417,7 +417,6 @@ class Session
         File.WriteAllText(editFileName, editString);
 
         // Remember the edit as part of the session
-        edit.FileNumber = m_Project.LastItemId;
         AddOperation(edit);
     }
 

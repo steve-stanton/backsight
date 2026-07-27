@@ -1,0 +1,127 @@
+namespace Backsight.Model;
+
+/// <summary>
+/// A node represents the geometry that may be shared by one or more
+/// instances of <see cref="PointFeature"/>.
+/// </summary>
+/// <remarks>
+/// This class currently extends <see cref="PointGeometry"/>, which implies that the
+/// position can only be 2D. If there is ever a need for 3D positions, it should be
+/// relatively easy to relate the node to the geometry by association instead (or
+/// let <c>PointGeometry</c> hold a nullable Z-value). The only reason for not doing so
+/// today is that I don't want to bloat the object model unecessarily.
+/// </remarks>
+class Node : PointGeometry, ITerminal
+{
+    /// <summary>
+    /// The points that share this node.
+    /// </summary>
+    private readonly List<PointFeature> m_Points;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Node"/> class that refers to
+    /// a specific point, with the specified location.
+    /// </summary>
+    /// <param name="p">The point that will be assigned this geometry (not null).
+    /// Modified by referring its geometry to <c>this</c> node.</param>
+    /// <param name="g">The geometry for the point (not null)</param>
+    internal Node(PointFeature p, PointGeometry g)
+        : base(g)
+    {
+        if (p==null)
+            throw new ArgumentNullException();
+
+        m_Points = new List<PointFeature>(1);
+        m_Points.Add(p);
+
+        // Ensure the point is associated with this node
+        p.SetNode(this);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Node"/> class that refers to
+    /// the supplied array of points, all associated with the specified location.
+    /// </summary>
+    /// <param name="pts">The points that will be assigned this geometry (not null).
+    /// Each point will be modified by referring its geometry to <c>this</c> node.</param>
+    /// <param name="g">The geometry for the point (not null)</param>
+    internal Node(PointFeature[] pts, PointGeometry g)
+        : base(g)
+    {
+        if (pts==null)
+            throw new ArgumentNullException();
+
+        m_Points = new List<PointFeature>(pts);
+
+        // Ensure every point is associated with this node
+        foreach (PointFeature p in pts)
+            p.SetNode(this);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Node"/> class, with sufficient space
+    /// to reference a single point feature. Make a subsequent call to <see cref="AttachPoint"/>
+    /// to associate the new node with the point.
+    /// </summary>
+    /// <param name="g">The position of the node</param>
+    internal Node(PointGeometry g)
+        : base(g)
+    {
+        m_Points = new List<PointFeature>(1);
+    }
+
+    /// <summary>
+    /// The dividers that start or end at the terminal. If a divider
+    /// starts and also ends at the terminal, it should appear in the
+    /// returned array just once.
+    /// </summary>
+    /// <returns></returns>
+    public IDivider[] IncidentDividers()
+    {
+        // In the vast majority of cases, points will NOT share geometry with
+        // anything else, so cover that case
+        if (m_Points.Count == 1)
+            return m_Points[0].IncidentDividers();
+
+        // Cover case where multiple points share this node (the structure here is a bit
+        // rough, but cleaning it up would require messing with Feature references, which
+        // is a bit sensitive)
+        var result = new List<IDivider>(4);
+
+        foreach (PointFeature p in m_Points)
+            result.AddRange(p.IncidentDividers());
+
+        return result.ToArray();
+    }
+
+    /// <summary>
+    /// Associates this node with an additional feature
+    /// </summary>
+    /// <param name="p">The point making use of this node</param>
+    /// <exception cref="ArgumentException">If the supplied point has a geometry that
+    /// doesn't refer to this node</exception>
+    internal void AttachPoint(PointFeature p)
+    {
+        if (!ReferenceEquals(p.Geometry, this))
+            throw new ArgumentException();
+
+        m_Points.Add(p);
+    }
+
+    /// <summary>
+    /// The number of points associated with this node
+    /// </summary>
+    internal uint PointCount => (uint)m_Points.Count;
+
+    /// <summary>
+    /// The first point associated with this node. When the information for a node
+    /// is serialized to XML, the position is written only for the first point -
+    /// subsequent points get their position via the first point.
+    /// </summary>
+    internal PointFeature? FirstPoint => PointCount==0 ? null : m_Points[0];
+
+    /// <summary>
+    /// The points that share this node (may be empty).
+    /// </summary>
+    internal PointFeature[] Points => m_Points.ToArray();
+}

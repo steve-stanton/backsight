@@ -5,6 +5,7 @@ using Backsight.Database;
 using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.ViewModels;
 using Backsight.Map.Editor.Views;
+using Backsight.Model;
 using Microsoft.Extensions.DependencyInjection;
 using RepoDb;
 
@@ -27,6 +28,7 @@ public partial class App : Application
         collection.AddSingleton<IEnvironmentRepository, EnvironmentRepository>();
         collection.AddSingleton<IMapEditorModel, MapEditorModel>();
         collection.AddSingleton<IMapEditorViewModel, MapEditorViewModel>();
+        collection.AddSingleton<IMapRepository, MapsDirectory>();
         
         var services = collection.BuildServiceProvider();
 

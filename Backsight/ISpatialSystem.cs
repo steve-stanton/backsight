@@ -54,7 +54,7 @@ public interface ISpatialSystem
     IPosition GetGeographic(IPosition p);
 
     /// <summary>
-    /// Obtains a scale factor (multiplier) that may be applied to ground distances,
+    /// Calculates a scale factor (multiplier) that may be applied to ground distances,
     /// to reduce them to the mapping projection.
     /// </summary>
     /// <param name="start">The starting XY position</param>

@@ -365,6 +365,8 @@ public partial class MapWindow : Avalonia.Controls.Window
 
         var pointOffset = _pointSize * 0.5f;
 
+        // Layer.GetFeatures just returns what it has cached (the supplied extent and resolution seem to be ignored)
+        // Layer.FetchAsync retrieves from the provider and saves it as the cache - it's called from Layer.FetchAsync
         foreach (var feature in layer.GetFeatures(viewport.ToExtent(), viewport.Resolution))
         {
             n++;

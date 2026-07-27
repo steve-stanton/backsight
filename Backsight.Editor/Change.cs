@@ -30,7 +30,7 @@ class Change : IPersistent
     /// </summary>
     /// <param name="editDeserializer">The mechanism for reading back content.</param>
     /// <returns>The created editing event object</returns>
-    static internal Change Deserialize(EditDeserializer editDeserializer)
+    internal static Change Deserialize(EditDeserializer editDeserializer)
     {
         Change result = editDeserializer.ReadPersistent<Change>(DataField.Edit);
 

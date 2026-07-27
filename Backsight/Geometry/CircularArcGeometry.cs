@@ -388,7 +388,7 @@ public class CircularArcGeometry : ILineGeometry, ICircularArcGeometry
 
     // If the specified position isn't actually on the arc, the length is to the
     // position when it's projected onto the arc (i.e. the perpendicular position)
-    public static ILength GetLength(ICircularArcGeometry g, IPosition asFarAs)
+    public static ILength GetLength(ICircularArcGeometry g, IPosition? asFarAs)
     {
         ICircleGeometry circle = g.Circle;
         double radius = circle.Radius;

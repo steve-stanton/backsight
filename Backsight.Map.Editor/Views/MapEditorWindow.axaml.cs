@@ -5,6 +5,10 @@ using Backsight.Map.Editor.ViewModels;
 
 namespace Backsight.Map.Editor.Views;
 
+// This should be responsible for:
+// 1. holding the MapControl
+// 2. renderer/drawing layer
+// 3. canvas-specific drawing
 public partial class MapEditorWindow : Avalonia.Controls.Window
 {
     public MapEditorWindow()
@@ -24,6 +28,21 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
             Console.WriteLine($"Startup result: {result}");
             if (String.IsNullOrEmpty(result))
                 Close();
+            else
+            {
+                Console.WriteLine($"Startup result: {result}");
+
+                if (result == "OpenMap")
+                {
+                    Console.WriteLine("the startup window should have covered the OpenMap option");
+                    Close();
+                }
+                else
+                {
+                    if (DataContext is IMapEditorViewModel vm)
+                        vm.OpenMap(result);
+                }
+            }
         };
     }
 

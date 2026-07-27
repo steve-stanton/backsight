@@ -78,26 +78,17 @@ class IntersectionFinder
 
     #endregion
 
-    internal uint Count
-    {
-        get { return (uint)m_Intersects.Count; }
-    }
+    internal uint Count => (uint)m_Intersects.Count;
 
     /// <summary>
     /// The list of things that <c>Geometry</c> intersects
     /// </summary>
-    internal IList<IntersectionResult> Intersections
-    {
-        get { return m_Intersects; }
-    }
+    internal IList<IntersectionResult> Intersections => m_Intersects;
 
     /// <summary>
     /// The thing being intersected
     /// </summary>
-    internal IIntersectable Intersector
-    {
-        get { return m_Line; }
-    }
+    internal IIntersectable Intersector => m_Line;
 
     /// <summary>
     /// Appends intersection info to this object.

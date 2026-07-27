@@ -1,0 +1,200 @@
+﻿using System.Diagnostics;
+using Backsight.Database;
+using Backsight.Environment;
+
+namespace Backsight.Model;
+
+/// <summary>
+/// Model-related functions required by the <see cref="EditDeserializer"/>.
+/// </summary>
+interface IMapLoader
+{
+    Operation FindOperation(InternalIdValue id);
+    T Find<T>(InternalIdValue id) where T : Feature;
+    NativeId AddNativeId(uint rawId);
+    ForeignId AddForeignId(string key);
+    Session LastSession { get; }
+}
+
+public class MapStore : IMapStore
+{
+    private readonly string _mapName;
+    private readonly IMapRepository _mapRepo;
+    private readonly IEnvironmentRepository _envRepo;
+
+    /// <summary>
+    /// Editing and display preferences for the map.
+    /// </summary>
+    private readonly MapSettings _settings;
+    
+    // TODO: pull class data into this class?
+    private readonly CadastralMapModel _model;
+    
+    private uint _maxSequence = 0;
+
+    /// <summary>
+    /// The last internal ID value assigned to something in this map.
+    /// </summary>
+    uint _lastItemId;
+    
+    internal MapStore(
+        string mapName,
+        IMapRepository mapRepo,
+        IEnvironmentRepository envRepo,
+        MapSettings settings)
+    {
+        _mapName = mapName;
+        _mapRepo = mapRepo;
+        _envRepo = envRepo;
+        _settings = settings;
+        _model = new CadastralMapModel(_envRepo);
+    }
+
+    internal void Load(EditDeserializer ed)
+    {
+        Session? lastSession = null;
+        Change edit = Change.Deserialize(ed);
+
+        if (edit is MapCreatedEvent mapInfo)
+        {
+            // If the project settings don't have default entity types, initialize them with
+            // the layer defaults. This covers a case where the settings file has been lost, and
+            // automatically re-created by ProjectSettings.CreateInstance.
+
+            var layer = _envRepo.FindRequired<ILayer>(mapInfo.LayerId);
+            _settings.GetDefaults(layer);
+        }
+        else if (edit is NewSessionEvent newSession)
+        {
+            lastSession = new Session(this, newSession);
+            _model.AddSession(lastSession);
+        }
+        else if (edit is EndSessionEvent)
+        {
+            Debug.Assert(lastSession is not null);
+            lastSession.EndTime = edit.When;
+        }
+        else if (edit is IdAllocation alloc)
+        {
+            IdGroup g = _model.IdManager.FindGroupById(alloc.GroupId);
+            g.AddIdPacket(alloc);
+
+            // Remember that allocations have been made in the session (bit of a hack
+            // to ensure the session isn't later removed if no edits are actually
+            // performed).
+            // TODO: Consider ID allocations as part of the env repository
+            Debug.Assert(lastSession is not null);
+            lastSession.AddAllocation(alloc, false);
+        }
+        else if (edit is Operation op)
+        {
+            Debug.Assert(lastSession is not null);
+            lastSession.AddOperation(op);
+        }
+        else
+        {
+            throw new NotImplementedException("Unexpected edit type: " + edit.GetType().Name);
+        }
+    }
+
+    /// <summary>
+    /// Allocates a single internal ID for this map. This is a lightweight request that
+    /// just increments a counter. It does not persist anything to disk.
+    /// </summary>
+    /// <returns>The next available ID.</returns>
+    internal uint AllocateId()
+    {
+        _lastItemId++;
+        return _lastItemId;
+    }            
+    
+    /// <inheritdoc/>
+    public CadastralMapModel Model => _model;
+    
+    public string Name => _mapName;
+    
+    /// <summary>
+    /// The last internal ID value assigned to something in this map.
+    /// </summary>
+    /// <remarks>
+    /// On a call to <see cref="SaveChanges"/>, this value will be assigned to <see cref="Settings.SavedItemCount"/>.
+    /// </remarks>
+    public uint ItemCount
+    {
+        get => _lastItemId;
+        set => _lastItemId = value;
+    }
+
+    /// <summary>
+    /// Undoes the last edit in the current working session.
+    /// </summary>
+    /// <returns>True if an edit was rolled back, false if there are no edits in the current session (or
+    /// the last edit has already been saved).</returns>
+    /// <remarks>
+    /// You <b>should</b> be able to undo even if you have saved the edit via a call to <see cref="SaveChanges"/> - in
+    /// that scenario, the value for <see cref="ItemCount"/> could just be reduced. The problem is that the map
+    /// repository may also include items that are not regarded as "edits" (e.g. instances of <see cref="IdAllocation"/>).
+    /// So if we undo a saved edit prior to that, anything recorded after that will also need to be removed.
+    /// <para/>
+    /// Ideally the map repository should only use the <see cref="ItemCount"/> for edits (i.e. anything that
+    /// extends from <see cref="Operation"/>). But to do that, we need some other way to persist non-edits.
+    /// In the meantime, the application forces a save following any ID allocation and, while that is also
+    /// problematic, it means that we can avoid any issue by only allowing rollback to the last save.
+    /// </remarks>
+    public bool UndoLastEdit()
+    {
+        var session = _model.WorkingSession;
+        if (session is null)
+            throw new InvalidOperationException("Working session not set");
+
+        // Disallow an attempt to undo past the start of the working session
+        var lastOp = session.LastOperation;
+        if (lastOp is null)
+            return false;
+
+        // Disallow an attempt to undo past the last save (see remarks)
+        if (lastOp.EditSequence < _settings.SavedItemCount)
+            return false;
+        
+        // Remove the change from the repository
+        var itemCount = ItemCount + 1 - lastOp.EditSequence;
+        bool isRemoved = _mapRepo.RemoveChange(_mapName, lastOp, itemCount);
+        if (!isRemoved)
+            throw new ApplicationException($"Could not remove change {ItemCount}");
+        
+        // Undo the last operation
+        if (!session.Rollback())
+            return false;
+        
+        ItemCount = lastOp.EditSequence - 1;
+        Model.CleanEdit();
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public void SaveChanges()
+    {
+        // Changes are recorded as we go. All we need to do now is update the saved item count to match
+        // the current item count.
+        _settings.SavedItemCount = _lastItemId;
+        _mapRepo.SaveMapSettings(_mapName, _settings);
+        
+        // TODO: Rollup change files
+    }
+
+    /// <summary>
+    /// Editing and display preferences for the map.
+    /// </summary>
+    public MapSettings Settings => _settings;
+
+    /// <inheritdoc />
+    /// TODO: Could be an IMapStore extension method
+    public void RecordChange<T>(T change, uint itemCount) where T : Change
+    {
+        _mapRepo.RecordChange(_mapName, change, itemCount);
+    }
+
+    /// <inheritdoc />
+    public bool IsSaved => _lastItemId == _settings.SavedItemCount ||
+                           _lastItemId == (Model.WorkingSession?.ItemNumber ?? _lastItemId);
+}

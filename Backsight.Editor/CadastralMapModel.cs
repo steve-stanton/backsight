@@ -188,7 +188,7 @@ class CadastralMapModel : ISpatialModel
 
     public ISpatialObject? QueryClosest(IPosition p, ILength radius, SpatialType types)
     {
-        return m_Index.QueryClosest(p, radius, types);
+        return m_Index.QueryClosest(p, radius, types) as ISpatialObject;
     }
 
     /// <summary>

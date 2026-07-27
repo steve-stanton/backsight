@@ -8,7 +8,7 @@
         x:Class="Backsight.Map.Editor.Views.MapEditorWindow"
         x:DataType="vm:MapEditorViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Cadastral Map Editor">
+        Title="{Binding WindowTitle}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,

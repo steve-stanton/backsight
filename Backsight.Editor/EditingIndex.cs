@@ -14,7 +14,7 @@
 // </remarks>
 
 using System.Diagnostics;
-using Backsight.Index;
+using Backsight.Editor.Index;
 
 namespace Backsight.Editor;
 
@@ -102,12 +102,12 @@ class EditingIndex : SpatialIndex
     /// <returns>The circle closest to the search position (null if nothing found)</returns>
     internal Circle QueryClosestCircle(IPosition p, ILength tol)
     {
-        ISpatialObject so = m_ExtraData.QueryClosest(p, tol, SpatialType.Line);
-        if (so==null)
+        var so = m_ExtraData.QueryClosest(p, tol, SpatialType.Line) as ISpatialObject;
+        if (so is null)
             return null;
 
         Debug.Assert(so is Circle);
-        return (so as Circle);
+        return so as Circle;
     }
 
     /// <summary>
@@ -132,6 +132,16 @@ class EditingIndex : SpatialIndex
         m_ExtraData.QueryWindow(extent, SpatialType.Line, itemHandler);
     }
 
+    /// <summary>
+    /// Processes line intersection points that overlap the specified window.
+    /// </summary>
+    /// <param name="extent">The query extent</param>
+    /// <param name="itemHandler">Delegate for processing each query hit</param>
+    internal void ProcessIntersections(IWindow extent, ProcessItem itemHandler)
+    {
+        m_ExtraData.QueryWindow(extent, SpatialType.Point, itemHandler);
+    }
+    
     /// <summary>
     /// Attempts to find a location that can act as a terminal for a polygon boundary.
     /// This either refers to a user-perceived point feature, or an intersection
@@ -182,14 +192,5 @@ class EditingIndex : SpatialIndex
     internal uint GetIntersectCount()
     {
         return m_ExtraData.GetPointCount();
-    }
-
-    /// <summary>
-    /// Draws intersection points
-    /// </summary>
-    /// <param name="mapDisplay">The display to draw to</param>
-    internal void DrawIntersections(IMapDisplay mapDisplay)
-    {
-        new DrawQuery(m_ExtraData, mapDisplay, SpatialType.Point);
     }
 }

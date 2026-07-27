@@ -26,12 +26,6 @@ public interface ISpatialObject
     /// Value denoting the spatial object type.
     /// </summary>
     SpatialType SpatialType { get; }
-    
-    /// <summary>
-    /// Draws this object on the specified display.
-    /// </summary>
-    /// <param name="mapDisplay">The display where this item should be rendered.</param>
-    void Draw(IMapDisplay mapDisplay);
 
     /// <summary>
     /// The spatial extent of this object.
@@ -44,4 +38,11 @@ public interface ISpatialObject
     /// <param name="point">The position of interest</param>
     /// <returns>The shortest distance between the specified position and this object</returns>
     ILength Distance(IPosition point);
+
+    /// <summary>
+    /// Draws this object on the specified display.
+    /// </summary>
+    /// <param name="mapDisplay">The display where this item should be rendered.</param>
+    /// TODO: This shouldn't be here
+    void Draw(IMapDisplay mapDisplay);
 }

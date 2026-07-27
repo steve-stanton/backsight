@@ -1,0 +1,150 @@
+namespace Backsight.Model;
+
+/// <written by="Steve Stanton" on="24-OCT-2007" />
+/// <summary>
+/// An intersection of two or more lines.
+/// </summary>
+class Intersection : PointGeometry, ITerminal, IPoint
+{
+    /// <summary>
+    /// The lines passing through this intersection. In most cases, this
+    /// will probably involve just two lines.
+    /// </summary>
+    readonly List<LineFeature> m_Lines;
+
+    /// <summary>
+    /// Flag bits relating to the intersection
+    /// </summary>
+    IntersectionFlag m_Flag;
+
+    /// <summary>
+    /// Creates a new <c>Intersection</c> at the specified position.
+    /// </summary>
+    /// <param name="p">The position of the intersection</param>
+    internal Intersection(PointGeometry p)
+        : base(p)
+    {
+        m_Lines = new List<LineFeature>(2);
+        m_Flag = 0;
+    }
+
+    /// <summary>
+    /// Associates this intersection with the specified line.
+    /// </summary>
+    /// <param name="line">The line that passes through this intersection (not null)</param>
+    /// <exception cref="ArgumentNullException">If the specified line is null</exception>
+    internal void Add(LineFeature line)
+    {
+        if (line == null)
+            throw new ArgumentNullException();
+
+        if (!m_Lines.Contains(line))
+            m_Lines.Add(line);
+    }
+
+    /// <summary>
+    /// Removes the specified line from this intersection.
+    /// </summary>
+    /// <param name="line">The line to remove</param>
+    /// <returns>True if the line was removed. False if it was not associated
+    /// with this intersection</returns>
+    internal bool Remove(LineFeature line)
+    {
+        return m_Lines.Remove(line);
+    }
+
+    /// <summary>
+    /// The dividers that start or end at this intersection. If a divider
+    /// starts and also ends here, it should appear in the returned array just once.
+    /// </summary>
+    public IDivider[]? IncidentDividers() // ITerminal
+    {
+        List<IDivider> result = new List<IDivider>(m_Lines.Count*2);
+
+        foreach (LineFeature line in m_Lines)
+            line.AddIncidentDividers(result, this);
+
+        return result.ToArray();
+    }
+
+    /// <summary>
+    /// The spatial type of an intersection is <see cref="SpatialType.Point"/>
+    /// </summary>
+    public SpatialType SpatialType => SpatialType.Point;
+
+    /// <summary>
+    /// Is a flag bit set?
+    /// </summary>
+    /// <param name="flag">The flag(s) to check for (may be a combination of more
+    /// than one flag)</param>
+    /// <returns>True if any of the supplied flag bits are set</returns>
+    bool IsFlagSet(IntersectionFlag flag)
+    {
+        return (m_Flag & flag) != 0;
+    }
+
+    /// <summary>
+    /// Sets flag bit(s)
+    /// </summary>
+    /// <param name="flag">The flag bit(s) to set</param>
+    /// <param name="setting">True to set, false to clear</param>
+    void SetFlag(IntersectionFlag flag, bool setting)
+    {
+        if (setting)
+            m_Flag |= flag;
+        else
+            m_Flag &= (~flag);
+    }
+
+    /// <summary>
+    /// Has this intersection been spatially indexed?
+    /// </summary>
+    internal bool IsIndexed
+    {
+        get => IsFlagSet(IntersectionFlag.Indexed);
+        set => SetFlag(IntersectionFlag.Indexed, value);
+    }
+
+    /// <summary>
+    /// The geometry for this point is <c>this</c>
+    /// </summary>
+    public IPointGeometry Geometry => this;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="line"></param>
+    internal void OnLineDeactivation(LineFeature line)
+    {
+        // Remove the reference the intersection has to the line
+        Remove(line);
+
+        // If the intersection now refers only to one line, it's no longer
+        // an intersection, so remove it from the spatial index and merge
+        // the sections incident on the intersection.
+        if (m_Lines.Count<=1)
+        {
+            if (IsIndexed)
+            {
+                CadastralMapModel map = line.MapModel;
+                EditingIndex index = map.EditingIndex;
+                index.RemoveIntersection(this);
+            }
+
+            if (m_Lines.Count>0)
+            {
+                Topology t = m_Lines[0].Topology;
+                if (t != null)
+                {
+                    // Merge the two sections - if we end up with just one
+                    // section covering the whole line, replace list topology
+                    // with fresh topology for the whole line.
+                    if (t.MergeSections(this) == 1)
+                    {
+                        m_Lines[0].SetTopology(true);
+                    }
+                }
+            }
+        }
+    }
+}

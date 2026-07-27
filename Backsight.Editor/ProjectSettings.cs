@@ -43,11 +43,6 @@ public class ProjectSettings
     bool m_IsChanged;
 
     /// <summary>
-    /// Any database connection string
-    /// </summary>
-    string m_ConnectionString;
-
-    /// <summary>
     /// Information about the area that was last drawn.
     /// </summary>
     DrawInfo m_DrawInfo;
@@ -139,7 +134,6 @@ public class ProjectSettings
     /// </summary>
     public ProjectSettings()
     {
-        m_ConnectionString = String.Empty;
         m_DrawInfo = new DrawInfo(0.0, 0.0, 0.0);
         m_DisplayUnit = DistanceUnitType.AsEntered;
         m_EntryUnit = DistanceUnitType.Meters;

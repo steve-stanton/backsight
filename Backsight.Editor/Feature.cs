@@ -641,12 +641,7 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
         get { return GetType().Name; }
     }
 
-    /// <summary>
-    /// Draws this feature on a specific map display. Not intended for bulk draws, since
-    /// it creates a drawing style object on each call.
-    /// </summary>
-    /// <param name="display">The display to draw to</param>
-    /// <param name="col">The colour to use for the draw</param>
+    /*
     public void Draw(ISpatialGraphics display, Color col)
     {
         var style = EditingController.Current.DrawStyle;
@@ -660,7 +655,7 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
         style.Fill = new Fill(hs, foreColor, display.MapPanel.BackColor);
         Render(display, style);
     }
-
+*/
     /// <summary>
     /// Restores (un-deletes) this feature.
     /// </summary>

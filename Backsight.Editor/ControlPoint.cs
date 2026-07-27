@@ -156,15 +156,4 @@ class ControlPoint : Position3D, IEquatable<ControlPoint>
     {
         return range.IsEnclosing(m_ControlId);
     }
-
-    /// <summary>
-    /// Draws this control point on the specified display.
-    /// </summary>
-    /// <param name="display">The display to draw to</param>
-    /// <param name="style">The style for the drawing</param>
-    internal void Render(ISpatialGraphics display, IDrawStyle style)
-    {
-        if (IsDefined)
-            style.RenderTriangle(display, this);
-    }
 }
