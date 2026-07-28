@@ -6,7 +6,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Event data for a new map.
 /// </summary>
-class MapCreatedEvent : Change
+class NewProjectEvent : Change
 {
     /// <summary>
     /// A unique ID for the map.
@@ -34,19 +34,19 @@ class MapCreatedEvent : Change
     internal string MachineName { get; set; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MapCreatedEvent"/> class
+    /// Initializes a new instance of the <see cref="NewProjectEvent"/> class
     /// with default values for all properties.
     /// </summary>
-    internal MapCreatedEvent()
+    internal NewProjectEvent()
         : base(1)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MapCreatedEvent"/> class.
+    /// Initializes a new instance of the <see cref="NewProjectEvent"/> class.
     /// </summary>
     /// <param name="ed">The mechanism for reading back content.</param>
-    internal MapCreatedEvent(EditDeserializer ed)
+    internal NewProjectEvent(EditDeserializer ed)
         : base(ed)
     {
         MapId = new Guid(ed.ReadString(DataField.ProjectId));

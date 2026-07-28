@@ -87,7 +87,7 @@ public class MapsDirectory : IMapRepository
         Directory.CreateDirectory(mapFolder);
 
         // Record a map creation event
-        var eventData = new MapCreatedEvent
+        var eventData = new NewProjectEvent
         {
             MapId = Guid.NewGuid(),
             LayerId = settings.ActiveLayer,
@@ -151,8 +151,16 @@ public class MapsDirectory : IMapRepository
 
         GlobalUserSetting.Write("LastMap", mapName);
         
+        // Ensure the settings record the SavedItemCount property (if we've just replaced the settings.json
+        // file, it will hold a value of 0)
+        if (settings.SavedItemCount == 0)
+        {
+            settings.SavedItemCount = store.ItemCount;
+            SaveMapSettings(mapName, settings);
+        }
+        
         // Record details for a new session
-        uint sessionId = store.ItemCount++;
+        uint sessionId = ++store.ItemCount;
         var change = new NewSessionEvent(sessionId, System.Environment.UserName, System.Environment.MachineName);
         RecordChange(mapName, change, 1);
         
@@ -184,7 +192,7 @@ public class MapsDirectory : IMapRepository
             uint[] fileNumbers = GetFileNumbers(mapFolder, session.ItemNumber);
 
             // Create an event for the end of the session
-            var endEvent = new EndSessionEvent(store.ItemCount++);
+            var endEvent = new EndSessionEvent(++store.ItemCount);
             var endFile = Path.Combine(_mapsFolderPath, GetDataFileName(endEvent.EditSequence));
 
             // Combine the files
@@ -227,7 +235,8 @@ public class MapsDirectory : IMapRepository
         var fileName = Path.Combine(_mapsFolderPath, mapName, "settings.json");
         if (File.Exists(fileName))
         {
-            var result = JsonSerializer.Deserialize<MapSettings>(fileName);
+            var text = File.ReadAllText(fileName);
+            var result = JsonSerializer.Deserialize<MapSettings>(text);
             if (result is not null)
                 return result;
             
@@ -235,6 +244,8 @@ public class MapsDirectory : IMapRepository
         }
         else
         {
+            // TODO: If we have an old settings.txt file (containing settings in xml), replace with json
+            
             var result = new MapSettings();
             SaveMapSettings(mapName, result);
             return result;
@@ -364,6 +375,10 @@ public class MapsDirectory : IMapRepository
         var mapFolder = Path.Combine(_mapsFolderPath, mapName);
         var fileNumber = change.EditSequence + itemCount - 1;
         var fileName = Path.Combine(mapFolder, GetDataFileName(fileNumber));
+        
+        if (File.Exists(fileName))
+            throw new ApplicationException("File already exists: " + fileName);
+        
         var changeText = EditSerializer.GetSerializedString(DataField.Edit, change);
         File.WriteAllText(fileName, changeText);
     }

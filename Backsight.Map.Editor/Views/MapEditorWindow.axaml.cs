@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Intrinsics.X86;
 using Avalonia.Controls;
 using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.ViewModels;
@@ -43,6 +44,12 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
                         vm.OpenMap(result);
                 }
             }
+        };
+
+        Closing += (_, _) =>
+        {
+            if (DataContext is IMapEditorViewModel { CurrentMapName: not null } vm)
+                vm.CloseMap();
         };
     }
 

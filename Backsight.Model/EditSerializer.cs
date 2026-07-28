@@ -73,7 +73,7 @@ public class EditSerializer
             for (int i=0; i<array.Length; i++)
             {
                 string itemName = string.Format("[{0}]", i);
-                WritePersistent<T>(itemName, array[i]);
+                WritePersistent(itemName, array[i]);
             }
 
             m_Writer.WriteEndObject();
@@ -176,24 +176,16 @@ public class EditSerializer
     /// <typeparam name="T">The type of object being written (as it is known to the instance
     /// that contains it)</typeparam>
     /// <param name="name">The tag that identifies the item.</param>
-    /// <param name="value">The object to write (may be null)</param>
-    void WritePersistent<T>(string name, T value) where T : IPersistent
+    /// <param name="value">The object (if any) to write.</param>
+    void WritePersistent<T>(string name, T? value) where T : IPersistent
     {
-        if (value == null)
+        if (value is null)
         {
             m_Writer.WriteString(name, "null");
         }
         else
         {
-            // Output the data type of the object only if it's a derived type
-            string parentTypeName = typeof(T).Name;
-            string valueTypeName = value.GetType().Name;
-
-            if (parentTypeName == valueTypeName)
-                m_Writer.WriteString(name, null);
-            else
-                m_Writer.WriteString(name, valueTypeName);
-
+            m_Writer.WriteString(name, value.GetType().Name);
             m_Writer.WriteBeginObject();
             value.WriteData(this);
             m_Writer.WriteEndObject();

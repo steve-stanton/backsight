@@ -25,8 +25,15 @@ public interface IMapEditorModel
     /// <summary>
     /// Opens a map for editing.
     /// </summary>
-    /// <param name="mapName"></param>
+    /// <param name="mapName">The name of the map to be opened.</param>
     void OpenMap(string mapName);
+    
+    /// <summary>
+    /// Does an open map contain changes that have not been saved?
+    /// </summary>
+    /// <returns>True if a map store has been opened and it contains unsaved changes. False if a map store
+    /// is open but there is nothing to save (or there is no active map).</returns>
+    bool RequiresSave { get; }
     
     /// <summary>
     /// Closes the current map.
@@ -49,6 +56,8 @@ public sealed class DesignMapEditorModel : IMapEditorModel
     public void CloseMap()
     {
     }
+    
+    public bool RequiresSave => false;
 }
 
 public class MapEditorModel : IMapEditorModel
@@ -60,16 +69,6 @@ public class MapEditorModel : IMapEditorModel
     // This implementation will allow for just the one map, but it should be viable to allow for
     // more than one map (it could be nice to see two adjacent maps at the same time)
     private IMapStore? _store;
-    
-    // The list of sessions should probably be part of the IMapStore implementation.
-    // But it would be good to retain a list of unsaved operations here (leaving the store ONLY
-    // for things that have been saved)
-    //private List<Session> _sessions;
-    
-    /// <summary>
-    /// Changes that have been recorded, but not yet saved as far as the user is concerned.
-    /// </summary>
-    //private List<Change> _changes = new();
     
     public MapEditorModel(IEnvironmentRepository envRepo, IMapRepository mapRepo)
     {
@@ -112,6 +111,7 @@ public class MapEditorModel : IMapEditorModel
         try
         {
             _store = _mapRepo.OpenMap(mapName);
+            Console.WriteLine("Map opened");
         }
         catch (Exception e)
         {
@@ -121,17 +121,16 @@ public class MapEditorModel : IMapEditorModel
     }
 
     /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">Map has not been opened.</exception>
     public void CloseMap()
     {
         if (_store is null)
-            throw new InvalidOperationException("No map is open.");
+            throw new InvalidOperationException("Map has not been opened.");
 
         _mapRepo.CloseMap(_store);
         _store = null;
     }
 
-    /// <summary>
-    /// Have all edits been saved?
-    /// </summary>
-    internal bool IsSaved => _store?.IsSaved ?? true;
+    /// <inheritdoc />
+    public bool RequiresSave => _store?.IsSaved ?? false;
 }

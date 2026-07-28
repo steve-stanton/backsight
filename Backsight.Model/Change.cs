@@ -52,7 +52,7 @@ public class Change : IPersistent
     /// <param name="mapStore">The map store that the change relates to.</param>
     protected Change(IMapStore mapStore)
     {
-        m_Sequence = mapStore.ItemCount++;
+        m_Sequence = ++mapStore.ItemCount;
         m_When = DateTime.UtcNow;
     }
     

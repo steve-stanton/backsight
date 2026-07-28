@@ -122,14 +122,13 @@ class Session
     }
 
     /// <summary>
-    /// Allocates the next available internal ID for the project that this session belongs to.
-    /// This is a lightweight request, because it just increments a counter. The database gets updated
-    /// when an edit completes.
+    /// Allocates the next available internal ID for the map that this session belongs to.
+    /// This is a lightweight request, because it just increments a counter.
     /// </summary>
     /// <returns>The allocated internal ID</returns>
     internal InternalIdValue AllocateNextId()
     {
-        return new InternalIdValue(MapStore.ItemCount++);
+        return new InternalIdValue(++MapStore.ItemCount);
     }
 
     /// <summary>

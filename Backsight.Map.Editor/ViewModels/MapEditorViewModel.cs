@@ -7,6 +7,12 @@ public interface IMapEditorViewModel
 {
     string? CurrentMapName { get; }
     void OpenMap(string mapName);
+    
+    /// <summary>
+    /// Closes any map that is currently open.
+    /// </summary>
+    /// <returns>True if a map was closed, or false if there was no open map.</returns>
+    bool CloseMap();
 }
 
 // Responsible for:
@@ -44,6 +50,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     public string WindowTitle =>
         String.IsNullOrWhiteSpace(CurrentMapName) ? "Map Editor" : CurrentMapName;
 
+    /// <inheritdoc />
+    /// <exception cref="ArgumentException">Map name cannot be empty.</exception>
     public void OpenMap(string mapName)
     {
         if (String.IsNullOrWhiteSpace(mapName))
@@ -51,5 +59,22 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
         _model.OpenMap(mapName);
         CurrentMapName = mapName;
+    }
+
+    /// <inheritdoc />
+    public bool CloseMap()
+    {
+        if (CurrentMapName is null)
+            return false;
+        
+        if (_model.RequiresSave)
+        {
+            // TODO: Prompt if changes need to be saved
+            Console.WriteLine("Map changes were not saved");
+        }
+        
+        CurrentMapName = null;
+        _model.CloseMap();
+        return true;
     }
 }

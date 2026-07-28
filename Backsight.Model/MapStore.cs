@@ -52,10 +52,9 @@ public class MapStore : IMapStore
 
     internal void Load(EditDeserializer ed)
     {
-        Session? lastSession = null;
         Change edit = Change.Deserialize(ed);
 
-        if (edit is MapCreatedEvent mapInfo)
+        if (edit is NewProjectEvent mapInfo)
         {
             // If the project settings don't have default entity types, initialize them with
             // the layer defaults. This covers a case where the settings file has been lost, and
@@ -66,11 +65,12 @@ public class MapStore : IMapStore
         }
         else if (edit is NewSessionEvent newSession)
         {
-            lastSession = new Session(this, newSession);
-            _model.AddSession(lastSession);
+            var s = new Session(this, newSession);
+            _model.AddSession(s);
         }
         else if (edit is EndSessionEvent)
         {
+            var lastSession = _model.LastSession;
             Debug.Assert(lastSession is not null);
             lastSession.EndTime = edit.When;
         }
@@ -83,11 +83,13 @@ public class MapStore : IMapStore
             // to ensure the session isn't later removed if no edits are actually
             // performed).
             // TODO: Consider ID allocations as part of the env repository
+            var lastSession = _model.LastSession;
             Debug.Assert(lastSession is not null);
             lastSession.AddAllocation(alloc, false);
         }
         else if (edit is Operation op)
         {
+            var lastSession = _model.LastSession;
             Debug.Assert(lastSession is not null);
             lastSession.AddOperation(op);
         }
@@ -96,17 +98,6 @@ public class MapStore : IMapStore
             throw new NotImplementedException("Unexpected edit type: " + edit.GetType().Name);
         }
     }
-
-    /// <summary>
-    /// Allocates a single internal ID for this map. This is a lightweight request that
-    /// just increments a counter. It does not persist anything to disk.
-    /// </summary>
-    /// <returns>The next available ID.</returns>
-    internal uint AllocateId()
-    {
-        _lastItemId++;
-        return _lastItemId;
-    }            
     
     /// <inheritdoc/>
     public CadastralMapModel Model => _model;
@@ -178,8 +169,6 @@ public class MapStore : IMapStore
         // the current item count.
         _settings.SavedItemCount = _lastItemId;
         _mapRepo.SaveMapSettings(_mapName, _settings);
-        
-        // TODO: Rollup change files
     }
 
     /// <summary>

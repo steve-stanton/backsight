@@ -51,7 +51,7 @@ class IdGroup : IdGroupFacade
         Data = repo.UpdateIdGroup(Data, newMaxUsedId);
         
         // Remember the allocation as as part of this group
-        var editSequence = session.MapStore.ItemCount++;
+        var editSequence = ++session.MapStore.ItemCount;
         var alloc = new IdAllocation(editSequence)
         {
             GroupId = this.Id,
