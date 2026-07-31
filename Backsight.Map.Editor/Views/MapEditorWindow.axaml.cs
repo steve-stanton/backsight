@@ -58,7 +58,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         if (DataContext is IMapEditorViewModel vm)
         {
             Console.WriteLine("MapEditorViewModel attached to view");
-            //MapControl.Map = vm.Map;
+            MapControl.Map = vm.MapData;
         }
     }
 }

@@ -112,7 +112,7 @@ class UpdateOperation : Operation
     /// made from the edit that was revised. That should occur when update items are
     /// applied to the original edit using <see cref="IRevisable.ExchangeData"/>.
     /// </summary>
-    public override void AddReferences()
+    private protected override void AddReferences()
     {
         // TODO: What about updates that change an observation so that something else is
         // referenced? I think the handling of references should be getting done when

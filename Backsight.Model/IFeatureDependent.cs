@@ -13,7 +13,7 @@ interface IFeatureDependent
     /// </summary>
     /// <param name="f">The feature that is about to be moved  - something that
     /// the <c>IFeatureDependent</c> is dependent on (not null).</param>
-    /// <param name="ctx">The context in which the move is being made (not null).</param>
+    /// <param name="context">The context in which the move is being made (not null).</param>
     void OnFeatureMoving(Feature f, UpdateEditingContext context);
 
     /// <summary>

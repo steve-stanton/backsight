@@ -100,14 +100,14 @@ public class Change : IPersistent
     /// <summary>
     /// Change sequence number.
     /// </summary>
-    public uint EditSequence => m_Sequence;
+    internal uint EditSequence => m_Sequence;
 
     /// <summary>
     /// Adds references to existing features referenced by an editing event.
     /// <para/>
     /// Applies only to instances of <see cref="Operation"/>.
     /// </summary>
-    public virtual void AddReferences()
+    private protected virtual void AddReferences()
     {
         // Do nothing
     }

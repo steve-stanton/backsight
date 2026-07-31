@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// A point feature (e.g. control point, any sort of computed point). A point feature must
 /// exist at both ends of every <see cref="LineFeature"/>.
 /// </summary>
-class PointFeature : Feature, IPoint, ITerminal, IPersistent
+class PointFeature : Feature, IPoint, ITerminal, IMapPoint
 {
     /// <summary>
     /// The geometry for this point. Could conceivably be shared by more
@@ -163,7 +163,7 @@ class PointFeature : Feature, IPoint, ITerminal, IPersistent
     /// <summary>
     /// Does this point occur at the end of a trimmed dangling line?
     /// </summary>
-    bool IsTrimPoint()
+    private bool IsTrimPoint()
     {
         // The point has to be marked as trimmed
         if (!IsTrimmed)
@@ -290,7 +290,7 @@ class PointFeature : Feature, IPoint, ITerminal, IPersistent
             // If any topological lines pass THROUGH this point, ensure they have
             // been marked as moved (force recalculation of intersections).
 
-            IDivider[] dividers = this.IncidentDividers();
+            IDivider[] dividers = IncidentDividers();
 
             foreach (IDivider d in dividers)
             {

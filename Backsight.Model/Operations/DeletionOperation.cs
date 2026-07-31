@@ -195,7 +195,7 @@ class DeletionOperation : Operation, IFeatureRefArray
     /// This override does nothing. A deletions operates directly on the referenced features
     /// (sets a special flag bit).
     /// </summary>
-    public override void AddReferences()
+    private protected override void AddReferences()
     {
     }
 

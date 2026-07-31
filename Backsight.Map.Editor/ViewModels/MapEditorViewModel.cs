@@ -5,6 +5,11 @@ namespace Backsight.Map.Editor.ViewModels;
 
 public interface IMapEditorViewModel
 {
+    /// <summary>
+    /// The data for a map display.
+    /// </summary>
+    Mapsui.Map MapData { get; }
+    
     string? CurrentMapName { get; }
     void OpenMap(string mapName);
     
@@ -22,11 +27,29 @@ public interface IMapEditorViewModel
 // 4. commands
 // 5. viewport state
 
-// should probably implement IProvider
+// should probably implement IProvider (or delegate to something that does)
+/// <summary>
+/// An implementation of a view model for <see cref="Backsight.Map.Editor.Views.MapEditorWindow"/>.
+/// </summary>
 public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 {
+    /// <summary>
+    /// The application model.
+    /// </summary>
     private readonly IMapEditorModel _model;
-    private string? _currentMapName;
+    
+    /// <summary>
+    /// The map data for the map display.
+    /// </summary>
+    /// <remarks>
+    /// This acts like a helper that feeds a Mapsui map control that should be present inside
+    /// the map editor view. The map control should automatically pick up changes made via this
+    /// instance, so it acts kind of like an inner view model.
+    /// <para/>
+    /// Meanwhile, the <c>MapEditorViewModel</c> class as a whole is expected to expose only those
+    /// properties that the enclosing <c>MapEditorWindow</c> can bind to.
+    /// </remarks>
+    private readonly Mapsui.Map _mapData;
 
     public MapEditorViewModel() : this(new DesignMapEditorModel())
     {
@@ -35,14 +58,18 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     public MapEditorViewModel(IMapEditorModel model)
     {
         _model = model;
+        _mapData = new Mapsui.Map();
     }
 
+    /// <inheritdoc />
+    Mapsui.Map IMapEditorViewModel.MapData => _mapData;
+    
     public string? CurrentMapName
     {
-        get => _currentMapName;
+        get;
         private set
         {
-            if (SetProperty(ref _currentMapName, value))
+            if (SetProperty(ref field, value))
                 OnPropertyChanged(nameof(WindowTitle));
         }
     }

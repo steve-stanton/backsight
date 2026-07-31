@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using Backsight.Database;
 using Backsight.Environment;
 using Backsight.Model;
-using Svg;
 
 namespace Backsight.Map.Editor.Models;
 
@@ -26,6 +24,10 @@ public interface IMapEditorModel
     /// Opens a map for editing.
     /// </summary>
     /// <param name="mapName">The name of the map to be opened.</param>
+    /// <remarks>
+    /// The model should only support one open map. An exception should be thrown if
+    /// you attempt to open a 2nd map.
+    /// </remarks>
     void OpenMap(string mapName);
     
     /// <summary>
@@ -36,28 +38,24 @@ public interface IMapEditorModel
     bool RequiresSave { get; }
     
     /// <summary>
-    /// Closes the current map.
+    /// Closes the current map (or does nothing if a map has not been opened).
     /// </summary>
     void CloseMap();
+    
+    /// <summary>
+    /// The extent of the current map (null if there is no map, or the map is empty).
+    /// </summary>
+    IWindow? Extent { get; }
 }
 
 public sealed class DesignMapEditorModel : IMapEditorModel
 {
     public string MapName => "Design";
-
-    public void CreateMap(string mapName, ILayer layer)
-    {
-    }
-
-    public void OpenMap(string mapName)
-    {
-    }
-
-    public void CloseMap()
-    {
-    }
-    
+    public void CreateMap(string mapName, ILayer layer) {}
+    public void OpenMap(string mapName) {}
+    public void CloseMap() {}
     public bool RequiresSave => false;
+    public IWindow? Extent => null;
 }
 
 public class MapEditorModel : IMapEditorModel
@@ -103,8 +101,13 @@ public class MapEditorModel : IMapEditorModel
     }
     
     /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">Map already opened.</exception>
     public void OpenMap(string mapName)
     {
+        // Disallow an attempt to open more than one map
+        if (_store is not null)
+            throw new InvalidOperationException("Map already opened.");
+        
         if (String.IsNullOrWhiteSpace(mapName))
             throw new ArgumentException("Map name cannot be empty.");
 
@@ -121,16 +124,28 @@ public class MapEditorModel : IMapEditorModel
     }
 
     /// <inheritdoc />
-    /// <exception cref="InvalidOperationException">Map has not been opened.</exception>
     public void CloseMap()
     {
-        if (_store is null)
-            throw new InvalidOperationException("Map has not been opened.");
-
-        _mapRepo.CloseMap(_store);
-        _store = null;
+        if (_store is not null)
+        {
+            _mapRepo.CloseMap(_store);
+            _store = null;
+        }
     }
 
     /// <inheritdoc />
     public bool RequiresSave => _store?.IsSaved ?? false;
+    
+    /// <inheritdoc />
+    public IWindow? Extent
+    {
+        get
+        {
+            if (_store is null)
+                return null;
+            
+            var extent = _store.Model.Extent;
+            return extent.IsEmpty ? null : extent;
+        }
+    }
 }

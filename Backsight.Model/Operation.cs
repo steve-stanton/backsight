@@ -260,7 +260,7 @@ abstract class Operation : Change, IFeatureDependent
     /// <para/>
     /// The <see cref="DeletionOperation"/> and <see cref="UpdateOperation"/> classes provide overrides.
     /// </remarks>
-    public override void AddReferences()
+    private protected override void AddReferences()
     {
         Feature[] feats = GetRequiredFeatures();
 
