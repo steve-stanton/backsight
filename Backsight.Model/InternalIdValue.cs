@@ -9,7 +9,7 @@ namespace Backsight.Model;
 /// internal ID will generally be hidden from users, whereas <c>FeatureId</c> is a user-
 /// specified ID.
 /// </summary>
-struct InternalIdValue : IEquatable<InternalIdValue>, IComparable<InternalIdValue>
+public struct InternalIdValue : IEquatable<InternalIdValue>, IComparable<InternalIdValue>
 {
     /// <summary>
     /// An undefined internal ID.

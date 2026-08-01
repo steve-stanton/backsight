@@ -9,7 +9,7 @@
 /// These values are used to help avoid potential typos that might not get caught until
 /// run-time. As things currently stand, these values do not get persisted, so you can
 /// re-arrange them as you please. This may need to change if a binary writer is provided.</remarks>
-internal enum DataField : ushort
+public enum DataField : ushort
 {
     Empty = 0,
     X,

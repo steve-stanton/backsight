@@ -6,7 +6,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Any sort of survey observation.
 /// </summary>
-abstract class Observation : IPersistent
+public abstract class Observation : IPersistent
 {
     /// <summary>
     /// Checks whether this observation makes reference to a specific feature.

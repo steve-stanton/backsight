@@ -4,7 +4,7 @@ namespace Backsight.Model;
 /// <summary>
 /// A series of connected dividers, forming the edge of a polygon.
 /// </summary>
-abstract class Ring : RingMetrics, IMapObject
+public abstract class Ring : RingMetrics, IMapObject
 {
     /// <summary>
     /// Creates a new <c>Ring</c> that's either a <see cref="Polygon"/> or an <see cref="Island"/>.

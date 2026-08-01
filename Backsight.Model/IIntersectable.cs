@@ -4,7 +4,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Something that can be intersected.
 /// </summary>
-interface IIntersectable
+public interface IIntersectable
 {
     /// <summary>
     /// The geometry involved in the intersection calculation

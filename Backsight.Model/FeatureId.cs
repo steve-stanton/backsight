@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// An ID acts as a cross-reference that allows for a many-to-many relationship
 /// between map features and rows in associated database tables.
 /// </summary>
-abstract class FeatureId
+public abstract class FeatureId
 {
     /// <summary>
     /// Either a reference to the single feature that has this key, or a reference to

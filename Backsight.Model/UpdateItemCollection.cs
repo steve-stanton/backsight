@@ -3,7 +3,7 @@
 /// <summary>
 /// A collection of <see cref="UpdateItem"/>, indexed by the item name.
 /// </summary>
-class UpdateItemCollection
+public class UpdateItemCollection
 {
     /// <summary>
     /// The change items

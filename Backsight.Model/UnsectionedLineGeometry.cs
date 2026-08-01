@@ -4,7 +4,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Line geometry that <b>cannot</b> act as the base for <see cref="SectionGeometry"/>
 /// </summary>
-abstract class UnsectionedLineGeometry : LineGeometry
+public abstract class UnsectionedLineGeometry : LineGeometry
 {
     /// <summary>
     /// Creates a new <c>UnsectionedLineGeometry</c> using the supplied terminals.

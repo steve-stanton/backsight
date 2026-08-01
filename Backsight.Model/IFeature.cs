@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// <remarks>
 /// Implemented by <see cref="Feature"/> and <see cref="FeatureStub"/> 
 /// </remarks>
-interface IFeature
+public interface IFeature
 {
     /// <summary>
     /// The editing operation that created the feature (never null).

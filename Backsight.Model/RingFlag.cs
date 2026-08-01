@@ -5,7 +5,7 @@ namespace Backsight.Model;
 /// Flag bits relating to a polygon ring.
 /// </summary>
 [Flags]
-enum RingFlag : byte
+public enum RingFlag : byte
 {
     /// <summary>
     /// Ring is due for deletion.

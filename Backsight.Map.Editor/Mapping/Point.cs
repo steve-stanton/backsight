@@ -4,10 +4,10 @@ namespace Backsight.Map.Editor.Mapping;
 
 class Point : FeatureBase
 {
-    internal IMapPoint PointFeature { get; }
+    internal PointFeature Feature { get; }
     
-    internal Point(IMapPoint point) : base(point)
+    internal Point(PointFeature point) : base(point)
     {
-        PointFeature = point;
+        Feature = point;
     }
 }

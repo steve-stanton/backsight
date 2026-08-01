@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// <summary>
 /// The geometry for a circular arc.
 /// </summary>
-class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry, IFeatureRef
+public class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry, IFeatureRef
 {
     /// <summary>
     /// Definition of the circle that this arc lies on.

@@ -16,7 +16,7 @@ namespace Backsight.Model;
 /// editing). Features are meant to be things that the user explicitly creates.
 /// </summary>
 [DefaultProperty("EntityType")]
-abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IExpandablePropertyItem, IPersistent
+public abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IExpandablePropertyItem, IPersistent
 {
     /// <summary>
     /// The editing operation that created this feature.

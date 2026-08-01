@@ -4,7 +4,7 @@ using Backsight.Environment;
 
 namespace Backsight.Model;
 
-class TextFeature : Feature
+public class TextFeature : Feature
 {
     /// <summary>
     /// Should polygon label reference points be rendered during draws?

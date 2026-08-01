@@ -9,7 +9,7 @@ namespace Backsight.Model;
 /// Implemented by <see cref="LineTopology"/> and <see cref="SectionTopology"/>
 /// </summary>
 /// <seealso cref="DividerObject"/>
-interface IDivider : IIntersectable, IExpandablePropertyItem
+public interface IDivider : IIntersectable, IExpandablePropertyItem
 {
     /// <summary>
     /// The line the divider is associated with (the divider may cover only a portion

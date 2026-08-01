@@ -4,7 +4,7 @@ namespace Backsight.Model;
 /// <summary>
 /// The geometric parameters relating to a <see cref="Ring"/>
 /// </summary>
-class RingMetrics
+public class RingMetrics
 {
     /// <summary>
     /// Area in square meters. If the ring is an instance of <c>Polygon</c>, this

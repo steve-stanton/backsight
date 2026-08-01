@@ -6,7 +6,7 @@ namespace Backsight.Model
     /// Changes arising while the a <see cref="CadastralMapModel"/> is being updated (handling
     /// revised information represented by the <see cref="UpdateOperation"/> class).
     /// </summary>
-    class UpdateEditingContext : EditingContext
+    public class UpdateEditingContext : EditingContext
     {
         /// <summary>
         /// The operation holding the changes that are being propagated (not null).

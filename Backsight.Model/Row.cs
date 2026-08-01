@@ -6,7 +6,7 @@ namespace Backsight.Model;
 /// <summary>
 /// A row of miscellaneous attribute data
 /// </summary>
-class Row : IPossibleList<Row>
+public class Row : IPossibleList<Row>
 {
     /// <summary>
     /// The ID for the row

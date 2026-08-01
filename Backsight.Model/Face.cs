@@ -5,7 +5,7 @@ namespace Backsight.Model;
 ///	A polygon ring divider that is associated with a facing direction. This is a transient
 ///	class that is utilized when a new polygon is being created.
 /// </summary>
-class Face : IEquatable<Face>
+public class Face : IEquatable<Face>
 {
     /// <summary>
     /// What divider?

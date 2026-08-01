@@ -4,7 +4,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Base class for any sort of line geometry.
 /// </summary>
-abstract class LineGeometry : ILineGeometry, IIntersectable, IPersistent
+public abstract class LineGeometry : ILineGeometry, IIntersectable, IPersistent
 {
     /// <summary>
     /// The start of the connection.

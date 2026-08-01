@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// <summary>
 /// A line feature.
 /// </summary>
-class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersistent
+public class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersistent
 {
     /// <summary>
     /// The topology (if any) for this line. Null if this line is non-topological.

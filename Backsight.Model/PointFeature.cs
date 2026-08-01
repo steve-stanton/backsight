@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// A point feature (e.g. control point, any sort of computed point). A point feature must
 /// exist at both ends of every <see cref="LineFeature"/>.
 /// </summary>
-class PointFeature : Feature, IPoint, ITerminal, IMapPoint
+public class PointFeature : Feature, IPoint, ITerminal, IMapPoint
 {
     /// <summary>
     /// The geometry for this point. Could conceivably be shared by more

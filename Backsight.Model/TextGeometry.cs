@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// A text object is some sort of string that appears on a map. This is the base class for
 ///	<see cref="MiscTextGeometry"/>, <see cref="KeyTextGeometry"/>, and <see cref="RowTextGeometry"/>.
 /// </summary>
-abstract class TextGeometry : IString, IPersistent
+public abstract class TextGeometry : IString, IPersistent
 {
     /// <summary>
     /// The text style (defines the type-face and the height of the text). Specify null

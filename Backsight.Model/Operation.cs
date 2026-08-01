@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Base class for any sort of editing operation.
 /// </summary>
-abstract class Operation : Change, IFeatureDependent
+public abstract class Operation : Change, IFeatureDependent
 {
     /// <summary>
     /// The session in which this operation was originally defined.

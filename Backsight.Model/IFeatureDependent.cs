@@ -5,7 +5,7 @@ namespace Backsight.Model;
 /// Something that is dependent on the position of instance(s) of <c>Feature</c>.
 /// Each feature involved should be cross-referenced to the dependent feature.
 /// </summary>
-interface IFeatureDependent
+public interface IFeatureDependent
 {
     /// <summary>
     /// Performs any processing that needs to be done just before the position of

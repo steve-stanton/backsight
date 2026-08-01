@@ -9,7 +9,7 @@ namespace Backsight.Model;
 /// Integer (long) values are used largely for historical reasons, since various items
 /// of software are coded to accommodate the consequences of roundoff.
 /// </remarks>
-class PointGeometry : IPointGeometry
+public class PointGeometry : IPointGeometry
 {
     /// <summary>
     /// The easting of the point.
