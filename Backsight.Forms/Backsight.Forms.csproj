@@ -35,4 +35,8 @@
       <ProjectReference Include="..\Backsight\Backsight.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.4" />
+    </ItemGroup>
+
 </Project>

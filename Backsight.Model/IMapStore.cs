@@ -56,4 +56,12 @@ public interface IMapStore
     /// Have all changes been saved?
     /// </summary>
     bool IsSaved { get; }
+
+    /// <summary>
+    /// Searches for map features within a covering rectangle.
+    /// </summary>
+    /// <param name="window">The search window.</param>
+    /// <typeparam name="T">The specific feature type.</typeparam>
+    /// <returns>The features of the requested type, and with an extent that overlaps the search window.</returns>
+    List<T> Query<T>(IWindow window) where T : Feature;
 }

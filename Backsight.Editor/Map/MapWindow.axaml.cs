@@ -345,10 +345,6 @@ public partial class MapWindow : Avalonia.Controls.Window
         // list doing a bounding box check on each. If that sounds too easy, could think about
         // using an index like that used by GeoJsonProvider
 
-        // ...but do we even have to attach NTS geometry to each IFeature? If I set IFeature.Data
-        // to refer to the Backsight feature, I could pull that out here and render it more directly
-        // (e.g. circular arcs could be drawn without having to generate a LineString approximation).
-
         SKPoint ToScreenPoint(IPosition p)
         {
             var (sx, sy) = viewport.WorldToScreenXY(p.X, p.Y);
@@ -365,8 +361,11 @@ public partial class MapWindow : Avalonia.Controls.Window
 
         var pointOffset = _pointSize * 0.5f;
 
-        // Layer.GetFeatures just returns what it has cached (the supplied extent and resolution seem to be ignored)
-        // Layer.FetchAsync retrieves from the provider and saves it as the cache - it's called from Layer.FetchAsync
+        // Layer.GetFeatures just returns what it has cached (the supplied extent and resolution are ignored)
+        // Layer.FetchAsync (called by Layer.GetFetchJobs) retrieves from the provider and saves it as the cache,
+        // then fires a DataChanged event. It looks like GetFetchJobs is called by DataFetcher.ViewportChangeAsync
+        // (I imagine that there's one "job" per layer), called from Map.RefreshDataAsync... although that seems
+        // to be called only by test methods
         foreach (var feature in layer.GetFeatures(viewport.ToExtent(), viewport.Resolution))
         {
             n++;

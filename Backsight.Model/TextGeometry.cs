@@ -114,24 +114,24 @@ public abstract class TextGeometry : IString, IPersistent
     /// The height of the text, in meters on the ground. Corresponds to text
     /// em-size (the sum of the font ascent + descent).
     /// </summary>
-    internal float Height
+    public float Height
     {
         get => m_Height;
-        set => m_Height = value;
+        internal set => m_Height = value;
     }
 
     /// <summary>
     /// The total width of the text, in meters on the ground.
     /// </summary>
-    internal float Width => m_Width;
+    public float Width => m_Width;
 
     /// <summary>
     /// The text style
     /// </summary>
-    internal IFont? Font
+    public IFont? Font
     {
         get => m_Font;
-        set => m_Font = value;
+        internal set => m_Font = value;
     }
 
     public ILength Distance(IPosition point)

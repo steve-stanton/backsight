@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Backsight.Model;
 using Mapsui;
 using Mapsui.Styles;
+using SkiaSharp;
 
 namespace Backsight.Map.Editor.Mapping;
 
@@ -15,9 +16,16 @@ abstract class FeatureBase : Mapsui.IFeature
     
     protected FeatureBase(IMapObject item)
     {
-        _extent = item.Extent.ToMRect();
+        _extent = item.Extent.ToMRect() ?? throw new ArgumentException("Map object has no spatial extent");
     }
 
+    /// <summary>
+    /// Renders the feature to the given canvas.
+    /// </summary>
+    /// <param name="canvas">The canvas to draw on.</param>
+    /// <param name="style">The style properties to use for the rendering (specify null to use defaults).</param>
+    protected internal abstract void Render(MapCanvas canvas, PaintStyle? style = null);
+    
     public MRect? Extent => _extent;
 
     public object Clone()

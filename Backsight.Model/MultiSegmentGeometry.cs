@@ -9,7 +9,7 @@ namespace Backsight.Model;
 /// A line that consists of a series of connected line segments (referred to in other
 /// worlds as a "LineString").
 /// </summary>
-class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeometry
+public class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeometry
 {
     /// <summary>
     /// The positions defining the line.

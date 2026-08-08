@@ -186,4 +186,34 @@ public class MapStore : IMapStore
     /// <inheritdoc />
     public bool IsSaved => _lastItemId == _settings.SavedItemCount ||
                            _lastItemId == (Model.WorkingSession?.ItemNumber ?? _lastItemId);
+
+    /// <inheritdoc />
+    public List<T> Query<T>(IWindow window) where T : Feature
+    {
+        var result = new List<T>();
+        var type = GetSpatialType<T>();
+        
+        Model.Index.QueryWindow(window, type, item =>
+        {
+            if (item is T t)
+                result.Add(t);
+                
+            return true;
+        });
+
+        return result;
+    }
+
+    private static SpatialType GetSpatialType<T>() where T : Feature
+    {
+        var typeName = typeof(T).Name;
+
+        return typeName switch
+        {
+            nameof(PointFeature) => SpatialType.Point,
+            nameof(LineFeature) => SpatialType.Line,
+            nameof(TextFeature) => SpatialType.Text,
+            _ => throw new NotImplementedException(typeName)
+        };
+    }
 }

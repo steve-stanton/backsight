@@ -112,10 +112,10 @@ public class TextFeature : Feature
     /// <summary>
     /// The "geometry" for this text.
     /// </summary>
-    internal TextGeometry TextGeometry
+    public TextGeometry TextGeometry
     {
         get => m_Geom;
-        set => m_Geom = value;
+        internal set => m_Geom = value;
     }
 
     /// <summary>

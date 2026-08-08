@@ -1,8 +1,8 @@
 using System;
-using System.Runtime.Intrinsics.X86;
-using Avalonia.Controls;
-using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.ViewModels;
+using Mapsui;
+using Mapsui.Rendering;
+using SkiaSharp;
 
 namespace Backsight.Map.Editor.Views;
 
@@ -15,11 +15,11 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
     public MapEditorWindow()
     {
         InitializeComponent();
-        
-        // Start out with a context that's only suitable in design mode (an effective context will get injected)
-        DataContext = new MapEditorViewModel(new DesignMapEditorModel());
-        DataContextChanged += OnDataContextChanged;
 
+        // Start out with a context that's only suitable in design mode (an effective context will get injected)
+        //DataContext = new MapEditorViewModel(new DesignMapEditorModel());
+        DataContextChanged += OnDataContextChanged;
+        
         Opened += async (_, _) =>
         {
             var startupVm = new StartupViewModel();
@@ -58,7 +58,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         if (DataContext is IMapEditorViewModel vm)
         {
             Console.WriteLine("MapEditorViewModel attached to view");
-            MapControl.Map = vm.MapData;
+            MapDisplay.Map = vm.MapData;
         }
     }
 }

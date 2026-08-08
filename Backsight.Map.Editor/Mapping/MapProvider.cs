@@ -1,35 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.ViewModels;
+using Backsight.Model;
 using Mapsui;
 using Mapsui.Layers;
 using Mapsui.Providers;
+using IFeature = Mapsui.IFeature;
 
 namespace Backsight.Map.Editor.Mapping;
 
 public class MapProvider : IProvider
 {
     private readonly IMapEditorViewModel _viewModel;
-    private readonly IMapEditorModel  _model;
+    private readonly IMapStore _store;
     
-    public MapProvider(IMapEditorViewModel viewModel, IMapEditorModel model)
+    public MapProvider(IMapEditorViewModel viewModel, IMapStore store)
     {
         _viewModel = viewModel;
-        _model = model;
+        _store = store;
     }
-    
+
     MRect? IProvider.GetExtent()
     {
-        return _model.Extent?.ToMRect();
+        return _store.Model.Extent.ToMRect();
     }
 
     Task<IEnumerable<IFeature>> IProvider.GetFeaturesAsync(FetchInfo fetchInfo)
     {
         var result = new List<IFeature>();
-        var mapScale = GetMapScale(fetchInfo);
+        var requiredTypes = _viewModel.GetTypesAtCurrentScale();
+        if (requiredTypes == SpatialType.None)
+            return Task.FromResult<IEnumerable<IFeature>>(result);
+
+        Debug.Assert(_store is not null);
+            
+        var window = fetchInfo.Window;
+        Console.WriteLine("fetching data");
+
+        result.AddRange(_store.Query<Model.LineFeature>(window).Select(x => new Line(x)));
         
+        if (requiredTypes.HasFlag(SpatialType.Point))
+            result.AddRange(_store.Query<Model.PointFeature>(window).Select(x => new Point(x)));
+        
+        if (requiredTypes.HasFlag(SpatialType.Text))
+            result.AddRange(_store.Query<Model.TextFeature>(window).Select(x => new Text(x)));
+        
+        Console.WriteLine("found " + result.Count);
         return Task.FromResult<IEnumerable<IFeature>>(result);
     }
 
@@ -39,16 +59,4 @@ public class MapProvider : IProvider
         set => throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// Determines the map scale for a fetch.
-    /// </summary>
-    /// <param name="fetchInfo"></param>
-    /// <param name="dpi">The number of pixels per inch for the display.</param>
-    /// <returns>The corresponding map scale denominator.</returns>
-    private static double GetMapScale(FetchInfo fetchInfo, double dpi = 96.0)
-    {
-        double pixelsToMeters = 0.0254 / dpi;
-        var width = fetchInfo.Section.ScreenWidth * pixelsToMeters;
-        return fetchInfo.Extent.Width / width;
-    }
 }

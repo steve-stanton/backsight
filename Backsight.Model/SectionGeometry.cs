@@ -5,7 +5,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Geometry for a section of a line.
 /// </summary>
-class SectionGeometry : LineGeometry, ISection
+public class SectionGeometry : LineGeometry, ISection
 {
     /// <summary>
     /// The line that the section is based on.
@@ -68,7 +68,7 @@ class SectionGeometry : LineGeometry, ISection
     /// Creates concrete geometry that corresponds to this line section.
     /// </summary>
     /// <returns>Geometry corresponding to this section.</returns>
-    internal UnsectionedLineGeometry Make()
+    public  UnsectionedLineGeometry Make()
     {
         return SectionBase.Section(this);
     }

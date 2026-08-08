@@ -27,7 +27,7 @@ public class LineAnnotationStyle
     /// not be displayed (if subsequently turned on, the display scale will default
     /// to 1:2000, and the height of the text will default to 2 meters on the ground).
     /// </summary>
-    internal LineAnnotationStyle()
+    public LineAnnotationStyle()
     {
         m_Scale = 2000.0;
         m_Height = 2.0;

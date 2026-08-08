@@ -22,6 +22,8 @@ namespace Backsight;
 [Flags]
 public enum SpatialType : byte
 {
+    None = 0x00,
+    
     /// <summary>
     /// Point features
     /// </summary>
@@ -41,11 +43,16 @@ public enum SpatialType : byte
     /// Polygons
     /// </summary>
     Polygon = 0x08,
-
+    
+    /// <summary>
+    /// Line annotations 
+    /// </summary>
+    Annotation = 0x10,
+    
     /// <summary>
     /// Any sort of spatial feature (excludes polygons).
     /// </summary>
-    Feature = (Point | Line | Text),
+    Feature = Point | Line | Text,
 
     /// <summary>
     /// Any type of spatial object (things that implement <c>ISpatialObject</c>)

@@ -4,7 +4,7 @@ namespace Backsight.Model;
 /// <summary>
 /// An intersection of two or more lines.
 /// </summary>
-class Intersection : PointGeometry, ITerminal, IPoint
+public class Intersection : PointGeometry, ITerminal, IPoint
 {
     /// <summary>
     /// The lines passing through this intersection. In most cases, this

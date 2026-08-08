@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.Map.Editor", "Bac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backsight.Model", "Backsight.Model\Backsight.Model.csproj", "{F54CCD50-BEB9-43D5-9382-8F6A77B227A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMap", "TestMap\TestMap.csproj", "{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -150,6 +152,22 @@ Global
 		{F54CCD50-BEB9-43D5-9382-8F6A77B227A7}.Release|Win32.Build.0 = Release|Any CPU
 		{F54CCD50-BEB9-43D5-9382-8F6A77B227A7}.Release|x86.ActiveCfg = Release|Any CPU
 		{F54CCD50-BEB9-43D5-9382-8F6A77B227A7}.Release|x86.Build.0 = Release|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Debug|Win32.Build.0 = Debug|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Debug|x86.Build.0 = Debug|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Release|Win32.ActiveCfg = Release|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Release|Win32.Build.0 = Release|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Release|x86.ActiveCfg = Release|Any CPU
+		{D31E7AF1-6207-44AD-A4D7-0834EF7F9E5A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

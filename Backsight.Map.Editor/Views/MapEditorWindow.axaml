@@ -11,16 +11,17 @@
         Title="{Binding WindowTitle}">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MapEditorViewModel/>
     </Design.DataContext>
 
     <Grid>
-        <mapsui:MapControl x:Name="MapControl" Background="Khaki"/>
-        <Canvas x:Name="MapOverlay"
-                Background="Transparent"
-                IsHitTestVisible="False"/>
+        <mapsui:MapControl
+            x:Name="MapDisplay"
+            Background="Transparent"/>
+        <Canvas
+            x:Name="MapOverlay"
+            Background="Transparent"
+            IsHitTestVisible="False"/>
     </Grid>
 
 </Window>

@@ -9,9 +9,9 @@ static class IWindowEx
 {
     extension(IWindow window)
     {
-        internal MRect ToMRect()
+        internal MRect? ToMRect()
         {
-            return new MRect(window.Min.X, window.Min.Y, window.Max.X, window.Max.Y);
+            return window.IsEmpty ? null : new MRect(window.Min.X, window.Min.Y, window.Max.X, window.Max.Y);
         }
     }
 }

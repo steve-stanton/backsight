@@ -25,7 +25,7 @@ public interface IMapIndex
     IMapObject? QueryClosest(IPosition p, ILength radius, SpatialType types);
 
     /// <summary>
-    /// Process items with a covering rectangle that overlaps a query window.
+    /// Processes items with a covering rectangle that overlaps a query window.
     /// </summary>
     /// <param name="extent">The extent of the query window (null for everything).</param>
     /// <param name="types">The type(s) of object to look for</param>
@@ -33,4 +33,14 @@ public interface IMapIndex
     /// is defined as anything with a covering rectangle that overlaps the query window (this
     /// does not mean the hit actually intersects the window).</param>
     void QueryWindow(IWindow? extent, SpatialType types, ProcessItem itemHandler);
+}
+
+public interface IExtendedMapIndex : IMapIndex
+{
+    /// <summary>
+    /// Processes intersection points that overlaps a query window.
+    /// </summary>
+    /// <param name="extent">The extent of the query window.</param>
+    /// <param name="itemHandler">The method that should be called for each query hit.</param>
+    void ProcessIntersections(IWindow extent, ProcessItem itemHandler);
 }

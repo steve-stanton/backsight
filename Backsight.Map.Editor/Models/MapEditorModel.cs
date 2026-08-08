@@ -46,6 +46,11 @@ public interface IMapEditorModel
     /// The extent of the current map (null if there is no map, or the map is empty).
     /// </summary>
     IWindow? Extent { get; }
+    
+    /// <summary>
+    /// The underlying store for the map that is currently open (null if there is no map).
+    /// </summary>
+    IMapStore? Store { get; }
 }
 
 public sealed class DesignMapEditorModel : IMapEditorModel
@@ -56,6 +61,7 @@ public sealed class DesignMapEditorModel : IMapEditorModel
     public void CloseMap() {}
     public bool RequiresSave => false;
     public IWindow? Extent => null;
+    public IMapStore? Store => null;
 }
 
 public class MapEditorModel : IMapEditorModel
@@ -113,8 +119,11 @@ public class MapEditorModel : IMapEditorModel
 
         try
         {
+            // Deserialize from the repo
             _store = _mapRepo.OpenMap(mapName);
-            Console.WriteLine("Map opened");
+
+            // Initialize geometry etc
+            _store.Model.Load();
         }
         catch (Exception e)
         {
@@ -148,4 +157,7 @@ public class MapEditorModel : IMapEditorModel
             return extent.IsEmpty ? null : extent;
         }
     }
+    
+    /// <inheritdoc />
+    public IMapStore? Store => _store;
 }

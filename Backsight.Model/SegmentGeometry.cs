@@ -6,7 +6,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Geometry for a line that connects two points.
 /// </summary>
-class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
+public class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
 {
     /// <summary>
     /// Creates a new <c>SegmentGeometry</c> using the supplied points.

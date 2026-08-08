@@ -236,7 +236,12 @@ public class MapsDirectory : IMapRepository
         if (File.Exists(fileName))
         {
             var text = File.ReadAllText(fileName);
-            var result = JsonSerializer.Deserialize<MapSettings>(text);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
+            var result = JsonSerializer.Deserialize<MapSettings>(text, options);
             if (result is not null)
                 return result;
             

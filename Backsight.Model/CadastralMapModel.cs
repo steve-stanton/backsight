@@ -96,7 +96,7 @@ public class CadastralMapModel
     /// <summary>
     /// The spatial index for this model (in a form that's suitable for typical queries).
     /// </summary>
-    internal IMapIndex Index => m_Index;
+    public IExtendedMapIndex Index => m_Index;
 
     /// <summary>
     /// The spatial index for this model.
@@ -846,7 +846,7 @@ public class CadastralMapModel
     /// <summary>
     /// Loads this model from the database
     /// </summary>
-    internal void Load()
+    public void Load()
     {
         var ctx = new LoadingContext();
 

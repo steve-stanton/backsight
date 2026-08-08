@@ -9,7 +9,7 @@ namespace Backsight.Model;
 /// stuff, this provides an additional index for circles, plus an index of
 /// line intersections.
 /// </summary>
-class EditingIndex : MapIndex
+class EditingIndex : MapIndex, IExtendedMapIndex
 {
     /// <summary>
     /// Spatial index of all extra stuff that is required for the cadastral editor.
@@ -150,5 +150,11 @@ class EditingIndex : MapIndex
     {
         if (m_ExtraData.Remove(x))
             x.IsIndexed = false;
+    }
+
+    /// <inheritdoc cref="IExtendedMapIndex.ProcessIntersections" />
+    public void ProcessIntersections(IWindow extent, ProcessItem itemHandler)
+    {
+        m_ExtraData.QueryWindow(extent, SpatialType.Point, itemHandler);
     }
 }
