@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.ViewModels;
-using Mapsui;
-using Mapsui.Rendering;
-using SkiaSharp;
+using Mapsui.Extensions;
 
 namespace Backsight.Map.Editor.Views;
 
@@ -18,17 +20,26 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
 
         // Start out with a context that's only suitable in design mode (an effective context will get injected)
         //DataContext = new MapEditorViewModel(new DesignMapEditorModel());
-        DataContextChanged += OnDataContextChanged;
-        
+        DataContextChanged += (_, _) =>
+        {
+            if (DataContext is IMapEditorViewModel vm)
+            {
+                Console.WriteLine("MapEditorViewModel attached to view");
+                MapDisplay.Map = vm.MapData;
+            }
+        };
+
         Opened += async (_, _) =>
         {
             var startupVm = new StartupViewModel();
             var startup = new StartupWindow { DataContext = startupVm };
             var result = await startup.ShowDialog<string>(this);
-            
+
             Console.WriteLine($"Startup result: {result}");
             if (String.IsNullOrEmpty(result))
+            {
                 Close();
+            }
             else
             {
                 Console.WriteLine($"Startup result: {result}");
@@ -51,14 +62,63 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
             if (DataContext is IMapEditorViewModel { CurrentMapName: not null } vm)
                 vm.CloseMap();
         };
+
+        MapDisplay.PointerPressed += OnPointerPressed;
     }
 
-    private void OnDataContextChanged(object? sender, EventArgs e)
+    /// <summary>
+    /// Attaches the context menu for the current map selection.
+    /// </summary>
+    /// <param name="items">The items that the view model wants to display.</param>
+    /// <remarks>
+    /// The context menu isn't shown here. Avalonia opens the attached <c>ContextMenu</c> when it
+    /// raises <see cref="Control.ContextRequested"/> (on release of the right button).
+    /// </remarks>
+    private void SetContextMenu(IReadOnlyList<ContextMenuItem> items)
     {
-        if (DataContext is IMapEditorViewModel vm)
+        if (items.Count == 0)
         {
-            Console.WriteLine("MapEditorViewModel attached to view");
-            MapDisplay.Map = vm.MapData;
+            MapDisplay.ContextMenu = null;
+            return;
         }
+
+        var menu = new ContextMenu();
+
+        foreach (var item in items)
+        {
+            menu.Items.Add(item.IsSeparator
+                ? new Separator()
+                : new MenuItem
+                {
+                    Header = item.Header,
+                    Command = item.Command,
+                    IsChecked = item.IsChecked
+                });
+        }
+
+        MapDisplay.ContextMenu = menu;
+    }
+
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        var vm = DataContext as IMapEditorViewModel;
+        if (vm is null)
+            return;
+        
+        // c.f. EditingController.MouseDown
+        
+        if (e.Properties.IsRightButtonPressed)
+        {
+            SetContextMenu(vm.GetContextMenuItems());
+        }
+        else
+        {
+            var screenPosition = e.GetPosition(MapDisplay);
+            var (gx, gy) = MapDisplay.Map.Navigator.Viewport.ScreenToWorldXY(screenPosition.X, screenPosition.Y);
+            var p = new Position(gx, gy);
+            vm.OnLeftClick(p);
+        }
+        
+        e.Handled = true;
     }
 }

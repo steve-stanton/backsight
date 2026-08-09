@@ -7,7 +7,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Topology for a line that consists of at least two sections.
 /// </summary>
-class SectionTopologyList : Topology
+public class SectionTopologyList : Topology
 {
     /// <summary>
     /// The topological sections for a line, ordered along the line such that
@@ -188,7 +188,7 @@ class SectionTopologyList : Topology
     /// </summary>
     /// <param name="p">The position of interest</param>
     /// <returns>The closest section (null if there are no sections in this list)</returns>
-    internal IDivider FindClosestSection(IPosition p)
+    public IDivider? FindClosestSection(IPosition p)
     {
         if (m_Sections.Count==0)
             return null;

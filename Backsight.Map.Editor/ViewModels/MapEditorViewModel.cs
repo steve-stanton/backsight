@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Models;
 using Backsight.Model;
+using CommunityToolkit.Mvvm.Input;
 using Mapsui;
 using Mapsui.Extensions;
 using Mapsui.Layers;
@@ -9,8 +11,14 @@ using Mapsui.Rendering.Skia.Extensions;
 
 namespace Backsight.Map.Editor.ViewModels;
 
-public interface IMapEditorViewModel
+internal interface IMapEditorViewModel
 {
+    /// <summary>
+    /// The identifier of the custom renderer that should be used for the map display.
+    /// </summary>
+    /// <seealso cref="Backsight.Map.Editor.Mapping.Renderer"/>
+    string RendererName => "backsight-map-renderer";
+    
     /// <summary>
     /// The data for a map display.
     /// </summary>
@@ -40,6 +48,25 @@ public interface IMapEditorViewModel
     /// The storage for the map that is currently open (null if there is no open map).
     /// </summary>
     IMapStore? Store { get; }
+
+    /// <summary>
+    /// Creates context menu items (typically in response to a right click on the map display).
+    /// </summary>
+    /// <returns>The items that the view should present in a context menu (an empty list if
+    /// no menu should be shown).</returns>
+    IReadOnlyList<ContextMenuItem> GetContextMenuItems();
+
+    void OnLeftClick(IPosition p);
+    
+    /// <summary>
+    /// The current selection (may be empty).
+    /// </summary>
+    IMapSelection Selection { get; }
+    
+    /// <summary>
+    /// The current map scale (0 if there is no open map).
+    /// </summary>
+    double MapScale { get; }
 }
 
 // Responsible for:
@@ -71,13 +98,17 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// Meanwhile, the <c>MapEditorViewModel</c> class as a whole is expected to expose only those
     /// properties that the enclosing <c>MapEditorWindow</c> can bind to.
     /// </remarks>
-    //[ObservableProperty]
     private readonly Mapsui.Map _mapData;
 
     /// <summary>
     /// The current scale of the map that is currently open (0 if there is no open map).
     /// </summary>
     private double _mapScale;
+
+    /// <summary>
+    /// The current selection (never null, but may be empty).
+    /// </summary>
+    private Selection _selection = new();
     
     //internal double MapScale => _model.Store is null ? 0 : _mapScale;
 
@@ -98,20 +129,25 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         _mapData.Navigator.PanLock = true;
 
         _mapData.Navigator.ViewportChanged += OnViewportChanged;
-        
     }
     
     /// <inheritdoc />
     Mapsui.Map IMapEditorViewModel.MapData => _mapData;
-
-    /// <inheritdoc />
-    MapSettings? IMapEditorViewModel.Settings => _model.Store?.Settings;
     
     /// <inheritdoc />
-    IMapStore? IMapEditorViewModel.Store => _model.Store;
-
+    IMapSelection IMapEditorViewModel.Selection => _selection;
+    
     /// <inheritdoc />
-    SpatialType IMapEditorViewModel.GetTypesAtCurrentScale()
+    double IMapEditorViewModel.MapScale => _model.Store is null ? 0 : _mapScale;
+
+    /// <inheritdoc cref="IMapEditorViewModel.Settings" />
+    public MapSettings? Settings => _model.Store?.Settings;
+    
+    /// <inheritdoc cref="IMapEditorViewModel.Store" />
+    public IMapStore? Store => _model.Store;
+
+    /// <inheritdoc cref="IMapEditorViewModel.GetTypesAtCurrentScale" />
+    public SpatialType GetTypesAtCurrentScale()
     {
         var result = SpatialType.None;
         var store = _model.Store;
@@ -188,7 +224,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         var layer = new Layer(store.Name)
         {
             DataSource = new MapProvider(this, store),
-            CustomLayerRendererName = Renderer.RendererName
+            CustomLayerRendererName = (this as IMapEditorViewModel).RendererName
         };
         _mapData.Layers.Add(layer);
         _mapData.Navigator.ZoomToBox(_mapData.Extent);
@@ -210,6 +246,525 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         _mapData.Layers.Remove(x => x.Name == CurrentMapName);
         CurrentMapName = null;
         _model.CloseMap();
+        return true;
+    }
+
+    /// <inheritdoc />
+    IReadOnlyList<ContextMenuItem> IMapEditorViewModel.GetContextMenuItems()
+    {
+        // c.f. Backsight.Editor.MainForm.CreateContextMenu(ISpatialSelection)
+        
+        // Handle single-item selections...
+
+        var singleItem = _selection.SingleOrDefault;
+        if (singleItem is not null)
+        {
+            var t = singleItem.SpatialType;
+
+            if (t == SpatialType.Point)
+                return GetPointSelectedMenu();
+
+            if (t == SpatialType.Line)
+            {
+                var items = GetLineSelectedMenu();
+
+                var line = singleItem as LineFeature;
+                if (line is null && singleItem is DividerObject d)
+                    line = d.Divider.Line;
+
+                if (line?.HasTopology == true)
+                {
+                    // TODO: do this inside GetLineSelectedMenu
+                    var itemIndex = Array.FindIndex(items, x => x.Header == "Polygon Boundary");
+                    items[itemIndex] = items[itemIndex] with { IsChecked = true };
+                }
+
+                return items;
+            }
+
+            if (t == SpatialType.Text)
+                return GetTextSelectedMenu();
+        }
+
+        if (_selection.Count > 1)
+            return GetMultiSelectionMenu();
+
+        // Show the default menu, enabling the "Subdivide Polygon" item if a single polygon
+        // is currently selected
+        //ctxLineSubdividePolygon.Enabled = singleItem?.SpatialType == SpatialType.Polygon;
+        return GetNoSelectionMenu();
+    }
+
+    private ContextMenuItem[] GetPointSelectedMenu() =>
+    [
+        new("Sideshot...", PointSideshotCommand),
+        new("Update...", PointUpdateCommand),
+        new("Delete", PointDeleteCommand),
+        ContextMenuItem.Separator,
+        new("Add Straight Line", PointAddStraightLineCommand),
+        new("Add Circular Arc", PointAddCircularArcCommand),
+        ContextMenuItem.Separator,
+        new("Properties", PropertiesCommand)
+    ];
+
+    [RelayCommand]
+    private void PointSideshot()
+    {
+        Console.WriteLine(nameof(PointSideshot));
+    }
+
+    [RelayCommand]
+    private void PointUpdate()
+    {
+        Console.WriteLine(nameof(PointUpdate));
+    }
+
+    [RelayCommand]
+    private void PointAddStraightLine()
+    {
+        Console.WriteLine(nameof(PointAddStraightLine));
+    }
+
+    [RelayCommand]
+    private void PointAddCircularArc()
+    {
+        Console.WriteLine(nameof(PointAddCircularArc));
+    }
+
+    [RelayCommand]
+    private void PointDelete()
+    {
+        Console.WriteLine(nameof(PointDelete));
+    }
+    
+    private ContextMenuItem[] GetLineSelectedMenu() =>
+    [
+        new("Extend...", LineExtendCommand),
+        new("Subdivide", LineSubdivideCommand),
+        new("Subdivide (One Distance)...", LineSubdivideOneDistanceCommand),
+        new("Parallel", LineParallelCommand),
+        new("Update", LineUpdateCommand),
+        new("Polygon Boundary", LinePolygonBoundaryCommand),
+        new("Delete", LineDeleteCommand),
+        new("Trim Dangle", LineTrimDangleCommand),
+        ContextMenuItem.Separator,
+        new("Properties", PropertiesCommand)
+    ];
+
+    [RelayCommand]
+    private void LineExtend()
+    {
+        Console.WriteLine(nameof(LineExtend));
+    }
+    [RelayCommand]
+    private void LineSubdivide()
+    {
+        Console.WriteLine(nameof(LineSubdivide));
+    }
+    [RelayCommand]
+    private void LineSubdivideOneDistance()
+    {
+        Console.WriteLine(nameof(LineSubdivideOneDistance));
+    }
+    [RelayCommand]
+    private void LineParallel()
+    {
+        Console.WriteLine(nameof(LineParallel));
+    }
+    [RelayCommand]
+    private void LineUpdate()
+    {
+        Console.WriteLine(nameof(LineUpdate));
+    }
+    [RelayCommand]
+    private void LinePolygonBoundary()
+    {
+        Console.WriteLine(nameof(LinePolygonBoundary));
+    }
+    [RelayCommand]
+    private void LineDelete()
+    {
+        Console.WriteLine(nameof(LineDelete));
+    }
+    [RelayCommand]
+    private void LineTrimDangle()
+    {
+        Console.WriteLine(nameof(LineTrimDangle));
+    }
+    
+    private ContextMenuItem[] GetTextSelectedMenu() =>
+    [
+        new("Move", TextMoveCommand),
+        new("Move Polygon Reference Position", TextMovePolygonPositionCommand),
+        new("Delete", TextDeleteCommand),
+        ContextMenuItem.Separator,
+        new("Properties", PropertiesCommand)
+    ];
+
+    [RelayCommand]
+    private void TextMove()
+    {
+        Console.WriteLine(nameof(TextMove));
+    }
+
+    [RelayCommand]
+    private void TextMovePolygonPosition()
+    {
+        Console.WriteLine(nameof(TextMovePolygonPosition));
+    }
+    [RelayCommand]
+    private void TextDelete()
+    {
+        Console.WriteLine(nameof(TextDelete));
+    }
+    
+    private ContextMenuItem[] GetMultiSelectionMenu() =>
+    [
+        new("Delete", MultiDeleteCommand),
+        new("Trim Dangles", MultiTrimCommand),
+    ];
+
+    [RelayCommand]
+    private void MultiDelete()
+    {
+        Console.WriteLine(nameof(MultiDelete));
+    }
+    [RelayCommand]
+    private void MultiTrim()
+    {
+        Console.WriteLine(nameof(MultiTrim));
+    }
+    
+    /// <summary>
+    /// Gets the context menu to display when nothing is selected.
+    /// </summary>
+    private ContextMenuItem[] GetNoSelectionMenu() =>
+    [
+        new("Overview", OverviewCommand),
+        new("Zoom In", ZoomInCommand),
+        new("Zoom Out", ZoomOutCommand),
+        new("Zoom Rectangle", ZoomRectangleCommand),
+        new("Draw Scale...", DrawScaleCommand),
+        new("New Center", NewCenterCommand),
+        new("Pan", PanCommand),
+        new("Refresh", RefreshCommand),
+        ContextMenuItem.Separator,
+        new("Previous", PreviousCommand),
+        new("Next", NextCommand),
+    ];
+
+    [RelayCommand]
+    private void Overview()
+    {
+        var extent = _mapData.Extent;
+        if (extent is not null)
+            _mapData.Navigator.ZoomToBox(extent);
+    }
+
+    [RelayCommand]
+    private void ZoomIn() => Zoom(-0.2);
+
+    [RelayCommand]
+    private void ZoomOut() => Zoom(0.2);
+
+    /// <summary>
+    /// Zooms the map display in or out about the center of the current viewport.
+    /// </summary>
+    /// <param name="factor">The fraction of the current extent to grow by (negative to zoom in).</param>
+    private void Zoom(double factor)
+    {
+        var nav = _mapData.Navigator;
+        if (nav.Viewport.HasSize())
+        {
+            var extent = nav.Viewport.ToExtent();
+            var newExtent = extent.Grow(factor * extent.Height);
+            nav.ZoomToBox(newExtent);
+        }
+    }
+
+    [RelayCommand]
+    private void ZoomRectangle()
+    {
+        Console.WriteLine("Click4");
+    }
+
+    [RelayCommand]
+    private void DrawScale()
+    {
+        Console.WriteLine("Click5");
+    }
+
+    [RelayCommand]
+    private void NewCenter()
+    {
+        Console.WriteLine("Click6");
+    }
+
+    [RelayCommand]
+    private void Pan()
+    {
+        Console.WriteLine("Click7");
+    }
+
+    [RelayCommand]
+    private void Refresh()
+    {
+        // Refresh goes back to fetch from the provider, whereas RefreshGraphics just goes to the custom renderer
+        _mapData.Refresh(ChangeType.Discrete);
+    }
+
+    [RelayCommand]
+    private void Previous()
+    {
+        Console.WriteLine("Click9");
+    }
+
+    [RelayCommand]
+    private void Next()
+    {
+        Console.WriteLine("Click10");
+    }
+
+    [RelayCommand]
+    private void Properties()
+    {
+        // TODO: Display the properties of the currently selected feature
+    }
+
+    [RelayCommand]
+    private void DeleteSelection()
+    {
+        // TODO: Delete the currently selected feature
+    }
+
+    void IMapEditorViewModel.OnLeftClick(IPosition p)
+    {
+        Console.WriteLine("Left click at " + p);
+
+        /*
+         c.f. Backsight.Editor.EditingController.MouseDown
+         
+        // If there's no command, or it doesn't handle left clicks...
+        else if (m_Command is null || !m_Command.LButtonDown(p))
+        {
+            bool isMultiSelect = (Control.ModifierKeys & Keys.Shift) != 0;
+
+            // If we're currently auto-highlighting, and the user is doing
+            // a multi-select, turn off auto-highlight and get rid of the
+            // properties window (confusing).
+
+            // TODO: May want to keep the properties window, but disabled. In the
+            // past, it was ok to close because the dialog rested on top of the
+            // map. Now, closing the property window causes a redraw, which is
+            // a bit unexpected in the middle of a multiselect.
+
+            if (isMultiSelect)
+            {
+                m_IsAutoSelect = 0;
+                m_Main.ClosePropertiesWindow();
+            }
+
+            if (m_Sel is null)
+                OnSelect(sender.MapScale, p, isMultiSelect);
+            else
+                m_Sel.CtrlMouseDown(p);
+        }
+         */
+        // TODO: Attempt to select a feature at the clicked position (and assign it to Selection)
+        OnSelect(p, false);
+    }
+
+    /// <summary>
+    /// Tries to select something at the specified position
+    /// </summary>
+    /// <param name="p">The position where a left-click has occurred</param>
+    /// <param name="isMultiSelect">True if performing a multi-select (SHIFT key is pressed)</param>
+    private void OnSelect(IPosition p, bool isMultiSelect)
+    {
+        // Try to select something.
+        IMapObject? thing = SelectObject(_mapScale, p, SpatialType.All);
+
+        if (thing is not null)
+        {
+            // Caution: If we're auto-highlighting, and the thing
+            // we've just selected is the thing that's already
+            // selected, don't do ANYTHING (not even if the user
+            // is apparently doing a multi-select).
+
+            // Note that if the user IS doing a multi-select, any
+            // auto-highlighting is supposed to go away automatically
+            // (see OnLButtonDown && OnMouseMove).
+
+            /*
+            if (m_IsAutoSelect==1 && Object.ReferenceEquals(thing, m_Selection.SingleOrDefault))
+                return;
+
+            if (isMultiSelect)
+            {
+                // Add the thing to the selection (or remove it if
+                // it's currently selected).
+                AddOrRemoveFromSelection(thing);
+            }
+            else
+            {
+                SetSelection(new Selection(thing, p));
+            }
+            */
+            SetSelection(new Selection(thing, p));
+        }
+        else
+        {
+            // Ensure the selection has been unhighlighted & clear out the selection.
+            if (!isMultiSelect)
+                SetSelection(null);
+        }
+
+        // If we've now got a simple selection, notify any commands
+        // that are running so that their stuff will draw on top
+        // of the highlighting.
+        //OnSelect();
+
+        // If we are doing an inverse dialog, make sure its point
+        // coloring remains regardless of what is currently selected.
+        //m_Inverse?.Draw();
+    }
+
+    private IMapObject? Select(double mapScale, IPosition p, SpatialType spatialType)
+    {
+        var o = SelectObject(mapScale, p, spatialType);
+        
+        if (o is not null)
+            SetSelection(new Selection(o, p));
+        else
+            SetSelection(null);
+
+        return o;
+    }
+
+    private IMapObject? SelectObject(double mapScale, IPosition p, SpatialType spatialType)
+    {
+        if (_model.Store is null)
+            return null;
+        
+        var displayTypes = GetTypesAtCurrentScale();
+        var findTypes = spatialType & displayTypes;
+
+        if (findTypes == SpatialType.None)
+            return null;
+        
+        var settings = _model.Store.Settings;
+        var storeModel = _model.Store.Model;
+        IMapObject? result = null;
+
+        // Try to find a point feature if points are drawn.
+        if (findTypes.HasFlag(SpatialType.Point))
+        {
+            ILength size = new Length(settings.PointHeight * 0.5);
+            result = storeModel.QueryClosest(p, size, SpatialType.Point);
+            if (result is not null)
+                return result;
+        }
+
+        ILength tol = new Length(0.001 * mapScale);
+
+        // Try to find a line, using a tolerance of 1mm at the draw scale.
+        if (findTypes.HasFlag(SpatialType.Line))
+        {
+            result = storeModel.QueryClosest(p, tol, SpatialType.Line);
+            if (result is not null)
+                return result;
+        }
+
+        // Try for a text string if text is drawn.
+        // The old software handles text by checking that the point is inside
+        // the outline, not sure whether the new index provides acceptable alternative.
+        if (findTypes.HasFlag(SpatialType.Text))
+        {
+            result = storeModel.QueryClosest(p, tol, SpatialType.Text);
+            if (result is not null)
+                return result;
+        }
+
+        // Just return if a command dialog is up,
+        // since selecting a polygon is distracting at that stage
+        // (really, this applies to things like intersect commands).
+        // There MIGHT be cases at some later date where we really
+        // do want to select pols...
+        // For updates, allow polygon selection
+/*
+        if (IsCommandRunning && m_Command is not UpdateUI)
+            return null;
+*/
+        if (findTypes.HasFlag(SpatialType.Polygon))
+        {
+            IPointGeometry pg = PointGeometry.Create(p);
+            var pol = new FindPointContainerQuery(storeModel.Index, pg).Result;
+            if (pol is not null)
+                return pol;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Remembers a new selection
+    /// </summary>
+    /// <param name="newSel">The new selection (specify null to clear any current selection)</param>
+    /// <returns>True if selection changed. False if the selection matches the current selection</returns>
+    private bool SetSelection(Selection? newSel)
+    {
+        var ss = newSel is null ? new Selection() : newSel;
+        if (_selection.IsEqual(ss))
+            return false;
+
+        _selection = ss;
+        _mapData.RefreshGraphics();
+        /*
+        m_MapControl?.OnSelectionChanged(m_Selection);
+
+        ISpatialObject? item = ss.SingleOrDefault;
+        m_Main.SetSelection(item);
+
+        // If a single item has been selected
+        if (item is not null)
+        {
+            if (item is DividerObject d)
+                item = d.Divider.Line;
+
+            if (item is PointFeature selPoint)
+            {
+                if (ArePointsDrawn)
+                {
+                    m_Inverse?.OnSelectPoint(selPoint);
+                    m_Command?.OnSelectPoint(selPoint);
+                }
+            }
+            else if (item is LineFeature selLine)
+            {
+                if (m_Command is not null)
+                {
+                    m_Command.OnSelectLine(selLine);
+                }
+            }
+
+            // 20100709 -- Not sure about this. If the user wants to point at the
+            // same point twice in succession, the fact that the point is still
+            // selected means the 2nd pointing won't get passed down (we tested
+            // for a change above).
+
+            if (m_Command is not null)
+            {
+                // 20101005 -- Allow highlighting of polygons, since their selection
+                // should not interfere with command dialogs (and in things like the
+                // update UI, it can be useful to confirm that topology is ok).
+
+                if (item is not Polygon)
+                    ClearSelection();
+            }
+        }
+
+        m_HasSelectionChanged = true;
+        */
         return true;
     }
 }

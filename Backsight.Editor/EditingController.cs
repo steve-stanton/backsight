@@ -317,6 +317,7 @@ class EditingController
     /// <summary>
     /// Frees any area selection tool.
     /// </summary>
+    /// 
     void FreeAreaSelectionTool()
     {
         if (m_Sel is not null)

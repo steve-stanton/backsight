@@ -207,12 +207,12 @@ public class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersiste
     /// <summary>
     /// The point feature at the start of the line.
     /// </summary>
-    internal PointFeature StartPoint => m_From;
+    public PointFeature StartPoint => m_From;
 
     /// <summary>
     /// The point feature at the end of the line.
     /// </summary>
-    internal PointFeature EndPoint => m_To;
+    public PointFeature EndPoint => m_To;
 
     /// <summary>
     /// Is a divider associated with this line visible?
@@ -252,7 +252,7 @@ public class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersiste
     /// <summary>
     /// Is this line currently a polygon boundary (with defined topology)
     /// </summary>
-    internal bool HasTopology => m_Topology is not null;
+    public bool HasTopology => m_Topology is not null;
 
     /// <summary>
     /// Marks polygons affected by the introduction of a new line (possibly via
@@ -948,7 +948,7 @@ return pSub;
     /// <summary>
     /// The topology for this line (null if the line isn't currently topological).
     /// </summary>
-    internal Topology? Topology => m_Topology;
+    public Topology? Topology => m_Topology;
 
     /// <summary>
     /// Intersect this line with another line.

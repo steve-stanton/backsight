@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// This class assumes that polygon topology is completely up to date.
 /// </summary>
 /// <seealso cref="FindIslandContainerQuery"/>
-class FindPointContainerQuery
+public class FindPointContainerQuery
 {
     /// <summary>
     /// The position you want the container for.
@@ -36,7 +36,7 @@ class FindPointContainerQuery
     /// </summary>
     /// <param name="index">The spatial index to search</param>
     /// <param name="point">The position you want the container for</param>
-    internal FindPointContainerQuery(IMapIndex index, IPointGeometry p)
+    public FindPointContainerQuery(IMapIndex index, IPointGeometry p)
     {
         m_Point = p;
         m_Result = null;
@@ -101,5 +101,5 @@ class FindPointContainerQuery
     /// <summary>
     /// The result of the query (null if no features were found within the query region).
     /// </summary>
-    internal Polygon? Result => m_Result;
+    public Polygon? Result => m_Result;
 }

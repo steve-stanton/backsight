@@ -73,7 +73,7 @@ class MapCanvas : IDisposable
     }
 
     /// <summary>
-    /// Draws a point as a filled square.
+    /// Draws a point as a square.
     /// </summary>
     /// <param name="p">The position of the point (the center of the rendered square).</param>
     /// <param name="style">The style to use for drawing the point.</param>
@@ -199,7 +199,6 @@ class MapCanvas : IDisposable
         font.Size = 100f;
 
         // How big would that make the text (in screen units)
-        //var skBounds = new SKRect();
         font.MeasureText(text, out SKRect skBounds);
         if (skBounds.Height <= 0)
             throw new NotImplementedException("SKFont.MeasureText() returned unexpected height");
@@ -217,5 +216,47 @@ class MapCanvas : IDisposable
 
         // So how much do we need to scale in X to give us the required width?
         font.ScaleX = (float)(textGeom.Width / gwd);
+    }
+
+    internal void DrawLine(LineGeometry geom, PaintStyle style)
+    {
+        if (geom is SectionGeometry section)
+            geom = section.Make();
+
+        if (geom is SegmentGeometry seg)
+        {
+            DrawLine(seg.Start, seg.End, style);
+        }
+        else if (geom is MultiSegmentGeometry multiSeg)
+        {
+            DrawPath(multiSeg, style);
+        }
+        else if (geom is ArcGeometry arc)
+        {
+            DrawArc(arc, style);
+        }
+    }
+    
+    internal void DrawPolygon(Polygon pol, double mapScale, PaintStyle style)
+    {
+        // While SKPath does have an ArcTo method that lets you include circular arcs in the
+        // path, that tends to complicate things here - just approximate arcs on each ring
+        // (since that's the way it worked in the past).
+
+        var drawWindow = _viewport.ToExtent().ToWindow();
+        var outlines = pol.GetRingOutlines(mapScale, drawWindow);
+
+        using var path = new SKPath();
+
+        foreach (var outline in outlines)
+        {
+            path.MoveTo(_viewport.ToScreenPoint(outline[0]));
+
+            foreach (var p in outline.Skip(1))
+                path.LineTo(_viewport.ToScreenPoint(p));
+        }
+
+        // TODO: Can the path be clipped (e.g. street polygons that go everywhere)? Is it worth it?
+        _canvas.DrawPath(path, GetPaint(style));
     }
 }

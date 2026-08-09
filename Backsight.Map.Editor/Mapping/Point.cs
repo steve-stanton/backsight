@@ -8,7 +8,6 @@ internal class Point : FeatureBase
     private static readonly PaintStyle _defaultStyle = new()
     {
         Color = SKColors.Black,
-        IsAntialias = true,
         Style = SKPaintStyle.Fill
     };
     

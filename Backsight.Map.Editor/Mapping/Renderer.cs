@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using Backsight.Geometry;
 using Backsight.Map.Editor.ViewModels;
 using Backsight.Model;
 using Mapsui;
 using Mapsui.Extensions;
 using Mapsui.Layers;
 using Mapsui.Rendering;
-using Mapsui.Rendering.Skia.Functions;
 using SkiaSharp;
+using PointFeature = Mapsui.Layers.PointFeature;
 
 namespace Backsight.Map.Editor.Mapping;
 
@@ -37,27 +36,18 @@ public interface IMapControlRenderer
 /// </summary>
 class Renderer : IMapControlRenderer
 {
-    internal const string RendererName = "backsight-map-renderer";
-    
     private readonly IMapEditorViewModel _viewModel;
     
     public Renderer(IMapEditorViewModel viewModel)
     {
         _viewModel = viewModel;
-        Mapsui.Rendering.Skia.MapRenderer.RegisterLayerRenderer(RendererName, RenderMap);
+        Mapsui.Rendering.Skia.MapRenderer.RegisterLayerRenderer(viewModel.RendererName, RenderMap);
     }
     
     public void RenderMap(SKCanvas canvas, Viewport viewport, ILayer layer, RenderService renderService)
     {
         Console.WriteLine("render " + _viewModel.CurrentMapName);
-        
-        // The implementation of GetFeatures by the Layer class (which is the only type of layer that we care about)
-        // just returns what it has cached - the supplied extent and resolution are ignored.
-
         int n = 0;
-        
-        var extent = new MRect(0.0); // viewport.ToExtent()
-        var resolution = 0.0; // viewport.Resolution
 
         double? pointHeight = null;
         var settings = _viewModel.Settings;
@@ -70,6 +60,12 @@ class Renderer : IMapControlRenderer
             
         using var draw = new MapCanvas(canvas, viewport, pointHeight);
         
+        // The implementation of GetFeatures by the Layer class (which is the only type of layer that we care about)
+        // just returns what it has cached - the supplied extent and resolution are ignored.
+
+        var extent = new MRect(0.0); // viewport.ToExtent()
+        var resolution = 0.0; // viewport.Resolution
+        
         //foreach (var feature in layer.GetFeatures(viewport.ToExtent(), viewport.Resolution))
         foreach (var feature in layer.GetFeatures(extent, resolution).OfType<FeatureBase>())
         {
@@ -80,6 +76,9 @@ class Renderer : IMapControlRenderer
         // Draw any intersections when required
         if (pointHeight is not null && settings?.IntersectionsDrawn == true)
             RenderIntersections(draw);
+        
+        // Draw any selected items
+        RenderSelection(draw);
         
         Console.WriteLine("rendered " + n);
     }
@@ -94,7 +93,6 @@ class Renderer : IMapControlRenderer
         var style = new PaintStyle
         {
             Color = SKColors.Black,
-            IsAntialias = true,
             Style = SKPaintStyle.Stroke
         };
 
@@ -105,5 +103,74 @@ class Renderer : IMapControlRenderer
             canvas.DrawPoint(x, style);
             return true;
         });
+    }
+
+    private void RenderSelection(MapCanvas canvas)
+    {
+        var drawTypes = _viewModel.GetTypesAtCurrentScale();
+        var arePointsDrawn = drawTypes.HasFlag(SpatialType.Point);
+        
+        foreach (var item in _viewModel.Selection.Items)
+        {
+            if (item is Model.PointFeature pt)
+            {
+                new Point(pt).Render(canvas, new PaintStyle
+                {
+                    Color = SKColors.Red,
+                    Style = SKPaintStyle.Fill
+                });
+            }
+            else if (item is LineFeature line)
+            {
+                new Line(line).Render(canvas, new PaintStyle
+                {
+                    Color = SKColors.Red,
+                    Style = SKPaintStyle.Stroke,
+                    StrokeWidth = 5f
+                });
+
+                if (arePointsDrawn)
+                {
+                    new Point(line.StartPoint).Render(canvas, new PaintStyle
+                    {
+                        Color = SKColors.DarkBlue,
+                        Style = SKPaintStyle.Fill
+                    });
+                
+                    new Point(line.EndPoint).Render(canvas, new PaintStyle
+                    {
+                        Color = SKColors.Aqua,
+                        Style = SKPaintStyle.Fill
+                    });
+                }
+            }
+            else if (item is TextFeature text)
+            {
+                new Text(text).Render(canvas, new PaintStyle
+                {
+                    Color = SKColors.Red,
+                    Style = SKPaintStyle.Fill
+                });
+            }
+            else if (item is Polygon pol)
+            {
+                canvas.DrawPolygon(pol, _viewModel.MapScale, new PaintStyle
+                {
+                    Color = SKColors.LightSalmon,
+                    Style = SKPaintStyle.Fill
+                });
+            }
+        }
+
+        var section = _viewModel.Selection.LineSection;
+        if (section is not null)
+        {
+            canvas.DrawLine(section, new PaintStyle
+            {
+                Color = SKColors.Yellow,
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 2f
+            });
+        }
     }
 }

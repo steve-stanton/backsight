@@ -8,7 +8,6 @@ class Line : FeatureBase
     private static readonly PaintStyle _defaultStyle = new()
     {
         Color = SKColors.Black,
-        IsAntialias = true,
         Style = SKPaintStyle.Stroke,
         StrokeWidth = 1f
     };
@@ -24,20 +23,6 @@ class Line : FeatureBase
     {
         var style = altStyle ?? _defaultStyle;
         var geom = Feature.LineGeometry;
-        if (geom is SectionGeometry section)
-            geom = section.Make();
-
-        if (geom is SegmentGeometry seg)
-        {
-            canvas.DrawLine(seg.Start, seg.End, style);
-        }
-        else if (geom is MultiSegmentGeometry multiSeg)
-        {
-            canvas.DrawPath(multiSeg, style);
-        }
-        else if (geom is ArcGeometry arc)
-        {
-            canvas.DrawArc(arc, style);
-        }
+        canvas.DrawLine(Feature.LineGeometry, style);
     }
 }

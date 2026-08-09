@@ -7,7 +7,7 @@ namespace Backsight.Model;
 /// Topology for a line. Base class for <see cref="LineTopology"/> and
 /// <see cref="SectionTopologyList"/>
 /// </summary>
-abstract class Topology : IEnumerable<IDivider>
+public abstract class Topology : IEnumerable<IDivider>
 {
     /// <summary>
     /// Creates new topology for the specified line.

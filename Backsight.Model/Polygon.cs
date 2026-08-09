@@ -9,7 +9,7 @@ namespace Backsight.Model;
 /// the <see cref="IDivider"/> objects that define the outer perimeter of the area,
 /// and a collection of any islands that may exist within the area.
 /// </summary>
-class Polygon : Ring
+public class Polygon : Ring
 {
     /// <summary>
     /// Any islands (null if there aren't any).
@@ -159,7 +159,7 @@ class Polygon : Ring
         }
     }
 
-    internal IPosition[][] GetRingOutlines(double mapScale, IWindow extent)
+    public IPosition[][] GetRingOutlines(double mapScale, IWindow extent)
     {
         // For any circular arcs, we will need to determine a suitable
         // arc tolerance, based on the current draw scale. Try 0.1mm at scale.

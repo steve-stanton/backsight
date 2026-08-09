@@ -13,12 +13,12 @@ using IFeature = Mapsui.IFeature;
 
 namespace Backsight.Map.Editor.Mapping;
 
-public class MapProvider : IProvider
+class MapProvider : IProvider
 {
     private readonly IMapEditorViewModel _viewModel;
     private readonly IMapStore _store;
     
-    public MapProvider(IMapEditorViewModel viewModel, IMapStore store)
+    internal MapProvider(IMapEditorViewModel viewModel, IMapStore store)
     {
         _viewModel = viewModel;
         _store = store;

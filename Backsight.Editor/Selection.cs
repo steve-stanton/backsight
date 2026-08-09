@@ -179,7 +179,7 @@ class Selection : ISpatialSelection
 
         if (a.Count != b.Count)
             return false;
-
+        
         foreach (ISpatialObject sob in b.Items)
         {
             bool found = false;

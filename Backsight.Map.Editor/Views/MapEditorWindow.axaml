@@ -15,6 +15,7 @@
     </Design.DataContext>
 
     <Grid>
+        <!-- The context menu is supplied by the view model on a right click (see OnPointerPressed) -->
         <mapsui:MapControl
             x:Name="MapDisplay"
             Background="Transparent"/>
