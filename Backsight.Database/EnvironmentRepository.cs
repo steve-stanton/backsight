@@ -68,7 +68,7 @@ public class EnvironmentRepository : DbRepository<SqliteConnection>, IEnvironmen
     public EnvironmentRepository(string connectionString) :
         base(connectionString,
             commandTimeout: null,
-            trace: new ConsoleTrace(),
+            // trace: new ConsoleTrace(),
             cache: null, // use MemoryCache -- consider using a do-nothing cache
             cacheItemExpiration: Int32.MaxValue)
     {

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Models;
+using Backsight.Map.Editor.Tools;
 using Backsight.Model;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mapsui;
 using Mapsui.Extensions;
@@ -85,6 +88,17 @@ internal interface IMapEditorViewModel
 /// </summary>
 public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 {
+    /// <summary>
+    /// The cursor to display over the map.
+    /// </summary>
+    [ObservableProperty]
+    private Cursor _mapCursor = Cursor.Default;
+
+    /// <summary>
+    /// The current map navigation tool (if any).
+    /// </summary>
+    private MapDisplayTool? _mapTool = null;
+    
     /// <summary>
     /// The application model.
     /// </summary>
@@ -514,12 +528,25 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         Console.WriteLine("Click6");
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanStartMapDisplayTool))]
     private void Pan()
     {
-        Console.WriteLine("Click7");
+        _mapTool = new PanMapTool(this);
+        _mapTool.Start();
+    }
+    
+    private bool CanStartMapDisplayTool => _mapTool is null;
+
+    internal void FinishTool()
+    {
+        _mapTool = null;
     }
 
+    internal void Escape()
+    {
+        _mapTool?.Escape();
+    }
+    
     [RelayCommand]
     private void Refresh()
     {

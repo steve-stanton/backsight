@@ -67,6 +67,8 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
             if (DataContext is IMapEditorViewModel { CurrentMapName: not null } vm)
                 vm.CloseMap();
         };
+        
+        KeyDown += OnKeyDown;
 
         MapDisplay.PointerPressed += OnPointerPressed;
         MapDisplay.PointerMoved += OnPointerMoved;
@@ -174,4 +176,30 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
             vm.OnMouseMove(p);
         }
     }
+
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        const Key escapeKey = Key.Escape;
+        Console.WriteLine($"MapEditorWindow Key={e.Key} {e.KeyModifiers}");
+
+        if (DataContext is not MapEditorViewModel vm)
+            return;
+        /*
+        if (e.KeyModifiers == KeyModifiers.Alt)
+        {
+            bool redraw = false;
+            
+            if (e.Key == Key.Left)
+                redraw = _drawHistory.SetPrevious();
+            else if (e.Key == Key.Right)
+                redraw = _drawHistory.SetNext();
+
+            if (redraw)
+                DrawExtent();
+        }
+*/
+        if (e.Key == escapeKey)
+            vm.Escape();
+    }
+
 }

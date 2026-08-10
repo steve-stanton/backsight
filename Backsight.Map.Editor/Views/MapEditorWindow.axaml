@@ -196,6 +196,7 @@
         <Grid>
             <mapsui:MapControl
                 x:Name="MapDisplay"
+                Cursor="{Binding MapCursor}"
                 Background="Transparent"/>
             <Canvas
                 x:Name="MapOverlay"
