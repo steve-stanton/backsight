@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Backsight.Map.Editor.Mapping;
+using Avalonia.Interactivity;
 using Backsight.Map.Editor.ViewModels;
 using Mapsui.Extensions;
 
@@ -14,6 +14,12 @@ namespace Backsight.Map.Editor.Views;
 // 3. canvas-specific drawing
 public partial class MapEditorWindow : Avalonia.Controls.Window
 {
+    /// <summary>
+    /// Dynamically created menu items for a list of recent maps.
+    /// </summary>
+    private readonly List<MenuItem> _recentMapMenuItems = [];
+    private MapEditorViewModel? _recentMapsViewModel;
+
     public MapEditorWindow()
     {
         InitializeComponent();
@@ -27,6 +33,8 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
                 Console.WriteLine("MapEditorViewModel attached to view");
                 MapDisplay.Map = vm.MapData;
             }
+
+            _recentMapsViewModel = DataContext as MapEditorViewModel;
         };
 
         Opened += async (_, _) =>
@@ -64,6 +72,37 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         };
 
         MapDisplay.PointerPressed += OnPointerPressed;
+    }
+
+    private void OnFileMenuOpened(object? sender, RoutedEventArgs e)
+    {
+        _recentMapsViewModel = DataContext as MapEditorViewModel;
+        RebuildRecentMapsMenu();
+    }
+
+    private void RebuildRecentMapsMenu()
+    {
+        foreach (var item in _recentMapMenuItems)
+            FileMenu.Items.Remove(item);
+
+        _recentMapMenuItems.Clear();
+
+        if (_recentMapsViewModel is null)
+            return;
+
+        var insertAt = FileMenu.Items.IndexOf(RecentMapsAnchor) + 1;
+        foreach (var mapName in _recentMapsViewModel.RecentMaps)
+        {
+            var item = new MenuItem
+            {
+                Header = mapName,
+                Command = _recentMapsViewModel.OpenRecentMapCommand,
+                CommandParameter = mapName
+            };
+
+            FileMenu.Items.Insert(insertAt++, item);
+            _recentMapMenuItems.Add(item);
+        }
     }
 
     /// <summary>

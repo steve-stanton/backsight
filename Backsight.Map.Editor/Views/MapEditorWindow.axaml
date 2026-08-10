@@ -14,15 +14,78 @@
         <vm:MapEditorViewModel/>
     </Design.DataContext>
 
-    <Grid>
-        <!-- The context menu is supplied by the view model on a right click (see OnPointerPressed) -->
-        <mapsui:MapControl
-            x:Name="MapDisplay"
-            Background="Transparent"/>
-        <Canvas
-            x:Name="MapOverlay"
-            Background="Transparent"
-            IsHitTestVisible="False"/>
-    </Grid>
+    <!-- Register key bindings on the window in case the menu is closed -->
+
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+N" Command="{Binding FileNewCommand}" />
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding FileOpenCommand}" />
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding FileSaveCommand}" />
+    </Window.KeyBindings>
+        
+    <DockPanel>
+        <!-- See https://docs.avaloniaui.net/docs/how-to/menu-how-to -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem x:Name="FileMenu"
+                      Header="File"
+                      SubmenuOpened="OnFileMenuOpened">
+                <MenuItem
+                    Header="_New"
+                    Command="{Binding FileNewCommand}"
+                    ToolTip.Tip="Create a new map"
+                    InputGesture="Ctrl+N"
+                    />
+                <MenuItem
+                    Header="_Open"
+                    Command="{Binding FileOpenCommand}"
+                    ToolTip.Tip="Open an existing map"
+                    InputGesture="Ctrl+O"
+                />
+                <MenuItem
+                    Header="_Save"
+                    Command="{Binding FileSaveCommand}"
+                    ToolTip.Tip="Save the current map"
+                    InputGesture="Ctrl+S"
+                />
+                <Separator/>
+                <MenuItem
+                    Header="Show _Changes..."
+                    Command="{Binding FileShowChangesCommand}"
+                />
+                <Separator/>
+                <MenuItem
+                    Header="S_tatistics..."
+                    Command="{Binding FileStatisticsCommand}"
+                    ToolTip.Tip="List file statistics"
+                />
+                <MenuItem
+                    Header="Coordinate S_ystem..."
+                    Command="{Binding FileCoordinateSystemCommand}"
+                />
+                <MenuItem
+                    Header="Chec_k..."
+                    Command="{Binding FileCheckCommand}"
+                    ToolTip.Tip="Check all polygons have labels and attributes"
+                />
+                <Separator/>
+                <MenuItem x:Name="RecentMapsAnchor"
+                          Header="Recent Maps"
+                          IsEnabled="False" />
+                <Separator/>
+                <MenuItem
+                    Header="E_xit"
+                    Command="{Binding FileExitCommand}" />
+            </MenuItem>
+        </Menu>
+        
+        <Grid>
+            <mapsui:MapControl
+                x:Name="MapDisplay"
+                Background="Transparent"/>
+            <Canvas
+                x:Name="MapOverlay"
+                Background="Transparent"
+                IsHitTestVisible="False"/>
+        </Grid>
+    </DockPanel>
 
 </Window>

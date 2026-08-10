@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Models;
 using Backsight.Model;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mapsui;
 using Mapsui.Extensions;
@@ -213,9 +217,17 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// <exception cref="ArgumentException">Map name cannot be empty.</exception>
     public void OpenMap(string mapName)
     {
+        Console.WriteLine("Opening " + mapName);
+        
         if (String.IsNullOrWhiteSpace(mapName))
             throw new ArgumentException("Map name cannot be empty.", nameof(mapName));
 
+        if (mapName.StartsWith("Test"))
+        {
+            Console.WriteLine("Skipping due to test");
+            return;
+        }
+        
         _model.OpenMap(mapName);
         var store = _model.Store ?? throw new ApplicationException("Open map has no store");
         CurrentMapName = mapName;
@@ -766,5 +778,76 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         m_HasSelectionChanged = true;
         */
         return true;
+    }
+
+    [RelayCommand]
+    private void FileNew()
+    {
+        Console.WriteLine(nameof(FileNew));
+    }
+
+    [RelayCommand]
+    private void FileOpen()
+    {
+        Console.WriteLine(nameof(FileOpen));
+    }
+
+    [RelayCommand]
+    private void FileSave()
+    {
+        Console.WriteLine(nameof(FileSave));
+    }
+    
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
+    private void FileShowChanges()
+    {
+        Console.WriteLine(nameof(FileShowChanges));
+    }
+    
+    private bool CommandNotImplemented => false;
+    
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
+    private void FileStatistics()
+    {
+        Console.WriteLine(nameof(FileStatistics));
+    }
+    
+    [RelayCommand]
+    private void FileCoordinateSystem()
+    {
+        Console.WriteLine(nameof(FileCoordinateSystem));
+    }
+    
+    [RelayCommand]
+    private void FileCheck()
+    {
+        Console.WriteLine(nameof(FileCheck));
+    }
+
+    [RelayCommand]
+    private void FileExit()
+    {
+        CloseMap();
+        
+        // Alternatively, raise an ExitRequested event and do this in the view
+        if (Application.Current?.ApplicationLifetime
+            is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.Shutdown();
+        }
+    }
+
+    // TODO: Should limit to 5 items
+    public ObservableCollection<string> RecentMaps { get; } =
+    [
+        "Test 1",
+        "Test 2",
+        "Test 3"
+    ];
+
+    [RelayCommand]
+    private void OpenRecentMap(string mapName)
+    {
+        OpenMap(mapName);
     }
 }

@@ -46,7 +46,7 @@ class Renderer : IMapControlRenderer
     
     public void RenderMap(SKCanvas canvas, Viewport viewport, ILayer layer, RenderService renderService)
     {
-        Console.WriteLine("render " + _viewModel.CurrentMapName);
+        //Console.WriteLine("render " + _viewModel.CurrentMapName);
         int n = 0;
 
         double? pointHeight = null;

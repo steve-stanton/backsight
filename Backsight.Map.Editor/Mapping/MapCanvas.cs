@@ -56,7 +56,7 @@ class MapCanvas : IDisposable
     /// </remarks>
     public void Dispose()
     {
-        Console.WriteLine($"Dispose {_paintCache.Count} styles");
+        //Console.WriteLine($"Dispose {_paintCache.Count} styles");
         foreach (var paint in _paintCache.Values)
             paint.Dispose();
     }
@@ -67,7 +67,7 @@ class MapCanvas : IDisposable
             return result;
 
         result = style.ToPaint();
-        Console.WriteLine($"style: {style}");
+        //Console.WriteLine($"style: {style}");
         _paintCache.Add(style, result);
         return result;
     }
