@@ -112,8 +112,11 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// The current selection (never null, but may be empty).
     /// </summary>
     private Selection _selection = new();
-    
-    //internal double MapScale => _model.Store is null ? 0 : _mapScale;
+
+    /// <summary>
+    /// Is auto-highlight enabled? (0=false, 1=true)
+    /// </summary>
+    private bool _autoSelect;
 
     public MapEditorViewModel() : this(new DesignMapEditorModel())
     {
@@ -585,6 +588,21 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         OnSelect(p, false);
     }
 
+    internal void OnMouseMove(IPosition p)
+    {
+        /*
+        if (_mapTool is not null)
+        {
+            var screenPosition = e.GetPosition(MapControl);
+            var (gx, gy) = _map.Navigator.Viewport.ScreenToWorldXY(screenPosition.X, screenPosition.Y);
+            var p = new Position(gx, gy);
+            _mapTool.MouseMove(p, MouseButton.Left);
+        }
+         */
+        if (AutoSelect)
+            Select(_mapScale, p, SpatialType.All);
+    }
+
     /// <summary>
     /// Tries to select something at the specified position
     /// </summary>
@@ -848,5 +866,75 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private void OpenRecentMap(string mapName)
     {
         OpenMap(mapName);
+    }
+
+    [RelayCommand(CanExecute = nameof(IsEditDeleteEnabled))]
+    private void EditDelete()
+    {
+        Console.WriteLine(nameof(EditDelete));
+    }
+
+    private bool IsEditDeleteEnabled()
+    {
+        return _selection.Count > 0;
+    }
+
+    [RelayCommand]
+    private void EditUndo()
+    {
+        Console.WriteLine(nameof(EditUndo));
+    }
+
+    [RelayCommand]
+    private void EditRepeat()
+    {
+        Console.WriteLine(nameof(EditRepeat));
+    }
+
+    [RelayCommand]
+    private void EditRecall()
+    {
+        Console.WriteLine(nameof(EditRecall));
+    }
+
+    [RelayCommand]
+    private void EditOperationHistory()
+    {
+        Console.WriteLine(nameof(EditOperationHistory));
+    }
+    
+    [RelayCommand]
+    private void EditIdAllocations()
+    {
+        Console.WriteLine(nameof(EditIdAllocations));
+    }
+
+    [RelayCommand]
+    private void EditAutoNumber()
+    {
+        Console.WriteLine(nameof(EditAutoNumber));
+    }
+
+    [RelayCommand]
+    private void EditPreferences()
+    {
+        Console.WriteLine(nameof(EditPreferences));
+    }
+
+    [RelayCommand(CanExecute = nameof(IsEditAutoHighlightEnabled))]
+    private void EditAutoHighlight()
+    {
+        AutoSelect = !AutoSelect;
+    }
+
+    public bool AutoSelect
+    {
+        get => _autoSelect;
+        private set => SetProperty(ref _autoSelect, value);
+    }
+
+    private bool IsEditAutoHighlightEnabled()
+    {
+        return _model.Extent is not null;
     }
 }

@@ -69,6 +69,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         };
 
         MapDisplay.PointerPressed += OnPointerPressed;
+        MapDisplay.PointerMoved += OnPointerMoved;
     }
 
     private void OnFileMenuOpened(object? sender, RoutedEventArgs e)
@@ -150,12 +151,27 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         }
         else
         {
-            var screenPosition = e.GetPosition(MapDisplay);
-            var (gx, gy) = MapDisplay.Map.Navigator.Viewport.ScreenToWorldXY(screenPosition.X, screenPosition.Y);
-            var p = new Position(gx, gy);
+            var p = GetWorldPosition(e);
             vm.OnLeftClick(p);
         }
         
         e.Handled = true;
+    }
+
+    private Position GetWorldPosition(PointerEventArgs e)
+    {
+        var screenPosition = e.GetPosition(MapDisplay);
+        var (gx, gy) = MapDisplay.Map.Navigator.Viewport.ScreenToWorldXY(screenPosition.X, screenPosition.Y);
+        return new Position(gx, gy);
+    }
+    
+
+    private void OnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (DataContext is MapEditorViewModel vm)
+        {
+            var p = GetWorldPosition(e);
+            vm.OnMouseMove(p);
+        }
     }
 }

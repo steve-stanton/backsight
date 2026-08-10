@@ -26,7 +26,7 @@
         <!-- See https://docs.avaloniaui.net/docs/how-to/menu-how-to -->
         <Menu DockPanel.Dock="Top">
             <MenuItem x:Name="FileMenu"
-                      Header="File"
+                      Header="_File"
                       SubmenuOpened="OnFileMenuOpened">
                 <MenuItem
                     Header="_New"
@@ -68,13 +68,128 @@
                 />
                 <Separator/>
                 <!-- Recent map names will be inserted below via code-behind -->
-                <MenuItem x:Name="RecentMapsAnchor"
-                          Header="Recent Maps"
-                          IsEnabled="False" />
+                <MenuItem x:Name="RecentMapsAnchor" Header="Recent Maps" IsEnabled="False" />
                 <Separator/>
                 <MenuItem
                     Header="E_xit"
                     Command="{Binding FileExitCommand}" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem
+                    Header="_Delete"
+                    Command="{Binding EditDeleteCommand}"
+                    ToolTip.Tip="Delete currently selected feature(s)"
+                    />
+                <MenuItem
+                    Header="_Undo"
+                    Command="{Binding EditUndoCommand}"
+                    ToolTip.Tip="Undo the last action"
+                    />
+                <MenuItem
+                    Header="_Repeat"
+                    Command="{Binding EditRepeatCommand}"
+                    />
+                <Separator/>
+                <MenuItem
+                    Header="Re_call"
+                    Command="{Binding EditRecallCommand}"
+                    />
+                <MenuItem 
+                    Header="_Operation History..."
+                    Command="{Binding EditOperationHistoryCommand}"
+                    ToolTip.Tip="Display + Edit Previous Operations"
+                    />
+                <Separator/>
+                <MenuItem
+                    Header="_ID Allocations..."
+                    Command="{Binding EditIdAllocationsCommand}"
+                    ToolTip.Tip="Allocate unique IDs for new features"
+                    />
+                <MenuItem
+                    Header="_Auto-Number"
+                    Command="{Binding EditAutoNumberCommand}"
+                    ToolTip.Tip="Toggle automatic point numbering"
+                    />
+                <Separator/>
+                <MenuItem
+                    Header="Preferences..."
+                    Command="{Binding EditPreferencesCommand}"
+                    ToolTip.Tip="Set editing preferences"
+                    />
+                <MenuItem
+                    Header="Auto-_Highlight"
+                    Command="{Binding EditAutoHighlightCommand}"
+                    ToggleType="CheckBox"
+                    IsChecked="{Binding AutoSelect, Mode=OneWay}"
+                    />
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem 
+                    Header="Over_view"
+                    Command="{Binding OverviewCommand}"
+                    ToolTip.Tip="Draw the complete map"
+                    />
+                <MenuItem
+                    Header="Zoom _In" 
+                    Command="{Binding ZoomInCommand}" 
+                    ToolTip.Tip="Redraw at magnified scale"
+                    />
+                <MenuItem
+                    Header="Zoom _Out"
+                    Command="{Binding ZoomOutCommand}" 
+                    ToolTip.Tip="Redraw at smaller scale"
+                    />
+                <MenuItem
+                    Header="Zoom _Rectangle" 
+                    Command="{Binding ZoomRectangleCommand}" 
+                    ToolTip.Tip="Redraw by specifying a rectangle"
+                    />
+                <MenuItem
+                    Header="Draw Scal_e..."
+                    Command="{Binding DrawScaleCommand}" 
+                    ToolTip.Tip="Draw map at a specific scale"
+                    />
+                <MenuItem
+                    Header="New _Center"
+                    Command="{Binding NewCenterCommand}" 
+                    ToolTip.Tip="Point at new center for the draw"
+                    />
+                <MenuItem
+                    Header="Pa_n" 
+                    Command="{Binding PanCommand}" 
+                    ToolTip.Tip="Drag the map display"
+                    />
+                <MenuItem
+                    Header="Re_fresh" 
+                    Command="{Binding RefreshCommand}" 
+                    ToolTip.Tip="Refresh the current draw"
+                    />
+                <Separator/>
+                <MenuItem
+                    Header="Previo_us" 
+                    Command="{Binding PreviousCommand}" 
+                    ToolTip.Tip="Draw the previous map extent"
+                    />
+                <MenuItem
+                    Header="Ne_xt" 
+                    Command="{Binding NextCommand}"
+                    ToolTip.Tip="Undo the last View Previous command"
+                    />
+            </MenuItem>
+            <MenuItem Header="_Data">
+                
+            </MenuItem>
+            <MenuItem Header="_Point">
+                
+            </MenuItem>
+            <MenuItem Header="_Line">
+                
+            </MenuItem>
+            <MenuItem Header="_Text">
+                
+            </MenuItem>
+            <MenuItem Header="_Intersect">
+                
             </MenuItem>
         </Menu>
         
