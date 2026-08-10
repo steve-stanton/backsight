@@ -156,8 +156,9 @@ class Renderer : IMapControlRenderer
             {
                 canvas.DrawPolygon(pol, _viewModel.MapScale, new PaintStyle
                 {
-                    Color = SKColors.LightSalmon,
-                    Style = SKPaintStyle.Fill
+                    Color = SKColors.Yellow,
+                    Style = SKPaintStyle.Fill,
+                    StrokeWidth = 2f
                 });
             }
         }

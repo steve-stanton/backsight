@@ -256,7 +256,42 @@ class MapCanvas : IDisposable
                 path.LineTo(_viewport.ToScreenPoint(p));
         }
 
+        // The shader option isn't part of PaintStyle, so just work with an un-cached version
+        using var paint = style.ToPaint();
+        paint.Shader = CreateShader(paint.Color, paint.StrokeWidth);
+        
         // TODO: Can the path be clipped (e.g. street polygons that go everywhere)? Is it worth it?
-        _canvas.DrawPath(path, GetPaint(style));
+        _canvas.DrawPath(path, paint);
     }
+
+    private static SKShader CreateShader(SKColor color, float strokeWidth = 1f, int tileSize = 8)
+    {
+        // This implementation was AI generated, but may also want to see this:
+        // https://bclehmann.github.io/2022/11/05/HatchingWithSKShader/
+
+        using var bitmap = new SKBitmap(tileSize, tileSize);
+        using var tileCanvas = new SKCanvas(bitmap);
+
+        tileCanvas.Clear(SKColors.Transparent);
+
+        using var hatchPaint = new SKPaint
+        {
+            Color = color,
+            StrokeWidth = strokeWidth,
+            Style = SKPaintStyle.Stroke,
+            IsAntialias = true
+        };
+
+        // One diagonal direction
+        tileCanvas.DrawLine(0, tileSize, tileSize, 0, hatchPaint);
+
+        // Other diagonal direction for cross-hatching
+        //tileCanvas.DrawLine(0, 0, tileSize, tileSize, hatchPaint);
+
+        return SKShader.CreateBitmap(
+            bitmap,
+            SKShaderTileMode.Repeat,
+            SKShaderTileMode.Repeat);
+    }
+    
 }
