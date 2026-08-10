@@ -67,6 +67,7 @@
                     ToolTip.Tip="Check all polygons have labels and attributes"
                 />
                 <Separator/>
+                <!-- Recent map names will be inserted below via code-behind -->
                 <MenuItem x:Name="RecentMapsAnchor"
                           Header="Recent Maps"
                           IsEnabled="False" />

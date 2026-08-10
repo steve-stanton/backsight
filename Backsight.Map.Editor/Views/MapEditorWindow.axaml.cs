@@ -18,7 +18,6 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
     /// Dynamically created menu items for a list of recent maps.
     /// </summary>
     private readonly List<MenuItem> _recentMapMenuItems = [];
-    private MapEditorViewModel? _recentMapsViewModel;
 
     public MapEditorWindow()
     {
@@ -33,8 +32,6 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
                 Console.WriteLine("MapEditorViewModel attached to view");
                 MapDisplay.Map = vm.MapData;
             }
-
-            _recentMapsViewModel = DataContext as MapEditorViewModel;
         };
 
         Opened += async (_, _) =>
@@ -76,27 +73,28 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
 
     private void OnFileMenuOpened(object? sender, RoutedEventArgs e)
     {
-        _recentMapsViewModel = DataContext as MapEditorViewModel;
         RebuildRecentMapsMenu();
     }
 
     private void RebuildRecentMapsMenu()
     {
+        if (DataContext is not MapEditorViewModel vm)
+            return;
+
+        // Clear out anything we previously had
         foreach (var item in _recentMapMenuItems)
             FileMenu.Items.Remove(item);
 
         _recentMapMenuItems.Clear();
 
-        if (_recentMapsViewModel is null)
-            return;
-
+        // Insert recent map names underneath the "Recent Maps" anchor
         var insertAt = FileMenu.Items.IndexOf(RecentMapsAnchor) + 1;
-        foreach (var mapName in _recentMapsViewModel.RecentMaps)
+        foreach (var mapName in vm.RecentMaps)
         {
             var item = new MenuItem
             {
                 Header = mapName,
-                Command = _recentMapsViewModel.OpenRecentMapCommand,
+                Command = vm.OpenRecentMapCommand,
                 CommandParameter = mapName
             };
 

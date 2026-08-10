@@ -6,7 +6,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Models;
 using Backsight.Model;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mapsui;
 using Mapsui.Extensions;
