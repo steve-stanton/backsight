@@ -154,7 +154,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         else
         {
             var p = GetWorldPosition(e);
-            vm.OnMouseDown(p);
+            vm.OnMouseDown(p, e.Properties.MouseButton);
         }
         
         e.Handled = true;
@@ -173,7 +173,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         if (DataContext is MapEditorViewModel vm)
         {
             var p = GetWorldPosition(e);
-            vm.OnMouseMove(p);
+            vm.OnMouseMove(p, e.Properties.MouseButton);
         }
     }
 
@@ -182,7 +182,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         if (DataContext is MapEditorViewModel vm)
         {
             var p = GetWorldPosition(e);
-            vm.OnMouseUp(p);
+            vm.OnMouseUp(p, e.Properties.MouseButton);
         }
     }
     private void OnKeyDown(object? sender, KeyEventArgs e)

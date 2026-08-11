@@ -585,7 +585,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         // TODO: Delete the currently selected feature
     }
 
-    internal void OnMouseDown(IPosition p)
+    internal void OnMouseDown(IPosition p, MouseButton b)
     {
         /*
          c.f. MapControl.mapPanel_MouseDown
@@ -636,32 +636,23 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         }
         else
         {
-            _mapTool.MouseDown(p, MouseButton.Left);
+            _mapTool.MouseDown(p, b);
         }
     }
 
-    internal void OnMouseMove(IPosition p)
+    internal void OnMouseMove(IPosition p, MouseButton b)
     {
-        /*
         if (_mapTool is not null)
-        {
-            var screenPosition = e.GetPosition(MapControl);
-            var (gx, gy) = _map.Navigator.Viewport.ScreenToWorldXY(screenPosition.X, screenPosition.Y);
-            var p = new Position(gx, gy);
-            _mapTool.MouseMove(p, MouseButton.Left);
-        }
-         */
-        if (_mapTool is not null)
-            _mapTool.MouseMove(p, MouseButton.Left);
+            _mapTool.MouseMove(p, b);
         
         if (AutoSelect)
             Select(_mapScale, p, SpatialType.All);
     }
 
-    internal void OnMouseUp(IPosition p)
+    internal void OnMouseUp(IPosition p, MouseButton b)
     {
         if (_mapTool is not null)
-            _mapTool.MouseUp(p, MouseButton.Left);
+            _mapTool.MouseUp(p, b);
     }
 
     /// <summary>
