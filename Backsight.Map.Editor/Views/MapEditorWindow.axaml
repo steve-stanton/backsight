@@ -198,10 +198,16 @@
                 x:Name="MapDisplay"
                 Cursor="{Binding MapCursor}"
                 Background="Transparent"/>
-            <Canvas
+            <ItemsControl
                 x:Name="MapOverlay"
-                Background="Transparent"
-                IsHitTestVisible="False"/>
+                ItemsSource="{Binding OverlayChildren}"
+                IsHitTestVisible="False">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas Background="Transparent"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
         </Grid>
     </DockPanel>
 

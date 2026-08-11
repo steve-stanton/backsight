@@ -16,12 +16,12 @@ internal class PanMapTool : MapDisplayTool
         return true;
     }
 
-    private protected override void MouseDown(IPosition p, MouseButton b)
+    internal override void MouseDown(IPosition p, MouseButton b)
     {
         ViewModel.MapCursor = EditingCursors.HandCursor;
     }
 
-    private protected override void MouseUp(IPosition p, MouseButton b)
+    internal override void MouseUp(IPosition p, MouseButton b)
     {
         ViewModel.MapCursor = EditingCursors.StartPanCursor;
     }
@@ -29,7 +29,6 @@ internal class PanMapTool : MapDisplayTool
     private protected override bool Finish()
     {
         (ViewModel as IMapEditorViewModel).MapData.Navigator.PanLock = true;
-        ViewModel.MapCursor = Cursor.Default;
         return base.Finish();   
     }
 }

@@ -19,15 +19,15 @@ internal abstract class MapDisplayTool(MapEditorViewModel viewModel)
         Finish();
     }
 
-    private protected virtual void MouseDown(IPosition p, MouseButton b)
+    internal virtual void MouseDown(IPosition p, MouseButton b)
     {
     }
 
-    private protected virtual void MouseUp(IPosition p, MouseButton b)
+    internal virtual void MouseUp(IPosition p, MouseButton b)
     {
     }
 
-    private protected virtual void MouseMove(IPosition p, MouseButton b)
+    internal virtual void MouseMove(IPosition p, MouseButton b)
     {
     }
 }

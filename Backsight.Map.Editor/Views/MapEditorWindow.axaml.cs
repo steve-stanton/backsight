@@ -72,6 +72,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
 
         MapDisplay.PointerPressed += OnPointerPressed;
         MapDisplay.PointerMoved += OnPointerMoved;
+        MapDisplay.PointerReleased += OnPointerReleased;
     }
 
     private void OnFileMenuOpened(object? sender, RoutedEventArgs e)
@@ -141,8 +142,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        var vm = DataContext as IMapEditorViewModel;
-        if (vm is null)
+        if (DataContext is not MapEditorViewModel vm)
             return;
         
         // c.f. EditingController.MouseDown
@@ -154,7 +154,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         else
         {
             var p = GetWorldPosition(e);
-            vm.OnLeftClick(p);
+            vm.OnMouseDown(p);
         }
         
         e.Handled = true;
@@ -177,6 +177,14 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         }
     }
 
+    private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (DataContext is MapEditorViewModel vm)
+        {
+            var p = GetWorldPosition(e);
+            vm.OnMouseUp(p);
+        }
+    }
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         const Key escapeKey = Key.Escape;

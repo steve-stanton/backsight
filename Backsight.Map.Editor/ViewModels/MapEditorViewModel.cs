@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using Mapsui;
 using Mapsui.Extensions;
 using Mapsui.Layers;
+using Mapsui.Manipulations;
 using Mapsui.Rendering.Skia.Extensions;
 
 namespace Backsight.Map.Editor.ViewModels;
@@ -56,15 +57,6 @@ internal interface IMapEditorViewModel
     IMapStore? Store { get; }
 
     /// <summary>
-    /// Creates context menu items (typically in response to a right click on the map display).
-    /// </summary>
-    /// <returns>The items that the view should present in a context menu (an empty list if
-    /// no menu should be shown).</returns>
-    IReadOnlyList<ContextMenuItem> GetContextMenuItems();
-
-    void OnLeftClick(IPosition p);
-    
-    /// <summary>
     /// The current selection (may be empty).
     /// </summary>
     IMapSelection Selection { get; }
@@ -94,6 +86,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [ObservableProperty]
     private Cursor _mapCursor = Cursor.Default;
 
+    [ObservableProperty]
+    private Avalonia.Controls.Controls _overlayChildren = new();
+    
     /// <summary>
     /// The current map navigation tool (if any).
     /// </summary>
@@ -277,8 +272,12 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         return true;
     }
 
-    /// <inheritdoc />
-    IReadOnlyList<ContextMenuItem> IMapEditorViewModel.GetContextMenuItems()
+    /// <summary>
+    /// Creates context menu items (typically in response to a right click on the map display).
+    /// </summary>
+    /// <returns>The items that the view should present in a context menu (an empty list if
+    /// no menu should be shown).</returns>
+    internal IReadOnlyList<ContextMenuItem> GetContextMenuItems()
     {
         // c.f. Backsight.Editor.MainForm.CreateContextMenu(ISpatialSelection)
         
@@ -510,10 +509,17 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanStartMapDisplayTool))]
     private void ZoomRectangle()
     {
-        Console.WriteLine("Click4");
+        _mapTool = new ZoomRectangleMapTool(this);
+        _mapTool.Start();
+    }
+
+    internal void ZoomTo(IWindow extent)
+    {
+        //_previousViewport = _map.Navigator.Viewport;
+        _mapData.Navigator.ZoomToBox(extent.ToMRect());
     }
 
     [RelayCommand]
@@ -539,6 +545,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     internal void FinishTool()
     {
+        MapCursor = Cursor.Default;
         _mapTool = null;
     }
 
@@ -578,41 +585,59 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         // TODO: Delete the currently selected feature
     }
 
-    void IMapEditorViewModel.OnLeftClick(IPosition p)
+    internal void OnMouseDown(IPosition p)
     {
-        Console.WriteLine("Left click at " + p);
-
         /*
-         c.f. Backsight.Editor.EditingController.MouseDown
-         
-        // If there's no command, or it doesn't handle left clicks...
-        else if (m_Command is null || !m_Command.LButtonDown(p))
-        {
-            bool isMultiSelect = (Control.ModifierKeys & Keys.Shift) != 0;
+         c.f. MapControl.mapPanel_MouseDown
+            // Ensure focus is with the map panel so that mouse wheel
+            // events will be received
+            mapPanel.Focus();
 
-            // If we're currently auto-highlighting, and the user is doing
-            // a multi-select, turn off auto-highlight and get rid of the
-            // properties window (confusing).
+            Position p = DisplayToGround(e.Location);
 
-            // TODO: May want to keep the properties window, but disabled. In the
-            // past, it was ok to close because the dialog rested on top of the
-            // map. Now, closing the property window causes a redraw, which is
-            // a bit unexpected in the middle of a multiselect.
-
-            if (isMultiSelect)
-            {
-                m_IsAutoSelect = 0;
-                m_Main.ClosePropertiesWindow();
-            }
-
-            if (m_Sel is null)
-                OnSelect(sender.MapScale, p, isMultiSelect);
+            if (m_Tool==null)
+                EditingController.Current.MouseDown(this, p, e.MouseButton);
             else
-                m_Sel.CtrlMouseDown(p);
-        }
+                m_Tool.MouseDown(p, e.MouseButton);
          */
-        // TODO: Attempt to select a feature at the clicked position (and assign it to Selection)
-        OnSelect(p, false);
+
+        if (_mapTool is null)
+        {
+            /*
+             c.f. Backsight.Editor.EditingController.MouseDown
+
+            // If there's no command, or it doesn't handle left clicks...
+            else if (m_Command is null || !m_Command.LButtonDown(p))
+            {
+                bool isMultiSelect = (Control.ModifierKeys & Keys.Shift) != 0;
+
+                // If we're currently auto-highlighting, and the user is doing
+                // a multi-select, turn off auto-highlight and get rid of the
+                // properties window (confusing).
+
+                // TODO: May want to keep the properties window, but disabled. In the
+                // past, it was ok to close because the dialog rested on top of the
+                // map. Now, closing the property window causes a redraw, which is
+                // a bit unexpected in the middle of a multiselect.
+
+                if (isMultiSelect)
+                {
+                    m_IsAutoSelect = 0;
+                    m_Main.ClosePropertiesWindow();
+                }
+
+                if (m_Sel is null)
+                    OnSelect(sender.MapScale, p, isMultiSelect);
+                else
+                    m_Sel.CtrlMouseDown(p);
+            }
+             */
+            OnSelect(p, false);
+        }
+        else
+        {
+            _mapTool.MouseDown(p, MouseButton.Left);
+        }
     }
 
     internal void OnMouseMove(IPosition p)
@@ -626,8 +651,17 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             _mapTool.MouseMove(p, MouseButton.Left);
         }
          */
+        if (_mapTool is not null)
+            _mapTool.MouseMove(p, MouseButton.Left);
+        
         if (AutoSelect)
             Select(_mapScale, p, SpatialType.All);
+    }
+
+    internal void OnMouseUp(IPosition p)
+    {
+        if (_mapTool is not null)
+            _mapTool.MouseUp(p, MouseButton.Left);
     }
 
     /// <summary>
@@ -963,5 +997,10 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private bool IsEditAutoHighlightEnabled()
     {
         return _model.Extent is not null;
+    }
+
+    internal ScreenPosition WorldToScreen(IPosition p)
+    {
+        return _mapData.Navigator.Viewport.WorldToScreen(p.X, p.Y);
     }
 }
