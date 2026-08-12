@@ -20,6 +20,9 @@
         <KeyBinding Gesture="Ctrl+N" Command="{Binding FileNewCommand}" />
         <KeyBinding Gesture="Ctrl+O" Command="{Binding FileOpenCommand}" />
         <KeyBinding Gesture="Ctrl+S" Command="{Binding FileSaveCommand}" />
+        <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}" />
+        <KeyBinding Gesture="Alt+Right" Command="{Binding NextCommand}" />
+        <KeyBinding Gesture="Alt+Left" Command="{Binding PreviousCommand}" />
     </Window.KeyBindings>
         
     <DockPanel>
@@ -150,11 +153,6 @@
                     ToolTip.Tip="Draw map at a specific scale"
                     />
                 <MenuItem
-                    Header="New _Center"
-                    Command="{Binding NewCenterCommand}" 
-                    ToolTip.Tip="Point at new center for the draw"
-                    />
-                <MenuItem
                     Header="Pa_n" 
                     Command="{Binding PanCommand}" 
                     ToolTip.Tip="Drag the map display"
@@ -163,17 +161,20 @@
                     Header="Re_fresh" 
                     Command="{Binding RefreshCommand}" 
                     ToolTip.Tip="Refresh the current draw"
+                    InputGesture="F5"
                     />
                 <Separator/>
                 <MenuItem
                     Header="Previo_us" 
                     Command="{Binding PreviousCommand}" 
                     ToolTip.Tip="Draw the previous map extent"
+                    InputGesture="Alt+Left"
                     />
                 <MenuItem
                     Header="Ne_xt" 
                     Command="{Binding NextCommand}"
                     ToolTip.Tip="Undo the last View Previous command"
+                    InputGesture="Alt+Right"
                     />
             </MenuItem>
             <MenuItem Header="_Data">
