@@ -80,7 +80,7 @@ class Renderer : IMapControlRenderer
         // Draw any selected items
         RenderSelection(draw);
         
-        Console.WriteLine("rendered " + n);
+        //Console.WriteLine("rendered " + n);
     }
 
     private void RenderIntersections(MapCanvas canvas)
@@ -107,6 +107,8 @@ class Renderer : IMapControlRenderer
 
     private void RenderSelection(MapCanvas canvas)
     {
+        var selection = _viewModel.Selection;
+        var isMultiSelect = selection.Items.Count > 1;
         var drawTypes = _viewModel.GetTypesAtCurrentScale();
         var arePointsDrawn = drawTypes.HasFlag(SpatialType.Point);
         
@@ -129,7 +131,7 @@ class Renderer : IMapControlRenderer
                     StrokeWidth = 5f
                 });
 
-                if (arePointsDrawn)
+                if (arePointsDrawn && !isMultiSelect)
                 {
                     new Point(line.StartPoint).Render(canvas, new PaintStyle
                     {

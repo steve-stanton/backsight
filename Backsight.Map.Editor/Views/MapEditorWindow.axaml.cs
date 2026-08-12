@@ -19,10 +19,15 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
     /// </summary>
     private readonly List<MenuItem> _recentMapMenuItems = [];
 
+    /// <summary>
+    /// Any keys that are currently pressed.
+    /// </summary>
+    private KeySelection _keySelection = KeySelection.None;
+    
     public MapEditorWindow()
     {
         InitializeComponent();
-
+        
         // Start out with a context that's only suitable in design mode (an effective context will get injected)
         //DataContext = new MapEditorViewModel(new DesignMapEditorModel());
         DataContextChanged += (_, _) =>
@@ -67,8 +72,9 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
             if (DataContext is IMapEditorViewModel { CurrentMapName: not null } vm)
                 vm.CloseMap();
         };
-        
+
         KeyDown += OnKeyDown;
+        KeyUp += OnKeyUp;
 
         MapDisplay.PointerPressed += OnPointerPressed;
         MapDisplay.PointerMoved += OnPointerMoved;
@@ -147,14 +153,16 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         
         // c.f. EditingController.MouseDown
         
-        if (e.Properties.IsRightButtonPressed)
+        var mb = e.Properties.MouseButton;
+        
+        if (mb == MouseButton.Right)
         {
             SetContextMenu(vm.GetContextMenuItems());
         }
         else
         {
             var p = GetWorldPosition(e);
-            vm.OnMouseDown(p, e.Properties.MouseButton);
+            vm.OnMouseDown(p, mb, _keySelection);
         }
         
         e.Handled = true;
@@ -187,27 +195,21 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
     }
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        const Key escapeKey = Key.Escape;
-        Console.WriteLine($"MapEditorWindow Key={e.Key} {e.KeyModifiers}");
-
         if (DataContext is not MapEditorViewModel vm)
             return;
-        /*
-        if (e.KeyModifiers == KeyModifiers.Alt)
-        {
-            bool redraw = false;
-            
-            if (e.Key == Key.Left)
-                redraw = _drawHistory.SetPrevious();
-            else if (e.Key == Key.Right)
-                redraw = _drawHistory.SetNext();
 
-            if (redraw)
-                DrawExtent();
-        }
-*/
-        if (e.Key == escapeKey)
+        //Console.WriteLine($"MapEditorWindow KeyDown={e.Key} {e.KeyModifiers}");
+
+        // The KeyEventArgs don't tell you which key just went down, it tells you all the keys that are now down
+        _keySelection = e.KeySelection;
+
+        if (e.Key == Key.Escape)
             vm.Escape();
     }
 
+    private void OnKeyUp(object? sender, KeyEventArgs e)
+    {
+        // The KeyEventArgs don't tell you which key just went up, it tells you what keys are still down
+        _keySelection = e.KeySelection;
+    }
 }

@@ -472,7 +472,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         new("Zoom Out", ZoomOutCommand),
         new("Zoom Rectangle", ZoomRectangleCommand),
         new("Draw Scale...", DrawScaleCommand),
-        new("New Center", NewCenterCommand),
         new("Pan", PanCommand),
         new("Refresh", RefreshCommand),
         ContextMenuItem.Separator,
@@ -528,12 +527,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         Console.WriteLine("Click5");
     }
 
-    [RelayCommand]
-    private void NewCenter()
-    {
-        Console.WriteLine("Click6");
-    }
-
     [RelayCommand(CanExecute = nameof(CanStartMapDisplayTool))]
     private void Pan()
     {
@@ -564,13 +557,13 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand]
     private void Previous()
     {
-        Console.WriteLine("Click9");
+        Console.WriteLine(nameof(Previous));
     }
 
     [RelayCommand]
     private void Next()
     {
-        Console.WriteLine("Click10");
+        Console.WriteLine(nameof(Next));
     }
 
     [RelayCommand]
@@ -585,7 +578,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         // TODO: Delete the currently selected feature
     }
 
-    internal void OnMouseDown(IPosition p, MouseButton b)
+    internal void OnMouseDown(IPosition p, MouseButton b, KeySelection ks)
     {
         /*
          c.f. MapControl.mapPanel_MouseDown
@@ -632,7 +625,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
                     m_Sel.CtrlMouseDown(p);
             }
              */
-            OnSelect(p, false);
+            bool isMultiSelect = ks.HasFlag(KeySelection.Shift);            
+            OnSelect(p, isMultiSelect);
         }
         else
         {
@@ -667,31 +661,24 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
         if (thing is not null)
         {
-            // Caution: If we're auto-highlighting, and the thing
-            // we've just selected is the thing that's already
-            // selected, don't do ANYTHING (not even if the user
-            // is apparently doing a multi-select).
+            // Caution: If we're auto-highlighting, and the thing we've just selected is the thing that's already
+            // selected, don't do ANYTHING (not even if the user is apparently doing a multi-select).
 
-            // Note that if the user IS doing a multi-select, any
-            // auto-highlighting is supposed to go away automatically
-            // (see OnLButtonDown && OnMouseMove).
-
-            /*
-            if (m_IsAutoSelect==1 && Object.ReferenceEquals(thing, m_Selection.SingleOrDefault))
+            // Note that if the user IS doing a multi-select, any auto-highlighting is supposed to go
+            // away automatically (see OnLButtonDown && OnMouseMove).
+            
+            if (_autoSelect && ReferenceEquals(thing, _selection.SingleOrDefault))
                 return;
 
             if (isMultiSelect)
             {
-                // Add the thing to the selection (or remove it if
-                // it's currently selected).
+                // Add the thing to the selection (or remove it if it's currently selected).
                 AddOrRemoveFromSelection(thing);
             }
             else
             {
                 SetSelection(new Selection(thing, p));
             }
-            */
-            SetSelection(new Selection(thing, p));
         }
         else
         {
@@ -710,6 +697,15 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         //m_Inverse?.Draw();
     }
 
+    void AddOrRemoveFromSelection(IMapObject o)
+    {
+        var sel = new Selection(_selection.Items);
+        if (!sel.Remove(o))
+            sel.Add(o);
+
+        SetSelection(sel);
+    }
+    
     private IMapObject? Select(double mapScale, IPosition p, SpatialType spatialType)
     {
         var o = SelectObject(mapScale, p, spatialType);
