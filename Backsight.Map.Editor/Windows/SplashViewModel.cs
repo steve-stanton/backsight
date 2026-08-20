@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Backsight.Map.Editor.ViewModels;
+namespace Backsight.Map.Editor.Windows;
 
 public class SplashViewModel : ViewModelBase
 {
     public async Task InitializeAsync()
     {
-        await Task.Delay(TimeSpan.FromSeconds(2));
+        await Task.Delay(TimeSpan.FromSeconds(1));
     }
     
 }

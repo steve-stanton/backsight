@@ -1,9 +1,7 @@
 ﻿using System;
 using Avalonia.Interactivity;
-using Backsight.Map.Editor.ViewModels;
-using Backsight.Map.Editor.Windows;
 
-namespace Backsight.Map.Editor.Views;
+namespace Backsight.Map.Editor.Windows;
 
 public partial class StartupWindow : Avalonia.Controls.Window
 {

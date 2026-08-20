@@ -1,4 +1,4 @@
-﻿namespace Backsight.Map.Editor.Views;
+﻿namespace Backsight.Map.Editor.Windows;
 
 public partial class SplashWindow : Avalonia.Controls.Window
 {

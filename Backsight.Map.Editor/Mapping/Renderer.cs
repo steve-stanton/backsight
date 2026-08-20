@@ -1,14 +1,11 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
-using Backsight.Map.Editor.ViewModels;
+using Backsight.Map.Editor.Windows;
 using Backsight.Model;
 using Mapsui;
-using Mapsui.Extensions;
 using Mapsui.Layers;
 using Mapsui.Rendering;
 using SkiaSharp;
-using PointFeature = Mapsui.Layers.PointFeature;
 
 namespace Backsight.Map.Editor.Mapping;
 

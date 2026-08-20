@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Backsight.Model;
 
-namespace Backsight.Map.Editor.ViewModels;
+namespace Backsight.Map.Editor.Models;
 
 /// <written by="Steve Stanton" on="13-NOV-2007" />
 /// <summary>

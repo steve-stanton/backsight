@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Backsight.Map.Editor.ViewModels;
 using Mapsui.Extensions;
 
-namespace Backsight.Map.Editor.Views;
+namespace Backsight.Map.Editor.Windows;
 
 // This should be responsible for:
 // 1. holding the MapControl

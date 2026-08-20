@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Input;
 
-namespace Backsight.Map.Editor.ViewModels;
+namespace Backsight.Map.Editor.Windows;
 
 /// <summary>
 /// Describes one entry in a context menu that a view model wants to display.

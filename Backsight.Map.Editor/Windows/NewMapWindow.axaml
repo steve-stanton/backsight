@@ -8,23 +8,27 @@
         x:Class="Backsight.Map.Editor.Windows.NewMapWindow"
         x:DataType="vm:NewMapViewModel"
         WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
         Background="LightGray"
         Title="New Map">
-    <Grid RowDefinitions="42 42 42" ColumnDefinitions="120 *" Margin="20">
+    
+    <GroupBox Header="New Map" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" >
+        
+    <Grid RowDefinitions="Auto Auto Auto" ColumnDefinitions="120 *" Margin="20">
         
         <Label Content="Project name" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center"/>
         <TextBox Text="{Binding MapName}"
                  HorizontalAlignment="Left"
                  TabIndex="0"
                  Height="32"
-                 Width="292" Grid.Row="0" Grid.Column="1"/>
+                 Width="250" Grid.Row="0" Grid.Column="1"/>
         
         <Label Content="Layer" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center" />
         <ComboBox VerticalContentAlignment="Center"
                   SelectedItem="{Binding  SelectedLayer}"
                   ItemsSource="{Binding Layers}"
                   TabIndex="1"
-                  Width="292" Grid.Row="1" Grid.Column="1"/>
+                  Width="250" Grid.Row="1" Grid.Column="1"/>
         
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1">
             <Button
@@ -45,4 +49,5 @@
                 Command="{Binding CancelButtonCommand}" />
         </StackPanel>
     </Grid>
+    </GroupBox>
 </Window>

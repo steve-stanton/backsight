@@ -17,7 +17,7 @@ using Mapsui.Layers;
 using Mapsui.Manipulations;
 using Mapsui.Rendering.Skia.Extensions;
 
-namespace Backsight.Map.Editor.ViewModels;
+namespace Backsight.Map.Editor.Windows;
 
 internal interface IMapEditorViewModel
 {

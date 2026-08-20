@@ -1,6 +1,6 @@
 ﻿using System;
 using Avalonia.Media;
-using Backsight.Map.Editor.ViewModels;
+using Backsight.Map.Editor.Windows;
 using Rectangle = Avalonia.Controls.Shapes.Rectangle;
 
 namespace Backsight.Map.Editor.Tools;

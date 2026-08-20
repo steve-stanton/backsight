@@ -2,7 +2,6 @@
 using System.Linq;
 using Backsight.Environment;
 using Backsight.Map.Editor.Models;
-using Backsight.Map.Editor.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 

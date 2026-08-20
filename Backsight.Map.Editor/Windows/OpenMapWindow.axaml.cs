@@ -1,8 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-
-namespace Backsight.Map.Editor.Views;
+﻿namespace Backsight.Map.Editor.Windows;
 
 public partial class OpenMapWindow : Avalonia.Controls.Window
 {

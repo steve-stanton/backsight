@@ -4,7 +4,7 @@ using Backsight.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace Backsight.Map.Editor.ViewModels;
+namespace Backsight.Map.Editor.Windows;
 
 public partial class OpenMapViewModel : ViewModelBase
 {

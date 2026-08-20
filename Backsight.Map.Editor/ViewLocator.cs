@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Backsight.Map.Editor.ViewModels;
+using Backsight.Map.Editor.Windows;
 
 namespace Backsight.Map.Editor;
 

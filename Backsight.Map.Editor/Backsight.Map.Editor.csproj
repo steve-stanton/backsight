@@ -42,5 +42,33 @@
       <Compile Update="Windows\NewMapViewModel.cs">
         <DependentUpon>NewMapWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\SplashWindow.axaml.cs">
+        <DependentUpon>SplashWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Windows\SplashViewModel.cs">
+        <DependentUpon>SplashWindow.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\StartupWindow.axaml.cs">
+        <DependentUpon>StartupWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Windows\StartupViewModel.cs">
+        <DependentUpon>StartupWindow.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\OpenMapWindow.axaml.cs">
+        <DependentUpon>OpenMapWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Windows\OpenMapViewModel.cs">
+        <DependentUpon>OpenMapWindow.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\MapEditorWindow.axaml.cs">
+        <DependentUpon>MapEditorWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Windows\MapEditorViewModel.cs">
+        <DependentUpon>MapEditorWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

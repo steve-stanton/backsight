@@ -1,7 +1,7 @@
 using System;
 using Backsight.Model;
 
-namespace Backsight.Map.Editor.ViewModels;
+namespace Backsight.Map.Editor.Models;
 
 /// <written by="Steve Stanton" on="22-NOV-2007" />
 /// <summary>

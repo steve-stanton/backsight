@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Backsight.Database;
 using Backsight.Map.Editor.Models;
-using Backsight.Map.Editor.Windows;
 using CommunityToolkit.Mvvm.Input;
 
-namespace Backsight.Map.Editor.ViewModels;
+namespace Backsight.Map.Editor.Windows;
 
 public partial class StartupViewModel : ViewModelBase
 {
