@@ -22,18 +22,17 @@ public partial class NewMapWindow : Avalonia.Controls.Window
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
         if (ViewModel is not null)
-            ViewModel.RequestClose += OnRequestClose;
+            ViewModel.CloseRequested += OnCloseRequested;
     }
 
     private void OnClosed(object? sender, EventArgs e)
     {
         if (ViewModel is not null)
-            ViewModel.RequestClose -= OnRequestClose;
+            ViewModel.CloseRequested -= OnCloseRequested;
     }
 
-    private void OnRequestClose()
+    private void OnCloseRequested(object? sender, string result)
     {
-        // Close with the name that was entered for the map (should be blank if the user cancelled)
-        Close(ViewModel?.MapName);
-    }    
+        Close(result);
+    }
 }

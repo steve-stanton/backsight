@@ -21,18 +21,18 @@ public partial class OpenMapViewModel : ViewModelBase
     }
     
     [RelayCommand(CanExecute=nameof(CanExecuteOk))]
-    void Ok()
+    private void Ok()
     {
         CloseRequested?.Invoke(this, SelectedMapName!);
     }
     
-    bool CanExecuteOk()
+    private bool CanExecuteOk()
     {
         return SelectedMapName is not null;
     }
     
     [RelayCommand]
-    void Cancel()
+    private void Cancel()
     {
         CloseRequested?.Invoke(this, "");
     }

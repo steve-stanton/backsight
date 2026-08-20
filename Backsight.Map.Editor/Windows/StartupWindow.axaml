@@ -46,6 +46,7 @@
                         HorizontalContentAlignment="Center"
                         Content="Open another map"
                         Command="{Binding OpenMapCommand}"
+                        CommandParameter="{Binding $parent[Window]}"
                         />
                 <Button Height="32"
                         BorderBrush="Black"

@@ -13,41 +13,40 @@
         Title="New Map">
     
     <GroupBox Header="New Map" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" >
-        
-    <Grid RowDefinitions="Auto Auto Auto" ColumnDefinitions="120 *" Margin="20">
-        
-        <Label Content="Project name" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center"/>
-        <TextBox Text="{Binding MapName}"
-                 HorizontalAlignment="Left"
-                 TabIndex="0"
-                 Height="32"
-                 Width="250" Grid.Row="0" Grid.Column="1"/>
-        
-        <Label Content="Layer" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center" />
-        <ComboBox VerticalContentAlignment="Center"
-                  SelectedItem="{Binding  SelectedLayer}"
-                  ItemsSource="{Binding Layers}"
-                  TabIndex="1"
-                  Width="250" Grid.Row="1" Grid.Column="1"/>
-        
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1">
-            <Button
-                Content="OK"
-                IsDefault="True"
-                HorizontalContentAlignment="Center"
-                Height="32"
-                Width="100"
-                Margin="10"
-                Command="{Binding OkButtonCommand}" />
-            <Button
-                Content="Cancel"
-                IsCancel="True"
-                HorizontalContentAlignment="Center"
-                Height="32"
-                Width="100"
-                Margin="10"
-                Command="{Binding CancelButtonCommand}" />
-        </StackPanel>
-    </Grid>
+        <Grid RowDefinitions="Auto Auto Auto" ColumnDefinitions="120 *" Margin="20">
+            
+            <Label Content="Project name" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center"/>
+            <TextBox Text="{Binding MapName}"
+                     HorizontalAlignment="Left"
+                     TabIndex="0"
+                     Height="32"
+                     Width="250" Grid.Row="0" Grid.Column="1"/>
+            
+            <Label Content="Layer" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center" />
+            <ComboBox VerticalContentAlignment="Center"
+                      SelectedItem="{Binding  SelectedLayer}"
+                      ItemsSource="{Binding Layers}"
+                      TabIndex="1"
+                      Width="250" Grid.Row="1" Grid.Column="1"/>
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1">
+                <Button
+                    Content="OK"
+                    IsDefault="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Width="100"
+                    Margin="10"
+                    Command="{Binding OkButtonCommand}" />
+                <Button
+                    Content="Cancel"
+                    IsCancel="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Width="100"
+                    Margin="10"
+                    Command="{Binding CancelButtonCommand}" />
+            </StackPanel>
+        </Grid>
     </GroupBox>
 </Window>

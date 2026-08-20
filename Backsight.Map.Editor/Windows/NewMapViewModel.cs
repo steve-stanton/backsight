@@ -22,7 +22,7 @@ public partial class NewMapViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(OkButtonCommand))]
     string _mapName = "";
     
-    public event Action? RequestClose;
+    public event EventHandler<string>? CloseRequested;
     
     public NewMapViewModel(IMapEditorModel model)
     {
@@ -39,7 +39,7 @@ public partial class NewMapViewModel : ViewModelBase
         try
         {
             _model.CreateMap(MapName, SelectedLayer);
-            RequestClose?.Invoke();
+            CloseRequested?.Invoke(this, MapName);
         }
         catch (Exception e)
         {
@@ -57,6 +57,6 @@ public partial class NewMapViewModel : ViewModelBase
     void CancelButton()
     {
         MapName = String.Empty;
-        RequestClose?.Invoke();
+        CloseRequested?.Invoke(this, "");
     }
 }

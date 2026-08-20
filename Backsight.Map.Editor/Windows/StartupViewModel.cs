@@ -29,9 +29,17 @@ public partial class StartupViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void OpenMap()
+    private async Task OpenMap(Avalonia.Controls.Window owner)
     {
-        CloseRequested?.Invoke(this, "OpenMap");
+        var dialog = new OpenMapWindow()
+        {
+            DataContext = new OpenMapViewModel(_model.MapRepository)
+        };
+        
+        var mapName = await dialog.ShowDialog<string>(owner);
+        
+        if (!String.IsNullOrEmpty(mapName))
+            CloseRequested?.Invoke(this, mapName);
     }
     
     [RelayCommand]

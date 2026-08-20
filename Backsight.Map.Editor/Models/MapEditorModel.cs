@@ -56,6 +56,11 @@ public interface IMapEditorModel
     /// The repository containing details about the operating environment.
     /// </summary>
     IEnvironmentRepository Environment { get; }
+    
+    /// <summary>
+    /// The repository for holding maps.
+    /// </summary>
+    IMapRepository MapRepository { get; }
 }
 
 public sealed class DesignMapEditorModel : IMapEditorModel
@@ -68,6 +73,7 @@ public sealed class DesignMapEditorModel : IMapEditorModel
     public IWindow? Extent => null;
     public IMapStore? Store => null;
     public IEnvironmentRepository Environment => new EmptyRepository();
+    public IMapRepository MapRepository => null!;
 }
 
 public class MapEditorModel : IMapEditorModel
@@ -169,4 +175,7 @@ public class MapEditorModel : IMapEditorModel
     
     /// <inheritdoc />
     public IEnvironmentRepository Environment => _envRepo;
+    
+    /// <inheritdoc />
+    public IMapRepository MapRepository => _mapRepo;
 }

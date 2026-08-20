@@ -3,33 +3,49 @@
         xmlns:vm="using:Backsight.Map.Editor.Windows"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="420"
+        Width="400" Height="420"
         x:Class="Backsight.Map.Editor.Windows.OpenMapWindow"
         x:DataType="vm:OpenMapViewModel"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        Background="LightGray"
         Title="OpenMapWindow">
 
-  <Grid>
-    <ListBox
-        ItemsSource="{Binding MapNames}"
-        SelectedItem="{Binding SelectedMapName}"
-        Height="300"
-        SelectionMode="Single" />
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="40">
-        <Button
-            Content="OK"
-            HorizontalContentAlignment="Center"
-            Height="32"
-            Width="100"
-            Margin="10"
-            Command="{Binding OkCommand}" />
-        <Button
-            Content="Cancel"
-            HorizontalContentAlignment="Center"
-            Height="32"
-            Width="100"
-            Margin="10"
-            Command="{Binding CancelCommand}" />
-    </StackPanel>
-  </Grid>
+    <GroupBox Header="Open Map" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="10">
+        <Grid RowDefinitions="Auto Auto">
+            <ListBox
+                Grid.Row="0"
+                TabIndex="0"
+                ItemsSource="{Binding MapNames}"
+                SelectedItem="{Binding SelectedMapName}"
+                Height="300"
+                Width="300"
+                BorderBrush="Black"
+                BorderThickness="2"
+                Background="LightGray"
+                Margin="10"
+                SelectionMode="Single" />
+            
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" >
+                <Button
+                    Content="OK"
+                    IsDefault="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Width="100"
+                    Margin="10"
+                    Command="{Binding OkCommand}" />
+                <Button
+                    Content="Cancel"
+                    IsCancel="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Width="100"
+                    Margin="10"
+                    Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </Grid>
+    </GroupBox>
 
 </Window>

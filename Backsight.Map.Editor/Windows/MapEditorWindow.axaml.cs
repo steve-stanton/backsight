@@ -48,26 +48,10 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
             var startup = new StartupWindow { DataContext = startupVm };
             var result = await startup.ShowDialog<string>(this);
 
-            Console.WriteLine($"Startup result: {result}");
             if (String.IsNullOrEmpty(result))
-            {
                 Close();
-            }
-            else
-            {
-                Console.WriteLine($"Startup result: {result}");
-
-                if (result == "OpenMap")
-                {
-                    Console.WriteLine("the startup window should have covered the OpenMap option");
-                    Close();
-                }
-                else
-                {
-                    if (DataContext is IMapEditorViewModel vm)
-                        vm.OpenMap(result);
-                }
-            }
+            else if (DataContext is IMapEditorViewModel vm)
+                vm.OpenMap(result);
         };
 
         Closing += (_, _) =>
