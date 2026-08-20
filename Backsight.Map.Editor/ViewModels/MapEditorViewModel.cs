@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
+using Backsight.Database;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.Tools;
@@ -123,7 +124,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private Selection _selection = new();
 
     /// <summary>
-    /// Is auto-highlight enabled? (0=false, 1=true)
+    /// Is auto-highlight enabled?
     /// </summary>
     private bool _autoSelect;
 
@@ -145,6 +146,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
         _mapData.Navigator.ViewportChanged += OnViewportChanged;
     }
+    
+    internal IEnvironmentRepository Environment => _model.Environment;
+    internal IMapEditorModel Model => _model;
     
     /// <inheritdoc />
     Mapsui.Map IMapEditorViewModel.MapData => _mapData;
@@ -664,8 +668,11 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             // Caution: If we're auto-highlighting, and the thing we've just selected is the thing that's already
             // selected, don't do ANYTHING (not even if the user is apparently doing a multi-select).
 
+            /* TODO
+             *
             // Note that if the user IS doing a multi-select, any auto-highlighting is supposed to go
             // away automatically (see OnLButtonDown && OnMouseMove).
+            */
             
             if (_autoSelect && ReferenceEquals(thing, _selection.SingleOrDefault))
                 return;

@@ -41,7 +41,11 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
 
         Opened += async (_, _) =>
         {
-            var startupVm = new StartupViewModel();
+            var model = (DataContext as MapEditorViewModel)?.Model;
+            if (model is null)
+                return;
+                    
+            var startupVm = new StartupViewModel(model);
             var startup = new StartupWindow { DataContext = startupVm };
             var result = await startup.ShowDialog<string>(this);
 

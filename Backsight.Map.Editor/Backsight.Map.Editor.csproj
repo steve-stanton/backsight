@@ -37,4 +37,10 @@
       <AvaloniaResource Include="Assets\ClosedHand.png" />
       <AvaloniaResource Include="Assets\OpenHand.png" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Windows\NewMapViewModel.cs">
+        <DependentUpon>NewMapWindow.axaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
 </Project>
