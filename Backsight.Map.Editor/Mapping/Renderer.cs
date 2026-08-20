@@ -77,6 +77,9 @@ class Renderer : IMapControlRenderer
         // Draw any selected items
         RenderSelection(draw);
         
+        // Draw anything related to the current command
+        _viewModel.CurrentCommand?.Render(draw);
+
         //Console.WriteLine("rendered " + n);
     }
 

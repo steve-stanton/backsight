@@ -237,10 +237,10 @@ public class CadastralMapModel
     /// <param name="fa">The features that need to be indexed</param>
     internal void AddFeatureIds(Feature[] fa)
     {
-        foreach (Feature f in fa)
+        foreach (var fid in fa.Where(x => x.FeatureId is not null)
+                                       .Select(x => x.FeatureId)
+                                       .Cast<FeatureId>())
         {
-            FeatureId fid = f.FeatureId;
-
             if (fid is ForeignId foreignId)
             {
                 ForeignId? existingId = FindForeignId(foreignId.FormattedKey);

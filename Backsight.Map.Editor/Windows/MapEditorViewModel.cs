@@ -61,6 +61,11 @@ internal interface IMapEditorViewModel
     /// The current selection (may be empty).
     /// </summary>
     IMapSelection Selection { get; }
+
+    /// <summary>
+    /// The current data entry command (if any).
+    /// </summary>
+    CommandTool? CurrentCommand { get; }
     
     /// <summary>
     /// The current map scale (0 if there is no open map).
@@ -94,6 +99,17 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// The current map navigation tool (if any).
     /// </summary>
     private MapDisplayTool? _mapTool = null;
+
+    /// <summary>
+    /// The current data entry tool (if any).
+    /// </summary>
+    private CommandTool? _commandTool = null;
+
+    /// <summary>
+    /// Modeless dialog used to perform inverse calculations (null if dialog
+    /// is not currently displayed).
+    /// </summary>
+    //private InverseWindow? _inverseCalculator = null;
     
     /// <summary>
     /// The application model.
@@ -212,7 +228,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         const double inchesToMeters = 0.0254;
         var width = (screenRect.Width / 96.0) * inchesToMeters;
         _mapScale = groundRect.Width / width;
-        Console.WriteLine("Viewport changed => scale: " + _mapScale);
+        //Console.WriteLine("Viewport changed => scale: " + _mapScale);
     }
 
     public string? CurrentMapName
@@ -236,12 +252,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         
         if (String.IsNullOrWhiteSpace(mapName))
             throw new ArgumentException("Map name cannot be empty.", nameof(mapName));
-
-        if (mapName.StartsWith("Test"))
-        {
-            Console.WriteLine("Skipping due to test");
-            return;
-        }
         
         _model.OpenMap(mapName);
         var store = _model.Store ?? throw new ApplicationException("Open map has no store");
@@ -332,41 +342,104 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         new("Update...", PointUpdateCommand),
         new("Delete", PointDeleteCommand),
         ContextMenuItem.Separator,
-        new("Add Straight Line", PointAddStraightLineCommand),
-        new("Add Circular Arc", PointAddCircularArcCommand),
+        new("Add Straight Line", LineAddStraightLineCommand),
+        new("Add Circular Arc", LineAddCircularArcCommand),
         ContextMenuItem.Separator,
         new("Properties", PropertiesCommand)
     ];
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    private void PointNew()
+    {
+        Console.WriteLine(nameof(PointNew));
+    }
+
+    [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    private void PointAddOnLine()
+    {
+        Console.WriteLine(nameof(PointAddOnLine));
+    }
+
+    [RelayCommand(CanExecute = nameof(CanStartConnectionPath))]
+    private void PointConnectionPath()
+    {
+        Console.WriteLine(nameof(PointConnectionPath));
+    }
+
+    private bool CanStartConnectionPath => _commandTool is null && ArePointsDrawn;
+
+    internal bool ArePointsDrawn => GetTypesAtCurrentScale().HasFlag(SpatialType.Point);
+
+    [RelayCommand(CanExecute = nameof(CanStartSideshot))]
     private void PointSideshot()
     {
         Console.WriteLine(nameof(PointSideshot));
     }
 
-    [RelayCommand]
+    private bool CanStartSideshot => _commandTool is null && _selection.SingleOrDefault is Model.PointFeature;
+
+    [RelayCommand(CanExecute = nameof(CanStartPointUpdate))]
     private void PointUpdate()
     {
         Console.WriteLine(nameof(PointUpdate));
     }
+    
+    private bool CanStartPointUpdate => _commandTool is null && _selection.SingleOrDefault is Model.PointFeature;
 
-    [RelayCommand]
-    private void PointAddStraightLine()
+    [RelayCommand(CanExecute = nameof(CanSetDefaultEntity))]
+    private void PointDefaultEntity()
     {
-        Console.WriteLine(nameof(PointAddStraightLine));
+        Console.WriteLine(nameof(PointDefaultEntity));
     }
 
-    [RelayCommand]
-    private void PointAddCircularArc()
+    private bool CanSetDefaultEntity => Store is not null;
+
+    [RelayCommand(CanExecute = nameof(CanStartInverseCalculator))]
+    private void PointInverseCalculator()
     {
-        Console.WriteLine(nameof(PointAddCircularArc));
+        Console.WriteLine(nameof(PointInverseCalculator));
     }
 
-    [RelayCommand]
+    private bool CanStartInverseCalculator => false; //_inverseCalculator is null && ArePointsDrawn;
+    
+    [RelayCommand(CanExecute = nameof(CanAddFeature))]
+    private void LineAddStraightLine()
+    {
+        StartCommand(new NewLineTool(this, _selection.SingleOrDefault as Model.PointFeature));
+    }
+
+    private void StartCommand(CommandTool tool)
+    {
+        if (_commandTool is not null)
+            throw new InvalidOperationException("Command tool already started");
+        
+        if (_autoSelect)
+            _autoSelect = false; // TODO: Should only suspend while command is running
+
+        _commandTool = tool;
+        _commandTool.Run();
+    }
+
+    internal void ClearSelection()
+    {
+        _selection = new Selection();
+    }
+    
+    private bool CanAddFeature => _commandTool is null && Store is not null;
+
+    [RelayCommand(CanExecute = nameof(CanAddFeature))]
+    private void LineAddCircularArc()
+    {
+        Console.WriteLine(nameof(LineAddCircularArc));
+    }
+
+    [RelayCommand(CanExecute = nameof(CanDeletePoint))]
     private void PointDelete()
     {
         Console.WriteLine(nameof(PointDelete));
     }
+    
+    private bool CanDeletePoint => _selection.SingleOrDefault is Model.PointFeature;
     
     private ContextMenuItem[] GetLineSelectedMenu() =>
     [
@@ -539,6 +612,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
     
     private bool CanStartMapDisplayTool => _mapTool is null;
+    
+    private bool CanStartCommandTool => _commandTool is null;
 
     internal void FinishTool()
     {
@@ -629,8 +704,12 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
                     m_Sel.CtrlMouseDown(p);
             }
              */
-            bool isMultiSelect = ks.HasFlag(KeySelection.Shift);            
-            OnSelect(p, isMultiSelect);
+            bool handledByCommand = _commandTool?.MouseDown(p, b) ?? false;
+            if (!handledByCommand)
+            {
+                bool isMultiSelect = ks.HasFlag(KeySelection.Shift);            
+                OnSelect(p, isMultiSelect);
+            }
         }
         else
         {
@@ -640,10 +719,33 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     internal void OnMouseMove(IPosition p, MouseButton b)
     {
+        /*
+         c.f. EditingController.MouseMove
+        
+        if (m_Sel is not null) // means the CTRL key is pressed
+        {
+            m_Sel.CtrlMouseMoveTo(p);
+        }
+        else
+        {
+            // The main window of the cadastral editor provides the option to
+            // display the current position of the mouse
+            m_Main.MouseMove(sender, p, b);
+
+            // Auto-highlight option
+            if (m_IsAutoSelect > 0)
+                Select(sender.MapScale, p, SpatialType.All);
+
+            m_Command?.MouseMove(p);
+        }
+         */
+
         if (_mapTool is not null)
             _mapTool.MouseMove(p, b);
         
-        if (AutoSelect)
+        if (_commandTool is not null)
+            _commandTool.MouseMove(p, MouseButton.None);
+        else if (AutoSelect)
             Select(_mapScale, p, SpatialType.All);
     }
 
@@ -997,4 +1099,63 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     {
         return _mapData.Navigator.Viewport.WorldToScreen(p.X, p.Y);
     }
+    
+    internal void AbortCommand(CommandTool cmd)
+    {
+        if (!ReferenceEquals(cmd, _commandTool))
+            throw new InvalidOperationException();
+
+        // Make sure the normal cursor is on screen.
+        MapCursor = Cursor.Default;
+
+        /*
+        cmd.ActiveMap.RestoreLastDraw();
+        RedrawSelection();
+
+        // Re-enable auto-highlighting if it was on before.
+        if (m_IsAutoSelect<0)
+            m_IsAutoSelect = -m_IsAutoSelect;
+
+        cmd.ActiveMap.PaintNow();
+        */
+        
+        cmd.Dispose();
+        _commandTool = null;
+    }
+
+    internal void FinishCommand(CommandTool cmd)
+    {
+        if (!ReferenceEquals(cmd, _commandTool))
+            throw new InvalidOperationException();
+        
+        // Make sure the normal cursor is on screen.
+        MapCursor = Cursor.Default;
+
+        /*
+        // Refresh everything from the model. This may seem a bit of an effort, considering
+        // that many edits don't do much to the display (some don't do anything). However,
+        // it's fast and keeps things clean in more complex cases. Do it before saving the
+        // map model, since it gives the impression that things are more responsive than
+        // they actually are!
+        RefreshAllDisplays();
+
+        // Notify any check dialog (re-check all potential problems).
+        // And repaint immediately to avoid flicker (icons wouldn't otherwise be repainted
+        // until the idle handler gets called)
+        if (m_Check is not null)
+        {
+            m_Check.OnFinishOp();
+            ActiveMap.PaintNow();
+        }
+
+        // Re-enable auto-highlighting if it was on before.
+        if (m_IsAutoSelect<0)
+            m_IsAutoSelect = -m_IsAutoSelect;
+*/
+
+        cmd.Dispose();
+        _commandTool = null;
+    }
+    
+    CommandTool? IMapEditorViewModel.CurrentCommand => _commandTool;
 }

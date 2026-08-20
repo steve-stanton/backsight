@@ -5,7 +5,7 @@ namespace Backsight.Model;
 /// Detects intersections of a line with the map. The things that it
 /// intersects are held in a series of <see cref="IntersectionResult"/> objects.
 /// </summary>
-class IntersectionFinder
+public class IntersectionFinder
 {
     /// <summary>
     /// The thing being intersected
@@ -47,7 +47,7 @@ class IntersectionFinder
     /// <param name="index">The map index to use for intersection queries.</param>
     /// <param name="geom">The geometry to intersect.</param>
     /// <param name="wantEndEnd">Specify true if you want end-to-end intersections in the results.</param>
-    internal IntersectionFinder(IMapIndex index, LineGeometry geom, bool wantEndEnd)
+    public IntersectionFinder(IMapIndex index, LineGeometry geom, bool wantEndEnd)
     {
         m_Line = geom;
         m_Intersects = new FindIntersectionsQuery(index, geom, wantEndEnd).Result;
@@ -58,7 +58,7 @@ class IntersectionFinder
     /// <summary>
     /// The list of things that <c>Geometry</c> intersects
     /// </summary>
-    internal IList<IntersectionResult> Intersections => m_Intersects;
+    public IList<IntersectionResult> Intersections => m_Intersects;
 
     /// <summary>
     /// The thing being intersected

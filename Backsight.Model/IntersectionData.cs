@@ -165,7 +165,7 @@ public class IntersectionData : IComparable<IntersectionData>
         }
     }
 
-    internal IPosition? P1 => m_X1;
+    public IPosition? P1 => m_X1;
 
     internal IPosition? P2 => m_X2;
 

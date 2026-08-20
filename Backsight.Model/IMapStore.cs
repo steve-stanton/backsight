@@ -1,4 +1,6 @@
-﻿namespace Backsight.Model;
+﻿using Backsight.Environment;
+
+namespace Backsight.Model;
 
 public interface IMapStore
 {
@@ -64,4 +66,9 @@ public interface IMapStore
     /// <typeparam name="T">The specific feature type.</typeparam>
     /// <returns>The features of the requested type, and with an extent that overlaps the search window.</returns>
     List<T> Query<T>(IWindow window) where T : Feature;
+    
+    IEntity DefaultLineType { get; }
+    IEntity DefaultPointType { get; }
+    IEntity DefaultPolygonType { get; }
+    IEntity DefaultTextType { get; }
 }

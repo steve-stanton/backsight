@@ -216,4 +216,26 @@ public class MapStore : IMapStore
             _ => throw new NotImplementedException(typeName)
         };
     }
+
+    /// <summary>
+    /// The default entity type for point features.
+    /// </summary>
+    public IEntity DefaultPointType => FindEntityById(_settings.Defaults?.PointType ?? 0);
+    
+    /// <summary>
+    /// The default entity type for line features.
+    /// </summary>
+    public IEntity DefaultLineType => FindEntityById(_settings.Defaults?.LineType ?? 0);
+
+    /// <summary>
+    /// The default entity type for polygon labels.
+    /// </summary>
+    public IEntity DefaultPolygonType => FindEntityById(_settings.Defaults?.PolygonType ?? 0);
+
+    /// <summary>
+    /// The default entity type for miscellaneous text features.
+    /// </summary>
+    public IEntity DefaultTextType => FindEntityById(_settings.Defaults?.TextType ?? 0);
+    
+    private IEntity FindEntityById(int entityId) => _envRepo.FindRequired<IEntity>(entityId);
 }

@@ -181,8 +181,45 @@
                 
             </MenuItem>
             <MenuItem Header="_Point">
-                
+                <MenuItem
+                    Header="Add Point (key in positio_n)..."
+                    Command="{Binding PointNewCommand}"
+                    ToolTip.Tip="Create new defined point"
+                    />
+                <MenuItem
+                    Header="Add Point (on _Line)..."
+                    Command="{Binding PointAddOnLineCommand}"
+                    ToolTip.Tip="Add new point on line by pointing"
+                />
+                <MenuItem
+                    Header="Connection P_ath..."
+                    Command="{Binding PointConnectionPathCommand}"
+                    ToolTip.Tip="Complex connection between 2 points"
+                />
+                <MenuItem
+                    Header="_Sideshot..."
+                    Command="{Binding PointSideshotCommand}"
+                    ToolTip.Tip="Add a point using direction &amp; distance"
+                />
+                <MenuItem
+                    Header="_Update..."
+                    Command="{Binding PointUpdateCommand}"
+                    ToolTip.Tip="Update the operation that created a point"
+                />
+                <Separator/>
+                <MenuItem
+                    Header="Default _Entity..."
+                    Command="{Binding PointDefaultEntityCommand}"
+                    ToolTip.Tip="Specify default entity type for new points"
+                />
+                <Separator/>
+                <MenuItem
+                    Header="_Inverse Calculator..."
+                    Command="{Binding PointInverseCalculatorCommand}"
+                    ToolTip.Tip="Calculate inverse quantities"
+                />
             </MenuItem>
+
             <MenuItem Header="_Line">
                 
             </MenuItem>

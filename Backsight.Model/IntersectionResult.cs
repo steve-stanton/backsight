@@ -9,7 +9,7 @@ namespace Backsight.Model;
 /// with information about the detected intersection(s).
 /// </summary>
 /// <see>IntersectionFinder</see>
-class IntersectionResult
+public class IntersectionResult
 {
     /// <summary>
     /// The object that is intersected.
@@ -81,7 +81,7 @@ class IntersectionResult
 
     internal int IntersectCount => (m_Data==null ? 0 : m_Data.Count);
 
-    internal List<IntersectionData> Intersections => m_Data;
+    public List<IntersectionData> Intersections => m_Data;
 
     // Circle
     internal uint Intersect(IPointGeometry center, double radius)

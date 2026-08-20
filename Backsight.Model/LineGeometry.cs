@@ -21,7 +21,7 @@ public abstract class LineGeometry : ILineGeometry, IIntersectable, IPersistent
     /// </summary>
     /// <param name="start">The start of the line.</param>
     /// <param name="end">The end of the line.</param>
-    protected LineGeometry(ITerminal start, ITerminal end)
+    public LineGeometry(ITerminal start, ITerminal end)
     {
         if (start==null || end==null)
             throw new ArgumentNullException("Null terminal for line geometry");

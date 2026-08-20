@@ -4,7 +4,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// Operation to add a new line (either a simple line segment, or a circular arc).
 /// </summary>
-abstract class NewLineOperation : Operation
+public abstract class NewLineOperation : Operation
 {
     /// <summary>
     /// The created line

@@ -5,13 +5,13 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// An edit that creates a line segment connecting a pair of pre-existing points.
 /// </summary>
-class NewSegmentOperation : NewLineOperation
+public class NewSegmentOperation : NewLineOperation
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="NewSegmentOperation"/> class.
     /// </summary>
     /// <param name="store">The map store this operation is part of.</param>
-    internal NewSegmentOperation(IMapStore store)
+    public NewSegmentOperation(IMapStore store)
         : base(store)
     {
     }
@@ -35,7 +35,7 @@ class NewSegmentOperation : NewLineOperation
     /// <remarks>When you add a new line segment, the two end points will be referenced both to the
     /// new line, and to the editing operation that defined the line. While this is a bit verbose,
     /// it's consistent.</remarks>
-    internal void Execute(PointFeature start, PointFeature end)
+    public void Execute(PointFeature start, PointFeature end)
     {
         // Disallow an attempt to add a null line.
         if (start.Geometry.IsCoincident(end.Geometry))

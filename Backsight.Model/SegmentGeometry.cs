@@ -13,7 +13,7 @@ public class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
     /// </summary>
     /// <param name="start">The point at the start of the line segment.</param>
     /// <param name="end">The point at the end of the line segment.</param>
-    internal SegmentGeometry(ITerminal start, ITerminal end)
+    public SegmentGeometry(ITerminal start, ITerminal end)
         : base(start, end)
     {
     }
