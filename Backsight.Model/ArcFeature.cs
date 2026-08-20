@@ -102,7 +102,7 @@ class ArcFeature : LineFeature
     /// <summary>
     /// The circle the arc falls on.
     /// </summary>
-    internal override Circle? Circle => Geometry.Circle as Circle;
+    internal override Circle? Circle => Geometry?.Circle as Circle;
 
     /// <summary>
     /// Is the geometry for this arc directed clockwise from BC to EC?
