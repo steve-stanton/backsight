@@ -40,7 +40,6 @@
                         BorderBrush="Black"
                         BorderThickness="2"
                         Foreground="Black"
-                        FontWeight="Bold"
                         Margin="50 10"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
@@ -52,7 +51,6 @@
                         BorderBrush="Black"
                         BorderThickness="2"
                         Foreground="Black"
-                        FontWeight="Bold"
                         Margin="50 10"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
@@ -64,13 +62,12 @@
                         BorderBrush="Black"
                         BorderThickness="2"
                         Foreground="Black"
-                        FontWeight="Bold"
                         Margin="50 10"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
                         IsCancel="True"
                         Content="Exit"
-                        Command="{Binding ExitCommand}"
+                        Command="{Binding CancelCommand}"
                         />
         </StackPanel>
         </Border>

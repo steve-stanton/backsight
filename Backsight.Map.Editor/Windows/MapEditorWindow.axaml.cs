@@ -33,25 +33,23 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         {
             if (DataContext is IMapEditorViewModel vm)
             {
-                Console.WriteLine("MapEditorViewModel attached to view");
+                //Console.WriteLine("MapEditorViewModel attached to view");
                 MapDisplay.Map = vm.MapData;
             }
         };
 
         Opened += async (_, _) =>
         {
-            var model = (DataContext as MapEditorViewModel)?.Model;
-            if (model is null)
-                return;
-                    
-            var startupVm = new StartupViewModel(model);
-            var startup = new StartupWindow { DataContext = startupVm };
-            var result = await startup.ShowDialog<string>(this);
-
-            if (String.IsNullOrEmpty(result))
-                Close();
-            else if (DataContext is IMapEditorViewModel vm)
-                vm.OpenMap(result);
+            if (DataContext is MapEditorViewModel vm)
+            {
+                var mapSupplied = await vm.Startup();
+                if (!mapSupplied)
+                    Close();
+                
+                var mapName = vm.CurrentMapName;
+            }
+            //var dialogService = new DialogService(this);
+            //await (dialogService as IDialogService).ShowDialog(new StartupWindow())
         };
 
         Closing += (_, _) =>
@@ -85,7 +83,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         _recentMapMenuItems.Clear();
 
         // Insert recent map names underneath the "Recent Maps" anchor
-        var insertAt = FileMenu.Items.IndexOf(RecentMapsAnchor) + 1;
+        var insertAt = FileMenu.Items.IndexOf(RecentMapsSection) + 1;
         foreach (var mapName in vm.RecentMaps)
         {
             var item = new MenuItem
@@ -199,4 +197,13 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         // The KeyEventArgs don't tell you which key just went up, it tells you what keys are still down
         _keySelection = e.KeySelection;
     }
-}
+
+    private void OnClick1(object? sender, RoutedEventArgs e)
+    {
+        Console.WriteLine("Click1");
+    }
+
+    private void OnClick2(object? sender, RoutedEventArgs e)
+    {
+        Console.WriteLine("Click2");
+    }}

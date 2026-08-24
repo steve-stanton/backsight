@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
@@ -82,7 +84,7 @@ internal interface IMapEditorViewModel
 
 // should probably implement IProvider (or delegate to something that does)
 /// <summary>
-/// An implementation of a view model for <see cref="Backsight.Map.Editor.Views.MapEditorWindow"/>.
+/// An implementation of a view model for <see cref="MapEditorWindow"/>.
 /// </summary>
 public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 {
@@ -143,14 +145,17 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// Is auto-highlight enabled?
     /// </summary>
     private bool _autoSelect;
+    
+    private readonly IDialogService _dialogService;
 
-    public MapEditorViewModel() : this(new DesignMapEditorModel())
+    public MapEditorViewModel() : this(new DesignMapEditorModel(), null!)
     {
     }
 
-    public MapEditorViewModel(IMapEditorModel model)
+    public MapEditorViewModel(IMapEditorModel model, IDialogService dialogService)
     {
         _model = model;
+        _dialogService = dialogService;
 
         _mapData = new Mapsui.Map
         {
@@ -742,7 +747,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
         if (_mapTool is not null)
             _mapTool.MouseMove(p, b);
-        
+     
+        // Ignore the auto-select function when any command tool is running
         if (_commandTool is not null)
             _commandTool.MouseMove(p, MouseButton.None);
         else if (AutoSelect)
@@ -963,11 +969,18 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand]
     private void FileOpen()
     {
-        Console.WriteLine(nameof(FileOpen));
+        var dialog = new OpenMapWindow
+        {
+            DataContext = new OpenMapViewModel(_model.MapRepository)
+        };
+
+        // TODO: How to pass down the owner window?
+        // How about a DialogService that knows the main window?
+        //var mapName = await dialog.ShowDialog<string>(owner);
     }
 
     [RelayCommand]
-    private void FileSave()
+    private async Task FileSave()
     {
         Console.WriteLine(nameof(FileSave));
     }
@@ -993,7 +1006,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
     
     [RelayCommand]
-    private void FileCheck()
+    private async Task FileCheck()
     {
         Console.WriteLine(nameof(FileCheck));
     }
@@ -1158,4 +1171,18 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
     
     CommandTool? IMapEditorViewModel.CurrentCommand => _commandTool;
+
+    internal async Task<bool> Startup()
+    {
+        var startupVm = new StartupViewModel(_model, _dialogService);
+        var startup = new StartupWindow(startupVm);
+        var result = await _dialogService.ShowDialog(startup);
+
+        if (result != DialogResult.OK)
+            return false;
+
+        Debug.Assert(startupVm.MapName is not null);
+        OpenMap(startupVm.MapName);
+        return true;
+    }
 }

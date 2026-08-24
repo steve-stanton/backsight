@@ -1,38 +1,14 @@
-﻿using System;
-using Avalonia.Interactivity;
+﻿namespace Backsight.Map.Editor.Windows;
 
-namespace Backsight.Map.Editor.Windows;
-
-public partial class NewMapWindow : Avalonia.Controls.Window
+public partial class NewMapWindow : DialogWindow<NewMapViewModel>
 {
-    public NewMapWindow()
+    public NewMapWindow() : base(null!)
     {
         InitializeComponent();
-        DataContextChanged += OnDataContextChanged;
     }
 
-    protected override void OnLoaded(RoutedEventArgs e)
+    public NewMapWindow(NewMapViewModel viewModel) : base(viewModel)
     {
-        base.OnLoaded(e);
-        this.FocusByTabIndex(0);
-    }
-
-    private NewMapViewModel? ViewModel => DataContext as NewMapViewModel;
-
-    private void OnDataContextChanged(object? sender, EventArgs e)
-    {
-        if (ViewModel is not null)
-            ViewModel.CloseRequested += OnCloseRequested;
-    }
-
-    private void OnClosed(object? sender, EventArgs e)
-    {
-        if (ViewModel is not null)
-            ViewModel.CloseRequested -= OnCloseRequested;
-    }
-
-    private void OnCloseRequested(object? sender, string result)
-    {
-        Close(result);
+        InitializeComponent();
     }
 }

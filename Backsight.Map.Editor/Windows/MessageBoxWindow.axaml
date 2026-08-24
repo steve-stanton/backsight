@@ -1,0 +1,45 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="viewModel:MessageBoxViewModel"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+        Width="400" Height="200"
+        x:Class="Backsight.Map.Editor.Windows.MessageBoxWindow"
+        WindowDecorations="None"
+        WindowStartupLocation="CenterOwner"
+        Title="MessageBoxWindow">
+
+    <GroupBox Header="{Binding Heading}"
+              BorderBrush="Brown"
+              BorderThickness="4"
+              CornerRadius="4" 
+              Margin="5"
+              Padding="10">
+        
+        <Grid RowDefinitions="Auto Auto">
+            <TextBlock
+                Grid.Row="0"
+                Text="{Binding Message}"
+                TextWrapping="Wrap"
+                HorizontalAlignment="Center"
+                FontSize="14"
+                FontWeight="Bold"
+                Height="100"
+            />
+            
+            <Button
+                Grid.Row="1"
+                TabIndex="0"
+                Content="OK"
+                IsDefault="True"
+                HorizontalAlignment="Center"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Margin="10"
+                Command="{Binding OkCommand}" />
+        </Grid>
+    </GroupBox>
+    
+</Window>

@@ -30,6 +30,8 @@ public partial class App : Application
         collection.AddSingleton<IMapEditorViewModel, MapEditorViewModel>();
         collection.AddSingleton<IMapRepository, MapsDirectory>();
         collection.AddSingleton<IMapControlRenderer, Renderer>();
+        collection.AddSingleton<MapEditorWindow>();
+        collection.AddSingleton<IDialogService, DialogService>();  
         
         var services = collection.BuildServiceProvider();
 
@@ -45,13 +47,10 @@ public partial class App : Application
             splash.Show();
             await splashVm.InitializeAsync();
 
-            var mapEditor = new MapEditorWindow
-            {
-                DataContext = services.GetRequiredService<IMapEditorViewModel>()
-            };
-
-            desktop.MainWindow = mapEditor;
-            mapEditor.Show();
+            var editorWindow = services.GetRequiredService<MapEditorWindow>();
+            editorWindow.DataContext = services.GetRequiredService<IMapEditorViewModel>();
+            desktop.MainWindow = editorWindow;
+            editorWindow.Show();
             splash.Close();
         }
 

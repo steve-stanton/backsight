@@ -7,7 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace Backsight.Map.Editor.Windows;
 
-public partial class NewMapViewModel : ViewModelBase
+public partial class NewMapViewModel : DialogViewModel
 {
     private readonly IMapEditorModel _model;
     
@@ -15,14 +15,12 @@ public partial class NewMapViewModel : ViewModelBase
     ILayer[] _layers;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(OkButtonCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CreateMapCommand))]
     private ILayer? _selectedLayer;
     
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(OkButtonCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CreateMapCommand))]
     string _mapName = "";
-    
-    public event EventHandler<string>? CloseRequested;
     
     public NewMapViewModel(IMapEditorModel model)
     {
@@ -30,16 +28,18 @@ public partial class NewMapViewModel : ViewModelBase
         _layers = model.Environment.Layers.Where(x => x.Id > 0).ToArray();
     }
 
-    [RelayCommand(CanExecute=nameof(CanExecuteOkButton))]
-    private void OkButton()
+    [RelayCommand(CanExecute=nameof(CanExecuteCreateMap))]
+    private void CreateMap()
     {
         if (SelectedLayer is null)
             throw new InvalidOperationException("No layer selected");
+
+        // TODO: Confirm the map doesn't already exist
         
         try
         {
             _model.CreateMap(MapName, SelectedLayer);
-            CloseRequested?.Invoke(this, MapName);
+            Ok();
         }
         catch (Exception e)
         {
@@ -48,15 +48,8 @@ public partial class NewMapViewModel : ViewModelBase
         }
     }
     
-    bool CanExecuteOkButton()
+    private bool CanExecuteCreateMap()
     {
         return SelectedLayer is not null && !String.IsNullOrWhiteSpace(MapName);
-    }
-
-    [RelayCommand]
-    void CancelButton()
-    {
-        MapName = String.Empty;
-        CloseRequested?.Invoke(this, "");
     }
 }

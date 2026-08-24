@@ -7,6 +7,7 @@ namespace Backsight.Map.Editor.Mapping;
 /// <summary>
 /// Methods for drawing geometry with a specific style.
 /// </summary>
+/// TODO: Is this obsolete?
 interface IDrawStyle
 {
     void Render(MapCanvas display, IPosition position);

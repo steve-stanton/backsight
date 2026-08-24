@@ -3,8 +3,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:Backsight.Map.Editor.Windows"
-        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="180"
-        Width="450" Height="180"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="220"
+        Width="450" Height="220"
         x:Class="Backsight.Map.Editor.Windows.NewMapWindow"
         x:DataType="vm:NewMapViewModel"
         WindowStartupLocation="CenterOwner"
@@ -13,17 +13,18 @@
         Title="New Map">
     
     <GroupBox Header="New Map" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" >
-        <Grid RowDefinitions="Auto Auto Auto" ColumnDefinitions="120 *" Margin="20">
+        <Grid RowDefinitions="50 50 Auto" ColumnDefinitions="120 *" Margin="20">
             
-            <Label Content="Project name" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center"/>
+            <Label Content="Project name" Grid.Row="0" Grid.Column="0" Height="32" VerticalContentAlignment="Center"/>
             <TextBox Text="{Binding MapName}"
                      HorizontalAlignment="Left"
                      TabIndex="0"
                      Height="32"
                      Width="250" Grid.Row="0" Grid.Column="1"/>
             
-            <Label Content="Layer" Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Center" />
+            <Label Content="Layer" Grid.Row="1" Grid.Column="0" Height="32" VerticalAlignment="Center" />
             <ComboBox VerticalContentAlignment="Center"
+                      VerticalAlignment="Center"
                       SelectedItem="{Binding  SelectedLayer}"
                       ItemsSource="{Binding Layers}"
                       TabIndex="1"
@@ -37,7 +38,8 @@
                     Height="32"
                     Width="100"
                     Margin="10"
-                    Command="{Binding OkButtonCommand}" />
+                    FontWeight="Bold"
+                    Command="{Binding CreateMapCommand}" />
                 <Button
                     Content="Cancel"
                     IsCancel="True"
@@ -45,7 +47,7 @@
                     Height="32"
                     Width="100"
                     Margin="10"
-                    Command="{Binding CancelButtonCommand}" />
+                    Command="{Binding CancelCommand}" />
             </StackPanel>
         </Grid>
     </GroupBox>

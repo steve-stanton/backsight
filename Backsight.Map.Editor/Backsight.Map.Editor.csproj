@@ -70,5 +70,8 @@
       <Compile Update="Windows\MapEditorViewModel.cs">
         <DependentUpon>MapEditorWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\MessageBoxViewModel.cs">
+        <DependentUpon>MessageBoxWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

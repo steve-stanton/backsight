@@ -15,7 +15,6 @@
     </Design.DataContext>
 
     <!-- Register key bindings on the window in case the menu is closed -->
-
     <Window.KeyBindings>
         <KeyBinding Gesture="Ctrl+N" Command="{Binding FileNewCommand}" />
         <KeyBinding Gesture="Ctrl+O" Command="{Binding FileOpenCommand}" />
@@ -69,9 +68,8 @@
                     Command="{Binding FileCheckCommand}"
                     ToolTip.Tip="Check all polygons have labels and attributes"
                 />
-                <Separator/>
-                <!-- Recent map names will be inserted below via code-behind -->
-                <MenuItem x:Name="RecentMapsAnchor" Header="Recent Maps" IsEnabled="False" />
+                <Separator x:Name="RecentMapsSection"/>
+                <!-- Recent map names will be inserted here via code-behind -->
                 <Separator/>
                 <MenuItem
                     Header="E_xit"
@@ -235,7 +233,9 @@
             <mapsui:MapControl
                 x:Name="MapDisplay"
                 Cursor="{Binding MapCursor}"
-                Background="Transparent"/>
+                Background="Transparent">
+                
+            </mapsui:MapControl>
             <ItemsControl
                 x:Name="MapOverlay"
                 ItemsSource="{Binding OverlayChildren}"

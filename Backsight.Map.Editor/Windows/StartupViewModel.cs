@@ -5,17 +5,23 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace Backsight.Map.Editor.Windows;
 
-public partial class StartupViewModel : ViewModelBase
+public partial class StartupViewModel : DialogViewModel
 {
-    public event EventHandler<string>? CloseRequested;
-    
     private readonly string _lastMap;
     private readonly IMapEditorModel _model;
+    private readonly IDialogService _dialogService;
+    private string? _mapName;
     
-    public StartupViewModel(IMapEditorModel model)
+    /// <summary>
+    /// The name of the map that should be opened (null if a map has not been specified).
+    /// </summary>
+    internal string? MapName => _mapName;
+    
+    public StartupViewModel(IMapEditorModel model, IDialogService dialogService)
     {
         _lastMap = GlobalUserSetting.Read("LastMap");
         _model = model;
+        _dialogService = dialogService;
     }
 
     public string OpenLastText => String.IsNullOrEmpty(_lastMap) ? "Open last map" : "Open " + _lastMap;
@@ -25,7 +31,13 @@ public partial class StartupViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanOpenLastMap))]
     private void OpenLastMap()
     {
-        CloseRequested?.Invoke(this, _lastMap);
+        StartWithMap(_lastMap);
+    }
+
+    void StartWithMap(string mapName)
+    {
+        _mapName = mapName;
+        Ok();
     }
 
     [RelayCommand]
@@ -37,27 +49,19 @@ public partial class StartupViewModel : ViewModelBase
         };
         
         var mapName = await dialog.ShowDialog<string>(owner);
-        
+
         if (!String.IsNullOrEmpty(mapName))
-            CloseRequested?.Invoke(this, mapName);
+            StartWithMap(mapName);
     }
     
     [RelayCommand]
     private async Task CreateMap(Avalonia.Controls.Window owner)
     {
-        var dialog = new NewMapWindow
-        {
-            DataContext = new NewMapViewModel(_model)
-        };
-        var newMapName = await dialog.ShowDialog<string>(owner);
-        
-        if (!String.IsNullOrEmpty(newMapName))
-            CloseRequested?.Invoke(this, newMapName);
-    }
+        var vm = new NewMapViewModel(_model);
+        var dialog = new NewMapWindow(vm);
+        var result = await dialog.ShowDialog<DialogResult>(owner);
 
-    [RelayCommand]
-    private void Exit()
-    {
-        CloseRequested?.Invoke(this, "");
+        if (result == DialogResult.OK)
+            StartWithMap(vm.MapName);
     }
 }
