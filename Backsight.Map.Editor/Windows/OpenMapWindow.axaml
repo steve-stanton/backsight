@@ -22,7 +22,7 @@
                 Height="300"
                 Width="300"
                 BorderBrush="Black"
-                BorderThickness="2"
+                BorderThickness="1"
                 Background="LightGray"
                 Margin="10"
                 SelectionMode="Single" />
@@ -31,6 +31,7 @@
                 <Button
                     Content="OK"
                     IsDefault="True"
+                    FontWeight="Bold"
                     HorizontalContentAlignment="Center"
                     Height="32"
                     Width="100"

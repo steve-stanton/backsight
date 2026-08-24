@@ -1,23 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Avalonia;
+﻿using System.Threading.Tasks;
 
 namespace Backsight.Map.Editor.Windows;
 
 public interface IDialogService
 {
+    /// <summary>
+    /// Displays a message box.
+    /// </summary>
+    /// <param name="message">The message to show in the body of the box.</param>
+    /// <param name="heading">The heading of a group box that surrounds the message.</param>
+    /// <param name="owner">The window that the message box is associated with (null to use
+    /// the top-level window known to the dialog service).</param>
     Task ShowMessageBox(string message, string heading = "Message", Avalonia.Controls.Window? owner = null);
+
+    /// <summary>
+    /// Displays a modal dialog.
+    /// </summary>
+    /// <param name="window">The dialog window to show.</param>
+    /// <returns>The way that the user closed the dialog.</returns>
     Task<DialogResult> ShowDialog(DialogWindow window);
+    
+    /// <summary>
+    /// Displays a modeless dialog.
+    /// </summary>
+    /// <param name="window">The dialog window to show.</param>
     void Show(DialogWindow window);
 }
 
-internal class DialogService : IDialogService //, IDisposable
+internal class DialogService : IDialogService
 {
     private readonly Avalonia.Controls.Window _topLevel;
-
-    //private readonly List<DialogWindow> _modelessDialogs = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DialogService"/> class that
@@ -42,42 +54,22 @@ internal class DialogService : IDialogService //, IDisposable
         _topLevel = mainWindow;
     }
 
+    /// <inheritdoc />
     async Task IDialogService.ShowMessageBox(string message, string heading, Avalonia.Controls.Window? owner)
     {
         var messageBox = new MessageBoxWindow(message, heading);
         await messageBox.ShowDialog<DialogResult>(owner ?? _topLevel);
     }
     
+    /// <inheritdoc />
     async Task<DialogResult> IDialogService.ShowDialog(DialogWindow window)
     {
         return await window.ShowDialog<DialogResult>(_topLevel);
     }
 
+    /// <inheritdoc />
     void IDialogService.Show(DialogWindow window)
     {
-        //_modelessDialogs.Add(window);
-        //window.Closed += OnModelessDialogClosed;
         window.Show(_topLevel);
     }
-
-    /*
-    private void OnModelessDialogClosed(object? sender, EventArgs e)
-    {
-        var dialog = sender as DialogWindow;
-        Debug.Assert(dialog is not null);
-        
-        bool isRemoved = _modelessDialogs.Remove(dialog);
-        Debug.Assert(isRemoved);
-        
-        Console.WriteLine($"Modeless dialog {dialog.GetType().Name} closed with result: {dialog.Result}");
-    }
-
-    public void Dispose()
-    {
-        _topLevel.Closed -= OnModelessDialogClosed;
-
-        foreach (var dialog in _modelessDialogs)
-            dialog.Close();
-    }
-    */
 }

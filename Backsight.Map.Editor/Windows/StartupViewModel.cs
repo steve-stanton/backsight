@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Backsight.Map.Editor.Models;
 using CommunityToolkit.Mvvm.Input;
@@ -43,15 +44,16 @@ public partial class StartupViewModel : DialogViewModel
     [RelayCommand]
     private async Task OpenMap(Avalonia.Controls.Window owner)
     {
-        var dialog = new OpenMapWindow()
-        {
-            DataContext = new OpenMapViewModel(_model.MapRepository)
-        };
-        
-        var mapName = await dialog.ShowDialog<string>(owner);
+        var vm = new OpenMapViewModel(_model.MapRepository);
+        var dialog = new OpenMapWindow(vm);
+        var result = await _dialogService.ShowDialog(dialog);
 
-        if (!String.IsNullOrEmpty(mapName))
+        if (result == DialogResult.OK)
+        {
+            var mapName = vm.SelectedMapName;
+            Debug.Assert(mapName is not null);
             StartWithMap(mapName);
+        }
     }
     
     [RelayCommand]

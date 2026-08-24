@@ -1,14 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Backsight.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 
 namespace Backsight.Map.Editor.Windows;
 
-public partial class OpenMapViewModel : ViewModelBase
+public partial class OpenMapViewModel : DialogViewModel
 {
-    public event EventHandler<string>? CloseRequested;
     public string[] MapNames { get; }
 
     [ObservableProperty]
@@ -20,20 +17,8 @@ public partial class OpenMapViewModel : ViewModelBase
         MapNames = mapRepository.FindAllMapNames().ToArray();
     }
     
-    [RelayCommand(CanExecute=nameof(CanExecuteOk))]
-    private void Ok()
-    {
-        CloseRequested?.Invoke(this, SelectedMapName!);
-    }
-    
-    private bool CanExecuteOk()
+    protected override bool CanExecuteOk()
     {
         return SelectedMapName is not null;
-    }
-    
-    [RelayCommand]
-    private void Cancel()
-    {
-        CloseRequested?.Invoke(this, "");
     }
 }
