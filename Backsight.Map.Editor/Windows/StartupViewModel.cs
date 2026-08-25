@@ -42,7 +42,7 @@ public partial class StartupViewModel : DialogViewModel
     }
 
     [RelayCommand]
-    private async Task OpenMap(Avalonia.Controls.Window owner)
+    private async Task OpenMap()
     {
         var vm = new OpenMapViewModel(_model.MapRepository);
         var dialog = new OpenMapWindow(vm);
@@ -57,13 +57,17 @@ public partial class StartupViewModel : DialogViewModel
     }
     
     [RelayCommand]
-    private async Task CreateMap(Avalonia.Controls.Window owner)
+    private async Task CreateMap()
     {
         var vm = new NewMapViewModel(_model);
         var dialog = new NewMapWindow(vm);
-        var result = await dialog.ShowDialog<DialogResult>(owner);
+        var result = await _dialogService.ShowDialog(dialog);
 
         if (result == DialogResult.OK)
-            StartWithMap(vm.MapName);
+        {
+            var mapName = vm.MapName;
+            Debug.Assert(mapName is not null);
+            StartWithMap(mapName);
+        }
     }
 }

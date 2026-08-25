@@ -6,7 +6,7 @@ namespace Backsight.Map.Editor.Windows;
 
 public static class WindowEx
 {
-    extension(Avalonia.Controls.Window window)
+    extension(Avalonia.Controls.Control control)
     {
         /// <summary>
         /// Attempts to focus a control based on the value of its <see cref="Control.TabIndex"/> property.
@@ -18,11 +18,11 @@ public static class WindowEx
         /// </returns>
         public bool FocusByTabIndex(int tabIndex)
         {
-            var control = FindControlByTabIndex<Control>(window, tabIndex);
-            if (control is null)
+            var target = FindControlByTabIndex<Control>(control, tabIndex);
+            if (target is null)
                 return false;
             
-            control.Focus();
+            target.Focus();
             return true;
         }
 
