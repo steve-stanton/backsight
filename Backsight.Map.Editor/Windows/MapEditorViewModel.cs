@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia;
@@ -261,6 +260,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         
         if (String.IsNullOrWhiteSpace(mapName))
             throw new ArgumentException("Map name cannot be empty.", nameof(mapName));
+
+        // Ensure we've closed any map that's currently open
+        CloseMap();
         
         _model.OpenMap(mapName);
         var store = _model.Store ?? throw new ApplicationException("Open map has no store");
@@ -965,9 +967,17 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand]
-    private void FileNew()
+    private async Task FileNew()
     {
-        Console.WriteLine(nameof(FileNew));
+        var dialog = new NewMapWindow(_model);
+        var result = await _dialogService.ShowDialog(dialog);
+        
+        if (result == DialogResult.OK)
+        {
+            var mapName = dialog.ViewModel.MapName;
+            Debug.Assert(mapName is not null);
+            OpenMap(mapName);
+        }
     }
 
     [RelayCommand]
@@ -980,7 +990,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         {
             var mapName = dialog.ViewModel.SelectedMapName;
             Debug.Assert(mapName is not null);
-            CloseMap();
             OpenMap(mapName);
         }
     }
@@ -1030,13 +1039,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         }
     }
 
-    // TODO: Should limit to 5 items
-    public ObservableCollection<string> RecentMaps { get; } =
-    [
-        "Test 1",
-        "Test 2",
-        "Test 3"
-    ];
+    public IReadOnlyList<string> RecentMaps => GlobalUserSetting.RecentMaps;
 
     [RelayCommand]
     private void OpenRecentMap(string mapName)

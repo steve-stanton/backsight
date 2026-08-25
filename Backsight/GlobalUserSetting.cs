@@ -111,4 +111,31 @@ public static class GlobalUserSetting
     {
         Write(settingName, val.ToString());
     }
+
+    /// <summary>
+    /// Updates the <see cref="RecentMaps"/> property by inserting the specified map name
+    /// at the start of the list. The list will be limited to no more than 5 items.
+    /// </summary>
+    /// <param name="mapName">The name of a recently opened map.</param>
+    public static void UpdateRecentMaps(string mapName)
+    {
+        var recentText = Read(nameof(RecentMaps));
+
+        if (recentText.Length == 0)
+        {
+            Write(nameof(RecentMaps), mapName);
+        }
+        else
+        {
+            var recentMaps = recentText.Split(',').ToList();
+            recentMaps.RemoveAll(s => s == mapName);
+            recentMaps.Insert(0, mapName);
+            Write(nameof(RecentMaps), String.Join(",", recentMaps.Take(5)));
+        }
+    }
+
+    /// <summary>
+    /// The names of recently opened maps.
+    /// </summary>
+    public static IReadOnlyList<string> RecentMaps => Read(nameof(RecentMaps)).Split(',');
 }

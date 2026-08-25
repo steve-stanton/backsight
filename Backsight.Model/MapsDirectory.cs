@@ -150,6 +150,7 @@ public class MapsDirectory : IMapRepository
         LoadEdits(mapName, store);
 
         GlobalUserSetting.Write("LastMap", mapName);
+        GlobalUserSetting.UpdateRecentMaps(mapName);
         
         // Ensure the settings record the SavedItemCount property (if we've just replaced the settings.json
         // file, it will hold a value of 0)
