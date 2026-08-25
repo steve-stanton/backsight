@@ -174,6 +174,18 @@
                     ToolTip.Tip="Undo the last View Previous command"
                     InputGesture="Alt+Right"
                     />
+                <Separator/>
+                <MenuItem
+                    Header="_Position" 
+                    Command="{Binding ViewPositionCommand}" 
+                    ToolTip.Tip="Track position of mouse"
+                    ToggleType="CheckBox"
+                    IsChecked="{Binding PositionShown, Mode=OneWay}"
+                />
+                <MenuItem
+                    Header="Propertie_s Window" 
+                    Command="{Binding ViewPropertiesWindowCommand}"
+                />
             </MenuItem>
             <MenuItem Header="_Data">
                 

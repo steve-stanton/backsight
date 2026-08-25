@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -17,6 +18,8 @@ using Mapsui.Extensions;
 using Mapsui.Layers;
 using Mapsui.Manipulations;
 using Mapsui.Rendering.Skia.Extensions;
+using Mapsui.Widgets;
+using Mapsui.Widgets.InfoWidgets;
 
 namespace Backsight.Map.Editor.Windows;
 
@@ -146,6 +149,12 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private bool _autoSelect;
 
     /// <summary>
+    /// Is the current position shown?
+    /// </summary>
+    //[ObservableProperty]
+    private bool _positionShown;
+        
+    /// <summary>
     /// Service class for displaying dialogs.
     /// </summary>
     private readonly IDialogService _dialogService;
@@ -164,6 +173,16 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             BackColor = Mapsui.Styles.Color.Khaki
         };
 
+        var positionWidget = new MouseCoordinatesWidget
+        {
+            VerticalAlignment = VerticalAlignment.Bottom,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Margin = new MRect(20),
+            Enabled = false
+        };
+        _mapData.Widgets.Add(positionWidget);
+        
+        
         // Ensure the map stays in position on a mouse drag (user needs to explicitly say they want to drag)
         _mapData.Navigator.PanLock = true;
 
@@ -656,6 +675,24 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         Console.WriteLine(nameof(Next));
     }
 
+    [RelayCommand(CanExecute = nameof(CanExecuteViewPosition))]
+    private void ViewPosition()
+    {
+        _positionShown = !_positionShown;
+        var widget = _mapData.Widgets.FirstOrDefault(x => x.GetType() == typeof(MouseCoordinatesWidget));
+        widget?.Enabled = _positionShown;
+    }    
+    
+    private bool CanExecuteViewPosition => _model.Extent is not null;
+    
+    [RelayCommand(CanExecute = nameof(CanExecuteViewPropertiesWindow))]
+    private void ViewPropertiesWindow()
+    {
+        Console.WriteLine(nameof(ViewPropertiesWindow));
+    }    
+
+    private bool CanExecuteViewPropertiesWindow => Store is not null;
+    
     [RelayCommand]
     private void Properties()
     {
@@ -1110,6 +1147,12 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     {
         get => _autoSelect;
         private set => SetProperty(ref _autoSelect, value);
+    }
+
+    public bool PositionShown
+    {
+        get => _positionShown;
+        private set => SetProperty(ref _positionShown, value);
     }
 
     private bool IsEditAutoHighlightEnabled()
