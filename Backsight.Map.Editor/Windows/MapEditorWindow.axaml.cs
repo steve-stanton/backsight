@@ -22,11 +22,11 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
     /// Any keys that are currently pressed.
     /// </summary>
     private KeySelection _keySelection = KeySelection.None;
-    
+
     public MapEditorWindow()
     {
         InitializeComponent();
-        
+
         // Start out with a context that's only suitable in design mode (an effective context will get injected)
         //DataContext = new MapEditorViewModel(new DesignMapEditorModel());
         DataContextChanged += (_, _) =>
@@ -45,15 +45,13 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
                 var mapSupplied = await vm.Startup();
                 if (!mapSupplied)
                     Close();
-                
-                var mapName = vm.CurrentMapName;
             }
-            //var dialogService = new DialogService(this);
-            //await (dialogService as IDialogService).ShowDialog(new StartupWindow())
         };
 
         Closing += (_, _) =>
         {
+            ClearDockPanel();
+
             if (DataContext is IMapEditorViewModel { CurrentMapName: not null } vm)
                 vm.CloseMap();
         };
@@ -135,11 +133,11 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
     {
         if (DataContext is not MapEditorViewModel vm)
             return;
-        
+
         // c.f. EditingController.MouseDown
-        
+
         var mb = e.Properties.MouseButton;
-        
+
         if (mb == MouseButton.Right)
         {
             SetContextMenu(vm.GetContextMenuItems());
@@ -149,7 +147,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
             var p = GetWorldPosition(e);
             vm.OnMouseDown(p, mb, _keySelection);
         }
-        
+
         e.Handled = true;
     }
 
@@ -159,7 +157,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         var (gx, gy) = MapDisplay.Map.Navigator.Viewport.ScreenToWorldXY(screenPosition.X, screenPosition.Y);
         return new Position(gx, gy);
     }
-    
+
 
     private void OnPointerMoved(object? sender, PointerEventArgs e)
     {
@@ -178,6 +176,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
             vm.OnMouseUp(p, e.Properties.MouseButton);
         }
     }
+
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (DataContext is not MapEditorViewModel vm)
@@ -198,12 +197,44 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         _keySelection = e.KeySelection;
     }
 
-    private void OnClick1(object? sender, RoutedEventArgs e)
+    /// <summary>
+    /// Sets the content of the dock panel to the specified dialog.
+    /// </summary>
+    /// <param name="dialog">The dialog to display.</param>
+    /// <exception cref="InvalidOperationException">DockPanel already has content.</exception>
+    /// <exception cref="ArgumentException">Dialog content must be a control.</exception>
+    internal void SetDockPanel(DialogWindow dialog)
     {
-        Console.WriteLine("Click1");
+        ArgumentNullException.ThrowIfNull(dialog);
+        
+        if (DockContainer.Content is not null)
+            throw new InvalidOperationException("DockPanel already has content.");
+        
+        if (dialog.Content is not Control content)
+            throw new ArgumentException("Dialog content must be a control.");
+
+        // The content can only have one visual parent, so clear before we transfer it to the dock panel
+        dialog.Content = null;
+
+        // Pull over the data context
+        if (content.DataContext is null && dialog.DataContext is not null)
+            content.DataContext = dialog.DataContext;
+
+        DockContainer.Width = dialog.Width; // might be NaN
+        if (dialog.Background is not null)
+            DockContainer.Background = dialog.Background;
+
+        DockContainer.Content = content;
+        DockContainer.IsVisible = true;
     }
 
-    private void OnClick2(object? sender, RoutedEventArgs e)
+    /// <summary>
+    /// Clears anything currently in the dock panel.
+    /// This should be called when the dialog is being closed.
+    /// </summary>
+    internal void ClearDockPanel()
     {
-        Console.WriteLine("Click2");
-    }}
+        DockContainer.Content = null;
+        DockContainer.IsVisible = false;
+    }
+}

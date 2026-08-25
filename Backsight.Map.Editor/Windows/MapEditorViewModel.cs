@@ -145,7 +145,10 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// Is auto-highlight enabled?
     /// </summary>
     private bool _autoSelect;
-    
+
+    /// <summary>
+    /// Service class for displaying dialogs.
+    /// </summary>
     private readonly IDialogService _dialogService;
 
     public MapEditorViewModel() : this(new DesignMapEditorModel(), null!)
@@ -167,6 +170,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
         _mapData.Navigator.ViewportChanged += OnViewportChanged;
     }
+    
     
     internal IEnvironmentRepository Environment => _model.Environment;
     internal IMapEditorModel Model => _model;

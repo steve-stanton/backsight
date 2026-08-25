@@ -6,6 +6,11 @@ namespace Backsight.Map.Editor.Windows;
 
 public abstract class DialogWindow : Avalonia.Controls.Window
 {
+    /// <summary>
+    /// The dialog service used to display this dialog (null if this dialog is not currently shown).
+    /// </summary>
+    internal IDialogService? DialogService { get; set; }
+    
     public DialogResult Result { get; protected set; } = DialogResult.None;
 }
 
@@ -38,6 +43,7 @@ public abstract class DialogWindow<TViewModel> : DialogWindow where TViewModel :
     protected override void OnClosing(WindowClosingEventArgs e)
     {
         Console.WriteLine("DialogWindow closing");
+        DialogService?.OnClosing(this);
         _viewModel.CloseRequested -= OnCloseRequested;
     }
 }

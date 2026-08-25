@@ -229,6 +229,12 @@
             </MenuItem>
         </Menu>
         
+        <ContentControl
+            x:Name="DockContainer"
+            DockPanel.Dock="Right"
+            VerticalAlignment="Top"
+            IsVisible="False" />
+        
         <Grid>
             <mapsui:MapControl
                 x:Name="MapDisplay"

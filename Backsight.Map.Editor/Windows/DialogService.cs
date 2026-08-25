@@ -1,18 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Backsight.Map.Editor.Windows;
 
 public interface IDialogService
 {
-    /// <summary>
-    /// Displays a message box.
-    /// </summary>
-    /// <param name="message">The message to show in the body of the box.</param>
-    /// <param name="heading">The heading of a group box that surrounds the message.</param>
-    /// <param name="owner">The window that the message box is associated with (null to use
-    /// the top-level window known to the dialog service).</param>
-    Task ShowMessageBox(string message, string heading = "Message", Avalonia.Controls.Window? owner = null);
-
     /// <summary>
     /// Displays a modal dialog.
     /// </summary>
@@ -24,23 +16,45 @@ public interface IDialogService
     /// Displays a modeless dialog.
     /// </summary>
     /// <param name="window">The dialog window to show.</param>
-    void Show(DialogWindow window);
+    /// <param name="dock">Display the dialog in a docked panel of the main window.</param>
+    void Show(DialogWindow window, bool dock = false);
+    
+    /// <summary>
+    /// Called when a dialog window is closing.
+    /// </summary>
+    /// <param name="window">The window that is being closed.</param>
+    void OnClosing(DialogWindow window);
+}
+
+internal static class IDialogServiceEx
+{
+    extension(IDialogService dialogService)
+    {
+        /// <summary>
+        /// Displays a message box.
+        /// </summary>
+        /// <param name="message">The message to show in the body of the box.</param>
+        /// <param name="heading">The heading of a group box that surrounds the message.</param>
+        internal async Task ShowMessageBox(string message, string heading = "Message")
+        {
+            var messageBox = new MessageBoxWindow(message, heading);
+            await dialogService.ShowDialog(messageBox);
+        }
+    }
 }
 
 internal class DialogService : IDialogService
 {
-    private readonly Avalonia.Controls.Window _topLevel;
+    private readonly MapEditorWindow _mainWindow;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DialogService"/> class that
-    /// uses the supplied window as the owner of all dialogs.
+    /// The dialog window that is currently docked in the main window.
     /// </summary>
-    /// <param name="owner">The window to use as the owner for sub-dialogs.</param>
-    internal DialogService(DialogWindow owner)
-    {
-        _topLevel = owner;
-    }
-    
+    /// <remarks>
+    /// Only one dialog window can be docked at a time.
+    /// </remarks>
+    private DialogWindow? _dockedWindow;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DialogService"/> class that
     /// uses the application's main window as the owner of all dialogs.
@@ -51,25 +65,46 @@ internal class DialogService : IDialogService
     /// </remarks>
     public DialogService(MapEditorWindow mainWindow)
     {
-        _topLevel = mainWindow;
+        _mainWindow = mainWindow;
     }
 
-    /// <inheritdoc />
-    async Task IDialogService.ShowMessageBox(string message, string heading, Avalonia.Controls.Window? owner)
-    {
-        var messageBox = new MessageBoxWindow(message, heading);
-        await messageBox.ShowDialog<DialogResult>(owner ?? _topLevel);
-    }
-    
     /// <inheritdoc />
     async Task<DialogResult> IDialogService.ShowDialog(DialogWindow window)
     {
-        return await window.ShowDialog<DialogResult>(_topLevel);
+        window.DialogService = this;
+        return await window.ShowDialog<DialogResult>(_mainWindow);
     }
 
     /// <inheritdoc />
-    void IDialogService.Show(DialogWindow window)
+    /// <exception cref="InvalidOperationException">Another dialog is already docked.</exception>
+    void IDialogService.Show(DialogWindow window, bool dock)
     {
-        window.Show(_topLevel);
+        if (dock && _dockedWindow is not null)
+            throw new InvalidOperationException("Another dialog is already docked.");
+
+        window.DialogService = this;
+        
+        if (dock)
+        {
+            _dockedWindow = window;
+            _mainWindow.SetDockPanel(window);
+        }
+        else
+        {
+            window.Show(_mainWindow);
+        }
+    }
+
+    /// <inheritdoc />
+    void IDialogService.OnClosing(DialogWindow window)
+    {
+        if (ReferenceEquals(_dockedWindow, window))
+        {
+            Console.WriteLine("Docked window is closing with result: " + window.Result);
+            _mainWindow.ClearDockPanel();
+            _dockedWindow = null;
+        }
+
+        window.DialogService = null;
     }
 }
