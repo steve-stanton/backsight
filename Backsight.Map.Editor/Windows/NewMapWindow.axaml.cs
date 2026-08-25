@@ -1,13 +1,18 @@
-﻿namespace Backsight.Map.Editor.Windows;
+﻿using Backsight.Map.Editor.Models;
+
+namespace Backsight.Map.Editor.Windows;
 
 public partial class NewMapWindow : DialogWindow<NewMapViewModel>
 {
-    public NewMapWindow() : base(null!)
+    /// <summary>
+    /// Design-time constructor.
+    /// </summary>
+    private NewMapWindow() : base(null!)
     {
         InitializeComponent();
     }
 
-    public NewMapWindow(NewMapViewModel viewModel) : base(viewModel)
+    public NewMapWindow(IMapEditorModel model) : base(new NewMapViewModel(model))
     {
         InitializeComponent();
     }

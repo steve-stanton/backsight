@@ -971,16 +971,18 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand]
-    private void FileOpen()
+    private async Task FileOpen()
     {
-        var dialog = new OpenMapWindow
+        var dialog = new OpenMapWindow(_model.MapRepository);
+        var result = await _dialogService.ShowDialog(dialog);
+        
+        if (result == DialogResult.OK)
         {
-            DataContext = new OpenMapViewModel(_model.MapRepository)
-        };
-
-        // TODO: How to pass down the owner window?
-        // How about a DialogService that knows the main window?
-        //var mapName = await dialog.ShowDialog<string>(owner);
+            var mapName = dialog.ViewModel.SelectedMapName;
+            Debug.Assert(mapName is not null);
+            CloseMap();
+            OpenMap(mapName);
+        }
     }
 
     [RelayCommand]
@@ -1176,17 +1178,21 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     
     CommandTool? IMapEditorViewModel.CurrentCommand => _commandTool;
 
+    /// <summary>
+    /// Initializes the application by ensuring that the user has selected a map (potentially
+    /// a brand new map).
+    /// </summary>
+    /// <returns>True if the startup succeeded, false if the user did not select any map.</returns>
     internal async Task<bool> Startup()
     {
-        var startupVm = new StartupViewModel(_model, _dialogService);
-        var startup = new StartupWindow(startupVm);
+        var startup = new StartupWindow(_model, _dialogService);
         var result = await _dialogService.ShowDialog(startup);
 
         if (result != DialogResult.OK)
             return false;
 
-        Debug.Assert(startupVm.MapName is not null);
-        OpenMap(startupVm.MapName);
+        Debug.Assert(startup.ViewModel.MapName is not null);
+        OpenMap(startup.ViewModel.MapName);
         return true;
     }
 }

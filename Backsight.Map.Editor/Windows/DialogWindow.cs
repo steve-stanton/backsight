@@ -24,7 +24,7 @@ public abstract class DialogWindow<TViewModel> : DialogWindow where TViewModel :
         DataContext = viewModel;
     }
     
-    protected TViewModel ViewModel => _viewModel;
+    internal TViewModel ViewModel => _viewModel;
     
     protected override void OnLoaded(RoutedEventArgs e)
     {

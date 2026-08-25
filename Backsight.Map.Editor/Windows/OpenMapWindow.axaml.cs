@@ -1,12 +1,19 @@
-﻿namespace Backsight.Map.Editor.Windows;
+﻿using Backsight.Model;
+
+namespace Backsight.Map.Editor.Windows;
 
 public partial class OpenMapWindow : DialogWindow<OpenMapViewModel>
 {
-    public OpenMapWindow() : this(null!)
+    /// <summary>
+    /// Design-time constructor.
+    /// </summary>
+    private OpenMapWindow() : base(null!)
     {
+        InitializeComponent();
     }
 
-    public OpenMapWindow(OpenMapViewModel viewModel) : base(viewModel)
+    internal OpenMapWindow(IMapRepository mapRepository)
+        : base(new OpenMapViewModel(mapRepository))
     {
         InitializeComponent();
     }
