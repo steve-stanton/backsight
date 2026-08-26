@@ -28,5 +28,6 @@ internal readonly record struct PaintStyle(
         Color = Color,
         Style = Style,
         StrokeWidth = StrokeWidth,
+        IsAntialias = true
     };
 }
