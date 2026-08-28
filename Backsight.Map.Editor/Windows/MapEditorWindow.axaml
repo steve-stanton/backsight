@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mapsui="clr-namespace:Mapsui.UI.Avalonia;assembly=Mapsui.UI.Avalonia"
+        xmlns:me="using:Backsight.Map.Editor.Windows"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Backsight.Map.Editor.Windows.MapEditorWindow"
         x:DataType="vm:MapEditorViewModel"
@@ -185,6 +186,8 @@
                 <MenuItem
                     Header="Propertie_s Window" 
                     Command="{Binding ViewPropertiesWindowCommand}"
+                    ToggleType="CheckBox"
+                    IsChecked="{Binding PropertiesVisible, Mode=OneWay}"
                 />
             </MenuItem>
             <MenuItem Header="_Data">
@@ -240,31 +243,69 @@
                 
             </MenuItem>
         </Menu>
-        
+            
         <ContentControl
             x:Name="DockContainer"
             DockPanel.Dock="Right"
             VerticalAlignment="Top"
             IsVisible="False" />
         
-        <Grid>
-            <mapsui:MapControl
-                x:Name="MapDisplay"
-                Cursor="{Binding MapCursor}"
-                Background="Transparent">
-                
-            </mapsui:MapControl>
-            <ItemsControl
-                x:Name="MapOverlay"
-                ItemsSource="{Binding OverlayChildren}"
-                IsHitTestVisible="False">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas Background="Transparent"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </Grid>
+        <SplitView
+            x:Name="SplitView"
+            IsPaneOpen="{Binding PropertiesVisible}"
+            DisplayMode="Inline"
+            OpenPaneLength="300">
+            
+            <SplitView.Pane>
+                <Grid ColumnDefinitions="*, 5">
+                    <!-- Left Pane: Properties Window -->
+                    <me:PropertyDisplay
+                        Grid.Column="0"
+                        DataContext="{Binding PropertyDisplay}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+
+                    <!-- Grab bar / Splitter -->
+                    <Thumb
+                        Grid.Column="1"
+                        Width="5"
+                        Cursor="SizeWestEast"
+                        DragDelta="OnPaneGrabBarDragDelta">
+                        <Thumb.Template>
+                            <ControlTemplate>
+                                <Border Background="#E4E4E4"
+                                        BorderBrush="#BDBDBD"
+                                        BorderThickness="1,0,1,0">
+                                    <Rectangle Width="1"
+                                               Height="30"
+                                               Fill="#888888"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Thumb.Template>
+                    </Thumb>
+                </Grid>
+            </SplitView.Pane>
+
+            <!-- Right Pane: Map Display -->
+            <Grid>
+                <mapsui:MapControl
+                    x:Name="MapDisplay"
+                    Cursor="{Binding MapCursor}"
+                    Background="Transparent" />
+                <ItemsControl
+                    x:Name="MapOverlay"
+                    ItemsSource="{Binding OverlayChildren}"
+                    IsHitTestVisible="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas Background="Transparent"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Grid>
+        </SplitView>
     </DockPanel>
 
 </Window>

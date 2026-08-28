@@ -153,26 +153,43 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// </summary>
     //[ObservableProperty]
     private bool _positionShown;
+
+    /// <summary>
+    /// Is the properties window currently visible?
+    /// </summary>
+    [ObservableProperty]
+    private bool _propertiesVisible;
+    
+    /// <summary>
+    /// The view model for the properties window.
+    /// </summary>
+    public PropertyDisplayViewModel PropertyDisplay => _propertyDisplay;
+    private readonly PropertyDisplayViewModel _propertyDisplay;
         
     /// <summary>
     /// Service class for displaying dialogs.
     /// </summary>
     private readonly IDialogService _dialogService;
 
-    public MapEditorViewModel() : this(new DesignMapEditorModel(), null!)
+    public MapEditorViewModel() : this(new DesignMapEditorModel(), null!, null!)
     {
     }
 
-    public MapEditorViewModel(IMapEditorModel model, IDialogService dialogService)
+    public MapEditorViewModel(
+        IMapEditorModel model,
+        IDialogService dialogService,
+        PropertyDisplayViewModel propertiesWindow)
     {
         _model = model;
         _dialogService = dialogService;
+        _propertyDisplay = propertiesWindow;
 
         _mapData = new Mapsui.Map
         {
             BackColor = Mapsui.Styles.Color.Khaki
         };
 
+        // Add widget to support ViewPosition
         var positionWidget = new MouseCoordinatesWidget
         {
             VerticalAlignment = VerticalAlignment.Bottom,
@@ -181,7 +198,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             Enabled = false
         };
         _mapData.Widgets.Add(positionWidget);
-        
         
         // Ensure the map stays in position on a mouse drag (user needs to explicitly say they want to drag)
         _mapData.Navigator.PanLock = true;
@@ -688,11 +704,14 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(CanExecuteViewPropertiesWindow))]
     private void ViewPropertiesWindow()
     {
-        Console.WriteLine(nameof(ViewPropertiesWindow));
+        PropertiesVisible = !PropertiesVisible;
+        
+        if (PropertiesVisible)
+            _propertyDisplay.Update(_selection);
     }    
 
     private bool CanExecuteViewPropertiesWindow => Store is not null;
-    
+        
     [RelayCommand]
     private void Properties()
     {
@@ -954,6 +973,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
         _selection = ss;
         _mapData.RefreshGraphics();
+        
+        if (PropertiesVisible)
+            _propertyDisplay.Update(_selection);
         /*
         m_MapControl?.OnSelectionChanged(m_Selection);
 

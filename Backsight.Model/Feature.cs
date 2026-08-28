@@ -507,6 +507,7 @@ public abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IE
     /// indirectly through some sort of <c>Observation</c> object).
     /// May be null.
     /// </summary>
+    [Browsable(false)]
     public List<IFeatureDependent>? Dependents => m_References;
 
     /// <summary>

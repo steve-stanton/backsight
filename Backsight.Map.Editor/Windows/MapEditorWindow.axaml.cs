@@ -237,4 +237,12 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
         DockContainer.Content = null;
         DockContainer.IsVisible = false;
     }
+
+    private void OnPaneGrabBarDragDelta(object? sender, VectorEventArgs e)
+    {
+        const double minWidth = 150;
+        const double maxWidth = 800;
+        var newLength = SplitView.OpenPaneLength + e.Vector.X;
+        SplitView.OpenPaneLength = Math.Clamp(newLength, minWidth, maxWidth);
+    }
 }

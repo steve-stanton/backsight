@@ -1,0 +1,79 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows"
+             xmlns:me="using:Backsight.Map.Editor.Windows"
+             x:DataType="viewModel:SimplePropertyGridViewModel"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Backsight.Map.Editor.Windows.SimplePropertyGrid">
+    
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <ItemsControl ItemsSource="{Binding Properties}"
+                      Grid.IsSharedSizeScope="True"
+                      Margin="4">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="me:PropertyItem">
+                    
+                    <Border Background="Bisque"
+                            BorderBrush="Transparent"
+                            Padding="2,4">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="PropertyName" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Column 0: > Expand/Collapse Toggle or Blank -->
+                                <ToggleButton Grid.Column="0"
+                                              x:Name="ExpandButton"
+                                              IsVisible="{Binding IsExpandable}"
+                                              IsChecked="{Binding #ContentPanel.IsVisible, Mode=TwoWay}"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              Padding="0"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center">
+                                    <ToggleButton.Styles>
+                                        <Style Selector="ToggleButton:checked > TextBlock">
+                                            <Setter Property="RenderTransform" Value="rotate(90deg)" />
+                                        </Style>
+                                    </ToggleButton.Styles>
+                                    <TextBlock Text="&#x25B8;"
+                                               FontSize="16"
+                                               RenderTransformOrigin="50%,50%">
+                                        <TextBlock.Transitions>
+                                            <Transitions>
+                                                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+                                            </Transitions>
+                                        </TextBlock.Transitions>
+                                    </TextBlock>
+                                </ToggleButton>
+
+                                <!-- Column 1: Property Name -->
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           Margin="0,0,16,0"
+                                           VerticalAlignment="Center"/>
+
+                                <!-- Column 2: Property Value -->
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding Value}"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            
+                            <!-- Nested Child Content (when expanded) -->
+                            <Panel x:Name="ContentPanel"
+                                   IsVisible="False">
+                                <me:SimplePropertyGrid DataContext="{Binding ChildViewModel}"
+                                                          Margin="20,4,0,4"/>
+                            </Panel>
+                        </StackPanel>      
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>

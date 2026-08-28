@@ -38,7 +38,7 @@ class MapProvider : IProvider
         Debug.Assert(_store is not null);
             
         var window = fetchInfo.Window;
-        Console.WriteLine("fetching data");
+        //Console.WriteLine("fetching data");
 
         result.AddRange(_store.Query<Model.LineFeature>(window).Select(x => new Line(x)));
         
@@ -48,7 +48,7 @@ class MapProvider : IProvider
         if (requiredTypes.HasFlag(SpatialType.Text))
             result.AddRange(_store.Query<Model.TextFeature>(window).Select(x => new Text(x)));
         
-        Console.WriteLine("found " + result.Count);
+        //Console.WriteLine("found " + result.Count);
         return Task.FromResult<IEnumerable<IFeature>>(result);
     }
 

@@ -73,5 +73,11 @@
       <Compile Update="Windows\MessageBoxViewModel.cs">
         <DependentUpon>MessageBoxWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\PropertyDisplayViewModel.cs">
+        <DependentUpon>PropertyDisplay.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\SimplePropertyGridViewModel.cs">
+        <DependentUpon>SimplePropertyGrid.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

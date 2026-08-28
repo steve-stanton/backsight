@@ -31,7 +31,9 @@ public partial class App : Application
         collection.AddSingleton<IMapRepository, MapsDirectory>();
         collection.AddSingleton<IMapControlRenderer, Renderer>();
         collection.AddSingleton<MapEditorWindow>();
-        collection.AddSingleton<IDialogService, DialogService>();  
+        collection.AddSingleton<IDialogService, DialogService>();
+
+        collection.AddSingleton<PropertyDisplayViewModel>();
         
         var services = collection.BuildServiceProvider();
 
@@ -46,7 +48,7 @@ public partial class App : Application
             desktop.MainWindow = splash;
             splash.Show();
             await splashVm.InitializeAsync();
-
+            
             var editorWindow = services.GetRequiredService<MapEditorWindow>();
             editorWindow.DataContext = services.GetRequiredService<IMapEditorViewModel>();
             desktop.MainWindow = editorWindow;

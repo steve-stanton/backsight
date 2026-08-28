@@ -4,7 +4,7 @@ using Backsight.Model;
 namespace Backsight.Map.Editor;
 
 /// <summary>
-/// Readonly access to properties of the <see cref="ViewModels.Selection"/> class.
+/// Readonly access to properties of the <see cref="Models.Selection"/> class.
 /// </summary>
 internal interface IMapSelection
 {
