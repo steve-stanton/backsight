@@ -162,6 +162,7 @@ public class MapsDirectory : IMapRepository
         
         // Record details for a new session
         uint sessionId = ++store.ItemCount;
+        Console.WriteLine("New session: " + sessionId);
         var change = new NewSessionEvent(sessionId, System.Environment.UserName, System.Environment.MachineName);
         RecordChange(mapName, change, 1);
         
@@ -180,49 +181,56 @@ public class MapsDirectory : IMapRepository
         if (session is null)
             throw new ApplicationException("No working session");
 
+        // Combine data files for the session (or discard if there are no changes)
         if (session.ChangeCount == 0)
-        {
             DeleteFile(store.Name, session.ItemNumber);
-        }
         else
-        {
-            // Rollup the edits in the session...
-
-            // Pick up the numbers of the files that relate to the session
-            string mapFolder = Path.Combine(_mapsFolderPath, store.Name);
-            uint[] fileNumbers = GetFileNumbers(mapFolder, session.ItemNumber);
-
-            // Create an event for the end of the session
-            var endEvent = new EndSessionEvent(++store.ItemCount);
-            var endFile = Path.Combine(_mapsFolderPath, GetDataFileName(endEvent.EditSequence));
-
-            // Combine the files
-            using (StreamWriter sw = File.CreateText(endFile))
-            {
-                foreach (uint fileNum in fileNumbers)
-                {
-                    var fileName = Path.Combine(mapFolder, GetDataFileName(fileNum));
-                    var s = File.ReadAllText(fileName);
-                    sw.Write(s);
-                }
-
-                // And finish off with the end event
-                var endText = EditSerializer.GetSerializedString(DataField.Edit, endEvent);
-                sw.Write(endText);
-            }
-
-            // Get rid of the files that we've just combined
-            foreach (uint fileNum in fileNumbers)
-            {
-                string fileName = Path.Combine(mapFolder, GetDataFileName(fileNum));
-                File.Delete(fileName);
-            }
-
-            // Remove any undo folder
-            DeleteUndoFolder(store.Name);
-        }
+            CompleteSession(session);
+        
+        // Remove any undo folder
+        DeleteUndoFolder(store.Name);
 
         SaveMapSettings(store.Name, store.Settings);
+    }
+
+    /// <summary>
+    /// Completes a session by appending an <see cref="EndSessionEvent"/>, and combines
+    /// operation data files into a single file.
+    /// </summary>
+    /// <param name="session">The session to be completed.</param>
+    private void CompleteSession(Session session)
+    {
+        var store = session.MapStore;
+
+        // Pick up the numbers of the files that relate to the session
+        string mapFolder = Path.Combine(_mapsFolderPath, store.Name);
+        uint[] fileNumbers = GetFileNumbers(mapFolder, session.ItemNumber);
+
+        // Create an event for the end of the session
+        var endEvent = new EndSessionEvent(++store.ItemCount);
+        var endFile = Path.Combine(_mapsFolderPath, store.Name, GetDataFileName(endEvent.EditSequence));
+
+        // Combine the files
+        using (StreamWriter sw = File.CreateText(endFile))
+        {
+            foreach (uint fileNum in fileNumbers)
+            {
+                var fileName = Path.Combine(mapFolder, GetDataFileName(fileNum));
+                var s = File.ReadAllText(fileName);
+                sw.Write(s);
+            }
+
+            // And finish off with the end event
+            var endText = EditSerializer.GetSerializedString(DataField.Edit, endEvent);
+            sw.Write(endText);
+        }
+
+        // Get rid of the files that we've just combined
+        foreach (uint fileNum in fileNumbers)
+        {
+            string fileName = Path.Combine(mapFolder, GetDataFileName(fileNum));
+            File.Delete(fileName);
+        }
     }
     
     /// <summary>
@@ -310,6 +318,15 @@ public class MapsDirectory : IMapRepository
 
         // Now load the files
         LoadDataFiles(store, dataFolder, fileNums);
+        
+        // If the last session didn't complete as expected, complete it now and ensure
+        // session files have been combined into a single file.
+        var lastSession = store.Model.LastSession;
+        if (lastSession is not null && lastSession.EndTime is null)
+        {
+            Console.WriteLine("Last session did not complete as expected, completing now");
+            CompleteSession(lastSession);
+        }
     }
     
     /// <summary>

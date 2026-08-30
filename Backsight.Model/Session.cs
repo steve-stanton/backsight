@@ -13,10 +13,19 @@ class Session
     readonly IMapStore m_MapStore;
 
     /// <summary>
-    /// Information about the session (corresponds to a row in the <c>Sessions</c> table)
+    /// Information about the session.
     /// </summary>
     readonly NewSessionEvent m_Data;
 
+    /// <summary>
+    /// Event that records completion of the session (null if the session is still active).
+    /// </summary>
+    /// <remarks>
+    /// In a situation where the application crashes during a session, an end event should be
+    /// created the next time the application starts up.
+    /// </remarks>
+    EndSessionEvent? m_EndData;
+    
     /// <summary>
     /// Operations (if any) that were performed during the session. 
     /// </summary>
@@ -33,7 +42,20 @@ class Session
         m_Data = sessionData ?? throw new ArgumentNullException(nameof(sessionData));
         m_Operations = new List<Operation>();
     }
+    
+    /// <summary>
+    /// Attaches event data to indicate that the session has now ended.
+    /// </summary>
+    /// <param name="endData">The event data to record the end of this session.</param>
+    /// <exception cref="InvalidOperationException">Session already ended.</exception>
+    public void EndSession(EndSessionEvent endData)
+    {
+        if (m_EndData is not null)
+            throw new InvalidOperationException("Session already ended.");
 
+        m_EndData = endData;
+    }
+    
     // TODO: I think the output was dedicated to a list of sessions to be shown to the user - probably not a good idea
     public override string ToString()
     {
@@ -168,9 +190,9 @@ class Session
     internal DateTime StartTime => m_Data.When;
 
     /// <summary>
-    /// When was the last edit performed?
+    /// When was the session completed (null if the session is still active).
     /// </summary>
-    internal DateTime EndTime { get; set; }
+    internal DateTime? EndTime => m_EndData?.When;
 
     /// <summary>
     /// Obtains dependent edits within this session.

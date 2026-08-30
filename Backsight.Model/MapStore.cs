@@ -29,8 +29,6 @@ public class MapStore : IMapStore
     
     // TODO: pull class data into this class?
     private readonly CadastralMapModel _model;
-    
-    private uint _maxSequence = 0;
 
     /// <summary>
     /// The last internal ID value assigned to something in this map.
@@ -68,11 +66,11 @@ public class MapStore : IMapStore
             var s = new Session(this, newSession);
             _model.AddSession(s);
         }
-        else if (edit is EndSessionEvent)
+        else if (edit is EndSessionEvent endSession)
         {
             var lastSession = _model.LastSession;
             Debug.Assert(lastSession is not null);
-            lastSession.EndTime = edit.When;
+            lastSession.EndSession(endSession);
         }
         else if (edit is IdAllocation alloc)
         {

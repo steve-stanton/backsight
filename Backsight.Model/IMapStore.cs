@@ -52,6 +52,13 @@ public interface IMapStore
     /// <summary>
     /// Saves any changes that have been recorded.
     /// </summary>
+    /// <remarks>
+    /// Saving changes should just be a matter of updating the map settings to refer to
+    /// the last data file that was written.
+    /// <para/>
+    /// In a situation where the user has made changes, but decides to exit without saving them,
+    /// the corresponding data files should be deleted.
+    /// </remarks>
     void SaveChanges();
     
     /// <summary>

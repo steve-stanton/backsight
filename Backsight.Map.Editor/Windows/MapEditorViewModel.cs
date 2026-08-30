@@ -289,15 +289,16 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     /// <inheritdoc />
     /// <exception cref="ArgumentException">Map name cannot be empty.</exception>
+    /// <exception cref="InvalidOperationException">Map already open.</exception>
     public void OpenMap(string mapName)
     {
         Console.WriteLine("Opening " + mapName);
         
         if (String.IsNullOrWhiteSpace(mapName))
             throw new ArgumentException("Map name cannot be empty.", nameof(mapName));
-
-        // Ensure we've closed any map that's currently open
-        CloseMap();
+        
+        if (CurrentMapName is not null)
+            throw new InvalidOperationException("Map already open.");
         
         _model.OpenMap(mapName);
         var store = _model.Store ?? throw new ApplicationException("Open map has no store");
@@ -310,7 +311,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             CustomLayerRendererName = (this as IMapEditorViewModel).RendererName
         };
         _mapData.Layers.Add(layer);
-        _mapData.Navigator.ZoomToBox(_mapData.Extent);
+        var extent = _mapData.Extent;
+        if (extent is not null)
+            _mapData.Navigator.ZoomToBox(extent.Grow(0.1 * extent.Height));
     }
 
     /// <inheritdoc />
@@ -321,7 +324,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         
         if (_model.RequiresSave)
         {
-            // TODO: Prompt if changes need to be saved
+            // TODO: Prompt if changes need to be saved... but needs async
             Console.WriteLine("Map changes were not saved");
         }
         
@@ -1028,6 +1031,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand]
     private async Task FileNew()
     {
+        // Ensure any map previously opened has been closed
+        CloseMap();
+        
         var dialog = new NewMapWindow(_model);
         var result = await _dialogService.ShowDialog(dialog);
         
@@ -1042,6 +1048,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand]
     private async Task FileOpen()
     {
+        // Ensure any map previously opened has been closed
+        CloseMap();
+        
         var dialog = new OpenMapWindow(_model.MapRepository);
         var result = await _dialogService.ShowDialog(dialog);
         
@@ -1056,7 +1065,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand]
     private async Task FileSave()
     {
-        Console.WriteLine(nameof(FileSave));
+        _model.Store?.SaveChanges();
     }
     
     [RelayCommand(CanExecute = "CommandNotImplemented")]
@@ -1103,6 +1112,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand]
     private void OpenRecentMap(string mapName)
     {
+        CloseMap();
         OpenMap(mapName);
     }
 

@@ -135,7 +135,7 @@ public class CadastralMapModel
     /// The last editing session in this model (null if this is a freshly created model,
     /// and data is still being loaded)
     /// </summary>
-    internal Session LastSession
+    internal Session? LastSession
     {
         get
         {
