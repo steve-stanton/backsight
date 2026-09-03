@@ -24,6 +24,8 @@
         <KeyBinding Gesture="Alt+Right" Command="{Binding NextCommand}" />
         <KeyBinding Gesture="Alt+Left" Command="{Binding PreviousCommand}" />
         <KeyBinding Gesture="Delete" Command="{Binding EditDeleteCommand}" />
+        <KeyBinding Gesture="Alt+Up" Command="{Binding EnlargePointSizeCommand}" />
+        <KeyBinding Gesture="Alt+Down" Command="{Binding ReducePointSizeCommand}" />
     </Window.KeyBindings>
         
     <DockPanel>

@@ -1303,4 +1303,62 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         OpenMap(startup.ViewModel.MapName);
         return true;
     }
+
+    private bool IsEnlargePointSizeEnabled()
+    {
+        return true;
+    }
+
+    [RelayCommand(CanExecute = nameof(IsEnlargePointSizeEnabled))]
+    private void EnlargePointSize()
+    {
+        var settings = _model.Store?.Settings;
+        if (settings is null)
+            return;
+
+        if (ArePointsDrawn)
+        {
+            // Increase by a meter on the ground.
+            settings.PointHeight += 1.0; 
+        }
+        else
+        {
+            // Initialize as 1mm at current map scale
+            settings.PointScale = Math.Floor(_mapScale + 1.0);
+            settings.PointHeight = Math.Max(0.01, 0.001 * _mapScale);
+        }
+            
+        _mapData.RefreshGraphics();
+    }
+
+    private bool IsReducePointSizeEnabled()
+    {
+        return this.ArePointsDrawn;
+    }
+
+    [RelayCommand(CanExecute = nameof(IsReducePointSizeEnabled))]
+    private void ReducePointSize()
+    {
+        var settings = _model.Store?.Settings;
+        if (settings is null)
+            return;
+        
+        // Reduce the current size of points by a meter on the ground (less if they're already less than 1m) 
+        var height = settings.PointHeight;
+
+        if (height - 1.0 < 1.0)
+            height -= 0.2;
+        else
+            height -= 1.0;
+
+        // What's the new size at the current draw scale? If it ends up below 0.1mm at the
+        // current draw scale, turn them off.
+        double size = height / _mapScale;
+        if (size < 0.0001)
+            settings.PointScale = 0.01; // not sure why 0.01 rather than 0.0
+        else
+            settings.PointHeight = Math.Max(0.01, height);
+
+        _mapData.RefreshGraphics();
+    }
 }
