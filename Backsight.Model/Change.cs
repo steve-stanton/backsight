@@ -41,7 +41,7 @@ public class Change : IPersistent
     readonly uint m_Sequence;
 
     /// <summary>
-    /// The time when the change occurred.
+    /// The time (UTC) when the change occurred.
     /// </summary>
     readonly DateTime m_When;
 
@@ -67,7 +67,7 @@ public class Change : IPersistent
             throw new ArgumentException();
 
         m_Sequence = editSequence;
-        m_When = DateTime.Now;
+        m_When = DateTime.UtcNow;
     }
 
     /// <summary>

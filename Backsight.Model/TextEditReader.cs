@@ -252,7 +252,7 @@ class TextEditReader : IEditReader
     public DateTime ReadDateTime(string name)
     {
         string s = ReadString(name);
-        return DateTime.Parse(s);
+        return DateTime.Parse(s).ToUniversalTime();
     }
 
     /// <summary>

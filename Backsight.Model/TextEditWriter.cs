@@ -167,7 +167,7 @@ class TextEditWriter : IEditWriter, IDisposable
     /// <param name="when">The timestamp to write</param>
     public void WriteDateTime(string name, DateTime value)
     {
-        WriteValue(name, value.ToString("s"));
+        WriteValue(name, value.ToString("o"));
     }
 
     /// <summary>
