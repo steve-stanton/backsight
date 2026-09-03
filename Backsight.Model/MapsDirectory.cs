@@ -201,6 +201,7 @@ public class MapsDirectory : IMapRepository
 
         foreach (var fileNum in fileNumbers)
         {
+            Console.WriteLine("Removing file: " + fileNum);
             var fileName = Path.Combine(mapFolder, GetDataFileName(fileNum));
             File.Delete(fileName);
         }
@@ -226,11 +227,15 @@ public class MapsDirectory : IMapRepository
 
         // Do nothing if everything in the session (including the NewSessionEvent) has been removed
         if (fileNumbers.Length == 0)
+        {
+            Console.WriteLine("CompleteSession: no data files");
             return;
+        }
         
         // If all we have is the session start event, just discard it
         if (fileNumbers.Length == 1 && fileNumbers[0] == session.ItemNumber)
         {
+            Console.WriteLine("CompleteSession: deleting " + fileNumbers[0]);
             DeleteFile(store.Name, fileNumbers[0]);
             return;
         }
@@ -238,6 +243,7 @@ public class MapsDirectory : IMapRepository
         // Create an event for the end of the session
         var endEvent = new EndSessionEvent(++store.ItemCount);
         var endFile = Path.Combine(_mapsFolderPath, store.Name, GetDataFileName(endEvent.EditSequence));
+        Console.WriteLine("CompleteSession: finishing with " + endEvent.EditSequence);
 
         // Combine the files
         using (StreamWriter sw = File.CreateText(endFile))
@@ -260,6 +266,8 @@ public class MapsDirectory : IMapRepository
             string fileName = Path.Combine(mapFolder, GetDataFileName(fileNum));
             File.Delete(fileName);
         }
+        
+        store.Settings.SavedItemCount = endEvent.EditSequence;
     }
     
     /// <summary>

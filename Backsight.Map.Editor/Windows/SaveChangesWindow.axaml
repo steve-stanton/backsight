@@ -35,9 +35,16 @@
                     Width="100"
                     Margin="10"
                     FontWeight="Bold"
-                    Command="{Binding OkCommand}" />
+                    Command="{Binding YesCommand}" />
                 <Button
                     Content="No"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Width="100"
+                    Margin="10"
+                    Command="{Binding NoCommand}" />
+                <Button
+                    Content="Cancel"
                     IsCancel="True"
                     HorizontalContentAlignment="Center"
                     Height="32"

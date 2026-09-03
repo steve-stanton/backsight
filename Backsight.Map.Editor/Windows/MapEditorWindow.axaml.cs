@@ -53,7 +53,11 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
             ClearDockPanel();
 
             if (DataContext is IMapEditorViewModel { CurrentMapName: not null } vm)
-                await vm.CloseMap();
+            {
+                Console.WriteLine("Closing window => closing map");
+                var isClosed = await vm.CloseMap();
+                Console.WriteLine("Is closed: " + isClosed);
+            }
         };
 
         KeyDown += OnKeyDown;

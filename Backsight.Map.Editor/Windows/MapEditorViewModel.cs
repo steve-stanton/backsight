@@ -337,7 +337,13 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             var dialog = new SaveChangesWindow(question);
             var answer = await _dialogService.ShowDialog(dialog);
 
-            // TODO: Handle cancel (by not closing?? => may need to backout of things like OpenMap)
+            // It seems that if you exit by clicking on the main window [x], the save changes dialog doesn't appear
+            // and you get a result of None. In that scenario, we'll end up saving the changes.
+            if (answer == DialogResult.None)
+                Console.WriteLine("Save changes dialog returned no answer");
+            
+            if (answer == DialogResult.Cancel)
+                return false;
             
             if (answer == DialogResult.No)
                 needToSaveChanges = false;
@@ -1052,7 +1058,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private async Task FileNew()
     {
         // Ensure any map previously opened has been closed
-        await CloseMap();
+        var isClosed = await CloseMap();
+        if (!isClosed)
+            return;
         
         var dialog = new NewMapWindow(_model);
         var result = await _dialogService.ShowDialog(dialog);
@@ -1069,7 +1077,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private async Task FileOpen()
     {
         // Ensure any map previously opened has been closed
-        await CloseMap();
+        var isClosed = await CloseMap();
+        if (!isClosed)
+            return;
         
         var dialog = new OpenMapWindow(_model.MapRepository);
         var result = await _dialogService.ShowDialog(dialog);
@@ -1117,7 +1127,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand]
     private async Task FileExit()
     {
-        await CloseMap();
+        var isClosed = await CloseMap();
+        if (!isClosed)
+            return;
         
         // Alternatively, raise an ExitRequested event and do this in the view
         if (Application.Current?.ApplicationLifetime
@@ -1132,8 +1144,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand]
     private async Task OpenRecentMap(string mapName)
     {
-        await CloseMap();
-        OpenMap(mapName);
+        var isClosed = await CloseMap();
+        if (isClosed)
+            OpenMap(mapName);
     }
 
     [RelayCommand(CanExecute = nameof(IsEditDeleteEnabled))]

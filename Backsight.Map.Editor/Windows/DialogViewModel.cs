@@ -18,26 +18,27 @@ public abstract partial class DialogViewModel : ViewModelBase
     [RelayCommand(CanExecute=nameof(CanExecuteOk))]
     protected void Ok()
     {
-        CloseRequested?.Invoke(this, PositiveResult);
+        RequestClose(DialogResult.OK);
     }
     
     protected virtual bool CanExecuteOk()
     {
         return true;
     }
-    
-    protected virtual DialogResult PositiveResult => DialogResult.OK;
 
     [RelayCommand(CanExecute=nameof(CanExecuteCancel))]
     protected void Cancel()
     {
-        CloseRequested?.Invoke(this, NegativeResult);
+        RequestClose(DialogResult.Cancel);
     }
     
     protected virtual bool CanExecuteCancel()
     {
         return true;
     }
-    
-    protected virtual DialogResult NegativeResult => DialogResult.Cancel;
+
+    protected void RequestClose(DialogResult result)
+    {
+        CloseRequested?.Invoke(this, result);
+    }
 }
