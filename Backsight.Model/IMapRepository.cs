@@ -53,7 +53,7 @@ public interface IMapRepository
     IMapStore OpenMap(string mapName);
     
     /// <summary>
-    /// Closes a map.
+    /// Closes a map, discarding any unsaved changes.
     /// </summary>
     /// <param name="store">A map store previously returned by <see cref="OpenMap"/>.</param>
     void CloseMap(IMapStore store);
@@ -77,4 +77,11 @@ public interface IMapRepository
     /// <typeparam name="T">The type of change.</typeparam>
     /// <returns>True if the change was removed. False if the change could not be found.</returns>
     bool RemoveChange<T>(string mapName, T change, uint itemCount) where T : Change;
+
+    /// <summary>
+    /// Deletes changes made to a map since the last savepoint.
+    /// </summary>
+    /// <param name="store">The store to modify.</param>
+    /// <returns>The number of changes that were removed.</returns>
+    uint RemoveChanges(IMapStore store);
 }

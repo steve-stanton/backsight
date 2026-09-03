@@ -79,5 +79,8 @@
       <Compile Update="Windows\SimplePropertyGridViewModel.cs">
         <DependentUpon>SimplePropertyGrid.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\SaveChangesViewModel.cs">
+        <DependentUpon>SaveChangesWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

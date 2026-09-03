@@ -1,6 +1,6 @@
 ﻿namespace Backsight.Model;
 
-class ForwardRefArrayItem
+public class ForwardRefArrayItem
 {
     internal int ArrayIndex { get; private set; }
     internal InternalIdValue InternalId { get; private set; }

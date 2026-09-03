@@ -5,7 +5,7 @@ namespace Backsight.Model;
 /// <summary>
 /// An editing session.
 /// </summary>
-class Session
+public class Session
 {
     /// <summary>
     /// The map store that contains this session.
@@ -162,8 +162,22 @@ class Session
     /// <summary>
     /// The number of changes in this session (the sum of the <see cref="OperationCount"/> and
     /// <see cref="AllocationCount"/> property values).
+    /// TODO: The fact that the allocation count is not included in the change count is confusing.
     /// </summary>
-    internal int ChangeCount => m_Operations.Count + (int)AllocationCount;
+    public int ChangeCount => m_Operations.Count + (int)AllocationCount;
+
+    /// <summary>
+    /// The number of editing operations in this session that follow the last savepoint.
+    /// </summary>
+    /// <remarks>This excludes any ID allocations that may have been made following the last save.</remarks>
+    public int UnsavedChangeCount
+    {
+        get
+        {
+            var lastSave = MapStore.Settings.SavedItemCount;
+            return m_Operations.Count(x => x.EditSequence > lastSave);
+        }
+    }
 
     /// <summary>
     /// The number of ID allocations that were made during this session.

@@ -48,12 +48,12 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
             }
         };
 
-        Closing += (_, _) =>
+        Closing += async (_, _) =>
         {
             ClearDockPanel();
 
             if (DataContext is IMapEditorViewModel { CurrentMapName: not null } vm)
-                vm.CloseMap();
+                await vm.CloseMap();
         };
 
         KeyDown += OnKeyDown;

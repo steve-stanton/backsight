@@ -42,8 +42,10 @@ internal interface IMapEditorViewModel
     /// <summary>
     /// Closes any map that is currently open.
     /// </summary>
-    /// <returns>True if a map was closed, or false if there was no open map.</returns>
-    bool CloseMap();
+    /// <returns>True if the map was closed. False if the user decided to cancel because changes
+    /// have not been saved.</returns>
+    /// <exception cref="InvalidOperationException">A map is not currently open.</exception>
+    Task<bool> CloseMap();
 
     /// <summary>
     /// Gets the types of spatial objects that should be rendered at the current map scale.
@@ -213,7 +215,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     Mapsui.Map IMapEditorViewModel.MapData => _mapData;
     
     /// <inheritdoc />
-    IMapSelection IMapEditorViewModel.Selection => _selection;
+    public IMapSelection Selection => _selection;
     
     /// <inheritdoc />
     double IMapEditorViewModel.MapScale => _model.Store is null ? 0 : _mapScale;
@@ -317,21 +319,34 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     /// <inheritdoc />
-    public bool CloseMap()
+    public async Task<bool> CloseMap()
     {
-        if (CurrentMapName is null)
-            return false;
+        if (CurrentMapName is null || Store is null)
+            throw new InvalidOperationException("Map not open.");
         
-        if (_model.RequiresSave)
+        // An editing session should have been established when the map was opened
+        var session = Store.Model.WorkingSession;
+        if (session is null)
+            throw new InvalidOperationException("No working session.");
+
+        var toSaveCount = session.UnsavedChangeCount;
+        var needToSaveChanges = toSaveCount > 0;
+        if (needToSaveChanges)
         {
-            // TODO: Prompt if changes need to be saved... but needs async
-            Console.WriteLine("Map changes were not saved");
+            var question = $"Save {toSaveCount} change`s to {CurrentMapName}?".TrimExtras();
+            var dialog = new SaveChangesWindow(question);
+            var answer = await _dialogService.ShowDialog(dialog);
+
+            // TODO: Handle cancel (by not closing?? => may need to backout of things like OpenMap)
+            
+            if (answer == DialogResult.No)
+                needToSaveChanges = false;
         }
         
         // Ensure the map display no longer contains a layer corresponding to the closed map
         _mapData.Layers.Remove(x => x.Name == CurrentMapName);
         CurrentMapName = null;
-        _model.CloseMap();
+        _model.CloseMap(needToSaveChanges);
         return true;
     }
 
@@ -462,8 +477,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         if (_commandTool is not null)
             throw new InvalidOperationException("Command tool already started");
         
-        if (_autoSelect)
-            _autoSelect = false; // TODO: Should only suspend while command is running
+        //if (_autoSelect)
+        //    _autoSelect = false; // TODO: Should only suspend while command is running
 
         _commandTool = tool;
         _commandTool.Run();
@@ -485,7 +500,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(CanDeletePoint))]
     private void PointDelete()
     {
-        Console.WriteLine(nameof(PointDelete));
+        EditDelete();
     }
     
     private bool CanDeletePoint => _selection.SingleOrDefault is Model.PointFeature;
@@ -534,11 +549,14 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     {
         Console.WriteLine(nameof(LinePolygonBoundary));
     }
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanDeleteLine))]
     private void LineDelete()
     {
-        Console.WriteLine(nameof(LineDelete));
+        EditDelete();
     }
+    
+    private bool CanDeleteLine => _selection.SingleOrDefault is Model.LineFeature;
+    
     [RelayCommand]
     private void LineTrimDangle()
     {
@@ -565,11 +583,13 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     {
         Console.WriteLine(nameof(TextMovePolygonPosition));
     }
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanDeleteText))]
     private void TextDelete()
     {
-        Console.WriteLine(nameof(TextDelete));
+        EditDelete();
     }
+
+    private bool CanDeleteText => _selection.SingleOrDefault is TextFeature;
     
     private ContextMenuItem[] GetMultiSelectionMenu() =>
     [
@@ -1032,7 +1052,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private async Task FileNew()
     {
         // Ensure any map previously opened has been closed
-        CloseMap();
+        await CloseMap();
         
         var dialog = new NewMapWindow(_model);
         var result = await _dialogService.ShowDialog(dialog);
@@ -1049,7 +1069,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private async Task FileOpen()
     {
         // Ensure any map previously opened has been closed
-        CloseMap();
+        await CloseMap();
         
         var dialog = new OpenMapWindow(_model.MapRepository);
         var result = await _dialogService.ShowDialog(dialog);
@@ -1063,7 +1083,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand]
-    private async Task FileSave()
+    private void FileSave()
     {
         _model.Store?.SaveChanges();
     }
@@ -1095,9 +1115,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand]
-    private void FileExit()
+    private async Task FileExit()
     {
-        CloseMap();
+        await CloseMap();
         
         // Alternatively, raise an ExitRequested event and do this in the view
         if (Application.Current?.ApplicationLifetime
@@ -1110,16 +1130,16 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     public IReadOnlyList<string> RecentMaps => GlobalUserSetting.RecentMaps;
 
     [RelayCommand]
-    private void OpenRecentMap(string mapName)
+    private async Task OpenRecentMap(string mapName)
     {
-        CloseMap();
+        await CloseMap();
         OpenMap(mapName);
     }
 
     [RelayCommand(CanExecute = nameof(IsEditDeleteEnabled))]
     private void EditDelete()
     {
-        Console.WriteLine(nameof(EditDelete));
+        StartCommand(new DeletionTool(this));
     }
 
     private bool IsEditDeleteEnabled()
@@ -1227,15 +1247,13 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         
         // Make sure the normal cursor is on screen.
         MapCursor = Cursor.Default;
-
-        /*
+        
         // Refresh everything from the model. This may seem a bit of an effort, considering
         // that many edits don't do much to the display (some don't do anything). However,
-        // it's fast and keeps things clean in more complex cases. Do it before saving the
-        // map model, since it gives the impression that things are more responsive than
-        // they actually are!
-        RefreshAllDisplays();
+        // it's fast and keeps things clean in more complex cases.
+        Refresh();
 
+        /*
         // Notify any check dialog (re-check all potential problems).
         // And repaint immediately to avoid flicker (icons wouldn't otherwise be repainted
         // until the idle handler gets called)
@@ -1249,7 +1267,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         if (m_IsAutoSelect<0)
             m_IsAutoSelect = -m_IsAutoSelect;
 */
-
         cmd.Dispose();
         _commandTool = null;
     }

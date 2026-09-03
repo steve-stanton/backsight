@@ -27,5 +27,15 @@ public enum DialogResult
     /// The dialog was not completed (typically by pressing a Cancel button). In that
     /// case, any data entry properties exposed by the dialog's view model should be disregarded.
     /// </summary>
-    Cancel
+    Cancel,
+    
+    /// <summary>
+    /// The dialog was completed by pressing a Yes button.
+    /// </summary>
+    Yes,
+    
+    /// <summary>
+    /// The dialog was completed by pressing a No button.
+    /// </summary>
+    No
 }

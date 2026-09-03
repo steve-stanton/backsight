@@ -966,7 +966,7 @@ public class CadastralMapModel
     /// <summary>
     /// The session that we are currently appending to (null if the model is being deserialized).
     /// </summary>
-    internal Session? WorkingSession => m_WorkingSession;
+    public Session? WorkingSession => m_WorkingSession;
 
     /// <summary>
     /// Defines the current editing session.

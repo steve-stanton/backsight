@@ -5,7 +5,7 @@
 /// Event data for normal completion of an editing session
 /// </summary>
 /// <seealso cref="NewSessionEvent"/>
-class EndSessionEvent : Change
+public class EndSessionEvent : Change
 {
     // No data (all I really want is the timestamp stored in the base class).
 

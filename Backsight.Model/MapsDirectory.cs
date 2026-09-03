@@ -180,22 +180,40 @@ public class MapsDirectory : IMapRepository
         var session = store.Model.WorkingSession;
         if (session is null)
             throw new ApplicationException("No working session");
-
-        // Combine data files for the session (or discard if there are no changes)
-        if (session.ChangeCount == 0)
-            DeleteFile(store.Name, session.ItemNumber);
-        else
-            CompleteSession(session);
         
         // Remove any undo folder
         DeleteUndoFolder(store.Name);
 
+        // Combine data files for the session (and append an EndSessionEvent)
+        CompleteSession(session); 
+
+        // Completion of the session normally increments the store's item count (to refer
+        // to the EndSessionEvent), so save the updated settings
         SaveMapSettings(store.Name, store.Settings);
     }
 
+    /// <inheritdoc />
+    public uint RemoveChanges(IMapStore store)
+    {
+        // Pick up the numbers of the files created after the last savepoint
+        string mapFolder = Path.Combine(_mapsFolderPath, store.Name);
+        uint[] fileNumbers = GetFileNumbers(mapFolder, store.Settings.SavedItemCount + 1);
+
+        foreach (var fileNum in fileNumbers)
+        {
+            var fileName = Path.Combine(mapFolder, GetDataFileName(fileNum));
+            File.Delete(fileName);
+        }
+        
+        store.ItemCount = store.Settings.SavedItemCount;
+
+        return (uint)fileNumbers.Length;
+    }
+    
     /// <summary>
     /// Completes a session by appending an <see cref="EndSessionEvent"/>, and combines
-    /// operation data files into a single file.
+    /// operation data files into a single file. Any data files that are beyond the last savepoint
+    /// will be discarded.
     /// </summary>
     /// <param name="session">The session to be completed.</param>
     private void CompleteSession(Session session)
@@ -205,6 +223,17 @@ public class MapsDirectory : IMapRepository
         // Pick up the numbers of the files that relate to the session
         string mapFolder = Path.Combine(_mapsFolderPath, store.Name);
         uint[] fileNumbers = GetFileNumbers(mapFolder, session.ItemNumber);
+
+        // Do nothing if everything in the session (including the NewSessionEvent) has been removed
+        if (fileNumbers.Length == 0)
+            return;
+        
+        // If all we have is the session start event, just discard it
+        if (fileNumbers.Length == 1 && fileNumbers[0] == session.ItemNumber)
+        {
+            DeleteFile(store.Name, fileNumbers[0]);
+            return;
+        }
 
         // Create an event for the end of the session
         var endEvent = new EndSessionEvent(++store.ItemCount);
@@ -326,6 +355,7 @@ public class MapsDirectory : IMapRepository
         {
             Console.WriteLine("Last session did not complete as expected, completing now");
             CompleteSession(lastSession);
+            SaveMapSettings(store.Name, store.Settings);            
         }
     }
     

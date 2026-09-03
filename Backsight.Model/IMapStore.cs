@@ -5,11 +5,6 @@ namespace Backsight.Model;
 public interface IMapStore
 {
     /// <summary>
-    /// The internal ID of the map.
-    /// </summary>
-    //Guid Id { get; }
-    
-    /// <summary>
     /// The user-perceived name of the map.
     /// </summary>
     string Name { get; }
@@ -50,6 +45,11 @@ public interface IMapStore
     void RecordChange<T>(T change, uint itemCount) where T : Change;
     
     /// <summary>
+    /// Have all changes been saved?
+    /// </summary>
+    bool IsSaved { get; }
+
+    /// <summary>
     /// Saves any changes that have been recorded.
     /// </summary>
     /// <remarks>
@@ -60,12 +60,20 @@ public interface IMapStore
     /// the corresponding data files should be deleted.
     /// </remarks>
     void SaveChanges();
-    
-    /// <summary>
-    /// Have all changes been saved?
-    /// </summary>
-    bool IsSaved { get; }
 
+    /// <summary>
+    /// Discards any changes that have been recorded.
+    /// </summary>
+    /// <remarks>
+    /// This should be called in a situation where a user wishes to close a map without saving recent
+    /// changes. The changes in the current working session that were made since the last savepoint
+    /// will be removed (without making any provision for undo).
+    /// <para/>
+    /// The record of these changes held in an associated <see cref="IMapRepository"/> need to
+    /// be discarded separately.
+    /// </remarks>
+    //void DiscardChanges();
+    
     /// <summary>
     /// Searches for map features within a covering rectangle.
     /// </summary>

@@ -6,7 +6,7 @@ namespace Backsight.Map.Editor;
 /// <summary>
 /// Readonly access to properties of the <see cref="Models.Selection"/> class.
 /// </summary>
-internal interface IMapSelection
+public interface IMapSelection
 {
     IReadOnlyList<IMapObject> Items { get; }
     

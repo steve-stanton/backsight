@@ -8,7 +8,7 @@ namespace Backsight.Model.Operations;
 /// and it doesn't get garbage collected. It just gets marked as deleted, and will
 /// be retained as part of the map history.
 /// </summary>
-class DeletionOperation : Operation, IFeatureRefArray
+public class DeletionOperation : Operation, IFeatureRefArray
 {
     /// <summary>
     /// The features that were deleted.
@@ -20,7 +20,7 @@ class DeletionOperation : Operation, IFeatureRefArray
     /// </summary>
     /// <param name="store">The map store the features are part of.</param>
     /// <param name="deletions">The features to be deleted (expected to be at least one).</param>
-    internal DeletionOperation(IMapStore store, Feature[] deletions)
+    public DeletionOperation(IMapStore store, Feature[] deletions)
         : base(store)
     {
         m_Deletions = deletions;
@@ -87,13 +87,13 @@ class DeletionOperation : Operation, IFeatureRefArray
     /// Executes this operation. Before calling this function, you must make at
     /// least one call to <see cref="AddDeletion"/>.
     /// </summary>
-    internal void Execute()
+    public void Execute()
     {
         // Confirm that at least one call to AddDeletion has been made.
         if (m_Deletions==null)
             throw new Exception("Deletion.Execute - Nothing to delete.");
 
-        // TODO: This should probably be done as part of the DeletionUI class (and make m_Deletions readonly)
+        // TODO: This should probably be done as part of the DeletionTool class (and make m_Deletions readonly)
         // Stick the features that were explicitly noted into the complete list
         List<Feature> all = new List<Feature>(m_Deletions);
 

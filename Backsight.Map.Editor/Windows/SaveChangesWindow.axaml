@@ -1,0 +1,52 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="viewModel:SaveChangesViewModel"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="120"
+        Width="400" Height="120"
+        x:Class="Backsight.Map.Editor.Windows.SaveChangesWindow"
+        WindowDecorations="None"
+        WindowStartupLocation="CenterOwner"
+        Title="Edits not saved">
+
+    <Border
+        BorderBrush="Brown"
+        BorderThickness="4"
+        CornerRadius="4" 
+        Margin="5"
+        Padding="10">
+        
+        <Grid RowDefinitions="Auto Auto">
+            <TextBlock
+                Grid.Row="0"
+                Text="{Binding Message}"
+                HorizontalAlignment="Center"
+                FontSize="18"
+                FontWeight="Bold"
+            />
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
+                <Button
+                    Content="Yes"
+                    IsDefault="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Width="100"
+                    Margin="10"
+                    FontWeight="Bold"
+                    Command="{Binding OkCommand}" />
+                <Button
+                    Content="No"
+                    IsCancel="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Width="100"
+                    Margin="10"
+                    Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </Grid>
+
+    </Border>
+    
+</Window>

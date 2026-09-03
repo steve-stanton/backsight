@@ -23,6 +23,7 @@
         <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}" />
         <KeyBinding Gesture="Alt+Right" Command="{Binding NextCommand}" />
         <KeyBinding Gesture="Alt+Left" Command="{Binding PreviousCommand}" />
+        <KeyBinding Gesture="Delete" Command="{Binding EditDeleteCommand}" />
     </Window.KeyBindings>
         
     <DockPanel>

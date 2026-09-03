@@ -109,17 +109,6 @@ internal class Selection : IMapSelection
     /// <inheritingdoc cref="IMapSelection.LineSection" />
     LineGeometry? IMapSelection.LineSection => m_Section?.Geometry;
     
-    /*
-    /// <summary>
-    /// Draws the items in this selection.
-    /// </summary>
-    /// <param name="display">The display to draw to</param>
-    public void Draw(IMapDisplay display)
-    {
-        foreach (ISpatialObject item in m_Items)
-            display.Draw(item);
-    }
-*/
     /// <summary>
     /// Checks whether this selection refers to the same spatial objects as
     /// another selection, and has the same reference position.

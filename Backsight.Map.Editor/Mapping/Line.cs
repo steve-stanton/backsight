@@ -22,7 +22,6 @@ class Line : FeatureBase
     protected internal override void Render(MapCanvas canvas, PaintStyle? altStyle = null)
     {
         var style = altStyle ?? _defaultStyle;
-        var geom = Feature.LineGeometry;
         canvas.DrawLine(Feature.LineGeometry, style);
     }
 }

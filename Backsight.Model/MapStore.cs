@@ -164,9 +164,31 @@ public class MapStore : IMapStore
     public void SaveChanges()
     {
         // Changes are recorded as we go. All we need to do now is update the saved item count to match
-        // the current item count.
+        // the current item count. Do nothing if the last item refers to the NewSessionEvent.
+        
+        if (_model.WorkingSession?.ChangeCount == 0)
+            return;
+            
         _settings.SavedItemCount = _lastItemId;
         _mapRepo.SaveMapSettings(_mapName, _settings);
+    }
+    
+    /// <inheritdoc/>
+    public bool IsSaved
+    {
+        get
+        {
+            var session = _model.WorkingSession;
+            if (session is null)
+                return true;
+
+            // The value for _lastItemId will exceed the value for SavedItemCount if the map has
+            // just been opened (since the NewSessionEvent record will have incremented the item count).
+            if (session.ChangeCount == 0)
+                return true;
+            
+            return _settings.SavedItemCount == _lastItemId;
+        }
     }
 
     /// <summary>
@@ -180,10 +202,6 @@ public class MapStore : IMapStore
     {
         _mapRepo.RecordChange(_mapName, change, itemCount);
     }
-
-    /// <inheritdoc />
-    public bool IsSaved => _lastItemId == _settings.SavedItemCount ||
-                           _lastItemId == (Model.WorkingSession?.ItemNumber ?? _lastItemId);
 
     /// <inheritdoc />
     public List<T> Query<T>(IWindow window) where T : Feature

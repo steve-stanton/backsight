@@ -31,16 +31,10 @@ public interface IMapEditorModel
     void OpenMap(string mapName);
     
     /// <summary>
-    /// Does an open map contain changes that have not been saved?
-    /// </summary>
-    /// <returns>True if a map store has been opened and it contains unsaved changes. False if a map store
-    /// is open but there is nothing to save (or there is no active map).</returns>
-    bool RequiresSave { get; }
-    
-    /// <summary>
     /// Closes the current map (or does nothing if a map has not been opened).
     /// </summary>
-    void CloseMap();
+    /// <param name="saveChanges">Should any unsaved changes be saved?</param>
+    void CloseMap(bool saveChanges);
     
     /// <summary>
     /// The extent of the current map (null if there is no map, or the map is empty).
@@ -68,8 +62,7 @@ public sealed class DesignMapEditorModel : IMapEditorModel
     public string MapName => "Design";
     public void CreateMap(string mapName, ILayer layer) {}
     public void OpenMap(string mapName) {}
-    public void CloseMap() {}
-    public bool RequiresSave => false;
+    public void CloseMap(bool saveChanges) {}
     public IWindow? Extent => null;
     public IMapStore? Store => null;
     public IEnvironmentRepository Environment => new EmptyRepository();
@@ -145,17 +138,24 @@ public class MapEditorModel : IMapEditorModel
     }
 
     /// <inheritdoc />
-    public void CloseMap()
+    public void CloseMap(bool saveChanges)
     {
-        if (_store is not null)
-        {
-            _mapRepo.CloseMap(_store);
-            _store = null;
-        }
-    }
+        if (_store is null)
+            return;
 
-    /// <inheritdoc />
-    public bool RequiresSave => _store?.IsSaved ?? false;
+        // If the user decided NOT to save changes, get rid of any change entries that follow the
+        // last savepoint (this may or may not include the NewSessionEvent record)
+        if (!saveChanges)
+            _mapRepo.RemoveChanges(_store);
+        
+        // Finalize the map repository. If the editing session contains at least one change, the MapsDirectory
+        // implementation will combine the associated data files into a single file, finishing off with an
+        // EndSessionEvent record. If there are no changes, the MapsDirectory implementation will simply
+        // delete the file that holds the NewSessionEvent record.
+        _mapRepo.CloseMap(_store);
+        
+        _store = null;
+    }
     
     /// <inheritdoc />
     public IWindow? Extent
