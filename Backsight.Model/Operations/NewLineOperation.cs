@@ -162,10 +162,10 @@ public abstract class NewLineOperation : Operation
     /// that any circles were found). False if this is a do-nothing function.</returns>
     bool GetCircles(List<Circle> clist, PointFeature point)
     {
-        // If the line we created is a circular arc, append the
-        // circle on which it is based.
-        if (m_NewLine is ArcFeature)
-            clist.Add((m_NewLine as ArcFeature).Circle);
+        // If the line we created is a circular arc, append the circle on which it is based.
+        var circle = (m_NewLine as ArcFeature)?.Circle;
+        if (circle is not null)
+            clist.Add(circle);
 
         return true;
     }

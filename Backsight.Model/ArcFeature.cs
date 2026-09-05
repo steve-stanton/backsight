@@ -100,7 +100,7 @@ class ArcFeature : LineFeature
     }
 
     /// <summary>
-    /// The circle the arc falls on.
+    /// The circle the arc falls on (null if <see cref="Geometry"/> is undefined)."/>
     /// </summary>
     internal override Circle? Circle => Geometry?.Circle as Circle;
 

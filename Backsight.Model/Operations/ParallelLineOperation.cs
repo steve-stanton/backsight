@@ -450,11 +450,13 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
             m_ParLine.EndPoint.ApplyPointGeometry(ctx, PointGeometry.Create(epos));
 
         // If the parallel is an arc, define the geometry
-        if (m_ParLine is ArcFeature)
+        if (m_ParLine is ArcFeature parArc)
         {
             // Get the center of the reference line
-            ArcFeature refArc = m_RefLine.GetArcBase();
-            PointFeature center = refArc.Circle.CenterPoint;
+            var refArc = m_RefLine.GetArcBase();
+            Debug.Assert(refArc is not null);
+            var center = refArc.Circle?.CenterPoint;
+            Debug.Assert(center is not null);
 
             // Obtain a circle for the parallel
             double radius = BasicGeom.Distance(center, m_ParLine.StartPoint);
@@ -465,8 +467,7 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
             if (IsArcReversed)
                 iscw = !iscw;
 
-            ArcGeometry geom = new ArcGeometry(circle, m_ParLine.StartPoint, m_ParLine.EndPoint, iscw);
-            (m_ParLine as ArcFeature).Geometry = geom;
+            parArc.Geometry = new ArcGeometry(circle, m_ParLine.StartPoint, m_ParLine.EndPoint, iscw);
         }
     }
 

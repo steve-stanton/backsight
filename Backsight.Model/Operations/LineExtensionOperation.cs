@@ -228,18 +228,18 @@ class LineExtensionOperation : Operation, IRecallable, IRevisable
         // This COULD have been defined at an earlier stage (e.g. as part of CreateFeature),
         // but it's more consistent to do it as part of this method.
 
-        if (m_NewLine is ArcFeature)
+        if (m_NewLine is ArcFeature newArc)
         {
-            ArcFeature arc = m_ExtendLine.GetArcBase();
-            Circle circle = arc.Circle;
-            Debug.Assert(circle != null);
+            var arc = m_ExtendLine.GetArcBase();
+            Debug.Assert(arc is not null);
+            var circle = arc.Circle;
+            Debug.Assert(circle is not null);
 
             bool iscw = arc.IsClockwise;
             if (!m_IsExtendFromEnd)
                 iscw = !iscw;
 
-            ArcGeometry geom = new ArcGeometry(circle, m_NewLine.StartPoint, m_NewLine.EndPoint, iscw);
-            (m_NewLine as ArcFeature).Geometry = geom;
+            newArc.Geometry = new ArcGeometry(circle, m_NewLine.StartPoint, m_NewLine.EndPoint, iscw);
         }
     }
 

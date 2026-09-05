@@ -283,39 +283,37 @@ public class CadastralMapModel
 
         var result = new List<Circle>(100);
 
-        foreach (Feature f in fa)
+        foreach (var arc in fa.OfType<ArcFeature>())
         {
-            if (f is ArcFeature feature)
+            var c = arc.Circle;
+            Debug.Assert(c is not null);
+
+            if (c.Creator == arc.Creator)
             {
-                Circle c = feature.Circle;
+                InternalIdValue centerPointId = c.CenterPoint.InternalId;
+                bool addToResult = false;
+                List<Circle>? circles;
 
-                if (c.Creator == feature.Creator)
+                if (dic.TryGetValue(centerPointId, out circles))
                 {
-                    InternalIdValue centerPointId = c.CenterPoint.InternalId;
-                    bool addToResult = false;
-                    List<Circle>? circles;
-
-                    if (dic.TryGetValue(centerPointId, out circles))
+                    Debug.Assert(circles is not null);
+                    
+                    if (circles.IndexOf(c)<0)
                     {
-                        Debug.Assert(circles is not null);
-                        
-                        if (circles.IndexOf(c)<0)
-                        {
-                            circles.Add(c);
-                            addToResult = true;
-                        }
-                    }
-                    else
-                    {
-                        circles = new List<Circle>(1);
                         circles.Add(c);
-                        dic.Add(centerPointId, circles);
                         addToResult = true;
                     }
-
-                    if (addToResult)
-                        result.Add(c);
                 }
+                else
+                {
+                    circles = new List<Circle>(1);
+                    circles.Add(c);
+                    dic.Add(centerPointId, circles);
+                    addToResult = true;
+                }
+
+                if (addToResult)
+                    result.Add(c);
             }
         }
 

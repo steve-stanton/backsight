@@ -280,8 +280,8 @@ class NewCircleOperation : NewLineOperation, IRecallable //, IRevisable
         }
 
         // Define the radius of the circle and include in the map model
-        Circle circle = arc.Circle;
-        Debug.Assert(circle != null);
+        var circle = arc.Circle;
+        Debug.Assert(circle is not null);
         circle.Radius = rad;
 
         // Refer the center point to the circle.
