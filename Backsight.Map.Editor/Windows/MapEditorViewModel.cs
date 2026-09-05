@@ -353,6 +353,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         _mapData.Layers.Remove(x => x.Name == CurrentMapName);
         CurrentMapName = null;
         _model.CloseMap(needToSaveChanges);
+        
+        // Any selection in the map we just closed is now irrelevant
+        ClearSelection();
         return true;
     }
 
