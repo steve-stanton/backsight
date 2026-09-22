@@ -82,5 +82,8 @@
       <Compile Update="Windows\SaveChangesViewModel.cs">
         <DependentUpon>SaveChangesWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\PreferencesViewModel.cs">
+        <DependentUpon>PreferencesWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

@@ -4,8 +4,10 @@ namespace Backsight.Model;
 /// Options relating to line annotation (as noted by <see cref="LineAnnotationStyle"/>)
 /// </summary>
 [Flags]
-enum LineAnnotationOptions : byte
+public enum LineAnnotationOptions : byte
 {
+    None = 0x00,
+    
     /// <summary>
     /// Should the adjusted length of lines be displayed?
     /// (the units used for the display is determined via another display preference)

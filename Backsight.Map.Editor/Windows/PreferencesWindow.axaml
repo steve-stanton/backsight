@@ -1,0 +1,150 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="viewModel:PreferencesViewModel"
+        xmlns:model="clr-namespace:Backsight.Model;assembly=Backsight.Model"
+        xmlns:conv="clr-namespace:Backsight.Map.Editor.Converters"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Backsight.Map.Editor.Windows.PreferencesWindow"
+        Title="Preferences">
+
+    <Window.Resources>
+        <conv:EnumToBooleanConverter x:Key="EnumToBoolConverter"/>
+    </Window.Resources>
+    
+    <Grid RowDefinitions="Auto, 100">
+        <TabControl Grid.Row="0">
+            <TabItem Header="Points">
+                <Grid RowDefinitions="Auto, Auto" Margin="20">
+                    <Grid Grid.Row="0" RowDefinitions="Auto Auto" ColumnDefinitions="220 Auto" RowSpacing="10" Margin="10">
+                        <!--
+                            Could do with a nicer error message on data entry validation (e.g. entry of a non-numeric value) - see
+                            https://docs.avaloniaui.net/docs/data-binding/binding-validation
+                        -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hide at scales smaller than 1:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding PointScale}" BorderBrush="LightGray"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Size (in meters on the ground)" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PointHeight}" BorderBrush="LightGray"/>
+                    </Grid>
+                    <CheckBox
+                        Grid.Row="1"
+                        Content="Show intersection points too"
+                        Margin="10"
+                        IsChecked="{Binding ShowIntersections}"
+                    />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Labels">
+                <Grid RowDefinitions="Auto Auto" ColumnDefinitions="220 Auto" RowSpacing="10" Margin="20">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Hide at scales smaller than 1:" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding LabelScale}" MinWidth="100" BorderBrush="LightGray"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Nominal scale (for font size) 1:" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="1" Grid.Column="1"  Text="{Binding NominalMapScale}" MinWidth="100" BorderBrush="LightGray"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Units">
+                <StackPanel Orientation="Horizontal" Margin="20" Spacing="40">
+                    <GroupBox Header="Data Entry" MinWidth="300">
+                        <StackPanel Orientation="Vertical" Margin="20">
+                            <RadioButton
+                                Content="Meters"
+                                GroupName="DataEntryUnits"
+                                IsChecked="{Binding EntryUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Meters}}"/>
+                            <RadioButton
+                                Content="Feet"
+                                GroupName="DataEntryUnits"
+                                IsChecked="{Binding EntryUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Feet}}"/>
+                            <RadioButton
+                                Content="Chains"
+                                GroupName="DataEntryUnits"
+                                IsChecked="{Binding EntryUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Feet}}"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Display" MinWidth="300">
+                        <StackPanel Orientation="Vertical" Margin="20">
+                            <RadioButton
+                                Content="Meters"
+                                GroupName="DisplayUnits"
+                                IsChecked="{Binding DisplayUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Meters}}"/>
+                            <RadioButton
+                                Content="Feet"
+                                GroupName="DisplayUnits"
+                                IsChecked="{Binding DisplayUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Feet}}"/>
+                            <RadioButton
+                                Content="Chains"
+                                GroupName="DisplayUnits"
+                                IsChecked="{Binding DisplayUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Chains}}"/>
+                            <RadioButton 
+                                Margin="0 20"
+                                Content="As entered"
+                                GroupName="DisplayUnits"
+                                IsChecked="{Binding DisplayUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.AsEntered}}"/>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Line Annotation">
+                <Grid RowDefinitions="Auto Auto Auto" Margin="20" RowSpacing="20">
+                    <GroupBox Grid.Row="0" Header="Show What">
+                            <StackPanel Orientation="Vertical" Margin="20">
+                                <RadioButton
+                                    Content="Observed lengths"
+                                    GroupName="AnnotationLengthDisplay"
+                                    IsChecked="{Binding AnnotationLengthDisplay, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:LineAnnotationOptions.ShowObservedLengths}}"/>
+                                <RadioButton
+                                    Content="Adjusted lengths (on mapping plane)"
+                                    GroupName="AnnotationLengthDisplay"
+                                    IsChecked="{Binding AnnotationLengthDisplay, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:LineAnnotationOptions.ShowAdjustedLengths}}"/>
+                                <RadioButton
+                                    Content="Don't show lengths"
+                                    GroupName="AnnotationLengthDisplay"
+                                    IsChecked="{Binding AnnotationLengthDisplay, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:LineAnnotationOptions.None}}"/>
+
+                                <CheckBox
+                                    Grid.Row="1"
+                                    Content="Observed Angles"
+                                    Margin="0 30 0 0"
+                                    IsChecked="{Binding ShowObservedAngles}"/>
+                            </StackPanel>
+                    </GroupBox>
+
+                    <Grid Grid.Row="2" RowDefinitions="Auto Auto Auto" ColumnDefinitions="220 120" RowSpacing="20" Margin="20 0 0 0">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hide at scales smaller than 1:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AnnotationScale}" BorderBrush="LightGray"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Size (in meters on the ground)" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding AnnotationHeight}" BorderBrush="LightGray"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Symbology">
+                <StackPanel Orientation="Vertical" Margin="30">
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 20">
+                        <TextBlock Text="Scale 1:" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding SymbologyScale}" Margin="10" MinWidth="100" BorderBrush="LightGray"/>
+                    </StackPanel>
+                    <TextBlock Text="Specify the limiting scale at which any colors and line patterning should be used during draws."/>
+                    <TextBlock Text="The value you enter applies to every map you open."/>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="20 20">
+            <Button
+                Content="Cancel"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Margin="10"
+                Command="{Binding CancelCommand}" />
+            <Button
+                Content="OK"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Margin="10"
+                Command="{Binding OkCommand}" />
+        </StackPanel>
+    </Grid>
+</Window>

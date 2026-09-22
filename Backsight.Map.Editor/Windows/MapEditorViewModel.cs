@@ -1200,9 +1200,13 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand]
-    private void EditPreferences()
+    private async Task EditPreferences()
     {
-        Console.WriteLine(nameof(EditPreferences));
+        var dialog = new PreferencesWindow(_model);
+        var result = await _dialogService.ShowDialog(dialog);
+        
+        if (result == DialogResult.OK)
+            dialog.ViewModel.SaveChanges();
     }
 
     [RelayCommand(CanExecute = nameof(IsEditAutoHighlightEnabled))]
