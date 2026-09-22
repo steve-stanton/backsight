@@ -60,19 +60,6 @@ public interface IMapStore
     /// the corresponding data files should be deleted.
     /// </remarks>
     void SaveChanges();
-
-    /// <summary>
-    /// Discards any changes that have been recorded.
-    /// </summary>
-    /// <remarks>
-    /// This should be called in a situation where a user wishes to close a map without saving recent
-    /// changes. The changes in the current working session that were made since the last savepoint
-    /// will be removed (without making any provision for undo).
-    /// <para/>
-    /// The record of these changes held in an associated <see cref="IMapRepository"/> need to
-    /// be discarded separately.
-    /// </remarks>
-    //void DiscardChanges();
     
     /// <summary>
     /// Searches for map features within a covering rectangle.

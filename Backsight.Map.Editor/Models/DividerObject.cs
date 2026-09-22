@@ -37,17 +37,6 @@ internal class DividerObject : IMapObject
     /// <inheritdoc cref="IMapObject.SpatialType"/>
     public SpatialType SpatialType => SpatialType.Line;
 
-    /*
-    /// <summary>
-    /// Draws this object on the specified display
-    /// </summary>
-    /// <param name="display">The display to draw to</param>
-    /// <param name="style">The drawing style</param>
-    public void Draw(IMapDisplay mapDisplay)
-    {
-        m_Geom.Draw(mapDisplay);
-    }
-*/
     /// <inheritdoc cref="IMapObject.Extent"/>
     public IWindow Extent => m_Geom.Extent;
 

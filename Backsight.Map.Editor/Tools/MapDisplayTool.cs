@@ -2,6 +2,10 @@
 
 namespace Backsight.Map.Editor.Tools;
 
+/// <summary>
+/// A tool that manipulates the map display.
+/// </summary>
+/// <param name="viewModel"></param>
 internal abstract class MapDisplayTool(MapEditorViewModel viewModel)
 {
     protected MapEditorViewModel ViewModel { get; } = viewModel;
