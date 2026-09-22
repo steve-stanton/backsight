@@ -20,7 +20,6 @@ public partial class PreferencesViewModel : DialogViewModel
     // Labels tab
     [ObservableProperty] private double _labelScale;
     [ObservableProperty] private uint _nominalMapScale;
-    [ObservableProperty] private string _defaultFont;
     
     // Units tab
     [ObservableProperty] private DistanceUnitType _entryUnit;

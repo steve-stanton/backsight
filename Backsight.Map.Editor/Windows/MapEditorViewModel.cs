@@ -42,9 +42,8 @@ internal interface IMapEditorViewModel
     /// <summary>
     /// Closes any map that is currently open.
     /// </summary>
-    /// <returns>True if the map was closed. False if the user decided to cancel because changes
-    /// have not been saved.</returns>
-    /// <exception cref="InvalidOperationException">A map is not currently open.</exception>
+    /// <returns>True if the map was closed (or nothing needed to be closed).
+    /// False if the user decided to cancel because changes have not been saved.</returns>
     Task<bool> CloseMap();
 
     /// <summary>
@@ -321,8 +320,11 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// <inheritdoc />
     public async Task<bool> CloseMap()
     {
-        if (CurrentMapName is null || Store is null)
-            throw new InvalidOperationException("Map not open.");
+        if (CurrentMapName is null)
+        {
+            Debug.Assert(Store is null);
+            return true;
+        }
         
         // An editing session should have been established when the map was opened
         var session = Store.Model.WorkingSession;
@@ -1199,7 +1201,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         Console.WriteLine(nameof(EditAutoNumber));
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsMapOpen))]
     private async Task EditPreferences()
     {
         var dialog = new PreferencesWindow(_model);
@@ -1207,6 +1209,11 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         
         if (result == DialogResult.OK)
             dialog.ViewModel.SaveChanges();
+    }
+
+    private bool IsMapOpen()
+    {
+        return _model.Store is not null;
     }
 
     [RelayCommand(CanExecute = nameof(IsEditAutoHighlightEnabled))]

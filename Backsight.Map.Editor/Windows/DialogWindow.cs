@@ -1,5 +1,4 @@
-﻿using System;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 
 namespace Backsight.Map.Editor.Windows;
@@ -35,14 +34,12 @@ public abstract class DialogWindow<TViewModel> : DialogWindow where TViewModel :
 
     private void OnCloseRequested(object? sender, DialogResult result)
     {
-        Console.WriteLine("DialogWindow close requested");
         Result = result;
         Close(result);
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        Console.WriteLine("DialogWindow closing");
         DialogService?.OnClosing(this);
         _viewModel.CloseRequested -= OnCloseRequested;
     }
