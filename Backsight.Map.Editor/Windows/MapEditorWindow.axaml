@@ -114,6 +114,8 @@
                     Header="_Auto-Number"
                     Command="{Binding EditAutoNumberCommand}"
                     ToolTip.Tip="Toggle automatic point numbering"
+                    ToggleType="CheckBox"
+                    IsChecked="{Binding AutoNumber, Mode=OneWay}"
                     />
                 <Separator/>
                 <MenuItem

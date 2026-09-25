@@ -1,6 +1,6 @@
 namespace Backsight.Model;
 
-abstract class DataStub
+public abstract class DataStub
 {
     /// <summary>
     /// The unique ID for an object (0 indicates a null). Values less than zero

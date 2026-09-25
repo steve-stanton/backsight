@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Backsight.Geometry;
-using Backsight.Model.Observations;
 
 namespace Backsight.Model;
 

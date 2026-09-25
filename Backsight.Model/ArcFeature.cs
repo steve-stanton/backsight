@@ -3,7 +3,7 @@ using Backsight.Model.Observations;
 
 namespace Backsight.Model;
 
-class ArcFeature : LineFeature
+public class ArcFeature : LineFeature
 {
     /// <summary>
     /// Creates a new <c>ArcFeature</c>
@@ -204,7 +204,7 @@ class ArcFeature : LineFeature
     /// <returns>True if position have been worked out. False if there is insufficient data,
     /// or the extension is not on a circular arc, or the length is more than the circumference
     /// of the circle (in those cases, the start and end positions come back as nulls)</returns>
-    internal bool CalculateExtension(
+    public bool CalculateExtension(
         bool isFromEnd,
         Distance dist,
         out IPosition? start,

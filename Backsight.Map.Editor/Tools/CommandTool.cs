@@ -9,22 +9,39 @@ internal abstract class CommandTool : IDisposable
 {
     private readonly MapEditorViewModel _viewModel;
     private readonly EditingActionId _editId;
+    private readonly IMapStore _mapStore;
 
     protected CommandTool(MapEditorViewModel viewModel, EditingActionId editId)
     {
         _viewModel = viewModel;
+        _mapStore = viewModel.Store ?? throw new InvalidOperationException("Cannot create a command tool without an active map.");
         _editId = editId;
     }
 
-    protected MapEditorViewModel ViewModel => _viewModel;
+    internal MapEditorViewModel ViewModel => _viewModel;
+    
+    /// <summary>
+    /// The map that this command is operating on.
+    /// </summary>
+    internal IMapStore Store => _mapStore;
 
     internal abstract bool Run();
 
+    internal void FinishDataEntry<T>(T viewModel) where T : class
+    {
+        Finish();
+    }
+
+    internal void CancelDataEntry<T>(T viewModel) where T : class
+    {
+        Abort();
+    }
+    
     /// <summary>
     /// Aborts this command.
     /// </summary>
     /// <returns>True (always).</returns>
-    protected bool Abort()
+    protected virtual bool Abort()
     {
         ViewModel.AbortCommand(this);
         /*
@@ -45,12 +62,11 @@ internal abstract class CommandTool : IDisposable
         return true;
     }
     
-
     /// <summary>
     /// Finishes this command.
     /// </summary>
     /// <returns>True (always).</returns>
-    protected bool Finish()
+    protected virtual bool Finish()
     {
         /*
         // If this command was invoked by an update command, get
@@ -88,5 +104,13 @@ internal abstract class CommandTool : IDisposable
     internal virtual void Render(MapCanvas canvas)
     {
         // Do nothing
+    }
+
+    /// <summary>
+    /// Refreshes the map display to reflect the current state of the data entry command.
+    /// </summary>
+    internal void RefreshMapDisplay()
+    {
+        ViewModel.RefreshMapDisplay();
     }
 }

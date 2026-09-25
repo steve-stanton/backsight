@@ -5,14 +5,14 @@ namespace Backsight.Model;
 /// cadastral map model is created (for meters, feet, and chains). The resultant
 /// objects will be held as part of the model.
 /// </summary>
-class DistanceUnit : IEquatable<DistanceUnit>
+public class DistanceUnit : IEquatable<DistanceUnit>
 {
     internal static readonly DistanceUnit Meters = new (DistanceUnitType.Meters);
     internal static readonly DistanceUnit Feet = new (DistanceUnitType.Feet);
     internal static readonly DistanceUnit Chains = new (DistanceUnitType.Chains);
     internal static readonly DistanceUnit AsEntered = new (DistanceUnitType.AsEntered);
 
-    internal static DistanceUnit GetUnit(DistanceUnitType unitType)
+    public static DistanceUnit GetUnit(DistanceUnitType unitType)
     {
         return unitType switch
         {

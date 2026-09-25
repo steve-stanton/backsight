@@ -6,7 +6,7 @@ namespace Backsight.Model;
 /// <written by="Steve Stanton" on="16-DEC-1998" />
 /// <summary>
 /// Management of ID assignment. One of these objects forms part of the
-/// <c>EditingController</c> class. It is responsible for maintaining a
+/// <c>CadastralMapModel</c> class. It is responsible for maintaining a
 /// connection to the external database that holds ID info. It acts as a
 ///	server for dishing out IDs.
 /// </summary>
@@ -135,9 +135,9 @@ public class IdManager
     /// </summary>
     /// <param name="ent">The entity type to find.</param>
     /// <returns>The matching group (null if no such group)</returns>
-    internal IdGroup? GetGroup(IEntity ent)
+    public IdGroup? GetGroup(IEntity? ent)
     {
-        if (ent == null || ent.Id == 0)
+        if (ent is null || ent.Id == 0)
             return null;
 
         if (m_EntityGroups.TryGetValue(ent.Id, out var result))

@@ -1,0 +1,75 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Backsight.Map.Editor.Windows"
+        x:DataType="vm:LineExtensionViewModel"
+        mc:Ignorable="d" d:DesignWidth="790" d:DesignHeight="320"
+        Width="790" Height="320"
+        CanResize="False"
+        x:Class="Backsight.Map.Editor.Windows.LineExtensionWindow"
+        Title="Line Extension">
+
+    <Grid RowDefinitions="Auto Auto" Margin="20" >
+        <Grid Grid.Row="0" ColumnDefinitions="Auto Auto" ColumnSpacing="20">
+            <GroupBox Grid.Column="0" Header="Specify Length of Extension" Width="260" Height="185" Padding="10" Margin="0 0 4 0">
+                <Grid RowDefinitions="Auto Auto" Margin="10" RowSpacing="20">
+                    <NumericUpDown Grid.Row="0"
+                       TabIndex="0"
+                       AllowSpin="False"
+                       ShowButtonSpinner="False"
+                       Value="{Binding Length}"
+                       InnerRightContent="{Binding Units}"
+                       VerticalContentAlignment="Center"
+                       Minimum="0.0001"/>
+                    <Button Grid.Row="1"
+                        IsTabStop="False"
+                        Content="Extend from _Other End"
+                        Command="{Binding OtherEndCommand}"
+                        HorizontalAlignment="Center"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox Grid.Column="1" Header="New Point at the end of the Extension" Width="460" Height="185" Padding="10" Margin="0 0 4 0">
+                <Grid RowDefinitions="Auto Auto" ColumnDefinitions="Auto Auto Auto" Margin="10" RowSpacing="20">
+                    <ComboBox Grid.Row="0" Grid.ColumnSpan="3"
+                        Width="400"
+                        ItemsSource="{Binding PointTypes}"
+                        SelectedItem="{Binding SelectedPointType}"
+                        />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="ID" Width="15" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1"
+                        Width="150"
+                        Margin="5 0"
+                        IsEnabled="{Binding AllowIdSelection}"
+                        ItemsSource="{Binding PointIds}"
+                        SelectedItem="{Binding SelectedPointId}"
+                        />
+                    <CheckBox Grid.Row="1" Grid.Column="2"
+                        Content="Add a _Line too"
+                        IsChecked="{Binding WantLine}"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 20 0 0">
+            <Button
+                Content="OK"
+                IsDefault="True"
+                FontWeight="Bold"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Margin="10"
+                Command="{Binding OkCommand}" />
+            <Button
+                Content="Cancel"
+                IsCancel="True"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Margin="10"
+                Command="{Binding CancelCommand}" />
+        </StackPanel>
+    </Grid>
+    
+</Window>

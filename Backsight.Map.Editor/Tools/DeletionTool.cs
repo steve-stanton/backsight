@@ -15,13 +15,11 @@ internal class DeletionTool : CommandTool
 
     internal override bool Run()
     {
-        Debug.Assert(ViewModel.Store is not null);
-        
         var features = ViewModel.Selection.Items.OfType<Feature>().ToArray();
         if (features.Length == 0)
             return false;
         
-        var dop = new DeletionOperation(ViewModel.Store, features);
+        var dop = new DeletionOperation(Store, features);
         dop.Execute();
         ViewModel.ClearSelection();
         ViewModel.FinishCommand(this);

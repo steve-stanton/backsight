@@ -1,0 +1,59 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Backsight.Map.Editor.Windows"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="420"
+        Width="600" Height="420"
+        x:Class="Backsight.Map.Editor.Windows.WizardWindow"
+        x:DataType="vm:WizardViewModel"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        Background="LightGray"
+        Title="{Binding Title}">
+
+    <GroupBox Header="{Binding Title}" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5">
+        <Grid RowDefinitions="Auto,*,Auto" Margin="10">
+            <!-- Header: Step Info -->
+            <DockPanel Grid.Row="0" Margin="5,0,5,10">
+                <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="14" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="DimGray">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Step {0} of {1}">
+                            <Binding Path="CurrentPageIndex" Converter="{x:Static vm:AddOneConverter.Instance}" />
+                            <Binding Path="PageCount" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </DockPanel>
+
+            <Separator Grid.Row="0" VerticalAlignment="Bottom" Height="1" Background="Gray"/>
+
+            <!-- Main Body: Active Page Content -->
+            <ContentControl x:Name="PagePresenter" Grid.Row="1" Margin="10" />
+
+            <!-- Footer: Navigation Buttons -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,10,5,0">
+                <Button Content="&lt; Back"
+                        Width="85" Height="32" Margin="5"
+                        Command="{Binding BackCommand}" />
+
+                <Button Content="Next &gt;"
+                        Width="85" Height="32" Margin="5"
+                        IsVisible="{Binding !IsLastPage}"
+                        Command="{Binding NextCommand}" />
+
+                <Button Content="Finish"
+                        Width="85" Height="32" Margin="5"
+                        FontWeight="Bold"
+                        IsVisible="{Binding IsLastPage}"
+                        Command="{Binding FinishCommand}" />
+
+                <Button Content="Cancel"
+                        Width="85" Height="32" Margin="5"
+                        IsCancel="True"
+                        Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </Grid>
+    </GroupBox>
+</Window>

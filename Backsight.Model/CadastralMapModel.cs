@@ -959,7 +959,7 @@ public class CadastralMapModel
     /// <summary>
     /// The object that manages assignment of user-specified IDs.
     /// </summary>
-    internal IdManager IdManager => m_IdManager;
+    public IdManager IdManager => m_IdManager;
 
     /// <summary>
     /// The session that we are currently appending to (null if the model is being deserialized).

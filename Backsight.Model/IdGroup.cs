@@ -9,7 +9,7 @@ namespace Backsight.Model;
 /// An ID group, corresponding to a row that was selected from the IdGroups table in
 /// the environment database.
 /// </summary>
-class IdGroup : IdGroupFacade
+public class IdGroup : IdGroupFacade
 {
     /// <summary>
     /// Any ID packets allocated for this group.
@@ -41,7 +41,7 @@ class IdGroup : IdGroupFacade
     /// </summary>
     /// <param name="session">The current working session.</param>   
     /// <returns>Information about the allocated range (null if the allocation failed).</returns>
-    internal IdPacket? GetAllocation(Session session)
+    public IdPacket? GetAllocation(Session session)
     {
         IdPacket? result = null;
         var repo = EnvironmentRepository.Current;
@@ -74,7 +74,7 @@ class IdGroup : IdGroupFacade
     /// </summary>
     /// <param name="id">The ID to find.</param>
     /// <returns>The ID packet, or null if not found.</returns>
-    internal IdPacket? FindPacket(uint id)
+    public IdPacket? FindPacket(uint id)
     {
         return m_Packets.Find(p => p.Min <= id && p.Max >= id);
     }
@@ -176,7 +176,7 @@ class IdGroup : IdGroupFacade
     /// <param name="id">The raw ID to format (may not actually lie within the
     /// limits of this packet).</param>
     /// <returns>The formatted result.</returns>
-    internal string FormatId(uint id)
+    public string FormatId(uint id)
     {
         // Apply the format assuming no check digit.
         string key = String.Format(KeyFormat, id);
@@ -241,7 +241,7 @@ class IdGroup : IdGroupFacade
     /// Loads a list with all the IDs that are available for this ID group.
     /// </summary>
     /// <returns>The raw IDs in this group that are available (may be an empty array).</returns>
-    internal uint[] GetAvailIds()
+    public uint[] GetAvailIds()
     {
         var result = new List<uint>();
 

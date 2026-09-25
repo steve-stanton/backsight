@@ -12,15 +12,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="12.0.4"/>
-        <PackageReference Include="Avalonia.Desktop" Version="12.0.4" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.4" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.4" />
-        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1">
+        <PackageReference Include="Avalonia" Version="12.1.2" />
+        <PackageReference Include="Avalonia.Desktop" Version="12.1.2" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.2" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.2" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
         <PackageReference Include="Mapsui" Version="5.1.0" />
         <PackageReference Include="Mapsui.Avalonia12" Version="5.1.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
@@ -84,6 +84,12 @@
       </Compile>
       <Compile Update="Windows\PreferencesViewModel.cs">
         <DependentUpon>PreferencesWindow.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\WizardViewModel.cs">
+        <DependentUpon>WizardWindow.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\LineExtensionViewModel.cs">
+        <DependentUpon>LineExtensionWindow.axaml</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

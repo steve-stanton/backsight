@@ -5,7 +5,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Fronts an instance of some object that implements <c>IIdGroup</c>.
 /// </summary>
-class IdGroupFacade : EnvironmentItemFacade<IIdGroup>, IIdGroup
+public class IdGroupFacade : EnvironmentItemFacade<IIdGroup>, IIdGroup
 {
     internal IdGroupFacade(IIdGroup data) : base(data)
     {

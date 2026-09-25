@@ -3,7 +3,7 @@ namespace Backsight.Model;
 /// <summary>
 /// A packet of user-perceived IDs.
 /// </summary>
-class IdPacket
+public class IdPacket
 {
     /// <summary>
     /// The ID group that contains this packet
@@ -154,7 +154,7 @@ class IdPacket
     /// </summary>
     /// <param name="id">The raw ID to reserve</param>
     /// <returns>True if the ID has been reserved successfully.</returns>
-    internal bool ReserveId(uint id)
+    public bool ReserveId(uint id)
     {
         // Get the index of the specified ID.
         int index = GetIndex(id);
@@ -343,7 +343,7 @@ class IdPacket
     /// </summary>
     /// <param name="id">The ID to create.</param>
     /// <returns>The created feature ID.</returns>
-    internal FeatureId CreateId(uint id)
+    public FeatureId CreateId(uint id)
     {
         // Confirm that the specified ID falls within this range.
         if (id<(uint)Min || id>(uint)Max)

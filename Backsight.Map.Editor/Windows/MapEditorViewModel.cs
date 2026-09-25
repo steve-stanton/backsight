@@ -327,7 +327,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         }
         
         // An editing session should have been established when the map was opened
-        var session = Store.Model.WorkingSession;
+        var session = Store?.Model.WorkingSession;
         if (session is null)
             throw new InvalidOperationException("No working session.");
 
@@ -530,11 +530,25 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         new("Properties", PropertiesCommand)
     ];
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsLineExtendEnabled))]
     private void LineExtend()
     {
-        Console.WriteLine(nameof(LineExtend));
+        var extendLine = _selection.SingleOrDefault as LineFeature;
+        Debug.Assert(extendLine is not null);
+        ClearSelection();
+        StartCommand(new LineExtensionTool(this, extendLine));
     }
+
+    /// <summary>
+    /// Checks whether the Line - Extend command is enabled or not.
+    /// A specific line has to be selected, and there can be no other command currently running.
+    /// </summary>
+    /// <returns></returns>
+    private bool IsLineExtendEnabled()
+    {
+        return _selection.SingleOrDefault is LineFeature && _commandTool is null;
+    }
+    
     [RelayCommand]
     private void LineSubdivide()
     {
@@ -713,6 +727,16 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         _mapData.Refresh(ChangeType.Discrete);
     }
 
+    /// <summary>
+    /// Re-paints the current map display (without going back to any map provider).
+    /// Instances of <see cref="CommandTool"/> that render anything on top of the map display
+    /// should call this whenever a related data entry field gets changed.
+    /// </summary>
+    internal void RefreshMapDisplay()
+    {
+        _mapData.RefreshGraphics();
+    }
+    
     [RelayCommand]
     private void Previous()
     {
@@ -1195,11 +1219,18 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         Console.WriteLine(nameof(EditIdAllocations));
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsMapOpen))]
     private void EditAutoNumber()
     {
-        Console.WriteLine(nameof(EditAutoNumber));
+        var settings = _model.Store?.Settings;
+        
+        // TODO: May want to notify an active CommandTool (a modeless dialog might give the
+        // user the ability to pick an ID)
+        if (settings is not null)
+            settings.AutoNumber = !settings.AutoNumber;
     }
+
+    public bool AutoNumber => _model.Store?.Settings.AutoNumber ?? false;
 
     [RelayCommand(CanExecute = nameof(IsMapOpen))]
     private async Task EditPreferences()
@@ -1252,6 +1283,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         // Make sure the normal cursor is on screen.
         MapCursor = Cursor.Default;
 
+        // Ensure anything rendered by the command has been cleared
+        RefreshMapDisplay();
         /*
         cmd.ActiveMap.RestoreLastDraw();
         RedrawSelection();
@@ -1374,5 +1407,10 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             settings.PointHeight = Math.Max(0.01, height);
 
         _mapData.RefreshGraphics();
+    }
+    
+    internal void Show(DialogWindow dialog)
+    {
+        _dialogService.Show(dialog);
     }
 }

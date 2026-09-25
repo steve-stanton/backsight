@@ -40,8 +40,6 @@ internal class NewLineTool : CommandTool
     internal NewLineTool(MapEditorViewModel viewModel, PointFeature? start)
         : base(viewModel, EditingActionId.NewLine)
     {
-        Debug.Assert(viewModel.Store is not null);
-        
         _start = start;
         _currentPoint = start;
 
@@ -54,7 +52,7 @@ internal class NewLineTool : CommandTool
         _showIntersections =
             viewModel.ArePointsDrawn &&
             viewModel.Settings?.IntersectionsDrawn == true && 
-            viewModel.Store.DefaultLineType.IsPolygonBoundaryValid;
+            Store.DefaultLineType.IsPolygonBoundaryValid;
     }
 
     internal override bool Run()
@@ -71,12 +69,11 @@ internal class NewLineTool : CommandTool
 
     internal override void MouseMove(IPosition p, MouseButton b)
     {
-        Debug.Assert(ViewModel.Store is not null);
         base.MouseMove(p, b);
         
         // Try to find a point at the current position
-        ILength size = new Length(ViewModel.Store.Settings.PointHeight * 0.5);
-        _currentPoint  = ViewModel.Store.Model.QueryClosest(p, size, SpatialType.Point) as PointFeature;
+        ILength size = new Length(Store.Settings.PointHeight * 0.5);
+        _currentPoint  = Store.Model.QueryClosest(p, size, SpatialType.Point) as PointFeature;
         
         if (_currentPoint is null)
             _end = PointGeometry.Create(p);
@@ -102,7 +99,7 @@ internal class NewLineTool : CommandTool
 
             if (_showIntersections)
             {
-                var xf = new IntersectionFinder(ViewModel.Store.Model.Index, geom, false);
+                var xf = new IntersectionFinder(Store.Model.Index, geom, false);
                 var points = new List<Rectangle>();
 
                 foreach (var x in xf.Intersections.SelectMany(x => x.Intersections))
@@ -173,10 +170,7 @@ internal class NewLineTool : CommandTool
         if (_start is null)
             throw new InvalidOperationException("Start point not defined.");
         
-        var store = ViewModel.Store;
-        Debug.Assert(store is not null);
-        
-        var op = new NewSegmentOperation(store);
+        var op = new NewSegmentOperation(Store);
         op.Execute(_start, end);
     }
     

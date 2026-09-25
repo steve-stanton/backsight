@@ -14,7 +14,7 @@ namespace Backsight.Model;
 /// by the facade will correspond to default values).
 /// </para></summary>
 /// <typeparam name="D">The type for the associated object</typeparam>
-class EnvironmentItemFacade<D> : DataStub where D : IEnvironmentItem
+public class EnvironmentItemFacade<D> : DataStub where D : IEnvironmentItem
 {
     /// <summary>
     /// Utility method for searching a list for a specific ID

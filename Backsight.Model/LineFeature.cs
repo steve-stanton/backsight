@@ -1271,7 +1271,7 @@ return &newend;
     /// <param name="end">The position of the end of the extension.</param>
     /// <returns>True if position have been worked out. False if the supplied distance is zero
     /// (in that case, the start and end positions come back as nulls).</returns>
-    internal bool CalculateExtension(
+    public bool CalculateExtension(
         bool isFromEnd,
         Distance dist,
         out IPosition? start,

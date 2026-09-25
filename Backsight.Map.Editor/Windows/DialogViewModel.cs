@@ -39,6 +39,12 @@ public abstract partial class DialogViewModel : ViewModelBase
 
     protected void RequestClose(DialogResult result)
     {
-        CloseRequested?.Invoke(this, result);
+        if (HandleCloseRequested(result))
+            CloseRequested?.Invoke(this, result);
+    }
+    
+    protected virtual bool HandleCloseRequested(DialogResult result)
+    {
+        return true;
     }
 }

@@ -13,7 +13,6 @@ namespace Backsight.Map.Editor.Mapping;
 /// </summary>
 /// <remarks>
 /// An instance of this class will be created each time the <see cref="Renderer"/> class is asked to render a map.
-/// This aims to encapsulate some of the implementation details.
 /// <para/>
 /// Make sure that the instance gets disposed when done (presumably via a <c>using</c> statement).
 /// Instances of <see cref="SKPaint"/> are needed when doing any sort of drawing to the Skia canvas,
@@ -56,7 +55,6 @@ class MapCanvas : IDisposable
     /// </remarks>
     public void Dispose()
     {
-        //Console.WriteLine($"Dispose {_paintCache.Count} styles");
         foreach (var paint in _paintCache.Values)
             paint.Dispose();
     }
@@ -67,7 +65,6 @@ class MapCanvas : IDisposable
             return result;
 
         result = style.ToPaint();
-        //Console.WriteLine($"style: {style}");
         _paintCache.Add(style, result);
         return result;
     }
@@ -123,7 +120,7 @@ class MapCanvas : IDisposable
         _canvas.DrawPath(path, GetPaint(style));
     }
 
-    internal void DrawArc(ArcGeometry arc, PaintStyle style)
+    internal void DrawArc(ICircularArcGeometry arc, PaintStyle style)
     {
         var rect = _viewport.ToScreenRect(arc.Circle);
         var startAngle = arc.StartBearingInRadians * MathConstants.RADTODEG - 90.0;
@@ -218,12 +215,12 @@ class MapCanvas : IDisposable
         font.ScaleX = (float)(textGeom.Width / gwd);
     }
 
-    internal void DrawLine(LineGeometry geom, PaintStyle style)
+    internal void DrawLine(ILineGeometry geom, PaintStyle style)
     {
         if (geom is SectionGeometry section)
             geom = section.Make();
 
-        if (geom is SegmentGeometry seg)
+        if (geom is ILineSegmentGeometry seg)
         {
             DrawLine(seg.Start, seg.End, style);
         }
@@ -231,7 +228,7 @@ class MapCanvas : IDisposable
         {
             DrawPath(multiSeg, style);
         }
-        else if (geom is ArcGeometry arc)
+        else if (geom is ICircularArcGeometry arc)
         {
             DrawArc(arc, style);
         }
@@ -293,5 +290,4 @@ class MapCanvas : IDisposable
             SKShaderTileMode.Repeat,
             SKShaderTileMode.Repeat);
     }
-    
 }

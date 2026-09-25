@@ -10,7 +10,7 @@ namespace Backsight.Model;
 /// <remarks>This class formerly served a larger role than it does now. It may be desirable to
 /// combine the class with <see cref="DisplayId"/> class, since they are now relatively close
 /// in terms of intended usage.</remarks>
-class IdHandle
+public class IdHandle
 {
     /// <summary>
     /// The current editing session.

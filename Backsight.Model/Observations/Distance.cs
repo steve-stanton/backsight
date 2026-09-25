@@ -4,7 +4,7 @@ namespace Backsight.Model.Observations;
 /// <summary>
 /// A distance observation.
 /// </summary>
-class Distance : Observation, ILength, IEquatable<Distance>
+public class Distance : Observation, ILength, IEquatable<Distance>
 {
     /// <summary>
     /// Attempts to parse the supplied string.
@@ -82,7 +82,7 @@ class Distance : Observation, ILength, IEquatable<Distance>
     /// </summary>
     /// <param name="distance">The entered distance value</param>
     /// <param name="unit">The units for the entered distance.</param>
-    internal Distance(double distance, DistanceUnit unit)
+    public Distance(double distance, DistanceUnit unit)
     {
         m_ObservedMetric = unit.ToMetric(distance);
         m_EnteredUnit = unit;

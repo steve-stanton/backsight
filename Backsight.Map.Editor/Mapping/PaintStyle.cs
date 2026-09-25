@@ -8,10 +8,12 @@ namespace Backsight.Map.Editor.Mapping;
 /// <param name="Color"></param>
 /// <param name="Style"></param>
 /// <param name="StrokeWidth"></param>
+/// <param name="Dashed"></param>
 internal readonly record struct PaintStyle(
     SKColor Color,
     SKPaintStyle Style = SKPaintStyle.Stroke,
-    float StrokeWidth = 1f
+    float StrokeWidth = 1f,
+    bool Dashed = false
 )
 {
     /// <summary>
@@ -28,6 +30,7 @@ internal readonly record struct PaintStyle(
         Color = Color,
         Style = Style,
         StrokeWidth = StrokeWidth,
-        IsAntialias = true
+        IsAntialias = true,
+        PathEffect = Dashed ? SKPathEffect.CreateDash([2, 4], 0) : null
     };
 }
