@@ -59,7 +59,7 @@
                             <RadioButton
                                 Content="Chains"
                                 GroupName="DataEntryUnits"
-                                IsChecked="{Binding EntryUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Feet}}"/>
+                                IsChecked="{Binding EntryUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Chains}}"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Display" MinWidth="300">
@@ -86,7 +86,7 @@
                 </StackPanel>
             </TabItem>
             <TabItem Header="Line Annotation">
-                <Grid RowDefinitions="Auto Auto Auto" Margin="20" RowSpacing="20">
+                <Grid RowDefinitions="Auto Auto" Margin="20" RowSpacing="20">
                     <GroupBox Grid.Row="0" Header="Show What">
                             <StackPanel Orientation="Vertical" Margin="20">
                                 <RadioButton
@@ -103,14 +103,13 @@
                                     IsChecked="{Binding AnnotationLengthDisplay, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:LineAnnotationOptions.None}}"/>
 
                                 <CheckBox
-                                    Grid.Row="1"
                                     Content="Observed Angles"
                                     Margin="0 30 0 0"
                                     IsChecked="{Binding ShowObservedAngles}"/>
                             </StackPanel>
                     </GroupBox>
 
-                    <Grid Grid.Row="2" RowDefinitions="Auto Auto Auto" ColumnDefinitions="220 120" RowSpacing="20" Margin="20 0 0 0">
+                    <Grid Grid.Row="1" RowDefinitions="Auto Auto Auto" ColumnDefinitions="220 120" RowSpacing="20" Margin="20 0 0 0">
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Hide at scales smaller than 1:" VerticalAlignment="Center"/>
                         <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AnnotationScale}" BorderBrush="LightGray"/>
 
