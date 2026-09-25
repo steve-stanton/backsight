@@ -94,12 +94,10 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// <summary>
     /// The cursor to display over the map.
     /// </summary>
-    [ObservableProperty]
-    private Cursor _mapCursor = Cursor.Default;
+    [ObservableProperty] private Cursor _mapCursor = Cursor.Default;
 
-    [ObservableProperty]
-    private Avalonia.Controls.Controls _overlayChildren = new();
-    
+    [ObservableProperty] private Avalonia.Controls.Controls _overlayChildren = new();
+
     /// <summary>
     /// The current map navigation tool (if any).
     /// </summary>
@@ -115,12 +113,12 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// is not currently displayed).
     /// </summary>
     //private InverseWindow? _inverseCalculator = null;
-    
+
     /// <summary>
     /// The application model.
     /// </summary>
     private readonly IMapEditorModel _model;
-    
+
     /// <summary>
     /// The map data for the map display.
     /// </summary>
@@ -158,15 +156,15 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// <summary>
     /// Is the properties window currently visible?
     /// </summary>
-    [ObservableProperty]
-    private bool _propertiesVisible;
-    
+    [ObservableProperty] private bool _propertiesVisible;
+
     /// <summary>
     /// The view model for the properties window.
     /// </summary>
     public PropertyDisplayViewModel PropertyDisplay => _propertyDisplay;
+
     private readonly PropertyDisplayViewModel _propertyDisplay;
-        
+
     /// <summary>
     /// Service class for displaying dialogs.
     /// </summary>
@@ -199,29 +197,29 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             Enabled = false
         };
         _mapData.Widgets.Add(positionWidget);
-        
+
         // Ensure the map stays in position on a mouse drag (user needs to explicitly say they want to drag)
         _mapData.Navigator.PanLock = true;
 
         _mapData.Navigator.ViewportChanged += OnViewportChanged;
     }
-    
-    
+
+
     internal IEnvironmentRepository Environment => _model.Environment;
     internal IMapEditorModel Model => _model;
-    
+
     /// <inheritdoc />
     Mapsui.Map IMapEditorViewModel.MapData => _mapData;
-    
+
     /// <inheritdoc />
     public IMapSelection Selection => _selection;
-    
+
     /// <inheritdoc />
     double IMapEditorViewModel.MapScale => _model.Store is null ? 0 : _mapScale;
 
     /// <inheritdoc cref="IMapEditorViewModel.Settings" />
     public MapSettings? Settings => _model.Store?.Settings;
-    
+
     /// <inheritdoc cref="IMapEditorViewModel.Store" />
     public IMapStore? Store => _model.Store;
 
@@ -237,16 +235,16 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         // Lines and polygons are always visible
         result |= SpatialType.Line;
         result |= SpatialType.Polygon;
-        
+
         if (_mapScale < store.Settings.PointScale)
             result |= SpatialType.Point;
-        
+
         if (_mapScale < store.Settings.LabelScale)
             result |= SpatialType.Text;
 
         if (_mapScale < store.Settings.LineAnnotation.ShowScale)
             result |= SpatialType.Annotation;
-        
+
         return result;
     }
 
@@ -265,7 +263,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             _mapScale = 0;
             return;
         }
-        
+
         var groundRect = e.Viewport.ToExtent();
         var screenRect = e.Viewport.ToSkiaRect();
 
@@ -273,6 +271,23 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         var width = (screenRect.Width / 96.0) * inchesToMeters;
         _mapScale = groundRect.Width / width;
         //Console.WriteLine("Viewport changed => scale: " + _mapScale);
+    }
+
+    private IWindow GetWindow(WorkingArea area)
+    {
+        const double inchesToMeters = 0.0254;
+
+        double wd = _mapData.Navigator.Viewport.Width / 96.0 * inchesToMeters;
+        double ht = _mapData.Navigator.Viewport.Height / 96.0 * inchesToMeters;
+
+        double dx = 0.5 * area.MapScale * wd;
+        double dy = 0.5 * area.MapScale * ht;
+
+        return new Window(
+            area.CenterX - dx,
+            area.CenterY - dy,
+            area.CenterX + dx,
+            area.CenterY + dy);
     }
 
     public string? CurrentMapName
@@ -312,9 +327,19 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             CustomLayerRendererName = (this as IMapEditorViewModel).RendererName
         };
         _mapData.Layers.Add(layer);
-        var extent = _mapData.Extent;
-        if (extent is not null)
-            _mapData.Navigator.ZoomToBox(extent.Grow(0.1 * extent.Height));
+        
+        var lastDraw = store.Settings.LastDraw;
+        if (lastDraw.MapScale > 0.0)
+        {
+            var window = GetWindow(lastDraw);
+            _mapData.Navigator.ZoomToBox(window.ToMRect());
+        }
+        else
+        {
+            var extent = _mapData.Extent;
+            if (extent is not null)
+                _mapData.Navigator.ZoomToBox(extent.Grow(0.1 * extent.Height));
+        }
     }
 
     /// <inheritdoc />
@@ -330,7 +355,13 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         var session = Store?.Model.WorkingSession;
         if (session is null)
             throw new InvalidOperationException("No working session.");
-
+        
+        // Ensure the settings include the current viewport
+        Settings?.LastDraw = new WorkingArea(
+            _mapData.Navigator.Viewport.CenterX,
+            _mapData.Navigator.Viewport.CenterY,
+            _mapScale);
+            
         var toSaveCount = session.UnsavedChangeCount;
         var needToSaveChanges = toSaveCount > 0;
         if (needToSaveChanges)
