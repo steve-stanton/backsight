@@ -651,8 +651,7 @@ public abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IE
         m_Id.CutReference(this);
 
         // Remove the the ID from its enclosing ID packet
-        NativeId nid = (m_Id as NativeId);
-        if (nid != null)
+        if (m_Id is NativeId nid)
             nid.IdGroup.ReleaseId(nid);
     }
 

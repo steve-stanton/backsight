@@ -51,7 +51,7 @@ class FeatureStub : IFeature, IPersistent
     /// <param name="fid">The (optional) user-perceived ID for the feature.</param>
     /// <exception cref="ArgumentNullException">If either <paramref name="ent"/> or
     /// <paramref name="creator"/> is null.</exception>
-    internal FeatureStub(Operation creator, IEntity ent, FeatureId fid)
+    internal FeatureStub(Operation creator, IEntity ent, FeatureId? fid)
         : this(creator, creator.Session.AllocateNextId(), ent, fid)
     {
     }

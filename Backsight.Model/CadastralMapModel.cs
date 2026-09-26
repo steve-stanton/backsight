@@ -830,7 +830,7 @@ public class CadastralMapModel
         TextFeature label = new TextFeature(creator, id, ent, null);
 
         // Define the label's ID and attach the row to it
-        FeatureId fid = polygonId.CreateId(label);
+        FeatureId fid = polygonId.CreateId(label) ?? throw new ApplicationException("Cannot create ID for polygon label");
         var row = new Row(fid, attributes);
 
         // Attach the geometry

@@ -236,7 +236,6 @@ public class IdGroup : IdGroupFacade
         return (str.Length==1);
     }
 
-
     /// <summary>
     /// Loads a list with all the IDs that are available for this ID group.
     /// </summary>

@@ -237,7 +237,7 @@ class IntersectTwoDistancesOperation : IntersectOperation, IRecallable, IRevisab
     {
         FeatureFactory ff = new FeatureFactory(this);
 
-        FeatureId fid = pointId.CreateId();
+        FeatureId? fid = pointId.CreateId();
         IFeature x = new FeatureStub(this, pointId.Entity, fid);
         ff.AddFeatureDescription(DataField.To, x);
 
