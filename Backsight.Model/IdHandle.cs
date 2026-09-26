@@ -75,7 +75,7 @@ public class IdHandle
     /// <remarks>In normal circumstances, reserved IDs will be discarded whenever a data entry
     /// dialog is aborted (from <see cref="CommandUI.AbortCommand"/>).
     /// </remarks>
-    internal void DiscardReservedId()
+    public void DiscardReservedId()
     {
         if (m_Packet is not null && m_Id != 0)
             m_Packet.FreeReservedId(m_Id);
@@ -113,7 +113,7 @@ public class IdHandle
     /// <param name="ent">The entity type that the ID is for.</param>
     /// <param name="id">The available ID to reserve.</param>
     /// <returns>True if the ID was successfully reserved.</returns>
-    internal bool ReserveId(IdPacket packet, IEntity ent, uint id)
+    public bool ReserveId(IdPacket packet, IEntity ent, uint id)
     {
         // Ensure that any currently reserved ID is released.
         FreeReservedId();
@@ -137,16 +137,16 @@ public class IdHandle
     /// </summary>
     /// <param name="feature">The feature that should get the created feature ID (currently
     /// without any defined ID)</param>
-    /// <returns>The created feature ID (if any).</returns>
-    internal FeatureId CreateId(Feature feature)
+    /// <returns>The created feature ID (null if an ID has not been reserved).</returns>
+    internal FeatureId? CreateId(Feature feature)
     {
         // Confirm that the feature does not already have an ID.
         if (feature.FeatureId is not null)
             throw new ApplicationException("IdHandle.CreateId - Feature already has an ID.");
 
         // Claim the reserved ID and cross reference to the feature
-        FeatureId fid = CreateId();
-        fid.Add(feature);
+        FeatureId? fid = CreateId();
+        fid?.Add(feature);
         return fid;
     }
 

@@ -8,7 +8,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// Operation to extend a line.
 /// </summary>
-class LineExtensionOperation : Operation, IRecallable, IRevisable
+public class LineExtensionOperation : Operation, IRecallable, IRevisable
 {
     /// <summary>
     /// The line being extended.
@@ -42,7 +42,7 @@ class LineExtensionOperation : Operation, IRecallable, IRevisable
     /// <param name="extendLine">The line that's being extended.</param>
     /// <param name="isFromEnd">True if extending from the end | False from the start.</param>
     /// <param name="length">The length of the extension.</param>
-    internal LineExtensionOperation(LineFeature extendLine, bool isFromEnd, Distance length)
+    public LineExtensionOperation(LineFeature extendLine, bool isFromEnd, Distance length)
         : base(extendLine.MapStore)
     {
         m_ExtendLine = extendLine;
@@ -123,16 +123,17 @@ class LineExtensionOperation : Operation, IRecallable, IRevisable
     /// Executes this operation.
     /// </summary>
     /// <param name="pointId">The ID (and entity type) for the extension point.</param>
+    /// <param name="pointType">The entity type for the extension point.</param>
     /// <param name="lineEnt">The entity type for the extension line (null for no line).</param>
-    internal void Execute(IdHandle pointId, IEntity lineEnt)
+    public void Execute(IdHandle pointId, IEntity pointType, IEntity? lineEnt)
     {
         FeatureFactory ff = new FeatureFactory(this);
 
-        FeatureId fid = pointId.CreateId();
-        IFeature xp = new FeatureStub(this, pointId.Entity, fid);
+        FeatureId? fid = pointId.CreateId();
+        IFeature xp = new FeatureStub(this, pointType, fid);
         ff.AddFeatureDescription(DataField.NewPoint, xp);
 
-        if (lineEnt != null)
+        if (lineEnt is not null)
         {
             IFeature f = new FeatureStub(this, lineEnt, null);
             ff.AddFeatureDescription(DataField.NewLine, f);

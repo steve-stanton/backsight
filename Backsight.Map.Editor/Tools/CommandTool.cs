@@ -10,15 +10,19 @@ internal abstract class CommandTool : IDisposable
     private readonly MapEditorViewModel _viewModel;
     private readonly EditingActionId _editId;
     private readonly IMapStore _mapStore;
+    private readonly Session _session;
 
     protected CommandTool(MapEditorViewModel viewModel, EditingActionId editId)
     {
         _viewModel = viewModel;
         _mapStore = viewModel.Store ?? throw new InvalidOperationException("Cannot create a command tool without an active map.");
+        _session = _mapStore.Model.WorkingSession ?? throw new InvalidOperationException("Cannot create a command tool without an active session.");
         _editId = editId;
     }
 
     internal MapEditorViewModel ViewModel => _viewModel;
+    
+    internal Session WorkingSession => _session;
     
     /// <summary>
     /// The map that this command is operating on.

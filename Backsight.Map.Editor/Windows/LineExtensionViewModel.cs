@@ -193,4 +193,21 @@ public partial class LineExtensionViewModel : DialogViewModel
     {
         return Length > 0;
     }
+
+    /// <summary>
+    /// Reserves an ID for the extension point.
+    /// </summary>
+    /// <returns>The handle on the reserved ID (null if the point has an entity type
+    /// that does not require any IDs).</returns>
+    /*
+    internal IdHandle? ReservePointIdH()
+    {
+        if (SelectedPointId is null)
+            return null;
+
+        var result = new IdHandle(_tool.WorkingSession);
+        result.Define
+
+    }
+    */
 }
