@@ -1314,8 +1314,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         // Make sure the normal cursor is on screen.
         MapCursor = Cursor.Default;
 
-        // Ensure anything rendered by the command has been cleared
-        RefreshMapDisplay();
         /*
         cmd.ActiveMap.RestoreLastDraw();
         RedrawSelection();
@@ -1329,7 +1327,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         
         cmd.Dispose();
         _commandTool = null;
-    }
+
+        // Ensure anything rendered by the command has been cleared
+        RefreshMapDisplay();    }
 
     internal void FinishCommand(CommandTool cmd)
     {
@@ -1338,11 +1338,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         
         // Make sure the normal cursor is on screen.
         MapCursor = Cursor.Default;
-        
-        // Refresh everything from the model. This may seem a bit of an effort, considering
-        // that many edits don't do much to the display (some don't do anything). However,
-        // it's fast and keeps things clean in more complex cases.
-        Refresh();
 
         /*
         // Notify any check dialog (re-check all potential problems).
@@ -1360,6 +1355,11 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 */
         cmd.Dispose();
         _commandTool = null;
+        
+        // Refresh everything from the model. This may seem a bit of an effort, considering
+        // that many edits don't do much to the display (some don't do anything). However,
+        // it's fast and keeps things clean in more complex cases.
+        Refresh();
     }
     
     CommandTool? IMapEditorViewModel.CurrentCommand => _commandTool;
