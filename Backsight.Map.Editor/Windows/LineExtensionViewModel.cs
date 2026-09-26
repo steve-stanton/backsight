@@ -170,7 +170,7 @@ public partial class LineExtensionViewModel : DialogViewModel
         }
     }
 
-    protected override bool HandleCloseRequested(DialogResult result)
+    internal override bool HandleCloseRequested(DialogResult result)
     {
         Console.WriteLine("Line extension requesting close with result: " + result);
 
