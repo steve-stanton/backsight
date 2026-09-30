@@ -5,7 +5,7 @@ namespace Backsight.Model.Observations;
 /// An offset with respect to something else. This is the base class for
 /// <see cref="OffsetDistance"/> and <see cref="OffsetPoint"/>.
 /// </summary>
-abstract class Offset : Observation
+public abstract class Offset : Observation
 {
     /// <summary>
     /// Returns the offset distance with respect to a reference direction, in meters

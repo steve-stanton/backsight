@@ -10,7 +10,7 @@ namespace Backsight.Model.Observations;
 /// editing operation (that should be done when(if) the operation is saved, via a call
 /// to <c>AddReferences</c>).
 /// </summary>
-class OffsetPoint : Offset, IFeatureRef
+public class OffsetPoint : Offset, IFeatureRef
 {
     /// <summary>
     /// The point that defines the offset position (the actual distance to it
@@ -32,7 +32,7 @@ class OffsetPoint : Offset, IFeatureRef
     /// Constructor for an offset at the specified point.
     /// </summary>
     /// <param name="point">The offset point</param>
-    internal OffsetPoint(PointFeature point)
+    public OffsetPoint(PointFeature point)
     {
         m_Point = point;
     }

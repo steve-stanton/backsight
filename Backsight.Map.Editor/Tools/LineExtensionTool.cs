@@ -1,5 +1,4 @@
 ﻿using System;
-using Avalonia.Media;
 using Backsight.Environment;
 using Backsight.Geometry;
 using Backsight.Map.Editor.Mapping;
@@ -25,7 +24,7 @@ internal class LineExtensionTool : CommandTool
     internal override bool Run()
     {
         ViewModel.Show(_dialog);
-        return false;
+        return true;
     }
 
     protected override bool Finish()
@@ -181,12 +180,5 @@ internal class LineExtensionTool : CommandTool
         }
 
         return null;
-    }
-    
-    public override void Dispose()
-    {
-        // TODO: Not used?
-        ViewModel.OverlayChildren.Clear();
-        base.Dispose();
     }
 }

@@ -6,7 +6,7 @@ namespace Backsight.Model.Observations;
 /// a pair of points that the direction is parallel to. Parallel directions are
 /// always regarded as FIXED directions.
 /// </summary>
-class ParallelDirection : Direction, IFeatureRef
+public class ParallelDirection : Direction, IFeatureRef
 {
     /// <summary>
     /// The origin of the direction.
@@ -42,7 +42,7 @@ class ParallelDirection : Direction, IFeatureRef
     /// <param name="from">The point the direction is from.</param>
     /// <param name="par1">The first point in the definition of the parallel line.</param>
     /// <param name="par2">The second point defining the parallel line.</param>
-    internal ParallelDirection(PointFeature from, PointFeature par1, PointFeature par2)
+    public ParallelDirection(PointFeature from, PointFeature par1, PointFeature par2)
     {
         m_From = from;
         m_Par1 = par1;
@@ -67,7 +67,7 @@ class ParallelDirection : Direction, IFeatureRef
     /// <summary>
     /// The bearing of this direction.
     /// </summary>
-    internal override IAngle Bearing
+    public override IAngle Bearing
     {
         get
         {

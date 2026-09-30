@@ -479,7 +479,10 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(CanStartSideshot))]
     private void PointSideshot()
     {
-        Console.WriteLine(nameof(PointSideshot));
+        var fromPoint = _selection.SingleOrDefault as Model.PointFeature;
+        Debug.Assert(fromPoint is not null);
+        ClearSelection();
+        StartCommand(new RadialTool(this, fromPoint));
     }
 
     private bool CanStartSideshot => _commandTool is null && _selection.SingleOrDefault is Model.PointFeature;

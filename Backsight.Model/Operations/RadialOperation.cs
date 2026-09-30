@@ -10,7 +10,7 @@ namespace Backsight.Model.Operations;
 /// <remarks>It was originally planned to also provide a RadialStakeout
 /// operation, that would add a whole bunch of sideshots, but there has
 /// been no need for that so far.</remarks>
-class RadialOperation : Operation, IRecallable, IRevisable
+public class RadialOperation : Operation, IRecallable, IRevisable
 {
     // Observations ...
 
@@ -174,10 +174,10 @@ class RadialOperation : Operation, IRecallable, IRevisable
     /// <c>OffsetPoint</c>.</param>
     /// <returns>The position of the sideshot point (null if there is insufficient data
     /// to calculate a position)</returns>
-    internal static IPosition Calculate(Direction dir, Observation len)
+    public static IPosition? Calculate(Direction? dir, Observation? len)
     {
         // Return if there is insufficient data.
-        if (dir == null || len == null)
+        if (dir is null || len is null)
             return null;
 
         // Get the position of the point the sideshot should radiate from.

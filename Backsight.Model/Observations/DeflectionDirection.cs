@@ -2,7 +2,7 @@ namespace Backsight.Model.Observations;
 
 /// <written by="Steve Stanton" on="09-JUN-1999" />
 /// <summary>A deflection angle.</summary>
-class DeflectionDirection : AngleDirection
+public class DeflectionDirection : AngleDirection
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="DeflectionDirection"/> class
@@ -24,7 +24,7 @@ class DeflectionDirection : AngleDirection
     /// station. Positive values indicate a clockwise rotation & negated values for
     /// counter-clockwise.
     /// </param>
-    internal DeflectionDirection(PointFeature backsight, PointFeature occupied, IAngle observation)
+    public DeflectionDirection(PointFeature backsight, PointFeature occupied, IAngle observation)
         : base(backsight, occupied, observation)
     {
     }
@@ -32,7 +32,7 @@ class DeflectionDirection : AngleDirection
     /// <summary>
     /// The angle as a bearing
     /// </summary>
-    internal override IAngle Bearing
+    public override IAngle Bearing
     {
         get
         {

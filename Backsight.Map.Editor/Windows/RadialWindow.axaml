@@ -1,0 +1,139 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:me="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="me:RadialViewModel"
+        mc:Ignorable="d" d:DesignWidth="890" d:DesignHeight="300"
+        Width="890" Height="300"
+        CanResize="False"
+        x:Class="Backsight.Map.Editor.Windows.RadialWindow"
+        Title="Sideshot">
+
+    <Window.Resources>
+        <me:FeatureIdConverter x:Key="FeatureIdConverter"/>
+        
+        <!-- Return false if a string does not start with some prefix -->
+        <me:StringStartsWithConverter x:Key="DoesNotStartWithConverter" ReturnOnMatch="False" />
+    </Window.Resources>
+    
+    <Grid RowDefinitions="Auto Auto" Margin="20" >
+        
+        <Grid Grid.Row="0" ColumnDefinitions="Auto Auto" ColumnSpacing="20">
+            <Grid
+                RowDefinitions="Auto Auto Auto"
+                ColumnDefinitions="70 170 Auto"
+                Margin="10"
+                ColumnSpacing="10"
+                RowSpacing="20">
+
+                <StackPanel Grid.Row="0" Grid.Column="0"  Orientation="Vertical">
+                    <TextBlock Text="Backsight" VerticalAlignment="Center"/>
+                    <TextBlock Text="(optional)" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                    <me:PickButton
+                        BorderBrush="Blue"
+                        BorderThickness="4"
+                        ToolTip.Tip="Pick backsight point from map"
+                        IsEnabled="{Binding IsParallel, Converter={x:Static BoolConverters.Not}}"
+                        Command="{Binding PickBacksightCommand}"/>
+                    <TextBox 
+                        Margin="5 0 0 0"
+                        MinWidth="130"
+                        HorizontalAlignment="Right"
+                        ToolTip.Tip="Use the picker to select a point from the map"
+                        IsReadOnly="True"
+                        Text="{Binding SelectedBacksight, Converter={StaticResource FeatureIdConverter}}"/>
+                </StackPanel>
+                <CheckBox Grid.Row="0" Grid.Column="2" Content="_Use Center of Curve"/>
+                
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Angle" VerticalAlignment="Center"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" Height="32" Orientation="Horizontal">
+                    <me:PickButton
+                        ToolTip.Tip="Pick two points from map to define a parallel direction"
+                        Margin="0 0 5 0"
+                        BorderBrush="DeepPink"
+                        BorderThickness="4"
+                        IsEnabled="{Binding SelectedBacksight, Converter={x:Static ObjectConverters.IsNull}}"
+                        Command="{Binding PickParallelCommand}"/>
+                    <TextBox 
+                        TabIndex="0"
+                        ToolTip.Tip="Type in angle, or pick two points to define a parallel direction"
+                        MinWidth="130"
+                        IsReadOnly="{Binding IsParallel}"
+                        Text="{Binding AngleText}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="2"
+                    Orientation="Vertical"
+                    IsVisible="{Binding IsParallel, Converter={x:Static BoolConverters.Not}}">
+                    <!-- Angles entered with a leading "-" character are always counter-clockwise -->
+                    <RadioButton Content="Clock_wise"
+                                 GroupName="AngleDirection"
+                                 IsEnabled="{Binding AngleText, Converter={StaticResource DoesNotStartWithConverter}, ConverterParameter='-'}"
+                                 IsChecked="{Binding IsClockwise}"/>
+                    <!-- IsChecked is needed below to ensure that the button gets checked when the radio above is disabled -->
+                    <RadioButton Content="_Counter-clockwise"
+                                 GroupName="AngleDirection"
+                                 IsChecked="{Binding IsClockwise, Converter={x:Static BoolConverters.Not}}"/>
+                </StackPanel>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Length"/>
+                <NumericUpDown Grid.Row="2" Grid.Column="1"
+                    AllowSpin="False"
+                    ShowButtonSpinner="False"
+                    Value="{Binding Length}"
+                    InnerRightContent="{Binding Units}"
+                    VerticalContentAlignment="Center"
+                    Minimum="0.0001"/>
+                <Button Grid.Row="2" Grid.Column="2" 
+                    IsTabStop="False"
+                    Content="_Offset ..."
+                    Command="{Binding SetOffsetCommand}"
+                    HorizontalAlignment="Center"/>
+            </Grid>
+
+            <GroupBox Grid.Column="1" Header="New Sideshot Point" Padding="10" Margin="0 0 4 0">
+                <Grid RowDefinitions="Auto Auto" ColumnDefinitions="40 Auto Auto" Margin="10" RowSpacing="20" ColumnSpacing="5">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Type" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                              Width="300"
+                              ItemsSource="{Binding PointTypes}"
+                              SelectedItem="{Binding SelectedPointType}"
+                    />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="ID" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1"
+                        Width="150"
+                        Margin="5 0"
+                        IsEnabled="{Binding AllowIdSelection}"
+                        ItemsSource="{Binding PointIds}"
+                        SelectedItem="{Binding SelectedPointId}"
+                        />
+                    <CheckBox Grid.Row="1" Grid.Column="2"
+                        Content="Add a _Line too"
+                        IsChecked="{Binding WantLine}"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 20 0 0">
+            <Button
+                Content="OK"
+                IsDefault="True"
+                FontWeight="Bold"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Margin="10"
+                Command="{Binding OkCommand}" />
+            <Button
+                Content="Cancel"
+                IsCancel="True"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Margin="10"
+                Command="{Binding CancelCommand}" />
+        </StackPanel>
+    </Grid>
+
+</Window>

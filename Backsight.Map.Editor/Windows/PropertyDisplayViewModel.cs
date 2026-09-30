@@ -20,7 +20,6 @@ public partial class PropertyDisplayViewModel : ViewModelBase
 
     internal void Update(IMapSelection selection)
     {
-        Console.WriteLine("Update view model");
         object? item = selection.Items.SingleOrDefault();
 
         if (item is null)

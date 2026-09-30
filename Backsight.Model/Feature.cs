@@ -115,7 +115,7 @@ public abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IE
         ReadData(editDeserializer, out m_InternalId, out m_What, out m_Id);
         m_References = null;
         m_Flag = 0;
-
+        
         // If a user-defined ID is present, ensure it knows about this feature, and vice versa
         if (m_Id != null)
             m_Id.AddReference(this);
@@ -447,7 +447,7 @@ public abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IE
     /// A string representing the key of this feature. If the feature does not
     /// have an ID, you get a blank string.
     /// </summary>
-    internal string FormattedKey => (m_Id==null ? String.Empty : m_Id.FormattedKey);
+    public string FormattedKey => (m_Id==null ? String.Empty : m_Id.FormattedKey);
 
     /// <summary>
     /// Is this feature inactive? A feature is considered to be inactive if

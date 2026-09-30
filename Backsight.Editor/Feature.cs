@@ -499,7 +499,7 @@ abstract class Feature : ISpatialObject, IPossibleList<Feature>, IFeature, IExpa
     /// A string representing the key of this feature. If the feature does not
     /// have an ID, you get a blank string.
     /// </summary>
-    internal string FormattedKey
+    public string FormattedKey
     {
         get { return (m_Id==null ? String.Empty : m_Id.FormattedKey); }
     }

@@ -290,4 +290,17 @@ class MapCanvas : IDisposable
             SKShaderTileMode.Repeat,
             SKShaderTileMode.Repeat);
     }
+
+    /// <summary>
+    /// The diagonal length of a line that spans the canvas viewport.
+    /// </summary>
+    /// <returns>The length of the diagonal (in ground units).</returns>
+    internal double GetDiagonalLength()
+    {
+        var extent = _viewport.ToExtent();
+        var wd = extent.Width;
+        var ht = extent.Height;
+        return Math.Sqrt(wd * wd + ht * ht);
+    }
+
 }

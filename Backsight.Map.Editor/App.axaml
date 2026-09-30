@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Backsight.Map.Editor.App"
              xmlns:local="using:Backsight.Map.Editor"
+             xmlns:windows="using:Backsight.Map.Editor.Windows"
              RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
@@ -24,6 +25,43 @@
         <Style Selector="TabItem">
             <Setter Property="FontSize" Value="12"/>
         </Style>
+        
+        <!-- 1. Suppress default bottom error messages -->
+        <Style Selector="DataValidationErrors">
+            <Setter Property="Template">
+                <ControlTemplate TargetType="DataValidationErrors">
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Content="{TemplateBinding Content}"
+                                      Padding="{TemplateBinding Padding}" />
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <!-- 2. Show the error icon inside all TextBox controls with formatted tooltip -->
+        <Style Selector="TextBox">
+            <Setter Property="InnerRightContent">
+                <Template>
+                    <PathIcon
+                        Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                        Foreground="Red"
+                        Width="16"
+                        Height="16"
+                        Margin="0,0,6,0"
+                        IsHitTestVisible="True"
+                        IsVisible="{Binding (DataValidationErrors.HasErrors),
+                                      RelativeSource={RelativeSource AncestorType=TextBox}}"
+                        ToolTip.Tip="{Binding (DataValidationErrors.Errors),
+                                        RelativeSource={RelativeSource AncestorType=TextBox},
+                                        Converter={x:Static windows:ErrorMessageConverter.Instance}}" />
+                </Template>
+            </Setter>
+        </Style>
+        
     </Application.Styles>
              
 </Application>

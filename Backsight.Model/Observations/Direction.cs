@@ -7,7 +7,7 @@ namespace Backsight.Model.Observations;
 /// <summary>
 /// Some sort of direction observation.
 /// </summary>
-abstract class Direction : Observation
+public abstract class Direction : Observation
 {
 	/// <summary>
 	/// Offset for the direction (if any)
@@ -36,7 +36,7 @@ abstract class Direction : Observation
 	/// <summary>
 	/// The observed direction, as a bearing.
 	/// </summary>
-	internal abstract IAngle Bearing { get; }
+	public abstract IAngle Bearing { get; }
 
 	/// <summary>
 	/// The point the direction was measured from (also see the <c>StartPosition</c> property).
@@ -122,7 +122,7 @@ abstract class Direction : Observation
 	/// The position at the start of this direction (which may be offset with
 	/// respect to the position obtained via the <c>From</c> property).
 	/// </summary>
-	internal IPosition StartPosition
+	public IPosition StartPosition
 	{
 		get
 		{

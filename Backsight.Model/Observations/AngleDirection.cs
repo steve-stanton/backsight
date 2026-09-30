@@ -5,7 +5,7 @@ namespace Backsight.Model.Observations;
 /// An "angle" is an angle taken from a point, with respect to a backsight
 /// that provides the reference orientation.
 /// </summary>
-class AngleDirection : Direction, IFeatureRef
+public class AngleDirection : Direction, IFeatureRef
 {
     /// <summary>
     /// The angle in radians. A negated value indicates an anticlockwise angle.
@@ -43,7 +43,7 @@ class AngleDirection : Direction, IFeatureRef
     /// <param name="observation">The angle to an observed point, measured with respect
     /// to the reference orientation defined by the backsight. Positive values indicate
     /// a clockwise rotation & negated values for counter-clockwise.</param>
-    internal AngleDirection(PointFeature backsight, PointFeature occupied, IAngle observation)
+    public AngleDirection(PointFeature backsight, PointFeature occupied, IAngle observation)
     {
         m_Backsight = backsight;
         m_From = occupied;
@@ -55,7 +55,7 @@ class AngleDirection : Direction, IFeatureRef
     /// <summary>
     /// The angle as a bearing
     /// </summary>
-    internal override IAngle Bearing
+    public override IAngle Bearing
     {
         get
         {

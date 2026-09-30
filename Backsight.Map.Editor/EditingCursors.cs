@@ -12,6 +12,7 @@ internal static class EditingCursors
     internal static Cursor HandCursor => CreateCursor("ClosedHand.png", 7, 5);
     internal static Cursor ZoomRectangleCursor => CreateCursor("ZoomRectangle.png", 26, 26);
     internal static Cursor PenCursor => CreateCursor("Pen.png", 0, 75);
+    internal static Cursor PickCursor => CreateCursor("RightTopArrow.png", 50, 10);
 
     private static Cursor CreateCursor(string assetName, int x, int y)
     {

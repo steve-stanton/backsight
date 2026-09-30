@@ -4,7 +4,7 @@ namespace Backsight.Model.Observations;
 /// <summary>
 /// A bearing is an angle taken from a point with respect to grid north.
 /// </summary>
-class BearingDirection : Direction, IFeatureRef
+public class BearingDirection : Direction, IFeatureRef
 {
     /// <summary>
     /// Angle from grid north, in range [0,2*PI].
@@ -35,14 +35,14 @@ class BearingDirection : Direction, IFeatureRef
     /// <param name="observation">The observed bearing. If this is outwith the range
     /// [0,2PI), the value stored will be fixed so that it is in the expected range.
     /// </param>
-    internal BearingDirection(PointFeature from, IAngle observation)
+    public BearingDirection(PointFeature from, IAngle observation)
     {
         double a = observation.Radians;
         m_Observation = new RadianValue(Direction.Normalize(a));
         m_From = from;
     }
 
-    internal override IAngle Bearing => m_Observation;
+    public override IAngle Bearing => m_Observation;
 
     internal override double ObservationInRadians => m_Observation.Radians;
 

@@ -91,5 +91,8 @@
       <Compile Update="Windows\LineExtensionViewModel.cs">
         <DependentUpon>LineExtensionWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\RadialViewModel.cs">
+        <DependentUpon>RadialWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

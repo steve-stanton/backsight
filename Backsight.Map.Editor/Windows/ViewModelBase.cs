@@ -2,6 +2,6 @@
 
 namespace Backsight.Map.Editor.Windows;
 
-public abstract class ViewModelBase : ObservableObject
+public abstract class ViewModelBase : ObservableValidator // ObservableObject
 {
 }
