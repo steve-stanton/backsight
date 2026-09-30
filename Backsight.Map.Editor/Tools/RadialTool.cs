@@ -59,9 +59,11 @@ internal class RadialTool : CommandTool
         if (model.PickingParallel is not null)
             canvas.DrawPoint(model.PickingParallel, pointStyle with { Color = SKColors.DeepPink });
 
+        // Length defined by offset point
+        var lengthOffset = model.LengthOffset ?? model.PickingOffset;
+        if (lengthOffset is not null)
+            canvas.DrawPoint(lengthOffset, pointStyle with { Color = SKColors.Green });
         /*
-        if (m_LengthOffset!=null)
-            DrawIfDefined(m_LengthOffset.Point, view, style, Color.Green);
 
         if (m_Offset!=null)
             DrawIfDefined(m_Offset.Point, view, style, Color.Gray);

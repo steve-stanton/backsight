@@ -222,6 +222,16 @@ public class DistanceUnit : IEquatable<DistanceUnit>
         return s;
     }
 
+    /// <summary>
+    /// The number of decimal digits to display for a distance of this type.
+    /// </summary>
+    public int DisplayPrecision => m_UnitCode switch
+    {
+        DistanceUnitType.Feet => 2,
+        DistanceUnitType.Chains => 4,
+        _ => 3
+    };
+    
     public override string ToString()
     {
         return m_UnitName;

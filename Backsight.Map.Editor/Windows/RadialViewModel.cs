@@ -19,7 +19,8 @@ public partial class RadialViewModel : DialogViewModel
     {
         None,
         Backsight,
-        Angle
+        Angle,
+        Offset,
     }
 
     private readonly RadialTool _tool;
@@ -30,9 +31,12 @@ public partial class RadialViewModel : DialogViewModel
 
     /// <summary>
     /// A point that defines the distance to the sideshot point.
-    /// If not null, the m_Length value should be undefined.
     /// </summary>
-    private PointFeature? _offsetPoint;
+    /// <remarks>
+    /// When defined, the _length property should also be defined to hold the distance
+    /// between the from-point and the offset point.
+    /// </remarks>
+    private PointFeature? _lengthOffset;
 
     /// <summary>
     /// True if a line should be added too.
@@ -173,6 +177,12 @@ public partial class RadialViewModel : DialogViewModel
     
     partial void OnLengthChanged(decimal? value)
     {
+        // The displayed length may be changed while picking an offset point. But if the
+        // user has picked, they might go on to change things - in that case, the offset
+        // point is no longer valid
+        if (_activePickTarget != PickTarget.Offset)
+            _lengthOffset = null;
+        
         _tool.RefreshMapDisplay();
     }
 
@@ -198,92 +208,11 @@ public partial class RadialViewModel : DialogViewModel
     {
         _tool.RefreshMapDisplay();
     }
-
-    private void OnChanged()
-    {
-/*
-        Direction dir=null;	            // Constructed direction.
-        AngleDirection angle;			// Angle from a backsight.
-        DeflectionDirection deflect;	// Deflection angle.
-        BearingDirection bearing;		// Bearing from north.
-        ParallelDirection par;			// Parallel to 2 points.
-        double srad;			        // Signed radian value.
-
-        // Apply sign to any angle we have.
-        if (m_IsClockwise)
-            srad = m_Radians;
-        else
-            srad = -m_Radians;
-
-        if (m_Backsight!=null)
-        {
-            // If we have a backsight, we could either have a regular
-            // angle or a deflection. To construct either, we need a
-            // from-point as well.
-
-            // Note that an angle of zero (passing through the backsight
-            // or foresight) is fine.
-
-            if (m_From!=null)
-            {
-                IAngle obsv = new RadianValue(srad);
-
-                if (m_IsDeflection)
-                {
-                    deflect = new DeflectionDirection(m_Backsight, m_From, obsv);
-                    dir = deflect;
-                }
-                else
-                {
-                    angle = new AngleDirection(m_Backsight, m_From, obsv);
-                    dir = angle;
-                }
-            }
-        }
-        else if (m_From!=null)
-        {
-            // No backsight, so we could have either a bearing,
-            // or a direction defined using 2 parallel points.
-            // Since a bearing of zero is quite valid, we check
-            // the dialog field to see if this is an entered value,
-            // or just the initial value.
-
-            if (m_Par1!=null && m_Par2!=null)
-            {
-                par = new ParallelDirection(m_From, m_Par1, m_Par2);
-                dir = par;
-            }
-            else
-            {
-                if (m_Radians>Constants.TINY || angleTextBox.Text.Trim().Length==0)
-                {
-                    bearing = new BearingDirection(m_From, new RadianValue(srad));
-                    dir = bearing;
-                }
-            }
-        }
-
-        // If we have formed a direction, apply any offset.
-        if (dir!=null)
-            dir.Offset = m_Offset;
-
-        // Try to calulate the position of the sideshot.
-        IPosition to = RadialOperation.Calculate(dir, this.Length);
-
-        // Return if we calculated a position that is identical to the old one.
-        //if (to!=null && to.IsAt(m_To, Double.Epsilon))
-        //    return;
-
-        m_Dir = dir;
-        m_To = to;
-
-        m_Cmd.ErasePainting();
- */        
-    }
     
     internal PointFeature From => _fromPoint;
     internal PointFeature? Parallel1 => _par1;
     internal PointFeature? Parallel2 => _par2;
+    internal PointFeature? LengthOffset => _lengthOffset;
     
     protected override bool CanExecuteOk()
     {
@@ -350,9 +279,19 @@ public partial class RadialViewModel : DialogViewModel
         AngleText = "...";
         IsParallel = true;
     }
-    
+
+    [RelayCommand]
+    private void PickOffset()
+    {
+        _activePickTarget = PickTarget.Offset;
+        _lengthOffset = null;
+        _tool.ViewModel.MapCursor = EditingCursors.PickCursor;
+        ShowLengthOffset(null);
+    }
+        
     internal PointFeature? PickingBacksight => _activePickTarget == PickTarget.Backsight ? _pickingPoint : null;
     internal PointFeature? PickingParallel => _activePickTarget == PickTarget.Angle ? _pickingPoint : null;
+    internal PointFeature? PickingOffset => _activePickTarget == PickTarget.Offset ? _pickingPoint : null;
     
     internal bool PickPoint(IPosition p)
     {
@@ -363,6 +302,20 @@ public partial class RadialViewModel : DialogViewModel
             _activePickTarget = PickTarget.None;
             _pickingPoint = null;
             _tool.ViewModel.MapCursor = Cursor.Default;
+            return true;
+        }
+
+        if (_activePickTarget == PickTarget.Offset)
+        {
+            // Adjust the displayed length while the pick target remains active (otherwise _lengthOffset
+            // will get cleared via OnLengthChanged)
+            var pt = QueryPoint(p);
+            ShowLengthOffset(pt);
+            
+            _activePickTarget = PickTarget.None;
+            _pickingPoint = null;
+            _tool.ViewModel.MapCursor = Cursor.Default;
+            _lengthOffset = pt;
             return true;
         }
         
@@ -407,6 +360,25 @@ public partial class RadialViewModel : DialogViewModel
         return false;
     }
 
+    private void ShowLengthOffset(PointFeature? offsetPoint)
+    {
+        if (offsetPoint is null)
+        {
+            Length = null;
+        }
+        else
+        {
+            var len = BasicGeom.Distance(_fromPoint, offsetPoint);
+            
+            // The displayed length needs to be in the current data entry units, and with
+            // the default number of decimal places for that unit type.
+            var entryUnit = DistanceUnit.GetUnit(_tool.Store.Settings.EntryUnit);
+            len = entryUnit.FromMetric(len);
+ 
+            Length = Decimal.Round((decimal)len, entryUnit.DisplayPrecision);
+        }
+    }
+
     private PointFeature? QueryPoint(IPosition p)
     {
         ILength size = new Length(_tool.Store.Settings.PointHeight * 0.5);
@@ -427,6 +399,9 @@ public partial class RadialViewModel : DialogViewModel
         {
             _pickingPoint = pt;
             _tool.ViewModel.RefreshMapDisplay();
+
+            if (_activePickTarget == PickTarget.Offset)
+                ShowLengthOffset(pt);
         }
     }
 
@@ -436,8 +411,8 @@ public partial class RadialViewModel : DialogViewModel
     /// <returns>The observed distance to the sideshot point (could be an offset point).</returns>
     internal Observation? GetLengthObservation()
     {
-        if (_offsetPoint is not null)
-            return new OffsetPoint(_offsetPoint);
+        if (_lengthOffset is not null)
+            return new OffsetPoint(_lengthOffset);
         
         if (Length is null)
             return null;

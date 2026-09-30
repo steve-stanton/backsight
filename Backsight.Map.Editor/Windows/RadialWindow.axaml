@@ -3,8 +3,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:me="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="me:RadialViewModel"
-        mc:Ignorable="d" d:DesignWidth="890" d:DesignHeight="300"
-        Width="890" Height="300"
+        mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="300"
+        Width="920" Height="300"
         CanResize="False"
         x:Class="Backsight.Map.Editor.Windows.RadialWindow"
         Title="Sideshot">
@@ -21,7 +21,7 @@
         <Grid Grid.Row="0" ColumnDefinitions="Auto Auto" ColumnSpacing="20">
             <Grid
                 RowDefinitions="Auto Auto Auto"
-                ColumnDefinitions="70 170 Auto"
+                ColumnDefinitions="70 40 130 Auto"
                 Margin="10"
                 ColumnSpacing="10"
                 RowSpacing="20">
@@ -30,40 +30,39 @@
                     <TextBlock Text="Backsight" VerticalAlignment="Center"/>
                     <TextBlock Text="(optional)" VerticalAlignment="Center"/>
                 </StackPanel>
-                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
-                    <me:PickButton
-                        BorderBrush="Blue"
-                        BorderThickness="4"
-                        ToolTip.Tip="Pick backsight point from map"
-                        IsEnabled="{Binding IsParallel, Converter={x:Static BoolConverters.Not}}"
-                        Command="{Binding PickBacksightCommand}"/>
-                    <TextBox 
-                        Margin="5 0 0 0"
-                        MinWidth="130"
-                        HorizontalAlignment="Right"
-                        ToolTip.Tip="Use the picker to select a point from the map"
-                        IsReadOnly="True"
-                        Text="{Binding SelectedBacksight, Converter={StaticResource FeatureIdConverter}}"/>
-                </StackPanel>
-                <CheckBox Grid.Row="0" Grid.Column="2" Content="_Use Center of Curve"/>
+                <me:PickButton Grid.Row="0" Grid.Column="1"
+                               Height="32"
+                    BorderBrush="Blue"
+                    BorderThickness="4"
+                    ToolTip.Tip="Pick backsight point from map"
+                    IsEnabled="{Binding IsParallel, Converter={x:Static BoolConverters.Not}}"
+                    Command="{Binding PickBacksightCommand}"/>
+                <TextBox Grid.Row="0" Grid.Column="2"
+                         Height="32"
+                    Margin="5 0 0 0"
+                    MinWidth="130"
+                    HorizontalAlignment="Right"
+                    ToolTip.Tip="Use the picker to select a point from the map"
+                    IsReadOnly="True"
+                    Text="{Binding SelectedBacksight, Converter={StaticResource FeatureIdConverter}}"/>
+                <CheckBox Grid.Row="0" Grid.Column="3" Content="_Use Center of Curve"/>
                 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Angle" VerticalAlignment="Center"/>
-                <StackPanel Grid.Row="1" Grid.Column="1" Height="32" Orientation="Horizontal">
-                    <me:PickButton
-                        ToolTip.Tip="Pick two points from map to define a parallel direction"
-                        Margin="0 0 5 0"
-                        BorderBrush="DeepPink"
-                        BorderThickness="4"
-                        IsEnabled="{Binding SelectedBacksight, Converter={x:Static ObjectConverters.IsNull}}"
-                        Command="{Binding PickParallelCommand}"/>
-                    <TextBox 
-                        TabIndex="0"
-                        ToolTip.Tip="Type in angle, or pick two points to define a parallel direction"
-                        MinWidth="130"
-                        IsReadOnly="{Binding IsParallel}"
-                        Text="{Binding AngleText}"/>
-                </StackPanel>
-                <StackPanel Grid.Row="1" Grid.Column="2"
+                <me:PickButton Grid.Row="1" Grid.Column="1" 
+                    ToolTip.Tip="Pick two points from map to define a parallel direction"
+                    Height="32"
+                    BorderBrush="DeepPink"
+                    BorderThickness="4"
+                    IsEnabled="{Binding SelectedBacksight, Converter={x:Static ObjectConverters.IsNull}}"
+                    Command="{Binding PickParallelCommand}"/>
+                <TextBox Grid.Row="1" Grid.Column="2"
+                    TabIndex="0"
+                    Height="32"
+                    ToolTip.Tip="Type in angle, or pick two points to define a parallel direction"
+                    MinWidth="130"
+                    IsReadOnly="{Binding IsParallel}"
+                    Text="{Binding AngleText}"/>
+                <StackPanel Grid.Row="1" Grid.Column="3"
                     Orientation="Vertical"
                     IsVisible="{Binding IsParallel, Converter={x:Static BoolConverters.Not}}">
                     <!-- Angles entered with a leading "-" character are always counter-clockwise -->
@@ -77,15 +76,21 @@
                                  IsChecked="{Binding IsClockwise, Converter={x:Static BoolConverters.Not}}"/>
                 </StackPanel>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Length"/>
-                <NumericUpDown Grid.Row="2" Grid.Column="1"
-                    AllowSpin="False"
-                    ShowButtonSpinner="False"
-                    Value="{Binding Length}"
-                    InnerRightContent="{Binding Units}"
-                    VerticalContentAlignment="Center"
-                    Minimum="0.0001"/>
-                <Button Grid.Row="2" Grid.Column="2" 
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Length" VerticalAlignment="Center"/>
+                <me:PickButton Grid.Row="2" Grid.Column="1"
+                               Height="32"
+                               BorderBrush="Green"
+                               BorderThickness="4"
+                               ToolTip.Tip="Pick offset point from map"
+                               Command="{Binding PickOffsetCommand}"/>
+                <NumericUpDown Grid.Row="2" Grid.Column="2"
+                               AllowSpin="False"
+                               ShowButtonSpinner="False"
+                               Value="{Binding Length}"
+                               InnerRightContent="{Binding Units}"
+                               VerticalContentAlignment="Center"
+                               Minimum="0.0001"/>
+                <Button Grid.Row="2" Grid.Column="3" 
                     IsTabStop="False"
                     Content="_Offset ..."
                     Command="{Binding SetOffsetCommand}"
