@@ -43,7 +43,7 @@ public class RadialOperation : Operation, IRecallable, IRevisable
     /// <param name="dir">The direction (could contain an offset).</param>
     /// <param name="length">The length of the sideshot arm (either a <see cref="Distance"/> or
     /// an <see cref="OffsetPoint"/>).</param>
-    internal RadialOperation(Direction dir, Observation length)
+    public RadialOperation(Direction dir, Observation length)
         : base(dir.From.MapStore)
     {
         m_Direction = dir;
@@ -112,22 +112,17 @@ public class RadialOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// Executes this operation.
     /// </summary>
-    /// <param name="pointId"></param>
-    /// <param name="lineType"></param>
-    internal void Execute(IdHandle pointId, IEntity lineType)
+    /// <param name="pointId">The ID for the extension point.</param>
+    /// <param name="pointType">The entity type for the extension point.</param>
+    /// <param name="lineType">The entity type for the extension line (null for no line).</param>
+    public void Execute(IdHandle pointId, IEntity pointType, IEntity? lineType)
     {
-        // Calculate the position of the sideshot point.
-        IPosition to = Calculate(m_Direction, m_Length);
-        if (to==null)
-            throw new Exception("Cannot calculate position of sideshot point.");
-
         FeatureFactory ff = new FeatureFactory(this);
-
         FeatureId? fid = pointId.CreateId();
-        IFeature x = new FeatureStub(this, pointId.Entity, fid);
+        IFeature x = new FeatureStub(this, pointType, fid);
         ff.AddFeatureDescription(DataField.To, x);
 
-        if (lineType != null)
+        if (lineType is not null)
         {
             IFeature f = new FeatureStub(this, lineType, null);
             ff.AddFeatureDescription(DataField.Line, f);
@@ -169,17 +164,12 @@ public class RadialOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// Calculates the position of the sideshot point.
     /// </summary>
-    /// <param name="dir">The direction observation (if any).</param>
+    /// <param name="dir">The direction observation.</param>
     /// <param name="len">The length observation (if any). Could be a <c>Distance</c> or an
     /// <c>OffsetPoint</c>.</param>
-    /// <returns>The position of the sideshot point (null if there is insufficient data
-    /// to calculate a position)</returns>
-    public static IPosition? Calculate(Direction? dir, Observation? len)
+    /// <returns>The position of the sideshot point.</returns>
+    public static IPosition Calculate(Direction dir, Observation len)
     {
-        // Return if there is insufficient data.
-        if (dir is null || len is null)
-            return null;
-
         // Get the position of the point the sideshot should radiate from.
         PointFeature from = dir.From;
 

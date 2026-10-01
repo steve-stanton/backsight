@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using Backsight.Environment;
 using Backsight.Map.Editor.Mapping;
+using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.Windows;
 using Backsight.Model;
 using Backsight.Model.Observations;
@@ -28,8 +30,68 @@ internal class RadialTool : CommandTool
 
     protected override bool Finish()
     {
-        Console.WriteLine("finish");
-        return true;
+/*
+        // If we are doing an update, remember the changes
+        UpdateUI? up = this.Update;
+
+        if (up is not null)
+        {
+            RadialOperation pop = (up.GetOp() as RadialOperation);
+            if (pop==null)
+            {
+                MessageBox.Show("RadialUI.DialFinish - Unexpected edit type.");
+                return false;
+            }
+
+            // Get info from the dialog.
+            Direction dir = m_Dialog.Direction;
+            Observation len = m_Dialog.Length;
+
+            // The direction and length must both be defined.
+            if (dir==null || len==null)
+            {
+                MessageBox.Show("Missing parameters for sideshot update.");
+                return false;
+            }
+
+            // Remember the changes as part of the UI object (the original edit remains
+            // unchanged for now)
+            UpdateItemCollection changes = pop.GetUpdateItems(dir, len);
+            if (!up.AddUpdate(pop, changes))
+                return false;
+        }
+        else
+        {
+        */
+
+        var model = _dialog.ViewModel;
+        var dir = GetDirection();
+        var len = model.GetLengthObservation();
+
+        if (dir is null || len is null)
+            return false;
+        
+        var op = new RadialOperation(dir, len);
+
+        IEntity? lineType = model.WantLine ? Store.DefaultLineType : null;
+        IEntity pointType = model.SelectedPointType;
+        var idh = new IdHandle(WorkingSession);
+        
+        try
+        {
+            DisplayId? id = model.SelectedPointId;
+            if (id is not null)
+                idh.ReserveId(id.Packet, pointType, id.RawId);
+                
+            op.Execute(idh, pointType, lineType);
+        }
+        catch
+        {
+            idh.DiscardReservedId();
+            throw;
+        }
+  
+        return base.Finish();
     }
 
     internal override void Render(MapCanvas canvas)
@@ -88,8 +150,7 @@ internal class RadialTool : CommandTool
             }
             else
             {
-                IPosition? to = RadialOperation.Calculate(dir, len);
-                Debug.Assert(to is not null);
+                IPosition to = RadialOperation.Calculate(dir, len);
                 canvas.DrawLine(from, to, lineStyle with { Dashed = !model.WantLine });
                 canvas.DrawPoint(to, pointStyle with { Color = SKColors.Magenta });
             }
@@ -128,18 +189,19 @@ internal class RadialTool : CommandTool
             angleInRadians = -angleInRadians;
 
         var angle = new RadianValue(angleInRadians);
+        var backsight = model.SelectedBacksight;
         
-        if (model.SelectedBacksight is null)
+        if (backsight is null)
         {
-            // No backsight, so we have a bearing,
+            // No backsight, so we have a bearing
             return new BearingDirection(model.From, angle);
         }
         
         // It could be either have a regular angle or a deflection.
         if (IsDeflectionAngle())
-            return new DeflectionDirection(model.SelectedBacksight, model.From, angle);
+            return new DeflectionDirection(backsight, model.From, angle);
 
-        return new AngleDirection(model.SelectedBacksight, model.From, angle);
+        return new AngleDirection(backsight, model.From, angle);
     }
     
     private bool IsDeflectionAngle()
