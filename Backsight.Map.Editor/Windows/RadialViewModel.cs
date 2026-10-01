@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Avalonia.Input;
@@ -9,7 +10,6 @@ using Backsight.Model;
 using Backsight.Model.Observations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using NetTopologySuite.Operation.Overlay.Validate;
 
 namespace Backsight.Map.Editor.Windows;
 
@@ -87,6 +87,18 @@ public partial class RadialViewModel : DialogViewModel
     /// The point defining the second point of a parallel direction. 
     /// </summary>
     private PointFeature? _par2;
+
+    /// <summary>
+    /// Any circles incident on the from point.
+    /// </summary>
+    private readonly List<Circle> _circles;
+    
+    internal bool HasCircles => _circles.Count > 0;
+
+    /// <summary>
+    /// Has the backsight been defined as a circle center point?
+    /// </summary>
+    [ObservableProperty] private bool _usingArcCenter = false;
     
     /// <summary>
     /// The units to display for entry of the extension length.
@@ -127,6 +139,10 @@ public partial class RadialViewModel : DialogViewModel
         
         // If we are auto-numbering, disable the combo.
         AllowIdSelection = !tool.Store.Settings.AutoNumber;
+
+        // Sometimes the BC or EC is apparently not EXACT when the data
+        // arrives from a foreign source, so allow 1mm on the ground.
+        _circles = tool.Store.Model.FindCircles(_fromPoint, new Length(0.001));
     }
 
     // TODO: Exact copy of what's in LineExtensionViewModel => make this an extension method of the store
@@ -258,14 +274,7 @@ public partial class RadialViewModel : DialogViewModel
     [RelayCommand]
     private void PickBacksight()
     {
-        // If a backsight was already picked, ensure it gets re-rendered in its normal color
-        // (not to be confused with a different point the user is hovering over)
-        if (SelectedBacksight is not null)
-        {
-            SelectedBacksight = null;
-            _tool.ViewModel.RefreshMapDisplay();
-        }
-
+        ClearBacksight();
         _activePickTarget = PickTarget.Backsight;
         _tool.ViewModel.MapCursor = EditingCursors.PickCursor;
     }
@@ -277,7 +286,25 @@ public partial class RadialViewModel : DialogViewModel
         _par1 = _par2 = null;
         _tool.ViewModel.MapCursor = EditingCursors.PickCursor;
         AngleText = "...";
+        
+        ClearBacksight();
         IsParallel = true;
+    }
+
+    /// <summary>
+    /// Clears a previously selected backsight, ensuring that the map display
+    /// gets refreshed to redraw it in its normal color.
+    /// </summary>
+    private void ClearBacksight()
+    {
+        if (SelectedBacksight is not null)
+        {
+            // If the user previously said the backsight should be a circle center point, clear it now
+            UsingArcCenter = false;
+            
+            SelectedBacksight = null;
+            _tool.ViewModel.RefreshMapDisplay();
+        }
     }
 
     [RelayCommand]
@@ -293,37 +320,44 @@ public partial class RadialViewModel : DialogViewModel
     internal PointFeature? PickingParallel => _activePickTarget == PickTarget.Angle ? _pickingPoint : null;
     internal PointFeature? PickingOffset => _activePickTarget == PickTarget.Offset ? _pickingPoint : null;
     
+    /// <summary>
+    /// Attempts to pick a point from the map.
+    /// </summary>
+    /// <param name="p">The selected map position.</param>
+    /// <returns>True if a point was selected.</returns>
     internal bool PickPoint(IPosition p)
     {
+        if (_activePickTarget == PickTarget.None)
+            return false;
+        
+        var pt = QueryPoint(p);
+        
         if (_activePickTarget == PickTarget.Backsight)
         {
-            // Cancel the pick if the user clicked in open space
-            SelectedBacksight = QueryPoint(p);
-            _activePickTarget = PickTarget.None;
-            _pickingPoint = null;
-            _tool.ViewModel.MapCursor = Cursor.Default;
-            return true;
+            SelectedBacksight = pt;
+            StopPicking();
         }
-
-        if (_activePickTarget == PickTarget.Offset)
+        else if (_activePickTarget == PickTarget.Offset)
         {
             // Adjust the displayed length while the pick target remains active (otherwise _lengthOffset
             // will get cleared via OnLengthChanged)
-            var pt = QueryPoint(p);
             ShowLengthOffset(pt);
-            
-            _activePickTarget = PickTarget.None;
-            _pickingPoint = null;
-            _tool.ViewModel.MapCursor = Cursor.Default;
+            StopPicking();
             _lengthOffset = pt;
-            return true;
         }
-        
-        if (_activePickTarget == PickTarget.Angle)
+        else if (_activePickTarget == PickTarget.Angle)
         {
-            var pt = QueryPoint(p);
+            if (pt is null)
+            {
+                // Ensure the first parallel point gets cleared when the second click was in open space (the
+                // 2nd point can't be defined - otherwise the pick operation should have already finished)
+                _par1 = null;
+                Debug.Assert(_par2 is null);
 
-            if (pt is not null)
+                IsParallel = false;
+                AngleText = null;
+            }
+            else
             {
                 if (_par1 is null)
                     _par1 = pt;
@@ -341,23 +375,22 @@ public partial class RadialViewModel : DialogViewModel
                 }
             }
 
-            // We're done if the user clicked in open space, or two points have now been picked
-            if (pt is null || (_par1 is not null && _par2 is not null))
-            {
-                _activePickTarget = PickTarget.None;
-                _tool.ViewModel.MapCursor = Cursor.Default;
-
-                if (pt is null)
-                {
-                    IsParallel = false;
-                    AngleText = null;
-                }
-            }
-
-            return true;
+            // We're done if two points have now been picked
+            if (_par1 is not null && _par2 is not null)
+                StopPicking();
         }
 
-        return false;
+        return pt is not null;
+    }
+
+    /// <summary>
+    /// Ensures that a request to pick a point from the map has been stopped.
+    /// </summary>
+    private void StopPicking()
+    {
+        _activePickTarget = PickTarget.None;
+        _pickingPoint = null;
+        _tool.ViewModel.MapCursor = Cursor.Default;
     }
 
     private void ShowLengthOffset(PointFeature? offsetPoint)
@@ -368,7 +401,12 @@ public partial class RadialViewModel : DialogViewModel
         }
         else
         {
+            // Get the length on the mapping place
             var len = BasicGeom.Distance(_fromPoint, offsetPoint);
+            
+            // Express as a distance on the ground
+            var scaleFactor = _fromPoint.SpatialSystem.GetLineScaleFactor(_fromPoint, offsetPoint);
+            len /= scaleFactor;
             
             // The displayed length needs to be in the current data entry units, and with
             // the default number of decimal places for that unit type.
@@ -420,5 +458,39 @@ public partial class RadialViewModel : DialogViewModel
         var len = Decimal.ToDouble(Length.Value);
         var entryUnit = _tool.Store.Settings.EntryUnit;
         return new Distance(len, DistanceUnit.GetUnit(entryUnit));
+    }
+
+    [RelayCommand]
+    private void UseArcCenter()
+    {
+        // The option to use arc center should have been hidden when no circles in sight
+        if (_circles.Count == 0)
+            return;
+
+        // If the user has launched the backsight picker, clear it now (the click to use
+        // the arc center takes priority). Also stop if the parallel picker is ongoing (since
+        // backsights are n/a when the angle is defined as a parallel)
+        if (_activePickTarget is PickTarget.Backsight or PickTarget.Angle)
+        {
+            if (_activePickTarget == PickTarget.Angle)
+                _par1 = null;
+            
+            StopPicking();
+        }
+     
+        if (UsingArcCenter)
+        {
+            if (_circles.Count == 1)
+                SelectedBacksight = _circles[0].Center as PointFeature;
+            else
+                Console.WriteLine("TODO: Handle more than 1 circle");
+            
+            // Ensure the newly assigned backsight is visible on the map
+            _tool.ViewModel.RefreshMapDisplay();
+        }
+        else
+        {
+            ClearBacksight();
+        }
     }
 }

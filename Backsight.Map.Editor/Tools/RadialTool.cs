@@ -5,7 +5,6 @@ using Backsight.Map.Editor.Windows;
 using Backsight.Model;
 using Backsight.Model.Observations;
 using Backsight.Model.Operations;
-using HarfBuzzSharp;
 using SkiaSharp;
 using Direction = Backsight.Model.Observations.Direction;
 
@@ -62,7 +61,7 @@ internal class RadialTool : CommandTool
         // Length defined by offset point
         var lengthOffset = model.LengthOffset ?? model.PickingOffset;
         if (lengthOffset is not null)
-            canvas.DrawPoint(lengthOffset, pointStyle with { Color = SKColors.Green });
+            canvas.DrawPoint(lengthOffset, pointStyle with { Color = SKColors.LightGreen });
         /*
 
         if (m_Offset!=null)

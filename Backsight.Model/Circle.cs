@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// The definition of a circle
 /// </summary>
 /// <seealso cref="Backsight.Geometry.CircleGeometry"/>
-class Circle : IMapObject, ICircleGeometry, IFeatureDependent
+public class Circle : IMapObject, ICircleGeometry, IFeatureDependent
 {
     /// <summary>
     /// The radius of the circle, in meters

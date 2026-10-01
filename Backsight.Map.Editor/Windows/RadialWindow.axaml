@@ -21,7 +21,7 @@
         <Grid Grid.Row="0" ColumnDefinitions="Auto Auto" ColumnSpacing="20">
             <Grid
                 RowDefinitions="Auto Auto Auto"
-                ColumnDefinitions="70 40 130 Auto"
+                ColumnDefinitions="70 Auto 130 Auto"
                 Margin="10"
                 ColumnSpacing="10"
                 RowSpacing="20">
@@ -38,14 +38,16 @@
                     IsEnabled="{Binding IsParallel, Converter={x:Static BoolConverters.Not}}"
                     Command="{Binding PickBacksightCommand}"/>
                 <TextBox Grid.Row="0" Grid.Column="2"
-                         Height="32"
-                    Margin="5 0 0 0"
-                    MinWidth="130"
-                    HorizontalAlignment="Right"
+                    Height="32"
                     ToolTip.Tip="Use the picker to select a point from the map"
                     IsReadOnly="True"
                     Text="{Binding SelectedBacksight, Converter={StaticResource FeatureIdConverter}}"/>
-                <CheckBox Grid.Row="0" Grid.Column="3" Content="_Use Center of Curve"/>
+                <CheckBox Grid.Row="0" Grid.Column="3"
+                    Content="_Use Arc Center Point"
+                    IsChecked="{Binding UsingArcCenter}"
+                    IsVisible="{Binding HasCircles}"
+                    IsEnabled="{Binding IsParallel, Converter={x:Static BoolConverters.Not}}"
+                    Command="{Binding UseArcCenterCommand}"/>
                 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Angle" VerticalAlignment="Center"/>
                 <me:PickButton Grid.Row="1" Grid.Column="1" 
@@ -59,7 +61,6 @@
                     TabIndex="0"
                     Height="32"
                     ToolTip.Tip="Type in angle, or pick two points to define a parallel direction"
-                    MinWidth="130"
                     IsReadOnly="{Binding IsParallel}"
                     Text="{Binding AngleText}"/>
                 <StackPanel Grid.Row="1" Grid.Column="3"

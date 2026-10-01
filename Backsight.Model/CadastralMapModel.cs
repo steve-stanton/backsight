@@ -534,7 +534,7 @@ public class CadastralMapModel
     /// <param name="p">The search position.</param>
     /// <param name="tol">The search tolerance (expected to be quite small).</param>
     /// <returns>The circles close to the search position (may be empty list)</returns>
-    internal List<Circle> FindCircles(IPosition p, ILength tol)
+    public List<Circle> FindCircles(IPosition p, ILength tol)
     {
         return new FindCirclesQuery(m_Index, p, tol).Result;
     }
