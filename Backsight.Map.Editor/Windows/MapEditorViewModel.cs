@@ -564,7 +564,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         new("Properties", PropertiesCommand)
     ];
 
-    [RelayCommand(CanExecute = nameof(IsLineExtendEnabled))]
+    [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LineExtend()
     {
         var extendLine = _selection.SingleOrDefault as LineFeature;
@@ -574,11 +574,11 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     /// <summary>
-    /// Checks whether the Line - Extend command is enabled or not.
+    /// Checks whether a command tool involving a selected line is enabled or not.
     /// A specific line has to be selected, and there can be no other command currently running.
     /// </summary>
     /// <returns></returns>
-    private bool IsLineExtendEnabled()
+    private bool IsLineToolEnabled()
     {
         return _selection.SingleOrDefault is LineFeature && _commandTool is null;
     }
@@ -593,11 +593,16 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     {
         Console.WriteLine(nameof(LineSubdivideOneDistance));
     }
-    [RelayCommand]
+
+    [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LineParallel()
     {
-        Console.WriteLine(nameof(LineParallel));
+        var refLine = _selection.SingleOrDefault as LineFeature;
+        Debug.Assert(refLine is not null);
+        ClearSelection();
+        StartCommand(new ParallelTool(this, refLine));
     }
+    
     [RelayCommand]
     private void LineUpdate()
     {

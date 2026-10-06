@@ -1,0 +1,43 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:me="clr-namespace:Backsight.Map.Editor.Windows" 
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="120"
+             x:Class="Backsight.Map.Editor.Windows.ParallelOffsetPage"
+             x:DataType="me:ParallelOffsetViewModel">
+
+    <Grid RowDefinitions="Auto Auto" Margin="20">
+        <StackPanel Grid.Row="0" Orientation="Vertical">
+            <TextBlock Text="Enter the distance to the parallel line,"/>
+            <TextBlock Text="or pick a point that is offset by the required distance"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Height="32" Margin="0 10 0 0">
+            <me:PickButton
+                Height="32"
+                BorderBrush="Green"
+                BorderThickness="4"
+                ToolTip.Tip="Pick point that the parallel should pass through"
+                Command="{Binding PickOffsetCommand}" />
+            <NumericUpDown
+                TabIndex="0"
+                Margin="10 0 0 0"
+                Width="100"
+                AllowSpin="False"
+                ShowButtonSpinner="False"
+                Value="{Binding OffsetDistance}"
+                InnerRightContent="{Binding Units}"
+                VerticalContentAlignment="Center"
+                Minimum="0.0001" />
+            <Button
+                Height="32"
+                Margin="20 0"
+                IsTabStop="False"
+                Content="_Other Way"
+                IsEnabled="{Binding AllowOtherWay}"
+                Command="{Binding OtherWayCommand}"
+                HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</UserControl>

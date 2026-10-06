@@ -83,7 +83,7 @@ public class ArcFeature : LineFeature
     /// <summary>
     /// The geometry for this feature (just casts the <c>LineGeometry</c> property).
     /// </summary>
-    internal ArcGeometry Geometry
+    public ArcGeometry Geometry
     {
         get => (ArcGeometry)LineGeometry;
 
@@ -172,7 +172,7 @@ public class ArcFeature : LineFeature
     /// Attempts to locate the circular arc (if any) that this line is based on.
     /// </summary>
     /// <returns><c>this</c> (always).</returns>
-    internal override ArcFeature? GetArcBase()
+    public override ArcFeature? GetArcBase()
     {
         return this;
     }

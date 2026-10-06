@@ -94,5 +94,14 @@
       <Compile Update="Windows\RadialViewModel.cs">
         <DependentUpon>RadialWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\ParallelViewModel.cs">
+        <DependentUpon>ParallelWindow.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\ParallelTerminalViewModel.cs">
+        <DependentUpon>ParallelTerminalPage.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\ParallelOffsetViewModel.cs">
+        <DependentUpon>ParallelOffsetPage.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

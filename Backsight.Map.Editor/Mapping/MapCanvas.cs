@@ -68,6 +68,11 @@ class MapCanvas : IDisposable
         _paintCache.Add(style, result);
         return result;
     }
+    
+    /// <summary>
+    /// Will calls to <see cref="DrawPoint"/> actually render points?
+    /// </summary>
+    internal bool ArePointsDrawn => _pointSize is not null;
 
     /// <summary>
     /// Draws a point as a square.
@@ -303,4 +308,32 @@ class MapCanvas : IDisposable
         return Math.Sqrt(wd * wd + ht * ht);
     }
 
+    /// <summary>
+    /// Highlights a line feature in red, as well as the start and end points (if points are rendered).
+    /// </summary>
+    /// <param name="line">The line to be highlighted.</param>
+    internal void Highlight(LineFeature line)
+    {
+        DrawLine(line.LineGeometry, new PaintStyle
+        {
+            Color = SKColors.Red,
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = 5f
+        });
+
+        if (_pointSize is not null)
+        {
+            DrawPoint(line.StartPoint, new PaintStyle
+            {
+                Color = SKColors.Blue,
+                Style = SKPaintStyle.Fill
+            });
+
+            DrawPoint(line.EndPoint, new PaintStyle
+            {
+                Color = SKColors.Aqua,
+                Style = SKPaintStyle.Fill
+            });
+        }
+    }
 }

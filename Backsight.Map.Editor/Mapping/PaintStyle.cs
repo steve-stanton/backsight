@@ -31,6 +31,6 @@ internal readonly record struct PaintStyle(
         Style = Style,
         StrokeWidth = StrokeWidth,
         IsAntialias = true,
-        PathEffect = Dashed ? SKPathEffect.CreateDash([2, 4], 0) : null
+        PathEffect = Dashed ? SKPathEffect.CreateDash([2 * StrokeWidth, 4 * StrokeWidth], 0) : null
     };
 }

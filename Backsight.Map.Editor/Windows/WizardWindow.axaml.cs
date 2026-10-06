@@ -1,7 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 
 namespace Backsight.Map.Editor.Windows;
 
@@ -17,7 +19,7 @@ public partial class WizardWindow : DialogWindow<WizardViewModel>
         InitializeComponent();
     }
 
-    public WizardWindow(WizardViewModel viewModel) : base(viewModel)
+    internal WizardWindow(WizardViewModel viewModel) : base(viewModel)
     {
         InitializeComponent();
         Pages.CollectionChanged += OnPagesCollectionChanged;
@@ -43,13 +45,47 @@ public partial class WizardWindow : DialogWindow<WizardViewModel>
         if (ViewModel.CurrentPageIndex >= 0 && ViewModel.CurrentPageIndex < Pages.Count)
         {
             var page = Pages[ViewModel.CurrentPageIndex];
-            // Ensure the page shares the single wizard DataContext
-            page.DataContext = ViewModel;
             PagePresenter.Content = page;
         }
         else
         {
             PagePresenter.Content = null;
         }
+    }
+    
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+        AdjustSizeToFitAllPages();
+    }
+
+    private void AdjustSizeToFitAllPages()
+    {
+        if (Pages.Count == 0)
+            return;
+
+        double maxPageWidth = 0;
+        double maxPageHeight = 0;
+
+        // Available constraint for measurement
+        var infiniteSize = new Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity);
+
+        foreach (var page in Pages)
+        {
+            page.Measure(infiniteSize);
+            var desired = page.DesiredSize;
+
+            if (desired.Width > maxPageWidth)
+                maxPageWidth = desired.Width;
+            if (desired.Height > maxPageHeight)
+                maxPageHeight = desired.Height;
+        }
+
+        // Account for header, separator, footer buttons, and Grid margins
+        const double horizontalChromePadding = 40;
+        const double verticalChromePadding = 180;
+
+        Width = Math.Max(MinWidth, maxPageWidth + horizontalChromePadding);
+        Height = Math.Max(MinHeight, maxPageHeight + verticalChromePadding);
     }
 }

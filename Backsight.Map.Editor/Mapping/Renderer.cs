@@ -133,13 +133,13 @@ class Renderer : IMapControlRenderer
 
                 if (arePointsDrawn && !isMultiSelect)
                 {
-                    new Point(line.StartPoint).Render(canvas, new PaintStyle
+                    canvas.DrawPoint(line.StartPoint, new PaintStyle
                     {
-                        Color = SKColors.DarkBlue,
+                        Color = SKColors.Blue,
                         Style = SKPaintStyle.Fill
                     });
-                
-                    new Point(line.EndPoint).Render(canvas, new PaintStyle
+
+                    canvas.DrawPoint(line.EndPoint, new PaintStyle
                     {
                         Color = SKColors.Aqua,
                         Style = SKPaintStyle.Fill

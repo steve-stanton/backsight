@@ -126,6 +126,9 @@ internal class RadialTool : CommandTool
             canvas.DrawPoint(lengthOffset, pointStyle with { Color = SKColors.LightGreen });
         /*
 
+        TODO: The ParallelOffsetPage doesn't currently implement an offset for the sideshot (choosing
+        the sideshot length via an offset point is different)
+        
         if (m_Offset!=null)
             DrawIfDefined(m_Offset.Point, view, style, Color.Gray);
             */

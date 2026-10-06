@@ -1,0 +1,53 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:me="clr-namespace:Backsight.Map.Editor.Windows"
+             x:DataType="me:ParallelTerminalViewModel"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="230"
+             MinWidth="500" MinHeight="230"
+             x:Class="Backsight.Map.Editor.Windows.ParallelTerminalPage">
+
+    <Grid RowDefinitions="70 40 40 60" Margin="10">
+        <TextBlock Grid.Row="0" xml:space="preserve">
+The parallel will terminate on the line that is currently
+highlighted. Click on a different line to terminate on
+something else. Or click on the checkbox below.
+            <TextBlock.IsEnabled>
+                <MultiBinding Converter="{x:Static me:AllTrueConverter.Instance}">
+                    <Binding Path="IsFloating" Converter="{x:Static BoolConverters.Not}" />
+                    <Binding Path="BadSelectedLine" Converter="{x:Static BoolConverters.Not}" />
+                    <Binding Path="SelectedLine" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                </MultiBinding>
+            </TextBlock.IsEnabled>
+        </TextBlock>
+
+        <TextBox Grid.Row="1" Text="Selected line does not appear to intersect the parallel line."
+                 BorderBrush="Transparent"
+                 Height="16"
+                 VerticalContentAlignment="Center">
+            <TextBox.IsVisible>
+                <MultiBinding Converter="{x:Static me:AllTrueConverter.Instance}">
+                    <Binding Path="IsFloating" Converter="{x:Static BoolConverters.Not}" />
+                    <Binding Path="BadSelectedLine" />
+                    <Binding Path="SelectedLine" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                </MultiBinding>
+            </TextBox.IsVisible>
+            <TextBox.InnerLeftContent>
+                <PathIcon
+                    Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                    Foreground="Red"/>
+            </TextBox.InnerLeftContent>
+        </TextBox>
+
+        <CheckBox Grid.Row="2"
+                  Content="_Don't terminate on any line"
+                  IsChecked="{Binding IsFloating}"/>
+        <Button Grid.Row="3"
+                Margin="0 10 0 0"
+            Content="Add the _other arc"
+            IsVisible="{Binding ShowOtherArc}" 
+            Command="{Binding OtherArcCommand}"/>
+    </Grid>
+
+</UserControl>

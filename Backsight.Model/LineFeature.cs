@@ -1155,7 +1155,7 @@ return &newend;
     /// </summary>
     /// <returns>The circular arc this line is based on (may well be null, it's only not null
     /// if this line is a section based on an arc). The <see cref="ArcFeature"/> class provides an override.</returns>
-    internal virtual ArcFeature? GetArcBase()
+    public virtual ArcFeature? GetArcBase()
     {
         return (m_Geom as SectionGeometry)?.BaseLine.GetArcBase();
     }
@@ -1311,7 +1311,7 @@ return &newend;
     /// <param name="sres">The position of the start of the parallel.</param>
     /// <param name="eres">The position of the end of the parallel.</param>
     /// <returns>True if positions calculated ok</returns>
-    internal bool CalculateParallel(Observation offset, out IPosition? sres, out IPosition? eres)
+    public bool CalculateParallel(Observation offset, out IPosition? sres, out IPosition? eres)
     {
         sres = eres = null;
 
