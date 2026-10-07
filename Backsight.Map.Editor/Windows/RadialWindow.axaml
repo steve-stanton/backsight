@@ -35,7 +35,7 @@
                     BorderBrush="Blue"
                     BorderThickness="4"
                     ToolTip.Tip="Pick backsight point from map"
-                    IsEnabled="{Binding IsParallel, Converter={x:Static BoolConverters.Not}}"
+                    IsEnabled="{Binding !IsParallel}"
                     Command="{Binding PickBacksightCommand}"/>
                 <TextBox Grid.Row="0" Grid.Column="2"
                     Height="32"
@@ -46,7 +46,7 @@
                     Content="_Use Arc Center Point"
                     IsChecked="{Binding UsingArcCenter}"
                     IsVisible="{Binding HasCircles}"
-                    IsEnabled="{Binding IsParallel, Converter={x:Static BoolConverters.Not}}"
+                    IsEnabled="{Binding !IsParallel}"
                     Command="{Binding UseArcCenterCommand}"/>
                 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Angle" VerticalAlignment="Center"/>
@@ -65,7 +65,7 @@
                     Text="{Binding AngleText}"/>
                 <StackPanel Grid.Row="1" Grid.Column="3"
                     Orientation="Vertical"
-                    IsVisible="{Binding IsParallel, Converter={x:Static BoolConverters.Not}}">
+                    IsVisible="{Binding !IsParallel}">
                     <!-- Angles entered with a leading "-" character are always counter-clockwise -->
                     <RadioButton Content="Clock_wise"
                                  GroupName="AngleDirection"
@@ -74,7 +74,7 @@
                     <!-- IsChecked is needed below to ensure that the button gets checked when the radio above is disabled -->
                     <RadioButton Content="_Counter-clockwise"
                                  GroupName="AngleDirection"
-                                 IsChecked="{Binding IsClockwise, Converter={x:Static BoolConverters.Not}}"/>
+                                 IsChecked="{Binding !IsClockwise}"/>
                 </StackPanel>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Length" VerticalAlignment="Center"/>
