@@ -3,11 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:me="clr-namespace:Backsight.Map.Editor.Windows" 
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="120"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="170"
+             MinWidth="600" MinHeight="170"
              x:Class="Backsight.Map.Editor.Windows.ParallelOffsetPage"
              x:DataType="me:ParallelOffsetViewModel">
 
-    <Grid RowDefinitions="Auto Auto" Margin="20">
+    <Grid RowDefinitions="Auto Auto Auto" Margin="20">
         <StackPanel Grid.Row="0" Orientation="Vertical">
             <TextBlock Text="Enter the distance to the parallel line,"/>
             <TextBlock Text="or pick a point that is offset by the required distance"/>
@@ -38,6 +39,23 @@
                 IsEnabled="{Binding AllowOtherWay}"
                 Command="{Binding OtherWayCommand}"
                 HorizontalAlignment="Center" />
+            <Button
+                Content="Other _Arc"
+                IsVisible="{Binding ShowOtherArc}" 
+                Command="{Binding OtherArcCommand}"/>
         </StackPanel>
+
+        <TextBox Grid.Row="2" Text="{Binding ValidationError}"
+                 BorderBrush="Transparent"
+                 Margin="0 10 0 0"
+                 Height="16"
+                 IsVisible="{Binding ValidationError, Converter={x:Static ObjectConverters.IsNotNull}}"
+                 VerticalContentAlignment="Center">
+            <TextBox.InnerLeftContent>
+                <PathIcon
+                    Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                    Foreground="Red"/>
+            </TextBox.InnerLeftContent>
+        </TextBox>
     </Grid>
 </UserControl>

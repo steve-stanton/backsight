@@ -6,7 +6,7 @@ namespace Backsight.Model;
 /// Base class for <see cref="LineDivider"/> and <see cref="LineOverlap"/>.
 /// </summary>
 /// <seealso cref="SectionTopology"/>
-abstract class LineTopology : Topology, IDivider
+public abstract class LineTopology : Topology, IDivider
 {
     /// <summary>
     /// Creates a new <c>LineTopology</c> that relates to a complete line.

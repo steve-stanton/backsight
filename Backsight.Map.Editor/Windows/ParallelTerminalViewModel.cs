@@ -17,27 +17,12 @@ public partial class ParallelTerminalViewModel : PageModel
     [ObservableProperty] private bool _isFloating = false;
 
     /// <summary>
-    /// Should the option to use the other circular arc be shown? (applies only if the
-    /// reference line is a circular arc, and we are dealing with the second terminal)
-    /// </summary>
-    internal bool ShowOtherArc { get; }
-
-    /// <summary>
-    /// Has the user opted for the circular arc that is not the default (applies
-    /// only if <see cref="ShowOtherArc"/> is true).
-    /// </summary>
-    internal bool UsingOtherArc { get; private set; } = false;
-
-    /// <summary>
     /// Creates the view model for the terminal of a parallel line.
     /// </summary>
     /// <param name="parentModel">The view model that contains this model.</param>
-    /// <param name="showOtherArc">Should the option to use the other circular arc be shown (ignored if
-    /// the reference line is not a circular arc).</param>
-    internal ParallelTerminalViewModel(ParallelViewModel parentModel, bool showOtherArc)
+    internal ParallelTerminalViewModel(ParallelViewModel parentModel)
     {
         _parentModel = parentModel;
-        ShowOtherArc = showOtherArc && parentModel.ReferenceLine.GetArcBase() is not null;
     }
 
     private ParallelTool Tool => _parentModel.Tool;
@@ -76,7 +61,7 @@ public partial class ParallelTerminalViewModel : PageModel
         {
             SelectedLine = line;
             BadSelectedLine = DoesLineIntersectParallel(line);
-            Tool.OnTerminalChanged(this);
+            _parentModel.OnTerminalChanged(this);
         }
         
         return line is not null;
@@ -88,13 +73,6 @@ public partial class ParallelTerminalViewModel : PageModel
             return false;
         
         return true;
-    }
-
-    [RelayCommand]
-    private void OtherArc()
-    {
-        UsingOtherArc = !UsingOtherArc;
-        Tool.RefreshMapDisplay();
     }
 
     internal override void OnBack()
@@ -109,4 +87,6 @@ public partial class ParallelTerminalViewModel : PageModel
             Tool.RefreshMapDisplay();
         }
     }
+
+    internal override bool ValidatePage() => !BadSelectedLine;
 }

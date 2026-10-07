@@ -1,4 +1,6 @@
-﻿namespace Backsight.Map.Editor.Windows;
+﻿using RTools_NTS.Util;
+
+namespace Backsight.Map.Editor.Windows;
 
 /// <summary>
 /// Base class for view models that represent a page in a <see cref="WizardViewModel"/>.
@@ -18,4 +20,10 @@ public abstract class PageModel : ViewModelBase
     internal virtual void OnNext()
     {
     }
+
+    /// <summary>
+    /// Performs any validation for the current page.
+    /// </summary>
+    /// <returns></returns>
+    internal virtual bool ValidatePage() => true;
 }

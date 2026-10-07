@@ -1334,7 +1334,13 @@ return &newend;
     /// which side (less than zero means it's to the left of the reference line).</param>
     /// <param name="sres">The position of the start of the parallel.</param>
     /// <param name="eres">The position of the end of the parallel.</param>
-    /// <returns>True if positions calculated ok</returns>
+    /// <returns>True if positions calculated ok. False only if the reference line is a circular arc,
+    /// the parallel is inside the circle, and the offset distance is greater than the radius.</returns>
+    /// <remarks>
+    /// For an offset distance greater than zero, the parallel positions will be on the right-hand
+    /// side of the reference line for straight lines and counter-clockwise circular arcs. For
+    /// clockwise arcs, the parallel positions will be on the left.
+    /// </remarks>
     private bool CalculateParallel(Distance offset, out IPosition? sres, out IPosition? eres)
     {
         // No result positions so far.
@@ -1365,9 +1371,20 @@ return &newend;
             // and use that to reduce the offset to the mapping plane.
             double bearing = BasicGeom.BearingInRadians(centre, middle);
             double offdist = offset.GetPlanarMetric(middle, bearing, SpatialSystem);
+            
+            /*
+             While doing the following might make things a bit more consistent, it will likely break
+             things when deserializing old maps.
+              
+            // Negate the offset if the arc is directed clockwise. This ensures that all offset distances
+            // greater than zero will lead to parallels that are to the right of the reference line.
+            if (arc.IsClockwise)
+                offdist = -offdist;
+                */
 
             // No parallel if the offset exceeds the radius.
-            // if ( offdist > radius ) return FALSE;
+            if (Math.Abs(offdist) > radius)
+                return false;
 
             // Calculate the parallel points.
             double sbear = BasicGeom.BearingInRadians(centre, spos);

@@ -48,7 +48,7 @@ public abstract partial class WizardViewModel : DialogViewModel
         }
     }
 
-    protected virtual bool CanGoNext() => PageCount > 0 && CurrentPageIndex < PageCount - 1;
+    protected virtual bool CanGoNext() => PageCount > 0 && CurrentPageIndex < PageCount - 1 && ValidateCurrentPage();
 
     [RelayCommand(CanExecute = nameof(CanFinish))]
     protected virtual void Finish()
@@ -59,7 +59,7 @@ public abstract partial class WizardViewModel : DialogViewModel
         }
     }
 
-    protected virtual bool CanFinish() => IsLastPage;
+    protected virtual bool CanFinish() => IsLastPage && ValidateCurrentPage();
 
     /// <summary>
     /// Override to implement per-step validation before navigating forward or finishing.

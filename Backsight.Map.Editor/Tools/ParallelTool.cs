@@ -1,5 +1,4 @@
 ﻿using System;
-using Avalonia.Rendering.Composition.Animations;
 using Backsight.Geometry;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Windows;
@@ -17,28 +16,6 @@ internal class ParallelTool : CommandTool
     /// </summary>
     private readonly LineFeature _referenceLine;
     
-    /// <summary>
-    /// The position perpendicular to the reference line where the parallel starts (or the
-    /// radial position if the reference line is a circular arc).
-    /// </summary>
-    private IPosition? _parallel1;
-
-    /// <summary>
-    /// The position perpendicular to the reference line where the parallel ends (or the
-    /// radial position if the reference line is a circular arc).
-    /// </summary>
-    private IPosition? _parallel2;
-
-    /// <summary>
-    /// The position of the parallel where it intersects the first terminal line (if any).
-    /// </summary>
-    private IPosition? _terminal1;
-
-    /// <summary>
-    /// The position of the parallel where it intersects the second terminal line (if any).
-    /// </summary>
-    private IPosition? _terminal2;
-    
     internal ParallelTool(MapEditorViewModel viewModel, LineFeature referenceLine)
         : base(viewModel, EditingActionId.Parallel)
     {
@@ -48,9 +25,6 @@ internal class ParallelTool : CommandTool
 
     internal override bool Run()
     {
-        var model = _dialog.Model;
-        Console.WriteLine("running with model type: " + model.GetType().Name);
-
         ViewModel.Show(_dialog);
         return true;
     }
@@ -80,19 +54,9 @@ internal class ParallelTool : CommandTool
         
         canvas.DrawLine(_referenceLine.LineGeometry, lineStyle with { Color = SKColors.Blue });
 
-        // Figure out the positions for the ends of the parallel line (if any) ...
-
-        // Assume we already know both terminals.
-        IPosition? start = _terminal1;
-        IPosition? end = _terminal2;
-
-        // If they weren't actually defined, use the parallel points instead.
-        if (start is null)
-            start = _parallel1;
-
-        if (end is null)
-            end = _parallel2;
-
+        // Draw the parallel line
+        IPosition? start = model.OnTerminal1 ?? model.Parallel1;
+        IPosition? end = model.OnTerminal2 ?? model.Parallel2;
         RenderParallel(canvas, start, end);
 
         var pt = model.Offset.OffsetPoint ?? model.Offset.PickingOffsetPoint;
@@ -119,8 +83,7 @@ internal class ParallelTool : CommandTool
             bool iscw = arc.IsClockwise;
 
             // Reverse the direction if necessary
-            // TODO: Should UsingOtherArc be an option of the offset page?
-            if (_dialog.Model.Terminal2.UsingOtherArc)
+            if (_dialog.Model.Offset.UsingOtherArc)
                 iscw = !iscw;
 
             // Draw the parallel line (the rest of the circle being dotted).
@@ -166,51 +129,4 @@ internal class ParallelTool : CommandTool
     {
         _dialog.Model.MouseMove(p);
     }
-
-    internal void OnOffsetChanged(Observation? offset)
-    {
-        // Attempt to calculate the parallel based on the offset alone
-        if (offset is null)
-        {
-            _parallel1 = _parallel2 = null;
-        }
-        else
-        {
-            _referenceLine.CalculateParallel(offset, out var start, out var end);
-            _parallel1 = start;
-            _parallel2 = end;
-        }
-
-        // The ParallelTerminalViewModel currently nulls out the selected terminal line if the
-        // user goes back to the offset page of the wizard. At that point, the two terminals
-        // held here should become n/a. That being the case, ensure they are in fact undefined.
-        
-        _terminal1 = _terminal2 = null;
-
-        ViewModel.RefreshMapDisplay();
-    }
-
-    /// <summary>
-    /// Handles any change to a terminal line selected by the user.
-    /// </summary>
-    /// <param name="sender">The view model where the change has been made.</param>
-    internal void OnTerminalChanged(ParallelTerminalViewModel sender)
-    {
-        var terminal = sender.SelectedLine;
-        if (terminal is null)
-        {
-            if (ReferenceEquals(sender, _dialog.Model.Terminal1))
-                _terminal1 = null;
-            else
-                _terminal2 = null;
-        }
-        else
-        {
-            // TODO: Attempt to calculate the terminal position
-            
-        }
-        
-        ViewModel.RefreshMapDisplay();
-    }
-
 }
