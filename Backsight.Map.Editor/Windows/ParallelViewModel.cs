@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Backsight.Map.Editor.Tools;
 using Backsight.Model;
 
@@ -19,28 +20,6 @@ public class ParallelViewModel : WizardViewModel
     internal ParallelOffsetViewModel Offset { get; }
     internal ParallelTerminalViewModel Terminal1 { get; }
     internal ParallelTerminalViewModel Terminal2 { get; }
-    
-    /// <summary>
-    /// The position perpendicular to the reference line where the parallel starts (or the
-    /// radial position if the reference line is a circular arc).
-    /// </summary>
-    internal IPosition? Parallel1 { get; private set; }
-
-    /// <summary>
-    /// The position perpendicular to the reference line where the parallel ends (or the
-    /// radial position if the reference line is a circular arc).
-    /// </summary>
-    internal IPosition? Parallel2 { get; private set; }
-
-    /// <summary>
-    /// The position of the parallel where it intersects the first terminal line (if any).
-    /// </summary>
-    internal IPosition? OnTerminal1 { get; private set; }
-
-    /// <summary>
-    /// The position of the parallel where it intersects the second terminal line (if any).
-    /// </summary>
-    internal IPosition? OnTerminal2 { get; private set; }
 
     internal ParallelViewModel(ParallelTool tool, LineFeature referenceLine)
     {
@@ -53,19 +32,13 @@ public class ParallelViewModel : WizardViewModel
 
     internal bool MouseDown(IPosition p)
     {
-        bool result = CurrentPageIndex switch
+        return CurrentPageIndex switch
         {
             0 => Offset.PickPoint(p),
             1 => Terminal1.PickLine(p),
             2 => Terminal2.PickLine(p),
             _ => false
         };
-
-        // TODO: Is this needed? What if the user didn't pick something?
-        //if (result)
-        //    Tool.RefreshMapDisplay();
-
-        return result;
     }
 
     internal void MouseMove(IPosition p)
@@ -76,7 +49,7 @@ public class ParallelViewModel : WizardViewModel
         // We don't (currently) auto-highlight terminal lines, although that would be consistent
     }
 
-    private ViewModelBase GetCurrentPageModel()
+    private PageModel GetCurrentPageModel()
     {
         return CurrentPageIndex switch
         {
@@ -89,10 +62,7 @@ public class ParallelViewModel : WizardViewModel
 
     protected override void Back()
     {
-        // Wizard pages don't HAVE to extend PageModel, those that do may or may not provide
-        // an implementation that does something
-
-        (GetCurrentPageModel() as PageModel)?.OnBack();
+        GetCurrentPageModel().OnBack();
         base.Back();
     }
 
@@ -113,56 +83,64 @@ public class ParallelViewModel : WizardViewModel
         return true;
     }
 
-    internal void OnOffsetChanged(Observation? offset)
+    protected override bool ValidateCurrentPage()
     {
-        // Attempt to calculate the parallel based on the offset alone
-        if (offset is null)
-        {
-            Parallel1 = Parallel2 = null;
-        }
-        else
-        {
-            ReferenceLine.CalculateParallel(offset, out var start, out var end);
-            Parallel1 = start;
-            Parallel2 = end;
-        }
-
-        // The ParallelTerminalViewModel currently nulls out the selected terminal line if the
-        // user goes back to the offset page of the wizard. At that point, the two terminals
-        // held here should become n/a. That being the case, ensure they are in fact undefined.
-        
-        OnTerminal1 = OnTerminal2 = null;
-
-        Tool.RefreshMapDisplay();
+        return GetCurrentPageModel().ValidatePage();
     }
 
     /// <summary>
-    /// Handles any change to a terminal line selected by the user.
+    /// Attempts to find a position on a line that has been selected as a terminal for the parallel.
     /// </summary>
-    /// <param name="sender">The view model where the change has been made.</param>
-    internal void OnTerminalChanged(ParallelTerminalViewModel sender)
+    /// <param name="line">The line (if any) that has been selected.</param>
+    /// <returns>The intersection (if any). In cases where the line intersects the parallel
+    /// more than once, you get an arbitrary intersection.</returns>
+    internal IPosition? FindTerminalPosition(LineFeature? line)
     {
-        var terminal = sender.SelectedLine;
-        if (terminal is null)
-        {
-            if (ReferenceEquals(sender, Terminal1))
-                OnTerminal1 = null;
-            else
-                OnTerminal2 = null;
-        }
-        else
-        {
-            // TODO: Attempt to calculate the terminal position
-            
-        }
+        if (line is null)
+            return null;
         
-        Tool.RefreshMapDisplay();
+        // Assume this is called only by the ParallelTerminalViewModel for the current wizard page
+        var parpos = CurrentPageIndex == 1 ? Offset.StartPosition : Offset.EndPosition; 
+        return ReferenceLine.GetIntersect(parpos, line);
     }
 
-    protected override bool ValidateCurrentPage()
+    /// <summary>
+    /// Attempts to find a line that is close to one end of the parallel line.
+    /// </summary>
+    /// <returns>The closest line (if any), together with the position (if any) where the parallel
+    /// line intersects it.</returns>
+    internal (LineFeature?, IPosition?) FindTerminal()
     {
-        var pageModel = GetCurrentPageModel() as PageModel;
-        return pageModel?.ValidatePage() ?? true;
+        // This should only be called by the ParallelTerminalViewModel for the current wizard page
+        // so a parallel position should have been defined
+        var parpos = CurrentPageIndex == 1 ? Offset.StartPosition : Offset.EndPosition;
+        Debug.Assert(parpos is not null);
+
+        // Get the offset to the parallel (on the mapping plane)
+        var offset = Offset.GetPlanarDistance(parpos);
+
+        // Search for the line closest to the parallel point, using a tolerance that's either half
+        // half the offset, or half a centimetre at the current draw scale (whichever is smaller)
+        var mapScale = (Tool.ViewModel as IMapEditorViewModel).MapScale;
+        ILength tol = new Length(Math.Min(offset * 0.5, mapScale * 0.005));
+        var line = Tool.Store.Model.QueryClosest(parpos, tol, SpatialType.Line) as LineFeature;
+
+        if (line is null)
+            return (null, null);
+        
+        // Return the line along with the position of any intersection
+        var p = ReferenceLine.GetIntersect(parpos, line);
+        return (line, p);
     }
 
+    /// <summary>
+    /// The position on a terminal line for the current wizard page (null if a good terminal line
+    /// has not been selected, or some other wizard page is currently shown).
+    /// </summary>
+    internal IPosition? CurrentTerminalPosition => CurrentPageIndex switch
+    {
+        1 => Terminal1.Position,
+        2 => Terminal2.Position,
+        _ => null
+    };
 }

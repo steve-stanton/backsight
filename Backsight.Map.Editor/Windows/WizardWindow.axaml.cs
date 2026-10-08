@@ -46,6 +46,7 @@ public partial class WizardWindow : DialogWindow<WizardViewModel>
         {
             var page = Pages[ViewModel.CurrentPageIndex];
             PagePresenter.Content = page;
+            (page.DataContext as PageModel)?.OnNavigatedTo();
         }
         else
         {

@@ -26,4 +26,10 @@ public abstract class PageModel : ViewModelBase
     /// </summary>
     /// <returns></returns>
     internal virtual bool ValidatePage() => true;
+    
+    /// <summary>
+    /// Performs any initialization that needs to happen when
+    /// the page is shown.
+    /// </summary>
+    internal virtual void OnNavigatedTo() { }
 }

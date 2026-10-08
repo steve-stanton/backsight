@@ -55,19 +55,30 @@ internal class ParallelTool : CommandTool
         canvas.DrawLine(_referenceLine.LineGeometry, lineStyle with { Color = SKColors.Blue });
 
         // Draw the parallel line
-        IPosition? start = model.OnTerminal1 ?? model.Parallel1;
-        IPosition? end = model.OnTerminal2 ?? model.Parallel2;
+        IPosition? start = model.Terminal1.Position ?? model.Offset.StartPosition;
+        IPosition? end = model.Terminal2.Position ?? model.Offset.EndPosition;
         RenderParallel(canvas, start, end);
 
+        // Draw the start and end points too
+        if (start is not null)
+            canvas.DrawPoint(start, pointStyle);
+        
+        if (end is not null)
+            canvas.DrawPoint(end, pointStyle);
+        
+        // Draw any offset point specified via the offset page
         var pt = model.Offset.OffsetPoint ?? model.Offset.PickingOffsetPoint;
         if (pt is not null)
             canvas.DrawPoint(pt, pointStyle with { Color = SKColors.LightGreen });
-
+        
         if (model.Terminal1.SelectedLine is not null)
             canvas.Highlight(model.Terminal1.SelectedLine);
 
         if (model.Terminal2.SelectedLine is not null)
             canvas.Highlight(model.Terminal2.SelectedLine);
+        
+        if (model.CurrentTerminalPosition is not null)
+            canvas.DrawPoint(model.CurrentTerminalPosition, pointStyle with { Color = SKColors.Yellow });
     }
 
     private void RenderParallel(MapCanvas canvas, IPosition? start, IPosition? end)
@@ -122,7 +133,7 @@ internal class ParallelTool : CommandTool
         if (selectionChanged)
             ViewModel.RefreshMapDisplay();
 
-        return selectionChanged;
+        return true;
     }
 
     internal override void MouseMove(IPosition p, MouseButton b)

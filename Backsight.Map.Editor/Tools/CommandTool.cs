@@ -85,6 +85,14 @@ internal abstract class CommandTool : IDisposable
         return true;
     }
     
+    /// <summary>
+    /// Handles a mouse down event.
+    /// </summary>
+    /// <param name="p">The position (in ground units) where the mouse down event occurred.</param>
+    /// <param name="b">What mouse button was pressed.</param>
+    /// <returns>This implementation always returns false, indicating that the tool does
+    /// not handle mouse down events. Derived classes that do handle mouse down events
+    /// should return true (regardless of the outcome).</returns>
     internal virtual bool MouseDown(IPosition p, MouseButton b)
     {
         return false;

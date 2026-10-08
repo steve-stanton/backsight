@@ -1472,7 +1472,7 @@ return &newend;
     /// <returns>The intersection (if any). In cases where the line intersects the
     /// parallel more than once, you get the intersection that is closest to the
     /// search position.</returns>
-    internal IPosition? GetIntersect(IPosition? parpos, LineFeature line)
+    public IPosition? GetIntersect(IPosition? parpos, LineFeature line)
     {
         // Make sure the intersection is undefined.
         IPosition? result = null;

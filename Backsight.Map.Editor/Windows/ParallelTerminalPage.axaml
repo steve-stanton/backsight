@@ -4,25 +4,35 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:me="clr-namespace:Backsight.Map.Editor.Windows"
              x:DataType="me:ParallelTerminalViewModel"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="170"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="200"
              MinWidth="500" MinHeight="170"
              x:Class="Backsight.Map.Editor.Windows.ParallelTerminalPage">
 
-    <Grid RowDefinitions="70 40 40" Margin="10">
+    <Grid RowDefinitions="70 30 40 40" Margin="10">
         <TextBlock Grid.Row="0" xml:space="preserve">
 The parallel will terminate on the line that is currently
 highlighted. Click on a different line to terminate on
 something else. Or click on the checkbox below.
-            <TextBlock.IsEnabled>
+            <TextBlock.IsVisible>
                 <MultiBinding Converter="{x:Static me:AllTrueConverter.Instance}">
                     <Binding Path="IsFloating" Converter="{x:Static BoolConverters.Not}" />
                     <Binding Path="BadSelectedLine" Converter="{x:Static BoolConverters.Not}" />
                     <Binding Path="SelectedLine" Converter="{x:Static ObjectConverters.IsNotNull}" />
                 </MultiBinding>
-            </TextBlock.IsEnabled>
+            </TextBlock.IsVisible>
+        </TextBlock>
+        
+        <TextBlock Grid.Row="1"
+                   Text="If you want to terminate on a line, select it.">
+            <TextBlock.IsVisible>
+                <MultiBinding Converter="{x:Static me:AllTrueConverter.Instance}">
+                    <Binding Path="IsFloating" Converter="{x:Static BoolConverters.Not}" />
+                    <Binding Path="SelectedLine" Converter="{x:Static ObjectConverters.IsNull}" />
+                </MultiBinding>
+            </TextBlock.IsVisible>
         </TextBlock>
 
-        <TextBox Grid.Row="1" Text="Selected line does not appear to intersect the parallel line."
+        <TextBox Grid.Row="2" Text="Selected line does not appear to intersect the parallel line."
                  BorderBrush="Transparent"
                  Height="16"
                  VerticalContentAlignment="Center">
@@ -40,7 +50,7 @@ something else. Or click on the checkbox below.
             </TextBox.InnerLeftContent>
         </TextBox>
 
-        <CheckBox Grid.Row="2"
+        <CheckBox Grid.Row="3"
                   Content="_Don't terminate on any line"
                   IsChecked="{Binding IsFloating}"/>
     </Grid>

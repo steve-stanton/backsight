@@ -69,6 +69,18 @@ public partial class ParallelOffsetViewModel : PageModel
     /// only if <see cref="ShowOtherArc"/> is true).
     /// </summary>
     internal bool UsingOtherArc { get; private set; } = false;    
+    
+    /// <summary>
+    /// The position perpendicular to the reference line where the parallel starts (or the
+    /// radial position if the reference line is a circular arc).
+    /// </summary>
+    internal IPosition? StartPosition { get; private set; }
+
+    /// <summary>
+    /// The position perpendicular to the reference line where the parallel ends (or the
+    /// radial position if the reference line is a circular arc).
+    /// </summary>
+    internal IPosition? EndPosition { get; private set; }
 
     internal ParallelOffsetViewModel(ParallelViewModel parentModel)
     {
@@ -135,7 +147,7 @@ public partial class ParallelOffsetViewModel : PageModel
         var offset = GetOffsetObservation();
         
         if (ValidateOffset(offset))
-            _parentModel.OnOffsetChanged(offset);
+            OnOffsetChanged(offset);
     }
 
     private bool ValidateOffset(Observation? offset)
@@ -239,7 +251,7 @@ public partial class ParallelOffsetViewModel : PageModel
         else
         {
             // Get the offset distance on the mapping plane
-            var len = GetPlanerDistance(offsetPoint);
+            var len = GetPlanarDistance(offsetPoint);
 
             // Express as a distance on the ground (assume the start of the reference line is good enough)
             var refStart = _parentModel.ReferenceLine.StartPoint;
@@ -259,9 +271,9 @@ public partial class ParallelOffsetViewModel : PageModel
     /// Calculates the perpendicular distance (in meters, on the mapping plane) between the
     /// reference line and an offset point.
     /// </summary>
-    /// <param name="p">The offset point.</param>
+    /// <param name="p">The offset position.</param>
     /// <returns>The corresponding offset distance (in meters on the mapping plane).</returns>
-    private double GetPlanerDistance(PointFeature p)
+    internal double GetPlanarDistance(IPosition p)
     {
         var refLine = _parentModel.ReferenceLine;
         var arc = refLine.GetArcBase()?.Geometry;
@@ -317,7 +329,7 @@ public partial class ParallelOffsetViewModel : PageModel
         var offset = GetOffsetObservation();
         
         if (ValidateOffset(offset))
-            _parentModel.OnOffsetChanged(offset);
+            OnOffsetChanged(offset);
         else
             _useNegatedOffset = !_useNegatedOffset;
     }
@@ -328,6 +340,23 @@ public partial class ParallelOffsetViewModel : PageModel
     private void OtherArc()
     {
         UsingOtherArc = !UsingOtherArc;
+        Tool.RefreshMapDisplay();
+    }
+
+    private void OnOffsetChanged(Observation? offset)
+    {
+        // Attempt to calculate the parallel based on the offset alone
+        if (offset is null)
+        {
+            StartPosition = EndPosition = null;
+        }
+        else
+        {
+            _parentModel.ReferenceLine.CalculateParallel(offset, out var start, out var end);
+            StartPosition = start;
+            EndPosition = end;
+        }
+
         Tool.RefreshMapDisplay();
     }
 }
