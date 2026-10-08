@@ -8,7 +8,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// Operation to create a parallel line.
 /// </summary>
-class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
+public class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
 {
     // Required input ...
 
@@ -27,13 +27,13 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
     /// <summary>
     /// The 1st terminal arc (if any).
     /// </summary>
-    LineFeature m_Term1;
+    LineFeature? m_Term1;
 
     /// <summary>
     /// The 2nd terminal line (if any). May be the same as <c>m_Term1</c> (e.g. could be a
     /// multi-segment that bends round).
     /// </summary>
-    LineFeature m_Term2;
+    LineFeature? m_Term2;
         
     /// <summary>
     /// Flag bits. Currently a value of 0x1 is the only defined value, and means
@@ -58,7 +58,7 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
     /// <param name="term1">A line that the parallel should start on.</param>
     /// <param name="term2">A line that the parallel should end on.</param>
     /// <param name="isArcReversed">Should circular arc be reversed?</param>
-    internal ParallelLineOperation(LineFeature refLine, Observation offset, LineFeature term1, LineFeature term2,
+    public ParallelLineOperation(LineFeature refLine, Observation offset, LineFeature? term1, LineFeature? term2,
         bool isArcReversed)
         : base(refLine.MapStore)
     {
@@ -114,8 +114,8 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
     internal PointFeature OffsetPoint => (m_Offset as OffsetPoint)?.Point;
 
     internal bool IsArcReversed => (m_Flags==1);
-    internal LineFeature Terminal1 => m_Term1;
-    internal LineFeature Terminal2 => m_Term2;
+    internal LineFeature? Terminal1 => m_Term1;
+    internal LineFeature? Terminal2 => m_Term2;
 
     /// <summary>
     /// A user-perceived title for this operation.
@@ -167,11 +167,8 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
         if (m_RefLine!=null)
             m_RefLine.CutOp(this);
 
-        if (m_Term1!=null)
-            m_Term1.CutOp(this);
-
-        if (m_Term2!=null)
-            m_Term2.CutOp(this);
+        m_Term1?.CutOp(this);
+        m_Term2?.CutOp(this);
 
         // Rollback the points at the end of the parallel (if they
         // were created by this operation).
@@ -320,10 +317,10 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
         if (m_RefLine != null)
             result.Add(m_RefLine);
 
-        if (m_Term1 != null)
+        if (m_Term1 is not null)
             result.Add(m_Term1);
 
-        if (m_Term2 != null && m_Term2 != m_Term1)
+        if (m_Term2 is not null && !ReferenceEquals(m_Term2, m_Term1))
             result.Add(m_Term2);
 
         result.AddRange(m_Offset.GetReferences());
@@ -333,13 +330,7 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
     /// <summary>
     /// Executes this operation.
     /// </summary>
-    /// <param name="refLine">The reference line.</param>
-    /// <param name="offset">The observed offset (either a <c>Distance</c> or
-    /// an <c>OffsetPoint</c>).</param>
-    /// <param name="term1">A line that the parallel should start on.</param>
-    /// <param name="term2">A line that the parallel should end on.</param>
-    /// <param name="isArcReversed">Should circular arc be reversed?</param>
-    internal void Execute()
+    public void Execute()
     {
         // Calculate the mathematical position of the parallel points.
         IPosition spar, epar;
@@ -716,10 +707,10 @@ class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatureRef
         base.WriteData(editSerializer);
         editSerializer.WriteFeatureRef<LineFeature>(DataField.RefLine, m_RefLine);
 
-        if (m_Term1 != null)
+        if (m_Term1 is not null)
             editSerializer.WriteFeatureRef<LineFeature>(DataField.Term1, m_Term1);
 
-        if (m_Term2 != null)
+        if (m_Term2 is not null)
             editSerializer.WriteFeatureRef<LineFeature>(DataField.Term2, m_Term2);
 
         if (IsArcReversed)

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using Backsight.Geometry;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Windows;
 using Backsight.Model;
+using Backsight.Model.Operations;
 using SkiaSharp;
 
 namespace Backsight.Map.Editor.Tools;
@@ -31,7 +33,47 @@ internal class ParallelTool : CommandTool
 
     protected override bool Finish()
     {
-        Console.WriteLine("finishing parallel");
+        /*
+        // If we are doing an update, remember the changes
+        if (up!=null)
+        {
+            // Get the original operation.
+            ParallelLineOperation op = (ParallelLineOperation)up.GetOp();
+            if (op==null)
+                throw new Exception("ParallelLineUI.DialFinish - Unexpected edit type.");
+
+            // Note the offset (it SHOULD be defined)
+            Observation offset = null;
+
+            if (m_Offset != null)
+                offset = m_Offset;
+            else if (m_OffsetPoint != null)
+                offset = new OffsetPoint(m_OffsetPoint);
+
+            Debug.Assert(offset != null);
+
+            // Remember the changes as part of the UI object (the original edit remains
+            // unchanged for now)
+
+            UpdateItemCollection changes = op.GetUpdateItems(m_Line, offset, m_TermLine1, m_TermLine2, m_IsReversed);
+            if (!up.AddUpdate(op, changes))
+                return false;
+        }
+        else
+        {
+        */
+        
+        var model = _dialog.Model;
+        var offset = model.Offset.GetOffsetObservation();
+        var terminal1 = model.Terminal1.SelectedLine;
+        var terminal2 = model.Terminal2.SelectedLine;
+        var isArcReversed = model.Offset.UsingOtherArc;
+        
+        Debug.Assert(offset is not null);
+        
+        var op = new ParallelLineOperation(_referenceLine, offset, terminal1, terminal2, isArcReversed);
+        op.Execute();
+
         return base.Finish();
     }
 

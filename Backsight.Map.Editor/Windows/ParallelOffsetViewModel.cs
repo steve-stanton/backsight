@@ -304,7 +304,7 @@ public partial class ParallelOffsetViewModel : PageModel
     /// The distance to the parallel (null if not entered).
     /// </summary>
     /// <returns>The observed distance to the parallel (could be an offset point).</returns>
-    private Observation? GetOffsetObservation()
+    internal Observation? GetOffsetObservation()
     {
         var opt = _picking ? PickingOffsetPoint : OffsetPoint;
         if (opt is not null)
