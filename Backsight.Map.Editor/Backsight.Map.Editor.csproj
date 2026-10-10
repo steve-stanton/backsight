@@ -103,5 +103,8 @@
       <Compile Update="Windows\ParallelOffsetViewModel.cs">
         <DependentUpon>ParallelOffsetPage.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\SimpleLineSubdivisionViewModel.cs">
+        <DependentUpon>SimpleLineSubdivisionWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

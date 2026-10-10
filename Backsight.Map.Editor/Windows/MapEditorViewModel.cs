@@ -583,15 +583,19 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         return _selection.SingleOrDefault is LineFeature && _commandTool is null;
     }
     
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LineSubdivide()
     {
         Console.WriteLine(nameof(LineSubdivide));
     }
-    [RelayCommand]
+
+    [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LineSubdivideOneDistance()
     {
-        Console.WriteLine(nameof(LineSubdivideOneDistance));
+        var line = _selection.SingleOrDefault as LineFeature;
+        Debug.Assert(line is not null);
+        ClearSelection();
+        StartCommand(new SimpleLineSubdivisionTool(this, line));
     }
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]

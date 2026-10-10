@@ -7,7 +7,7 @@ namespace Backsight.Model.Operations;
 /// Add a point at a specific distance from the start or end of an existing line,
 /// splitting the original line at the point.
 /// </summary>
-class SimpleLineSubdivisionOperation : Operation, IRecallable, IRevisable
+public class SimpleLineSubdivisionOperation : Operation, IRecallable, IRevisable
 {
     // Input ...
 
@@ -49,7 +49,7 @@ class SimpleLineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// <param name="splitLine">The line to split.</param>
     /// <param name="dist">The distance to the split point.</param>
     /// <param name="isFromEnd">Is the distance observed from the end of the line?</param>
-    internal SimpleLineSubdivisionOperation(LineFeature splitLine, Distance dist, bool isFromEnd)
+    public SimpleLineSubdivisionOperation(LineFeature splitLine, Distance dist, bool isFromEnd)
         : base(splitLine.MapStore)
     {
         m_Line = splitLine;
@@ -135,11 +135,11 @@ class SimpleLineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// Calculates the positions of the split point.
     /// </summary>
     /// <param name="line">The line being subdivided.</param>
-    /// <param name="dist">The distance to the split point.</param>
+    /// <param name="dist">The distance (on the ground) to the split point.</param>
     /// <param name="isFromEnd">Is the distance from the end of the line?</param>
     /// <returns>The calculated position (null if the distance is longer than the line being subdivided,
     /// or supplied information is incomplete)</returns>
-    internal static IPosition Calculate(LineFeature line, Distance dist, bool isFromEnd)
+    public static IPosition? Calculate(LineFeature line, Distance dist, bool isFromEnd)
     {
         // Can't calculate if there is insufficient data.
         if (line == null || dist == null)
@@ -186,7 +186,7 @@ class SimpleLineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// Executes this operation.
     /// </summary>
-    internal void Execute()
+    public void Execute()
     {
         // Calculate the position of the point.
         IPosition splitpos = Calculate();

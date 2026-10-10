@@ -238,7 +238,7 @@ public class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersiste
     /// <summary>
     /// The length of this line (on the ground).
     /// </summary>
-    internal ILength GroundLength
+    public ILength GroundLength
     {
         get
         {
