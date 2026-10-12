@@ -361,7 +361,7 @@ public abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IE
     /// <summary>
     /// Checks if this feature is topological or not.
     /// </summary>
-    internal bool IsTopological => IsFlagSet(FeatureFlag.Topol);
+    public bool IsTopological => IsFlagSet(FeatureFlag.Topol);
 
     /// <summary>
     /// Sets or clears topological status. If topology is being turned off,

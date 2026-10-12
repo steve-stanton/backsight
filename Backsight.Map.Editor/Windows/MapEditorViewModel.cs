@@ -412,22 +412,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
                 return GetPointSelectedMenu();
 
             if (t == SpatialType.Line)
-            {
-                var items = GetLineSelectedMenu();
-
-                var line = singleItem as LineFeature;
-                if (line is null && singleItem is DividerObject d)
-                    line = d.Divider.Line;
-
-                if (line?.HasTopology == true)
-                {
-                    // TODO: do this inside GetLineSelectedMenu
-                    var itemIndex = Array.FindIndex(items, x => x.Header == "Polygon Boundary");
-                    items[itemIndex] = items[itemIndex] with { IsChecked = true };
-                }
-
-                return items;
-            }
+                return GetLineSelectedMenu(singleItem);
 
             if (t == SpatialType.Text)
                 return GetTextSelectedMenu();
@@ -526,7 +511,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         //    _autoSelect = false; // TODO: Should only suspend while command is running
 
         _commandTool = tool;
-        _commandTool.Run();
+
+        if (!_commandTool.Run())
+            _commandTool = null;
     }
 
     internal void ClearSelection()
@@ -549,15 +536,24 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
     
     private bool CanDeletePoint => _selection.SingleOrDefault is Model.PointFeature;
+
+    private static bool IsPolygonBoundary(IMapObject o)
+    {
+        var line = o as LineFeature;
+        if (line is null && o is DividerObject d)
+            line = d.Divider.Line;
+
+        return line?.HasTopology == true;
+    }
     
-    private ContextMenuItem[] GetLineSelectedMenu() =>
+    private ContextMenuItem[] GetLineSelectedMenu(IMapObject o) =>
     [
         new("Extend...", LineExtendCommand),
         new("Subdivide", LineSubdivideCommand),
         new("Subdivide (One Distance)...", LineSubdivideOneDistanceCommand),
         new("Parallel", LineParallelCommand),
         new("Update", LineUpdateCommand),
-        new("Polygon Boundary", LinePolygonBoundaryCommand),
+        new("Polygon Boundary", LinePolygonBoundaryCommand, IsPolygonBoundary(o)),
         new("Delete", LineDeleteCommand),
         new("Trim Dangle", LineTrimDangleCommand),
         ContextMenuItem.Separator,
@@ -612,11 +608,16 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     {
         Console.WriteLine(nameof(LineUpdate));
     }
-    [RelayCommand]
+
+    [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LinePolygonBoundary()
     {
-        Console.WriteLine(nameof(LinePolygonBoundary));
+        var line = _selection.SingleOrDefault as LineFeature;
+        Debug.Assert(line is not null);
+        ClearSelection();
+        StartCommand(new SetTopologyTool(this, line));
     }
+    
     [RelayCommand(CanExecute = nameof(CanDeleteLine))]
     private void LineDelete()
     {

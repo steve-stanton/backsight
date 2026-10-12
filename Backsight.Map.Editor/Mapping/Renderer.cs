@@ -124,27 +124,7 @@ class Renderer : IMapControlRenderer
             }
             else if (item is LineFeature line)
             {
-                new Line(line).Render(canvas, new PaintStyle
-                {
-                    Color = SKColors.Red,
-                    Style = SKPaintStyle.Stroke,
-                    StrokeWidth = 5f
-                });
-
-                if (arePointsDrawn && !isMultiSelect)
-                {
-                    canvas.DrawPoint(line.StartPoint, new PaintStyle
-                    {
-                        Color = SKColors.Blue,
-                        Style = SKPaintStyle.Fill
-                    });
-
-                    canvas.DrawPoint(line.EndPoint, new PaintStyle
-                    {
-                        Color = SKColors.Aqua,
-                        Style = SKPaintStyle.Fill
-                    });
-                }
+                canvas.Highlight(line, arePointsDrawn && !isMultiSelect);
             }
             else if (item is TextFeature text)
             {

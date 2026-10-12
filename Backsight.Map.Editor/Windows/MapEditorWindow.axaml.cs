@@ -126,6 +126,7 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
                 {
                     Header = item.Header,
                     Command = item.Command,
+                    ToggleType = item.IsChecked ? MenuItemToggleType.CheckBox : MenuItemToggleType.None,
                     IsChecked = item.IsChecked
                 });
         }

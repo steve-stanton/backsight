@@ -4,7 +4,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// Edit that toggles the topological status of a line.
 /// </summary>
-class SetTopologyOperation : Operation
+public class SetTopologyOperation : Operation
 {
     /// <summary>
     /// The line altered by the edit.
@@ -24,7 +24,7 @@ class SetTopologyOperation : Operation
     /// Initializes a new instance of the <see cref="SetTopologyOperation"/> class.
     /// </summary>
     /// <param name="line">The line that needs to be changed.</param>
-    internal SetTopologyOperation(LineFeature line)
+    public SetTopologyOperation(LineFeature line)
         : base(line.MapStore)
     {
         if (line == null)
@@ -75,7 +75,7 @@ class SetTopologyOperation : Operation
     /// <summary>
     /// Executes the edit.
     /// </summary>
-    internal void Execute()
+    public void Execute()
     {
         base.Execute(new FeatureFactory(this));
     }

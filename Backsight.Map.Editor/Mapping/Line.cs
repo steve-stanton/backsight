@@ -21,7 +21,19 @@ class Line : FeatureBase
 
     protected internal override void Render(MapCanvas canvas, PaintStyle? altStyle = null)
     {
-        var style = altStyle ?? _defaultStyle;
-        canvas.DrawLine(Feature.LineGeometry, style);
+        if (altStyle is null)
+        {
+            var style = Feature.IsTopological ? _defaultStyle : new PaintStyle
+            {
+                Color = SKColors.Turquoise,
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 2f
+            };
+            canvas.DrawLine(Feature.LineGeometry, style);            
+        }
+        else
+        {
+            canvas.DrawLine(Feature.LineGeometry, altStyle.Value);
+        }
     }
 }

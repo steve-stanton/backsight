@@ -314,14 +314,22 @@ class MapCanvas : IDisposable
     /// <param name="line">The line to be highlighted.</param>
     internal void Highlight(LineFeature line)
     {
+        Highlight(line, _pointSize is not null);
+    }
+
+    internal void Highlight(LineFeature line, bool drawPoints)
+    {
+        // If we're highlighting a non-topological line, always draw it in turquoise,
+        var topological = line.IsTopological;
+        
         DrawLine(line.LineGeometry, new PaintStyle
         {
-            Color = SKColors.Red,
+            Color = topological ? SKColors.Red : SKColors.Turquoise,
             Style = SKPaintStyle.Stroke,
             StrokeWidth = 5f
         });
 
-        if (_pointSize is not null)
+        if (_pointSize is not null && drawPoints)
         {
             DrawPoint(line.StartPoint, new PaintStyle
             {
@@ -336,4 +344,5 @@ class MapCanvas : IDisposable
             });
         }
     }
+    
 }

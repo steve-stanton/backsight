@@ -29,6 +29,10 @@ internal abstract class CommandTool : IDisposable
     /// </summary>
     internal IMapStore Store => _mapStore;
 
+    /// <summary>
+    /// Runs this command tool.
+    /// </summary>
+    /// <returns>True if the tool was launched as expected. False if it did not.</returns>
     internal abstract bool Run();
 
     internal void FinishDataEntry<T>(T viewModel) where T : class
