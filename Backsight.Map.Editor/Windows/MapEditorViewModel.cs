@@ -109,12 +109,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private CommandTool? _commandTool = null;
 
     /// <summary>
-    /// Modeless dialog used to perform inverse calculations (null if dialog
-    /// is not currently displayed).
-    /// </summary>
-    //private InverseWindow? _inverseCalculator = null;
-
-    /// <summary>
     /// The application model.
     /// </summary>
     private readonly IMapEditorModel _model;
@@ -483,18 +477,10 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(CanSetDefaultEntity))]
     private void PointDefaultEntity()
     {
-        Console.WriteLine(nameof(PointDefaultEntity));
+        SetDefaultEntity(SpatialType.Point);
     }
-
+    
     private bool CanSetDefaultEntity => Store is not null;
-
-    [RelayCommand(CanExecute = nameof(CanStartInverseCalculator))]
-    private void PointInverseCalculator()
-    {
-        Console.WriteLine(nameof(PointInverseCalculator));
-    }
-
-    private bool CanStartInverseCalculator => false; //_inverseCalculator is null && ArePointsDrawn;
     
     [RelayCommand(CanExecute = nameof(CanAddFeature))]
     private void LineAddStraightLine()
@@ -502,63 +488,17 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         StartCommand(new NewLineTool(this, _selection.SingleOrDefault as Model.PointFeature));
     }
 
-    private void StartCommand(CommandTool tool)
-    {
-        if (_commandTool is not null)
-            throw new InvalidOperationException("Command tool already started");
-        
-        //if (_autoSelect)
-        //    _autoSelect = false; // TODO: Should only suspend while command is running
-
-        _commandTool = tool;
-
-        if (!_commandTool.Run())
-            _commandTool = null;
-    }
-
-    internal void ClearSelection()
-    {
-        _selection = new Selection();
-    }
-    
-    private bool CanAddFeature => _commandTool is null && Store is not null;
-
     [RelayCommand(CanExecute = nameof(CanAddFeature))]
     private void LineAddCircularArc()
     {
         Console.WriteLine(nameof(LineAddCircularArc));
     }
 
-    [RelayCommand(CanExecute = nameof(CanDeletePoint))]
-    private void PointDelete()
+    [RelayCommand(CanExecute = nameof(CanAddFeature))]
+    private void LineAddCircleConstructionLine()
     {
-        EditDelete();
+        Console.WriteLine(nameof(LineAddCircleConstructionLine));
     }
-    
-    private bool CanDeletePoint => _selection.SingleOrDefault is Model.PointFeature;
-
-    private static bool IsPolygonBoundary(IMapObject o)
-    {
-        var line = o as LineFeature;
-        if (line is null && o is DividerObject d)
-            line = d.Divider.Line;
-
-        return line?.HasTopology == true;
-    }
-    
-    private ContextMenuItem[] GetLineSelectedMenu(IMapObject o) =>
-    [
-        new("Extend...", LineExtendCommand),
-        new("Subdivide", LineSubdivideCommand),
-        new("Subdivide (One Distance)...", LineSubdivideOneDistanceCommand),
-        new("Parallel", LineParallelCommand),
-        new("Update", LineUpdateCommand),
-        new("Polygon Boundary", LinePolygonBoundaryCommand, IsPolygonBoundary(o)),
-        new("Delete", LineDeleteCommand),
-        new("Trim Dangle", LineTrimDangleCommand),
-        ContextMenuItem.Separator,
-        new("Properties", PropertiesCommand)
-    ];
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LineExtend()
@@ -567,16 +507,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         Debug.Assert(extendLine is not null);
         ClearSelection();
         StartCommand(new LineExtensionTool(this, extendLine));
-    }
-
-    /// <summary>
-    /// Checks whether a command tool involving a selected line is enabled or not.
-    /// A specific line has to be selected, and there can be no other command currently running.
-    /// </summary>
-    /// <returns></returns>
-    private bool IsLineToolEnabled()
-    {
-        return _selection.SingleOrDefault is LineFeature && _commandTool is null;
     }
     
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
@@ -618,6 +548,86 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         StartCommand(new SetTopologyTool(this, line));
     }
     
+    [RelayCommand]
+    private void LineTrimDangle()
+    {
+        Console.WriteLine(nameof(LineTrimDangle));
+    }
+    
+    [RelayCommand]
+    private void LineDefaultEntity()
+    {
+        Console.WriteLine(nameof(LineDefaultEntity));
+    }
+    
+    [RelayCommand]
+    private void LineSubdividePolygon()
+    {
+        Console.WriteLine(nameof(LineSubdividePolygon));
+    }
+
+    private void StartCommand(CommandTool tool)
+    {
+        if (_commandTool is not null)
+            throw new InvalidOperationException("Command tool already started");
+        
+        //if (_autoSelect)
+        //    _autoSelect = false; // TODO: Should only suspend while command is running
+
+        _commandTool = tool;
+
+        if (!_commandTool.Run())
+            _commandTool = null;
+    }
+
+    internal void ClearSelection()
+    {
+        _selection = new Selection();
+    }
+    
+    private bool CanAddFeature => _commandTool is null && Store is not null;
+
+    [RelayCommand(CanExecute = nameof(CanDeletePoint))]
+    private void PointDelete()
+    {
+        EditDelete();
+    }
+    
+    private bool CanDeletePoint => _selection.SingleOrDefault is Model.PointFeature;
+
+    private static bool IsPolygonBoundary(IMapObject o)
+    {
+        var line = o as LineFeature;
+        if (line is null && o is DividerObject d)
+            line = d.Divider.Line;
+
+        return line?.HasTopology == true;
+    }
+    
+    private ContextMenuItem[] GetLineSelectedMenu(IMapObject o) =>
+    [
+        new("Extend...", LineExtendCommand),
+        new("Subdivide", LineSubdivideCommand),
+        new("Subdivide (One Distance)...", LineSubdivideOneDistanceCommand),
+        new("Parallel", LineParallelCommand),
+        new("Update", LineUpdateCommand),
+        new("Polygon Boundary", LinePolygonBoundaryCommand, IsPolygonBoundary(o)),
+        new("Delete", LineDeleteCommand),
+        new("Trim Dangle", LineTrimDangleCommand),
+        ContextMenuItem.Separator,
+        new("Properties", PropertiesCommand)
+    ];
+
+    /// <summary>
+    /// Checks whether a command tool involving a selected line is enabled or not.
+    /// A specific line has to be selected, and there can be no other command currently running.
+    /// </summary>
+    /// <returns></returns>
+    private bool IsLineToolEnabled()
+    {
+        return _selection.SingleOrDefault is LineFeature && _commandTool is null;
+    }
+    
     [RelayCommand(CanExecute = nameof(CanDeleteLine))]
     private void LineDelete()
     {
@@ -625,12 +635,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
     
     private bool CanDeleteLine => _selection.SingleOrDefault is Model.LineFeature;
-    
-    [RelayCommand]
-    private void LineTrimDangle()
-    {
-        Console.WriteLine(nameof(LineTrimDangle));
-    }
     
     private ContextMenuItem[] GetTextSelectedMenu() =>
     [
@@ -642,16 +646,31 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     ];
 
     [RelayCommand]
+    private void TextAddMiscellaneousText()
+    {
+        Console.WriteLine(nameof(TextAddMiscellaneousText));
+    }
+    [RelayCommand]
+    private void TextAddPolygonLabels()
+    {
+        Console.WriteLine(nameof(TextAddPolygonLabels));
+    }
+    [RelayCommand]
     private void TextMove()
     {
         Console.WriteLine(nameof(TextMove));
     }
-
     [RelayCommand]
     private void TextMovePolygonPosition()
     {
         Console.WriteLine(nameof(TextMovePolygonPosition));
     }
+    [RelayCommand]
+    private void TextDefaultRotationAngle()
+    {
+        Console.WriteLine(nameof(TextDefaultRotationAngle));
+    }
+
     [RelayCommand(CanExecute = nameof(CanDeleteText))]
     private void TextDelete()
     {
@@ -659,6 +678,34 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     private bool CanDeleteText => _selection.SingleOrDefault is TextFeature;
+
+
+    [RelayCommand]
+    private void IntersectTwoDirections()
+    {
+        Console.WriteLine(nameof(IntersectTwoDirections));
+    }
+
+    [RelayCommand]
+    private void IntersectTwoDistances()
+    {
+        Console.WriteLine(nameof(IntersectTwoDistances));
+    }
+    [RelayCommand]
+    private void IntersectTwoLines()
+    {
+        Console.WriteLine(nameof(IntersectTwoLines));
+    }
+    [RelayCommand]
+    private void IntersectDirectionAndDistance()
+    {
+        Console.WriteLine(nameof(IntersectDirectionAndDistance));
+    }
+    [RelayCommand]
+    private void IntersectDirectionAndLine()
+    {
+        Console.WriteLine(nameof(IntersectDirectionAndLine));
+    }    
     
     private ContextMenuItem[] GetMultiSelectionMenu() =>
     [
@@ -970,10 +1017,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         // that are running so that their stuff will draw on top
         // of the highlighting.
         //OnSelect();
-
-        // If we are doing an inverse dialog, make sure its point
-        // coloring remains regardless of what is currently selected.
-        //m_Inverse?.Draw();
     }
 
     void AddOrRemoveFromSelection(IMapObject o)
@@ -1094,7 +1137,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             {
                 if (ArePointsDrawn)
                 {
-                    m_Inverse?.OnSelectPoint(selPoint);
                     m_Command?.OnSelectPoint(selPoint);
                 }
             }
@@ -1178,12 +1220,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
     
     private bool CommandNotImplemented => false;
-    
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void FileStatistics()
-    {
-        Console.WriteLine(nameof(FileStatistics));
-    }
     
     [RelayCommand]
     private void FileCoordinateSystem()
@@ -1457,4 +1493,24 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     {
         _dialogService.Show(dialog);
     }
+
+    private void SetDefaultEntity(SpatialType t)
+    {
+        /*
+        ILayer layer = ActiveLayer;
+        if (layer==null)
+            return;
+
+        IEntity e = CadastralMapModel.Current.GetDefaultEntity(t);
+        int entId = (e == null ? 0 : e.Id);
+        GetEntityForm dial = new GetEntityForm(layer, t, entId);
+        if (dial.ShowDialog() == DialogResult.OK)
+        {
+            e = dial.SelectedEntity;
+            CadastralMapModel.Current.SetDefaultEntity(t, e);
+        }
+        dial.Dispose();
+         */
+    }
+  
 }

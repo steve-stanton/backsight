@@ -54,18 +54,13 @@
                 />
                 <Separator/>
                 <MenuItem
-                    Header="Show _Changes..."
-                    Command="{Binding FileShowChangesCommand}"
+                    Header="Coordinate S_ystem..."
+                    Command="{Binding FileCoordinateSystemCommand}"
                 />
                 <Separator/>
                 <MenuItem
-                    Header="S_tatistics..."
-                    Command="{Binding FileStatisticsCommand}"
-                    ToolTip.Tip="List file statistics"
-                />
-                <MenuItem
-                    Header="Coordinate S_ystem..."
-                    Command="{Binding FileCoordinateSystemCommand}"
+                    Header="Show _Changes..."
+                    Command="{Binding FileShowChangesCommand}"
                 />
                 <MenuItem
                     Header="Chec_k..."
@@ -230,22 +225,126 @@
                     Command="{Binding PointDefaultEntityCommand}"
                     ToolTip.Tip="Specify default entity type for new points"
                 />
-                <Separator/>
-                <MenuItem
-                    Header="_Inverse Calculator..."
-                    Command="{Binding PointInverseCalculatorCommand}"
-                    ToolTip.Tip="Calculate inverse quantities"
-                />
             </MenuItem>
 
             <MenuItem Header="_Line">
-                
+                <MenuItem
+                    Header="Add Straight _Line"
+                    Command="{Binding LineAddStraightLineCommand}"
+                    ToolTip.Tip="Create line between 2 points"
+                />
+                <MenuItem
+                    Header="Add Circular _Arc"
+                    Command="{Binding LineAddCircularArcCommand}"
+                    ToolTip.Tip="Create arc between 2 points on a circle"
+                />
+                <MenuItem
+                    Header="Add _Circle Construction Line..."
+                    Command="{Binding LineAddCircleConstructionLineCommand}"
+                    ToolTip.Tip="Add a new circle"
+                />
+                <MenuItem
+                    Header="E_xtend..."
+                    Command="{Binding LineExtendCommand}"
+                    ToolTip.Tip="Add a line extension using a distance"
+                />
+                <MenuItem
+                    Header="_Subdivide Line..."
+                    Command="{Binding LineSubdivideCommand}"
+                    ToolTip.Tip="Break a line into 2 or more pieces"
+                />
+                <MenuItem
+                    Header="Subdivide Line (_One Distance)..."
+                    Command="{Binding LineSubdivideOneDistanceCommand}"
+                    ToolTip.Tip="Break a line into 2 pieces"
+                />
+                <MenuItem
+                    Header="Pa_rallel..."
+                    Command="{Binding LineParallelCommand}"
+                    ToolTip.Tip="Generate a parallel line"
+                />
+                <MenuItem
+                    Header="_Update..."
+                    Command="{Binding LineUpdateCommand}"
+                    ToolTip.Tip="Update the operation that created a line"
+                />
+                <MenuItem
+                    Header="Polygon _Boundary"
+                    Command="{Binding LinePolygonBoundaryCommand}"
+                    ToolTip.Tip="Toggle Polygon Boundary status"
+                />
+                <MenuItem
+                    Header="_Trim Dangle(s)"
+                    Command="{Binding LineTrimDangleCommand}"
+                    ToolTip.Tip="Erase dangling portions of selected line(s)"
+                />
+                <Separator/>
+                <MenuItem
+                    Header="Default _Entity..."
+                    Command="{Binding LineDefaultEntityCommand}"
+                    ToolTip.Tip="Specify default entity type for new lines"
+                />
+                <Separator/>
+                <MenuItem
+                    Header="Subdivide _Polygon"
+                    Command="{Binding LineSubdividePolygonCommand}"
+                    ToolTip.Tip="Automatically subdivide a polygon"
+                />
             </MenuItem>
             <MenuItem Header="_Text">
-                
+                <MenuItem
+                    Header="Add Miscellaneous _Text..."
+                    Command="{Binding TextAddMiscellaneousTextCommand}"
+                    ToolTip.Tip="Add a miscellaneous item of text"
+                />
+                <MenuItem
+                    Header="Add Polygon La_bels..."
+                    Command="{Binding TextAddPolygonLabelsCommand}"
+                    ToolTip.Tip="Add labels for unlabelled polygons"
+                />
+                <MenuItem
+                    Header="_Move"
+                    Command="{Binding TextMoveCommand}"
+                    ToolTip.Tip="Move the item of text"
+                />
+                <MenuItem
+                    Header="Move _Polygon Reference Position"
+                    Command="{Binding TextMovePolygonPositionCommand}"
+                    ToolTip.Tip="Move the position used to associate the label with enclosing polygon"
+                />
+                <Separator/>
+                <MenuItem
+                    Header="Default _Rotation Angle"
+                    Command="{Binding TextDefaultRotationAngleCommand}"
+                    ToolTip.Tip="Define the orientation angle for labels through two pointings"
+                />
             </MenuItem>
             <MenuItem Header="_Intersect">
-                
+                <MenuItem
+                    Header="Two di_rections..."
+                    Command="{Binding IntersectTwoDirectionsCommand}"
+                    ToolTip.Tip="Create point using two directions"
+                />
+                <MenuItem
+                    Header="Two di_stances..."
+                    Command="{Binding IntersectTwoDistancesCommand}"
+                    ToolTip.Tip="Create point using two distances"
+                />
+                <MenuItem
+                    Header="Two _lines..."
+                    Command="{Binding IntersectTwoLinesCommand}"
+                    ToolTip.Tip="Create point at intersection of two lines"
+                />
+                <MenuItem
+                    Header="Direction _and Distance..."
+                    Command="{Binding IntersectDirectionAndDistanceCommand}"
+                    ToolTip.Tip="Create point using direction &amp; distance"
+                />
+                <MenuItem
+                    Header="Directio_n and Line..."
+                    Command="{Binding IntersectDirectionAndLineCommand}"
+                    ToolTip.Tip="Create point using direction &amp; line"
+                />
             </MenuItem>
         </Menu>
             
