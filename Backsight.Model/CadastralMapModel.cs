@@ -864,8 +864,17 @@ public class CadastralMapModel
         // performance on repetitive stuff, especially sections based on sections based on sections...).
         // It's safe to play around with the geometry objects, since the spatial index only
         // references the feature objects.
+        /*
         m_Index.QueryWindow(null, SpatialType.Line, delegate(IMapObject item)
         {
+            // TODO: Is it really safe to play around with the geometry objects? When you
+            // subdivide an arc, the geometry objects are initially sections. This changes
+            // them to have ArcGeometry. But instances of LineFeature don't get changed
+            // into ArcFeatures. This means that LineFeature.GetArcBase doesn't work as
+            // expected.
+            
+            // Restricting this to sections on multi-segments would probably be ok though.
+            
             LineFeature line = (LineFeature)item;
             SectionGeometry section = (line.LineGeometry as SectionGeometry);
             if (section != null)
@@ -876,7 +885,7 @@ public class CadastralMapModel
 
             return true;
         });
-
+*/
 
         // Intersect topological lines that aren't marked for deletion
         Trace.Write("Intersecting lines");
