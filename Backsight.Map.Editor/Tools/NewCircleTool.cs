@@ -1,4 +1,5 @@
 ﻿using System;
+using Backsight.Geometry;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Windows;
 using Backsight.Model;
@@ -37,6 +38,31 @@ internal class NewCircleTool : CommandTool
             Color = SKColors.Aqua,
             Style = SKPaintStyle.Fill,
         };
+
+        var center = model.SelectedCenter ?? model.PickingCenter;
+        var radius = model.SelectedRadius ?? model.PickingRadius;
+        
+        if (center is not null)
+            canvas.DrawPoint(center, pointStyle with { Color = SKColors.DarkGray });
+        
+        if (radius is not null)
+            canvas.DrawPoint(radius, pointStyle with { Color = SKColors.LightGreen });
+
+        if (center is not null && radius is not null)
+        {
+            var pc = center.Geometry;
+            var pr = radius.Geometry;
+            var circle = new CircleGeometry(pc, BasicGeom.Distance(pc, pr));
+            var lineStyle = new PaintStyle
+            {
+                Color = SKColors.Magenta,
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 2,
+                Dashed = true
+            };
+            
+            canvas.DrawCircle(circle, lineStyle);
+        }
     }
 
     internal override bool MouseDown(IPosition p, MouseButton b)
