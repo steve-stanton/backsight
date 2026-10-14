@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Backsight.Environment;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Models;

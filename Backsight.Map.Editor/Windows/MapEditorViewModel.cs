@@ -433,19 +433,22 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         new("Properties", PropertiesCommand)
     ];
 
-    [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    //[RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void PointNew()
     {
         Console.WriteLine(nameof(PointNew));
     }
 
-    [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    //[RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void PointAddOnLine()
     {
         Console.WriteLine(nameof(PointAddOnLine));
     }
 
-    [RelayCommand(CanExecute = nameof(CanStartConnectionPath))]
+    //[RelayCommand(CanExecute = nameof(CanStartConnectionPath))]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void PointConnectionPath()
     {
         Console.WriteLine(nameof(PointConnectionPath));
@@ -466,7 +469,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     private bool CanStartSideshot => _commandTool is null && _selection.SingleOrDefault is Model.PointFeature;
 
-    [RelayCommand(CanExecute = nameof(CanStartPointUpdate))]
+    //[RelayCommand(CanExecute = nameof(CanStartPointUpdate))]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void PointUpdate()
     {
         Console.WriteLine(nameof(PointUpdate));
@@ -488,7 +492,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         StartCommand(new NewLineTool(this, _selection.SingleOrDefault as Model.PointFeature));
     }
 
-    [RelayCommand(CanExecute = nameof(CanAddFeature))]
+    //[RelayCommand(CanExecute = nameof(CanAddFeature))]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void LineAddCircularArc()
     {
         Console.WriteLine(nameof(LineAddCircularArc));
@@ -509,7 +514,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         StartCommand(new LineExtensionTool(this, extendLine));
     }
     
-    [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
+    //[RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void LineSubdivide()
     {
         Console.WriteLine(nameof(LineSubdivide));
@@ -533,7 +539,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         StartCommand(new ParallelTool(this, refLine));
     }
     
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void LineUpdate()
     {
         Console.WriteLine(nameof(LineUpdate));
@@ -548,7 +555,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         StartCommand(new SetTopologyTool(this, line));
     }
     
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void LineTrimDangle()
     {
         Console.WriteLine(nameof(LineTrimDangle));
@@ -560,7 +568,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         await SetDefaultEntity(SpatialType.Line);
     }
     
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void LineSubdividePolygon()
     {
         Console.WriteLine(nameof(LineSubdividePolygon));
@@ -645,27 +654,32 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         new("Properties", PropertiesCommand)
     ];
 
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void TextAddMiscellaneousText()
     {
         Console.WriteLine(nameof(TextAddMiscellaneousText));
     }
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void TextAddPolygonLabels()
     {
         Console.WriteLine(nameof(TextAddPolygonLabels));
     }
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void TextMove()
     {
         Console.WriteLine(nameof(TextMove));
     }
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void TextMovePolygonPosition()
     {
         Console.WriteLine(nameof(TextMovePolygonPosition));
     }
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void TextDefaultRotationAngle()
     {
         Console.WriteLine(nameof(TextDefaultRotationAngle));
@@ -680,28 +694,33 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private bool CanDeleteText => _selection.SingleOrDefault is TextFeature;
 
 
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void IntersectTwoDirections()
     {
         Console.WriteLine(nameof(IntersectTwoDirections));
     }
 
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void IntersectTwoDistances()
     {
         Console.WriteLine(nameof(IntersectTwoDistances));
     }
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void IntersectTwoLines()
     {
         Console.WriteLine(nameof(IntersectTwoLines));
     }
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void IntersectDirectionAndDistance()
     {
         Console.WriteLine(nameof(IntersectDirectionAndDistance));
     }
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void IntersectDirectionAndLine()
     {
         Console.WriteLine(nameof(IntersectDirectionAndLine));
@@ -713,12 +732,14 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         new("Trim Dangles", MultiTrimCommand),
     ];
 
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void MultiDelete()
     {
         Console.WriteLine(nameof(MultiDelete));
     }
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void MultiTrim()
     {
         Console.WriteLine(nameof(MultiTrim));
@@ -783,7 +804,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         _mapData.Navigator.ZoomToBox(extent.ToMRect());
     }
 
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void DrawScale()
     {
         Console.WriteLine("Click5");
@@ -828,13 +850,15 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         _mapData.RefreshGraphics();
     }
     
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void Previous()
     {
         Console.WriteLine(nameof(Previous));
     }
 
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void Next()
     {
         Console.WriteLine(nameof(Next));
@@ -1221,13 +1245,15 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     
     private bool CommandNotImplemented => false;
     
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void FileCoordinateSystem()
     {
         Console.WriteLine(nameof(FileCoordinateSystem));
     }
     
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private async Task FileCheck()
     {
         Console.WriteLine(nameof(FileCheck));
@@ -1269,31 +1295,36 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         return _selection.Count > 0;
     }
 
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void EditUndo()
     {
         Console.WriteLine(nameof(EditUndo));
     }
 
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void EditRepeat()
     {
         Console.WriteLine(nameof(EditRepeat));
     }
 
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void EditRecall()
     {
         Console.WriteLine(nameof(EditRecall));
     }
 
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void EditOperationHistory()
     {
         Console.WriteLine(nameof(EditOperationHistory));
     }
     
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void EditIdAllocations()
     {
         Console.WriteLine(nameof(EditIdAllocations));
