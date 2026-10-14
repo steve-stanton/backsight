@@ -133,6 +133,13 @@ class MapCanvas : IDisposable
         _canvas.DrawArc(rect, (float)startAngle, (float)sweepAngle, false, GetPaint(style));
     }
 
+    internal void DrawCircle(ICircleGeometry circle, PaintStyle style)
+    {
+        var center = _viewport.ToScreenPoint(circle.Center);
+        var radius = circle.Radius / _viewport.Resolution;
+        _canvas.DrawCircle(center, (float)radius, GetPaint(style));
+    }
+
     internal void DrawText(TextGeometry geom, PaintStyle style)
     {
         /*

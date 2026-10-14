@@ -1,4 +1,6 @@
-﻿using Backsight.Model;
+﻿using System;
+using Backsight.Model;
+using Backsight.Model.Operations;
 using SkiaSharp;
 
 namespace Backsight.Map.Editor.Mapping;
@@ -29,7 +31,12 @@ class Line : FeatureBase
                 Style = SKPaintStyle.Stroke,
                 StrokeWidth = 2f
             };
-            canvas.DrawLine(Feature.LineGeometry, style);            
+
+            var geom = Feature.LineGeometry;
+            if (geom is ArcGeometry arc && arc.IsCircle)
+                canvas.DrawCircle(arc.Circle, style with { Dashed = true, StrokeWidth = 4f });
+            else
+                canvas.DrawLine(geom, style);            
         }
         else
         {

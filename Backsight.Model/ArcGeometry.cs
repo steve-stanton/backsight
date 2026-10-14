@@ -430,7 +430,7 @@ public class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry, IFeatu
     /// <summary>
     /// Does this curve represents a complete circle?
     /// </summary>
-    internal bool IsCircle => BC.IsCoincident(EC);
+    public bool IsCircle => BC.IsCoincident(EC);
 
     /// <summary>
     /// Gets the most easterly position for this arc.
