@@ -33,7 +33,7 @@ class Line : FeatureBase
             };
 
             var geom = Feature.LineGeometry;
-            if (geom is ArcGeometry arc && arc.IsCircle)
+            if (geom is ArcGeometry { IsCircle: true } arc)
                 canvas.DrawCircle(arc.Circle, style with { Dashed = true, StrokeWidth = 4f });
             else
                 canvas.DrawLine(geom, style);            

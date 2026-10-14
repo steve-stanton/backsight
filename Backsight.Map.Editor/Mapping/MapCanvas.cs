@@ -326,15 +326,30 @@ class MapCanvas : IDisposable
 
     internal void Highlight(LineFeature line, bool drawPoints)
     {
-        // If we're highlighting a non-topological line, always draw it in turquoise,
-        var topological = line.IsTopological;
-        
-        DrawLine(line.LineGeometry, new PaintStyle
+        var geom = line.LineGeometry;
+        if (geom is ArcGeometry { IsCircle: true } arc)
         {
-            Color = topological ? SKColors.Red : SKColors.Turquoise,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = 5f
-        });
+            // Circle construction lines are kind of unusual
+            DrawCircle(arc.Circle, new PaintStyle
+            {
+                Color = SKColors.HotPink,
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 5f,
+                Dashed = true
+            });
+        }
+        else
+        {
+            // If we're highlighting a non-topological line, always draw it in turquoise,
+            var topological = line.IsTopological;
+
+            DrawLine(line.LineGeometry, new PaintStyle
+            {
+                Color = topological ? SKColors.Red : SKColors.Turquoise,
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 5f
+            });
+        }
 
         if (_pointSize is not null && drawPoints)
         {
