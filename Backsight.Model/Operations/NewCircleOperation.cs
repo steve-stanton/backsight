@@ -29,7 +29,7 @@ public class NewCircleOperation : NewLineOperation, IRecallable //, IRevisable
     /// <param name="center">The point at the center of the circle.</param>
     /// <param name="radius">The radius of the circle (either a <see cref="Distance"/> object,
     /// or an <see cref="OffsetPoint"/> that sits on the circumference of the circle.</param>
-    internal NewCircleOperation(PointFeature center, Observation radius)
+    public NewCircleOperation(PointFeature center, Observation radius)
         : base(center.MapStore)
     {
         m_Center = center;
@@ -194,7 +194,7 @@ public class NewCircleOperation : NewLineOperation, IRecallable //, IRevisable
     /// <summary>
     /// Executes this new circle operation.
     /// </summary>
-    internal void Execute()
+    public void Execute()
     {
         FeatureFactory ff = new FeatureFactory(this);
 

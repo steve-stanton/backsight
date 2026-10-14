@@ -497,7 +497,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(CanAddFeature))]
     private void LineAddCircleConstructionLine()
     {
-        Console.WriteLine(nameof(LineAddCircleConstructionLine));
+        StartCommand(new NewCircleTool(this));
     }
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]

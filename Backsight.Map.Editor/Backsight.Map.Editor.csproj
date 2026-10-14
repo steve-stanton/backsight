@@ -109,5 +109,8 @@
       <Compile Update="Windows\GetEntityViewModel.cs">
         <DependentUpon>GetEntityWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\NewCircleViewModel.cs">
+        <DependentUpon>NewCircleWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>
