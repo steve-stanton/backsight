@@ -106,5 +106,8 @@
       <Compile Update="Windows\SimpleLineSubdivisionViewModel.cs">
         <DependentUpon>SimpleLineSubdivisionWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\GetEntityViewModel.cs">
+        <DependentUpon>GetEntityWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

@@ -19,4 +19,14 @@ public record LayerDefaults(
     int PointType,
     int LineType,
     int PolygonType,
-    int TextType);
+    int TextType)
+{
+    public int DefaultType(SpatialType t) => t switch
+    {
+        SpatialType.Point => PointType,
+        SpatialType.Line => LineType,
+        SpatialType.Polygon => PolygonType,
+        SpatialType.Text => TextType,
+        _ => 0
+    };
+}

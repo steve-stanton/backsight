@@ -39,3 +39,27 @@ public interface ILayer : IEnvironmentItem
     /// </summary>
     int ThemeSequence { get; }
 }
+
+public static class ILayerEx
+{
+    extension(ILayer layer)
+    {
+        /// <summary>
+        /// The default entity type for a specific spatial type.
+        /// </summary>
+        /// <param name="type">The spatial type.</param>
+        /// <returns>The corresponding entity type (null if the supplied type is not one
+        /// of the fundamental spatial types).</returns>
+        public IEntity? GetDefaultEntity(SpatialType type)
+        {
+            return type switch
+            {
+                SpatialType.Point => layer.DefaultPointType,
+                SpatialType.Line => layer.DefaultLineType,
+                SpatialType.Text => layer.DefaultTextType,
+                SpatialType.Polygon => layer.DefaultPolygonType,
+                _ => null
+            };
+        }
+    }
+}

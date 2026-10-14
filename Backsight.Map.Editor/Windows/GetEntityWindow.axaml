@@ -1,0 +1,50 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="viewModel:GetEntityViewModel"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+        Width="400" Height="450"
+        x:Class="Backsight.Map.Editor.Windows.GetEntityWindow"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        Title="GetEntityWindow">
+    
+    <GroupBox Header="{Binding Heading}" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="10">
+        <Grid RowDefinitions="* Auto Auto">
+            <ListBox Grid.Row="0"
+                BorderBrush="DarkGray"
+                BorderThickness="1"
+                Margin="10"
+                SelectedItem="{Binding SelectedEntityType}"
+                ItemsSource="{Binding EntityTypes}"/>
+                
+            <CheckBox Grid.Row="1"
+                Content="Polygon Boundary"
+                HorizontalAlignment="Center"
+                IsVisible="{Binding LineEntities}"
+                IsChecked="{Binding IsPolygonBoundary}"/>
+            
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Button
+                    Content="OK"
+                    IsDefault="True"
+                    FontWeight="Bold"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding OkCommand}" />
+                <Button
+                    Content="Cancel"
+                    IsCancel="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding CancelCommand}" />
+            </StackPanel>
+            
+        </Grid>
+    </GroupBox>
+</Window>

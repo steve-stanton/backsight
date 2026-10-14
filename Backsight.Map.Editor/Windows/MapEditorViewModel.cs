@@ -475,9 +475,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private bool CanStartPointUpdate => _commandTool is null && _selection.SingleOrDefault is Model.PointFeature;
 
     [RelayCommand(CanExecute = nameof(CanSetDefaultEntity))]
-    private void PointDefaultEntity()
+    private async Task PointDefaultEntity()
     {
-        SetDefaultEntity(SpatialType.Point);
+        await SetDefaultEntity(SpatialType.Point);
     }
     
     private bool CanSetDefaultEntity => Store is not null;
@@ -554,10 +554,10 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         Console.WriteLine(nameof(LineTrimDangle));
     }
     
-    [RelayCommand]
-    private void LineDefaultEntity()
+    [RelayCommand(CanExecute = nameof(CanSetDefaultEntity))]
+    private async Task LineDefaultEntity()
     {
-        Console.WriteLine(nameof(LineDefaultEntity));
+        await SetDefaultEntity(SpatialType.Line);
     }
     
     [RelayCommand]
@@ -1494,23 +1494,36 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         _dialogService.Show(dialog);
     }
 
-    private void SetDefaultEntity(SpatialType t)
+    private async Task SetDefaultEntity(SpatialType t)
     {
-        /*
-        ILayer layer = ActiveLayer;
-        if (layer==null)
+        if (Settings is null)
             return;
 
-        IEntity e = CadastralMapModel.Current.GetDefaultEntity(t);
-        int entId = (e == null ? 0 : e.Id);
-        GetEntityForm dial = new GetEntityForm(layer, t, entId);
-        if (dial.ShowDialog() == DialogResult.OK)
+        var layer = _model.Environment.Find<Environment.ILayer>(Settings.ActiveLayer);
+        if (layer is null)
+            return;
+
+        var oldDefaults = Settings.GetDefaults(layer);
+        
+        var dialog = new GetEntityWindow(_model.Environment, layer, oldDefaults.DefaultType(t), t);
+        var result = await _dialogService.ShowDialog(dialog);
+
+        if (result == DialogResult.OK)
         {
-            e = dial.SelectedEntity;
-            CadastralMapModel.Current.SetDefaultEntity(t, e);
+            Debug.Assert(dialog.ViewModel.SelectedEntityType is not null);
+            var entityTypeId = dialog.ViewModel.SelectedEntityType.Id;
+
+            var newDefaults = t switch
+            {
+                SpatialType.Point => oldDefaults with { PointType = entityTypeId },
+                SpatialType.Line => oldDefaults with { LineType = entityTypeId },
+                SpatialType.Text => oldDefaults with { TextType = entityTypeId },
+                SpatialType.Polygon => oldDefaults with { PolygonType = entityTypeId },
+                _ => throw new NotImplementedException(t.ToString()),
+            };
+            
+            Settings.ReplaceDefaults(newDefaults);
+            _model.MapRepository.SaveMapSettings(_model.MapName, Settings);
         }
-        dial.Dispose();
-         */
     }
-  
 }

@@ -66,15 +66,6 @@ public interface IEntity : IEnvironmentItem
     bool IsTextValid { get; }
 
     /// <summary>
-    /// Checks whether this entity type can be associated with the supplied spatial data type.
-    /// This should end up calling an implementation of an <c>Is*Valid</c> property.
-    /// </summary>
-    /// <param name="t">The type of data to check (could conceivably be a combination
-    /// of types)</param>
-    /// <returns>True if this entity type can be associated with the spatial data type</returns>
-    bool IsValid(SpatialType t);
-
-    /// <summary>
     /// The table(s) that are usually associated with this entity type.
     /// </summary>
     ITable[] DefaultTables { get; }
@@ -82,4 +73,23 @@ public interface IEntity : IEnvironmentItem
     IIdGroup IdGroup { get; }
     ILayer Layer { get; }
     IFont Font { get; }
+}
+
+public static class IEntityEx
+{
+    extension(IEntity e)
+    {
+        /// <summary>
+        /// Checks whether this entity type can be associated with the supplied spatial data type.
+        /// </summary>
+        /// <param name="t">The type of data to check (could conceivably be a combination of types).</param>
+        /// <returns>True if this entity type can be associated with the spatial data type.</returns>
+        public bool IsValid(SpatialType t)
+        {
+            return (t.HasFlag(SpatialType.Point) && e.IsPointValid) ||
+                   (t.HasFlag(SpatialType.Line) && e.IsLineValid) ||
+                   (t.HasFlag(SpatialType.Text) && e.IsTextValid) ||
+                   (t.HasFlag(SpatialType.Polygon) && e.IsPolygonValid);
+        }        
+    }
 }

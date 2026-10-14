@@ -244,8 +244,15 @@ public class MapSettings
     /// <summary>
     /// The defaults for the currently active map layer (null if defaults have not been attached).
     /// </summary>
-    public LayerDefaults? Defaults => _layerDefaults.FirstOrDefault(x => x.LayerId == _activeLayer); 
-    
+    [JsonIgnore]
+    public LayerDefaults? Defaults => _layerDefaults.FirstOrDefault(x => x.LayerId == _activeLayer);
+
+    public List<LayerDefaults> LayerDefaults
+    {
+        get => _layerDefaults;
+        init => _layerDefaults = Set(value);
+    }
+
     /// <summary>
     /// Gets the defaults for a specific map layer (attaching layer defaults if necessary).
     /// </summary>

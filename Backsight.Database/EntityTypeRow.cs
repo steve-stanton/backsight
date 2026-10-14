@@ -86,18 +86,5 @@ internal partial class EntityTypeRow : Row, IEntity, ISetEntity
         set => FontId = value?.Id ?? 0;
     }
 
-    /// <summary>
-    /// Checks whether this entity type can be associated with the supplied spatial data type.
-    /// </summary>
-    /// <param name="t">The type of data to check (could conceivably be a combination of types).</param>
-    /// <returns>True if this entity type can be associated with the spatial data type.</returns>
-    public bool IsValid(SpatialType t)
-    {
-        return ((t & SpatialType.Point) != 0 && IsPointValid) ||
-               ((t & SpatialType.Line) != 0 && IsLineValid) ||
-               ((t & SpatialType.Text) != 0 && IsTextValid) ||
-               ((t & SpatialType.Polygon) != 0 && IsPolygonValid);
-    }
-
     public ITable[] DefaultTables => Repository.FindAssociatedTables(this).ToArray();
 }
