@@ -354,7 +354,7 @@ class CadastralMapModel : ISpatialModel
                 else if (!object.ReferenceEquals(nativeId, existingId))
                     throw new Exception("More than one native ID object for: "+nativeId.RawId);
             }
-            else
+            else if (fid is not null)
             {
                 throw new NotImplementedException("Unsupported ID type: " + fid.GetType().Name);
             }
