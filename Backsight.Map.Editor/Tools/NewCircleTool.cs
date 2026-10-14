@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using Backsight.Geometry;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Windows;
 using Backsight.Model;
+using Backsight.Model.Observations;
+using Backsight.Model.Operations;
 using SkiaSharp;
 
 namespace Backsight.Map.Editor.Tools;
@@ -25,7 +28,40 @@ internal class NewCircleTool : CommandTool
 
     protected override bool Finish()
     {
-        Console.WriteLine("finish");
+        var model = _dialog.ViewModel;
+        var center = model.SelectedCenter ?? throw new InvalidOperationException("Center not selected");
+        var radius = model.SelectedRadius ?? throw new InvalidOperationException("Radius not selected");
+        
+        /*
+        // If we are doing an update, alter the original operation.
+        UpdateUI? pup = this.Update;
+
+        if (pup is not null)
+        {
+            // Get the original operation.
+            NewCircleOperation pop = (pup.GetOp() as NewCircleOperation);
+            if (pop==null)
+            {
+                MessageBox.Show("NewCircleUI.DialFinish - Unexpected edit type.");
+                return false;
+            }
+
+            pop.Correct(center, radius);
+        }
+        else
+        {
+        */
+        
+        // The old system allowed specification of radius via an entered distance,
+        // but the distance had to be on the mapping plane. That was a bit of a hack
+        // because conversion of a ground dimension depends on a scaling factor that
+        // could potentially vary around the circumference of the circle. The new
+        // system will only let you specify a radius via an offset point - the operation
+        // will take an observed distance only for the sake of backward compatibility.
+        
+        var op = new NewCircleOperation(center, new OffsetPoint(radius));
+        op.Execute();
+
         return base.Finish();
     }
 
