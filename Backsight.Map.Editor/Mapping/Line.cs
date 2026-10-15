@@ -34,13 +34,35 @@ class Line : FeatureBase
 
             var geom = Feature.LineGeometry;
             if (geom is ArcGeometry { IsCircle: true } arc)
+            {
                 canvas.DrawCircle(arc.Circle, style with { Dashed = true, StrokeWidth = 4f });
+            }
             else
-                canvas.DrawLine(geom, style);            
+            {
+                // If we're dealing with a line that's been divided into at least two sections,
+                // and the line is marked as trimmed, ensure we only render the non-dangling sections.
+                RenderLine(canvas, style);
+            }
         }
         else
         {
             canvas.DrawLine(Feature.LineGeometry, altStyle.Value);
+        }
+    }
+
+    private void RenderLine(MapCanvas canvas, PaintStyle style)
+    {
+        if (Feature is { IsTrimmed: true, Topology: SectionTopologyList sectionList })
+        {
+            foreach (var divider in sectionList)
+            {
+                if (sectionList.IsVisible(divider))
+                    canvas.DrawLine(divider.LineGeometry, style);
+            }
+        }
+        else
+        {
+            canvas.DrawLine(Feature.LineGeometry, style);
         }
     }
 }

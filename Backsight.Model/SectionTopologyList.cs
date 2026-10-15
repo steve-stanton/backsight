@@ -240,17 +240,16 @@ public class SectionTopologyList : Topology
     }
 
     /// <summary>
-    /// Will a divider associated with this topology be drawn by the <see cref="RenderTrimmed"/>
-    /// method?
+    /// Should a divider associated with this topology be displayed?
     /// </summary>
     /// <param name="d">One of the dividers in this list</param>
     /// <returns>True if the divider coincides with a dangling portion of the line.</returns>
-    internal bool IsVisible(IDivider d)
+    public bool IsVisible(IDivider d)
     {
-        if (Object.ReferenceEquals(d, FirstDivider))
+        if (ReferenceEquals(d, FirstDivider))
             return !Line.IsStartDangle();
 
-        if (Object.ReferenceEquals(d, LastDivider))
+        if (ReferenceEquals(d, LastDivider))
             return !Line.IsEndDangle();
 
         return true;

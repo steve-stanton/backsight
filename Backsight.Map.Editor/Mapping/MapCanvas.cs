@@ -329,10 +329,13 @@ class MapCanvas : IDisposable
         var geom = line.LineGeometry;
         if (geom is ArcGeometry { IsCircle: true } arc)
         {
-            // Circle construction lines are kind of unusual
+            // Circle construction lines are kind of unusual. So long as the stroke width used here is different
+            // from the stroke width normally used for construction lines, this should give us a pattern of red
+            // and turquoise dashes
+            
             DrawCircle(arc.Circle, new PaintStyle
             {
-                Color = SKColors.HotPink,
+                Color = SKColors.Red,
                 Style = SKPaintStyle.Stroke,
                 StrokeWidth = 5f,
                 Dashed = true
@@ -340,15 +343,32 @@ class MapCanvas : IDisposable
         }
         else
         {
-            // If we're highlighting a non-topological line, always draw it in turquoise,
-            var topological = line.IsTopological;
-
-            DrawLine(line.LineGeometry, new PaintStyle
+            // Always Highlight non-topological lines in turquoise
+            var lineStyle = new PaintStyle
             {
-                Color = topological ? SKColors.Red : SKColors.Turquoise,
+                Color = line.IsTopological ? SKColors.Red : SKColors.Turquoise,
                 Style = SKPaintStyle.Stroke,
                 StrokeWidth = 5f
-            });
+            };
+
+            if (line is { IsTrimmed: true, Topology: SectionTopologyList sectionList })
+            {
+                foreach (var divider in sectionList)
+                {
+                    // Highlight the dangling sections with a thinner dashed line (if it's too wide, short
+                    // dangles may end up showing with more widely spaced dashes, making them more difficult
+                    // to see)
+
+                    if (sectionList.IsVisible(divider))
+                        DrawLine(divider.LineGeometry, lineStyle);
+                    else
+                        DrawLine(divider.LineGeometry, lineStyle with { StrokeWidth = 2f, Dashed = true });
+                }
+            }
+            else
+            {
+                DrawLine(line.LineGeometry, lineStyle);
+            }
         }
 
         if (_pointSize is not null && drawPoints)

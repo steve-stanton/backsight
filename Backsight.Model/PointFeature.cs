@@ -163,19 +163,19 @@ public class PointFeature : Feature, IPoint, ITerminal, IMapPoint
     /// <summary>
     /// Does this point occur at the end of a trimmed dangling line?
     /// </summary>
-    private bool IsTrimPoint()
+    public bool IsTrimPoint()
     {
         // The point has to be marked as trimmed
         if (!IsTrimmed)
             return false;
 
         // There has to be exactly one incident boundary
-        IDivider[] divs = IncidentDividers();
-        if (divs.Length!=1)
+        var div = IncidentDividers()?.SingleOrDefault();
+        if (div is null)
             return false;
 
         // The divider must be invisible
-        return !divs[0].IsVisible;
+        return !div.IsVisible;
     }
 
     public override IWindow Extent => m_Geom.Extent;

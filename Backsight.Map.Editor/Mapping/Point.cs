@@ -20,6 +20,7 @@ internal class Point : FeatureBase
 
     protected internal override void Render(MapCanvas canvas, PaintStyle? altStyle = null)
     {
-        canvas.DrawPoint(Feature.Geometry, altStyle ?? _defaultStyle);
+        if (!Feature.IsTrimPoint())
+            canvas.DrawPoint(Feature.Geometry, altStyle ?? _defaultStyle);
     }
 }
