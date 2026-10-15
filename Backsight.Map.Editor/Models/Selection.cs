@@ -82,6 +82,11 @@ internal class Selection : IMapSelection
     /// The one and only item in this selection (null if the selection is empty, or
     /// it contains more than one item).
     /// </summary>
+    /// <remarks>
+    /// The returned item may be a section on a line (an instance of <see cref="DividerObject"/>
+    /// rather than an instance of <see cref="LineFeature" />). If you are looking for a single
+    /// line, it may be better to work with the <see cref="SingleOrDefaultLine"/> property.
+    /// </remarks>
     internal IMapObject? SingleOrDefault
     {
         get
@@ -92,6 +97,12 @@ internal class Selection : IMapSelection
             return m_Items.Count == 1 ? m_Items[0] : null;
         }
     }
+
+    /// <summary>
+    /// The one and only line in this selection (null if the selection is empty, or
+    /// it contains more than one item).
+    /// </summary>
+    internal LineFeature? SingleOrDefaultLine  => m_Items is [LineFeature line] ? line : null;
 
     /// <summary>
     /// The number of items in the selection

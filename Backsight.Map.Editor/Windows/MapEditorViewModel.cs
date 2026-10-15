@@ -508,7 +508,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LineExtend()
     {
-        var extendLine = _selection.SingleOrDefault as LineFeature;
+        var extendLine = _selection.SingleOrDefaultLine;
         Debug.Assert(extendLine is not null);
         ClearSelection();
         StartCommand(new LineExtensionTool(this, extendLine));
@@ -524,7 +524,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LineSubdivideOneDistance()
     {
-        var line = _selection.SingleOrDefault as LineFeature;
+        var line = _selection.SingleOrDefaultLine;
         Debug.Assert(line is not null);
         ClearSelection();
         StartCommand(new SimpleLineSubdivisionTool(this, line));
@@ -533,7 +533,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LineParallel()
     {
-        var refLine = _selection.SingleOrDefault as LineFeature;
+        var refLine = _selection.SingleOrDefaultLine;
         Debug.Assert(refLine is not null);
         ClearSelection();
         StartCommand(new ParallelTool(this, refLine));
@@ -549,7 +549,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LinePolygonBoundary()
     {
-        var line = _selection.SingleOrDefault as LineFeature;
+        var line = _selection.SingleOrDefaultLine;
         Debug.Assert(line is not null);
         ClearSelection();
         StartCommand(new SetTopologyTool(this, line));
@@ -634,7 +634,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// <returns></returns>
     private bool IsLineToolEnabled()
     {
-        return _selection.SingleOrDefault is LineFeature && _commandTool is null;
+        return _commandTool is null && _selection.SingleOrDefaultLine is not null;
     }
     
     [RelayCommand(CanExecute = nameof(CanDeleteLine))]
@@ -642,8 +642,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     {
         EditDelete();
     }
-    
-    private bool CanDeleteLine => _selection.SingleOrDefault is Model.LineFeature;
+
+    private bool CanDeleteLine => _selection.SingleOrDefaultLine is not null;
     
     private ContextMenuItem[] GetTextSelectedMenu() =>
     [
