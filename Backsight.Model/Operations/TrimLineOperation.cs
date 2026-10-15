@@ -4,7 +4,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// Operation to assign "trim" status to dangling lines.
 /// </summary>
-class TrimLineOperation : Operation, IFeatureRefArray
+public class TrimLineOperation : Operation, IFeatureRefArray
 {
     /// <summary>
     /// Filters a list of features, returning any lines that are suitable
@@ -13,7 +13,7 @@ class TrimLineOperation : Operation, IFeatureRefArray
     /// <param name="things">The list to validate</param>
     /// <returns>The elements in <paramref name="things"/> that can be trimmed (may
     /// be an empty array)</returns>
-    internal static LineFeature[] PreCheck(IEnumerable<IMapObject> things)
+    public static LineFeature[] PreCheck(IEnumerable<IMapObject> things)
     {
         var result = new List<LineFeature>();
 
@@ -34,7 +34,7 @@ class TrimLineOperation : Operation, IFeatureRefArray
     /// <returns>The supplied candidate, cast to a line (given that the candidate is
     /// suitable for trimming). Null if the candidate is not a line, or not suitable
     /// for trimming.</returns>
-    static LineFeature? PreCheck(IMapObject thing)
+    private static LineFeature? PreCheck(IMapObject thing)
     {
         // It has no be a line
         if (thing is not LineFeature line)
@@ -75,7 +75,7 @@ class TrimLineOperation : Operation, IFeatureRefArray
     /// Initializes a new instance of the <see cref="TrimLineOperation"/> class
     /// </summary>
     /// <param name="store">The map store this operation is part of.</param>
-    internal TrimLineOperation(IMapStore store)
+    public TrimLineOperation(IMapStore store)
         : base(store)
     {
         m_Lines = null;
@@ -166,7 +166,7 @@ class TrimLineOperation : Operation, IFeatureRefArray
     /// </summary>
     /// <param name="lines">The lines to trim (previously validated via a call
     /// to the static <see cref="PreCheck"/> method).</param>
-    internal void Execute(LineFeature[] lines)
+    public void Execute(LineFeature[] lines)
     {
         m_Lines = lines;
 

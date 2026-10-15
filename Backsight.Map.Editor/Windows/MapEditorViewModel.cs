@@ -555,11 +555,27 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         StartCommand(new SetTopologyTool(this, line));
     }
     
-    //[RelayCommand]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void LineTrimDangle()
+    [RelayCommand(CanExecute = "IsLineTrimDanglesEnabled")]
+    private async Task LineTrimDangles()
     {
-        Console.WriteLine(nameof(LineTrimDangle));
+        var tool = new TrimDanglesTool(this);
+        if (!tool.Run())
+        {
+            await _dialogService.ShowMessageBox(
+                """
+                Possible reasons:
+
+                1. Lines have to be dangling.
+                2. Only lines that are polygon boundaries can be trimmed.
+                3. There has to be something left after trimming a line.
+                """, "Nothing can be trimmed"
+            );
+        }
+    }
+
+    private bool IsLineTrimDanglesEnabled()
+    {
+        return _commandTool is null && _selection.Items.Any(x => x is LineFeature);
     }
     
     [RelayCommand(CanExecute = nameof(CanSetDefaultEntity))]
@@ -622,7 +638,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         new("Update", LineUpdateCommand),
         new("Polygon Boundary", LinePolygonBoundaryCommand, IsPolygonBoundary(o)),
         new("Delete", LineDeleteCommand),
-        new("Trim Dangle", LineTrimDangleCommand),
+        new("Trim Dangles", LineTrimDanglesCommand),
         ContextMenuItem.Separator,
         new("Properties", PropertiesCommand)
     ];
@@ -885,7 +901,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     private bool CanExecuteViewPropertiesWindow => Store is not null;
         
-    [RelayCommand]
+    //[RelayCommand]
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void Properties()
     {
         // TODO: Display the properties of the currently selected feature

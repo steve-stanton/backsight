@@ -275,7 +275,7 @@
                 />
                 <MenuItem
                     Header="_Trim Dangle(s)"
-                    Command="{Binding LineTrimDangleCommand}"
+                    Command="{Binding LineTrimDanglesCommand}"
                     ToolTip.Tip="Erase dangling portions of selected line(s)"
                 />
                 <Separator/>
