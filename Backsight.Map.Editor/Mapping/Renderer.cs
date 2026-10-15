@@ -112,15 +112,23 @@ class Renderer : IMapControlRenderer
         var drawTypes = _viewModel.GetTypesAtCurrentScale();
         var arePointsDrawn = drawTypes.HasFlag(SpatialType.Point);
         
+        var selectionStyle = new PaintStyle
+        {
+            Color = SKColors.Red,
+            Style = SKPaintStyle.Fill
+        };
+        
         foreach (var item in _viewModel.Selection.Items)
         {
             if (item is Model.PointFeature pt)
             {
-                new Point(pt).Render(canvas, new PaintStyle
-                {
-                    Color = SKColors.Red,
-                    Style = SKPaintStyle.Fill
-                });
+                // Points marked as trimmed are normally invisible on draws, but should be rendered
+                // if they're part of a selection
+                
+                if (pt.IsTrimPoint())
+                    canvas.DrawPoint(pt, selectionStyle with { Style = SKPaintStyle.Stroke, StrokeWidth = 2 });
+                else
+                    canvas.DrawPoint(pt, selectionStyle);
             }
             else if (item is LineFeature line)
             {
@@ -128,11 +136,7 @@ class Renderer : IMapControlRenderer
             }
             else if (item is TextFeature text)
             {
-                new Text(text).Render(canvas, new PaintStyle
-                {
-                    Color = SKColors.Red,
-                    Style = SKPaintStyle.Fill
-                });
+                canvas.DrawText(text.TextGeometry, selectionStyle);
             }
             else if (item is Polygon pol)
             {
@@ -148,6 +152,7 @@ class Renderer : IMapControlRenderer
         var section = _viewModel.Selection.LineSection;
         if (section is not null)
         {
+            // If it's a trimmed dangling section, this will partly occlude red dashes already highlighted
             canvas.DrawLine(section, new PaintStyle
             {
                 Color = SKColors.Yellow,

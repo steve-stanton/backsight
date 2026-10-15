@@ -355,14 +355,15 @@ class MapCanvas : IDisposable
             {
                 foreach (var divider in sectionList)
                 {
-                    // Highlight the dangling sections with a thinner dashed line (if it's too wide, short
+                    // Highlight the dangling sections with a slightly thinner dashed line (if it's too wide, short
                     // dangles may end up showing with more widely spaced dashes, making them more difficult
-                    // to see)
+                    // to see). Bear in mind that if the dangling section has actually been selected, a yellow
+                    // overlay will later be rendered on top.
 
                     if (sectionList.IsVisible(divider))
                         DrawLine(divider.LineGeometry, lineStyle);
                     else
-                        DrawLine(divider.LineGeometry, lineStyle with { StrokeWidth = 2f, Dashed = true });
+                        DrawLine(divider.LineGeometry, lineStyle with { StrokeWidth = 3f, Dashed = true });
                 }
             }
             else
