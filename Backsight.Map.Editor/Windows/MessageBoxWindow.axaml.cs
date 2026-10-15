@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Backsight.Map.Editor.Windows;
+﻿namespace Backsight.Map.Editor.Windows;
 
 public partial class MessageBoxWindow : DialogWindow<MessageBoxViewModel>
 {

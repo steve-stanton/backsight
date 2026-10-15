@@ -4,10 +4,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="viewModel:MessageBoxViewModel"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
-        Width="400" Height="200"
+        MinWidth="400" MinHeight="200"
         x:Class="Backsight.Map.Editor.Windows.MessageBoxWindow"
         WindowDecorations="None"
         WindowStartupLocation="CenterOwner"
+        SizeToContent="WidthAndHeight"
         Title="MessageBoxWindow">
 
     <GroupBox Header="{Binding Heading}"
@@ -21,11 +22,9 @@
             <TextBlock
                 Grid.Row="0"
                 Text="{Binding Message}"
-                TextWrapping="Wrap"
                 HorizontalAlignment="Center"
                 FontSize="14"
-                FontWeight="Bold"
-                Height="100"
+                Margin="10"
             />
             
             <Button
