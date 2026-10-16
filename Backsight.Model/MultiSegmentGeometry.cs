@@ -119,7 +119,7 @@ public class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeomet
     /// <returns>True if the distance is somewhere ON the line. False if the distance
     /// was less than zero, or more than the line length (in that case, the position
     /// found corresponds to the corresponding terminal point).</returns>
-    internal override bool GetPosition(ILength distance, out IPosition result)
+    public override bool GetPosition(ILength distance, out IPosition result)
     {
         IPosition[] data = m_Data;
 

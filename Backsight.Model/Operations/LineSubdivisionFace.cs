@@ -7,7 +7,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// The sections that define one face of a subdivided line.
 /// </summary>
-class LineSubdivisionFace : IPersistent
+public class LineSubdivisionFace : IPersistent
 {
     /// <summary>
     /// Converts a data entry string into the corresponding observations.
@@ -17,15 +17,18 @@ class LineSubdivisionFace : IPersistent
     /// <param name="isEntryFromEnd">Are the distances observed from the end of the line?</param>
     /// <returns>The distances that correspond to the entry string, starting at the
     /// beginning of the line</returns>
-    internal static Distance[] GetDistances(string entryString, DistanceUnit defaultEntryUnit,
+    public static Distance[] GetDistances(string entryString, DistanceUnit defaultEntryUnit,
         bool isEntryFromEnd)
     {
+        if (String.IsNullOrWhiteSpace(entryString))
+            return [];
+
         string[] items = entryString.Split(' ');
         var result = new List<Distance>(items.Length);
 
         foreach (string t in items)
         {
-            // Hold seperate reference, since may attempt to change foreach iterator variable below
+            // Hold separate reference, since may attempt to change foreach iterator variable below
             string s = t;
 
             // Strip out any repeat count
@@ -77,7 +80,7 @@ class LineSubdivisionFace : IPersistent
     /// <returns>The adjusted lengths (in meters).</returns>
     /// <exception cref="Exception">If any observed distance is less than or equal to zero</exception>
     /// <exception cref="InvalidOperationException">If all distances are tagged as fixed</exception>
-    internal static double[] GetAdjustedLengths(LineFeature line, Distance[] distances)
+    public static double[] GetAdjustedLengths(LineFeature line, Distance[] distances)
     {
         ILength length = line.Length;
 
@@ -165,13 +168,18 @@ class LineSubdivisionFace : IPersistent
     }
 
     /// <summary>
-    /// The lengths for each subdivision section.
+    /// The lengths for each subdivision section (ordered from the start of the line).
     /// </summary>
     Distance[] m_Distances;
 
     /// <summary>
-    /// Are the distances observed from the end of the line?
+    /// Were the distances originally observed from the end of the line?
     /// </summary>
+    /// <remarks>
+    /// Some confusion here. The distances held in m_Distances are always ordered from
+    /// the start of the line, so knowing that the data entry order was actually reversed
+    /// is not particularly useful. 
+    /// </remarks>
     readonly bool m_IsEntryFromEnd;
 
     /// <summary>
@@ -183,8 +191,6 @@ class LineSubdivisionFace : IPersistent
     /// Initializes a new instance of the <see cref="LineSubdivisionFace"/> class.
     /// </summary>
     /// <param name="distances">The lengths for each subdivision section.</param>
-    /// <param name="defaultEntryUnit">The default distance units to use when decoding
-    /// the data entry string.</param>
     /// <param name="isEntryFromEnd">Are the distances observed from the end of the line?</param>
     internal LineSubdivisionFace(Distance[] distances, bool isEntryFromEnd)
     {
@@ -417,9 +423,4 @@ class LineSubdivisionFace : IPersistent
 
         return true;
     }
-
-    /// <summary>
-    /// Are the distances observed from the end of the line?
-    /// </summary>
-    internal bool IsEntryFromEnd => m_IsEntryFromEnd;
 }

@@ -8,7 +8,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// Operation to subdivide a line.
 /// </summary>
-class LineSubdivisionOperation : Operation, IRecallable, IRevisable
+public class LineSubdivisionOperation : Operation, IRecallable, IRevisable
 {
     /// <summary>
     /// The line that was subdivided.
@@ -32,7 +32,7 @@ class LineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// <param name="line">The line that is being subdivided.</param>
     /// <param name="distances">The lengths for each subdivision section.</param>
     /// <param name="isEntryFromEnd">Are the distances observed from the end of the line?</param>
-    internal LineSubdivisionOperation(LineFeature line, Distance[] distances, bool isEntryFromEnd)
+    public LineSubdivisionOperation(LineFeature line, Distance[] distances, bool isEntryFromEnd)
         : base(line.MapStore)
     {
         m_Line = line;
@@ -136,7 +136,7 @@ class LineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// Execute line subdivision.
     /// </summary>
-    internal void Execute()
+    public void Execute()
     {
         // Create stubs for all items that will be created.
         FeatureStub[] stubs = CreateStubs(MapStore, MapStore.Settings.DefaultPointType, m_Line.EntityType);

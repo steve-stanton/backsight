@@ -233,7 +233,7 @@ public class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersiste
     /// <summary>
     /// The length of this line (on the map projection).
     /// </summary>
-    internal ILength Length => m_Geom.Length;
+    public ILength Length => m_Geom.Length;
 
     /// <summary>
     /// The length of this line (on the ground).

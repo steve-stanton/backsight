@@ -112,5 +112,8 @@
       <Compile Update="Windows\NewCircleViewModel.cs">
         <DependentUpon>NewCircleWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\LineSubdivisionViewModel.cs">
+        <DependentUpon>LineSubdivisionWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

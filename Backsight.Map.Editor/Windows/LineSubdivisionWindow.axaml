@@ -1,0 +1,80 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows"
+        x:DataType="viewModel:LineSubdivisionViewModel"
+        mc:Ignorable="d" d:DesignWidth="460" d:DesignHeight="340"
+        Width="460" Height="340"
+        x:Class="Backsight.Map.Editor.Windows.LineSubdivisionWindow"
+        CanResize="False"
+        Title="Subdivide line">
+    
+    <Grid RowDefinitions="Auto 16 Auto" ColumnDefinitions="Auto Auto" ColumnSpacing="20" Margin="20">
+        
+        <TextBox Grid.Row="0" Grid.Column="0" Width="150" Height="200"
+                 TabIndex="0"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 Text="{Binding DistanceText}"/>
+        <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+            Text="{Binding ValidationError}"
+            BorderBrush="Transparent"
+            IsVisible="{Binding ValidationError, Converter={x:Static ObjectConverters.IsNotNull}}"
+            VerticalContentAlignment="Center">
+            <TextBox.InnerLeftContent>
+                <PathIcon
+                    Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                    Foreground="Red"/>
+            </TextBox.InnerLeftContent>
+        </TextBox>
+        
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
+            <GroupBox Header="Distances measured from" Margin="0 10 0 0">
+                <StackPanel Orientation="Horizontal" Spacing="20">
+                    <RadioButton
+                        Content="_Start of line"
+                        GroupName="EntryDirection"
+                        IsChecked="{Binding IsFromStart}"/>
+
+                    <RadioButton
+                        Content="_End of line"
+                        GroupName="EntryDirection"/>
+                </StackPanel>
+            </GroupBox>
+            
+            <Grid RowDefinitions="Auto Auto Auto" ColumnDefinitions="Auto Auto" Margin="20" RowSpacing="10" ColumnSpacing="10">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Length on ground" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding GroundLength}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Total entered" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="1" Grid.Column="1" IsReadOnly="True" Text="{Binding EnteredLength}"/>
+                
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Length left" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="2" Grid.Column="1" IsReadOnly="True" Text="{Binding RemainingLength}"/>
+            </Grid>
+            
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0">
+            <Button
+                Content="OK"
+                IsDefault="True"
+                FontWeight="Bold"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Margin="10"
+                Command="{Binding OkCommand}" />
+            <Button
+                Content="Cancel"
+                IsCancel="True"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Margin="10"
+                Command="{Binding CancelCommand}" />
+        </StackPanel>
+    </Grid>
+
+</Window>

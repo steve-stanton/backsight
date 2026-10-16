@@ -514,11 +514,13 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         StartCommand(new LineExtensionTool(this, extendLine));
     }
     
-    //[RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     private void LineSubdivide()
     {
-        Console.WriteLine(nameof(LineSubdivide));
+        var line = _selection.SingleOrDefaultLine;
+        Debug.Assert(line is not null);
+        ClearSelection();
+        StartCommand(new LineSubdivisionTool(this, line));
     }
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]

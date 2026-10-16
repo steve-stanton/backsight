@@ -82,7 +82,7 @@ public class SectionGeometry : LineGeometry, ISection
         return Make().Distance(point);
     }
 
-    internal override bool GetPosition(ILength dist, out IPosition pos)
+    public override bool GetPosition(ILength dist, out IPosition pos)
     {
         return Make().GetPosition(dist, out pos);
     }

@@ -37,7 +37,7 @@ public class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
         return LineSegmentGeometry.GetDistance(this, point);
     }
 
-    internal override bool GetPosition(ILength dist, out IPosition pos)
+    public override bool GetPosition(ILength dist, out IPosition pos)
     {
         return LineSegmentGeometry.GetPosition(this, dist.Meters, out pos);
     }

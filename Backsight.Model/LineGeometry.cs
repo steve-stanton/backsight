@@ -78,7 +78,7 @@ public abstract class LineGeometry : ILineGeometry, IIntersectable, IPersistent
     /// <returns>True if the distance is somewhere ON the line. False if the distance
     /// was less than zero, or more than the line length (in that case, the position
     /// found corresponds to the corresponding terminal point).</returns>
-    internal abstract bool GetPosition(ILength dist, out IPosition pos);
+    public abstract bool GetPosition(ILength dist, out IPosition pos);
 
     /// <summary>
     /// Calculates the distance from the start of this line to a specific position (on the map projection)
