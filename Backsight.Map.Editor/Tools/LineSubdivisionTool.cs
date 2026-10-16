@@ -4,7 +4,6 @@ using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Windows;
 using Backsight.Model;
 using Backsight.Model.Operations;
-using ShimSkiaSharp;
 using SkiaSharp;
 using SKPaintStyle = SkiaSharp.SKPaintStyle;
 

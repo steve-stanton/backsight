@@ -10,7 +10,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Information that can be used to automatically subdivide a polygon.
 /// </summary>
-class PolygonSub
+public class PolygonSub
 {
     /// <summary>
     /// The polygon being subdivided.
@@ -31,7 +31,7 @@ class PolygonSub
     /// Constructor (that does a lot of stuff)
     /// </summary>
     /// <param name="polygon">The polygon being subdivided.</param>
-    internal PolygonSub(Polygon polygon)
+    public PolygonSub(Polygon polygon)
     {
         m_Polygon = polygon;
         m_Faces = null;
@@ -255,7 +255,7 @@ class PolygonSub
     /// <summary>
     /// The polygon being subdivided.
     /// </summary>
-    internal Polygon Polygon => m_Polygon;
+    public Polygon Polygon => m_Polygon;
 
     /// <summary>
     /// Sets the number of intersections for one of the polygon link points.
@@ -439,7 +439,7 @@ class PolygonSub
     /// <param name="start">The point at the start of the link.</param>
     /// <param name="end">The point at the end of the link.</param>
     /// <returns>True if a link was returned</returns>
-    internal bool GetLink(int index, out PointFeature start, out PointFeature end)
+    public bool GetLink(int index, out PointFeature start, out PointFeature end)
     {
         // Initialize return variables.
         start = end = null;
@@ -472,7 +472,7 @@ class PolygonSub
     /// <summary>
     /// The number of links that have been formed.
     /// </summary>
-    internal int NumLink
+    public int NumLink
     {
         get
         {

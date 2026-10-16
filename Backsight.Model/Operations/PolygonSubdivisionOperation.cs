@@ -6,7 +6,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// Subdivision of a polygon.
 /// </summary>
-class PolygonSubdivisionOperation : Operation
+public class PolygonSubdivisionOperation : Operation
 {
     /// <summary>
     /// Any polygon label that was de-activated as a result of the subdivision.
@@ -22,7 +22,7 @@ class PolygonSubdivisionOperation : Operation
     /// Initializes a new instance of the <see cref="PolygonSubdivisionOperation"/> class.
     /// </summary>
     /// <param name="store">The map store this operation is part of.</param>
-    internal PolygonSubdivisionOperation(IMapStore store)
+    public PolygonSubdivisionOperation(IMapStore store)
         : base(store)
     {
     }
@@ -81,7 +81,7 @@ class PolygonSubdivisionOperation : Operation
     /// Executes this operation.
     /// </summary>
     /// <param name="sub">The polygon subdivision information.</param>
-    internal void Execute(PolygonSub sub)
+    public void Execute(PolygonSub sub)
     {
         int numLine = sub.NumLink;
         if (numLine==0)

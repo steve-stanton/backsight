@@ -586,13 +586,18 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         await SetDefaultEntity(SpatialType.Line);
     }
     
-    //[RelayCommand]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RelayCommand(CanExecute = nameof(IsSubdividePolygonEnabled))]
     private void LineSubdividePolygon()
     {
-        Console.WriteLine(nameof(LineSubdividePolygon));
+        var tool = new PolygonSubdivisionTool(this);
+        StartCommand(tool);
     }
 
+    private bool IsSubdividePolygonEnabled()
+    {
+        return _commandTool is null && Store is not null;
+    }
+    
     private void StartCommand(CommandTool tool)
     {
         if (_commandTool is not null)
@@ -849,6 +854,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     internal void Escape()
     {
         _mapTool?.Escape();
+        _commandTool?.Escape();
     }
     
     [RelayCommand]

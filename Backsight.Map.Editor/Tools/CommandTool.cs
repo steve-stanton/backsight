@@ -44,6 +44,14 @@ internal abstract class CommandTool : IDisposable
     {
         Abort();
     }
+
+    /// <summary>
+    /// Reacts to a situation where the user presses the ESC key, by aborting this command.
+    /// </summary>
+    internal void Escape()
+    {
+        Abort();
+    }
     
     /// <summary>
     /// Aborts this command.

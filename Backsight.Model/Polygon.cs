@@ -487,7 +487,7 @@ public class Polygon : Ring
     /// <param name="p">The position to check</param>
     /// <returns>True if position is inside this polygon. False if it lies outside
     /// this polygon, or it's inside one of this polygon's islands.</returns>
-    internal bool IsEnclosing(IPosition p)
+    public bool IsEnclosing(IPosition p)
     {
         return (IsRingEnclosing(p) && !HasIslandEnclosing(p));
     }
