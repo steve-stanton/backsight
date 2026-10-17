@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
@@ -55,6 +54,17 @@ internal class NewLineTool : CommandTool
             Store.DefaultLineType.IsPolygonBoundaryValid;
     }
 
+    private protected PointFeature? StartPoint => _start;
+
+    /// <summary>
+    /// The last mouse position (may or may not correspond to a point feature).
+    /// </summary>
+    private protected IPointGeometry? LastMousePosition
+    {
+        get => _end;
+        set => _end = value;
+    }
+
     internal override bool Run()
     {
         ViewModel.OverlayChildren.Add(_line);
@@ -73,12 +83,18 @@ internal class NewLineTool : CommandTool
         
         // Try to find a point at the current position
         ILength size = new Length(Store.Settings.PointHeight * 0.5);
-        _currentPoint  = Store.Model.QueryClosest(p, size, SpatialType.Point) as PointFeature;
-        
-        if (_currentPoint is null)
+        var pt  = Store.Model.QueryClosest(p, size, SpatialType.Point) as PointFeature;
+
+        if (pt is null)
+        {
             _end = PointGeometry.Create(p);
+            _currentPoint = null;
+        }
         else
-            _end = _currentPoint;
+        {
+            _end = pt;
+            _currentPoint = IsPointValid(pt) ? pt : null;
+        }
 
         if (_start is not null && _end.IsCoincident(_start))
         {
@@ -87,32 +103,43 @@ internal class NewLineTool : CommandTool
         }
         
         var geom = GetIntersectGeometry();
+        if (geom is null)
+            return;
+        
+        UpdateDisplay(geom);
 
-        if (geom is not null)
+        if (_showIntersections)
         {
-            var (p1x, p1y) = ViewModel.WorldToScreen(geom.Start);
-            var (p2x, p2y) = ViewModel.WorldToScreen(geom.End);
+            var xf = new IntersectionFinder(Store.Model.Index, geom, false);
+            var points = new List<Rectangle>();
 
-            _line.StartPoint = new Avalonia.Point(p1x, p1y);
-            _line.EndPoint = new Avalonia.Point(p2x, p2y);
-            _line.InvalidateVisual();
-
-            if (_showIntersections)
+            foreach (var x in xf.Intersections.SelectMany(x => x.Intersections))
             {
-                var xf = new IntersectionFinder(Store.Model.Index, geom, false);
-                var points = new List<Rectangle>();
-
-                foreach (var x in xf.Intersections.SelectMany(x => x.Intersections))
-                {
-                    if (x.P1 is not null)
-                        points.Add(CreateRectangle(x.P1));
-                }
-
-                var oldPoints = ViewModel.OverlayChildren.OfType<Rectangle>();
-                ViewModel.OverlayChildren.RemoveAll(oldPoints);
-                ViewModel.OverlayChildren.AddRange(points);
+                if (x.P1 is not null)
+                    points.Add(CreateRectangle(x.P1));
             }
+
+            var oldPoints = ViewModel.OverlayChildren.OfType<Rectangle>();
+            ViewModel.OverlayChildren.RemoveAll(oldPoints);
+            ViewModel.OverlayChildren.AddRange(points);
         }
+    }
+
+    /// <summary>
+    /// Checks whether a selected point is valid for the current line.
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns>True if the specified point can be used as a line endpoint.</returns>
+    private protected virtual bool IsPointValid(PointFeature p) => _start is null || !ReferenceEquals(p, _start);
+
+    private protected virtual void UpdateDisplay(Model.LineGeometry geom)
+    {
+        var (p1x, p1y) = ViewModel.WorldToScreen(geom.Start);
+        var (p2x, p2y) = ViewModel.WorldToScreen(geom.End);
+
+        _line.StartPoint = new Avalonia.Point(p1x, p1y);
+        _line.EndPoint = new Avalonia.Point(p2x, p2y);
+        _line.InvalidateVisual();
     }
 
     internal override bool MouseDown(IPosition p, MouseButton b)
@@ -165,7 +192,7 @@ internal class NewLineTool : CommandTool
     /// Adds a new line segment feature.
     /// </summary>
     /// <param name="end"></param>
-    protected virtual void AddNewLine(PointFeature end)
+    private protected virtual void AddNewLine(PointFeature end)
     {
         if (_start is null)
             throw new InvalidOperationException("Start point not defined.");
@@ -178,7 +205,7 @@ internal class NewLineTool : CommandTool
     /// Geometry that can be used to detect intersections with the map
     /// </summary>
     /// <returns>The geometry for the new line (null if insufficient information has been specified)</returns>
-    private Model.LineGeometry? GetIntersectGeometry()
+    private protected virtual Model.LineGeometry? GetIntersectGeometry()
     {
         if (_start is null || _end is null)
             return null;

@@ -395,6 +395,10 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     {
         // c.f. Backsight.Editor.MainForm.CreateContextMenu(ISpatialSelection)
         
+        var result = _commandTool?.CreateContextMenu();
+        if (result is not null)
+            return result;
+        
         // Handle single-item selections...
 
         var singleItem = _selection.SingleOrDefault;
@@ -492,12 +496,29 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         StartCommand(new NewLineTool(this, _selection.SingleOrDefault as Model.PointFeature));
     }
 
-    //[RelayCommand(CanExecute = nameof(CanAddFeature))]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void LineAddCircularArc()
+    [RelayCommand(CanExecute = nameof(IsLineAddCircularArcEnabled))]
+    private async Task LineAddCircularArc()
     {
-        Console.WriteLine(nameof(LineAddCircularArc));
+        // Locate the circles that pass through the start point
+        var startPoint = _selection.SingleOrDefault as Model.PointFeature;
+        Debug.Assert(startPoint is not null);
+
+        var tol = new Length(0.001);
+        var circles = _model.Store!.Model.FindCircles(startPoint, tol).ToArray();
+        if (circles.Length == 0)
+        {
+            await _dialogService.ShowMessageBox(
+            "The currently selected point does not coincide with any circles.",
+            "Cannot add circular arc");
+            return;
+        }
+        
+        var tool = new NewCircularArcTool(this, startPoint, circles);
+        StartCommand(tool);
     }
+
+    private bool IsLineAddCircularArcEnabled() =>
+        _commandTool is null && Store is not null && _selection.SingleOrDefault is Model.PointFeature;
 
     [RelayCommand(CanExecute = nameof(CanAddFeature))]
     private void LineAddCircleConstructionLine()
@@ -1548,6 +1569,11 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     internal void Show(DialogWindow dialog)
     {
         _dialogService.Show(dialog);
+    }
+
+    internal async Task ShowMessageBox(string message)
+    {
+        await _dialogService.ShowMessageBox(message);
     }
 
     private async Task SetDefaultEntity(SpatialType t)

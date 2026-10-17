@@ -1,5 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Backsight.Map.Editor.Windows;
 
@@ -16,9 +18,41 @@ namespace Backsight.Map.Editor.Windows;
 public record ContextMenuItem(string Header, ICommand? Command, bool IsChecked = false)
 {
     /// <summary>
+    /// Creates a context menu item from an Action delegate.
+    /// </summary>
+    public ContextMenuItem(string header, Action execute, bool isChecked = false)
+        : this(header, new RelayCommand(execute), isChecked)
+    {
+    }
+
+    /// <summary>
+    /// Creates a context menu item from a synchronous Action delegate with a guard condition.
+    /// </summary>
+    public ContextMenuItem(string header, Action execute, Func<bool> canExecute, bool isChecked = false)
+        : this(header, new RelayCommand(execute, canExecute), isChecked)
+    {
+    }
+    
+    /// <summary>
+    /// Creates a context menu item from an asynchronous Func&lt;Task&gt; delegate.
+    /// </summary>
+    public ContextMenuItem(string header, Func<Task> execute, bool isChecked = false)
+        : this(header, new AsyncRelayCommand(execute), isChecked)
+    {
+    }
+    
+    /// <summary>
+    /// Creates a context menu item from an asynchronous Func&lt;Task&gt; delegate with a guard condition.
+    /// </summary>
+    public ContextMenuItem(string header, Func<Task> execute, Func<bool> canExecute, bool isChecked = false)
+        : this(header, new AsyncRelayCommand(execute, canExecute), isChecked)
+    {
+    }
+    
+    /// <summary>
     /// An item that draws a dividing line between groups of commands.
     /// </summary>
-    public static ContextMenuItem Separator { get; } = new(String.Empty, null);
+    public static ContextMenuItem Separator { get; } = new(String.Empty, (ICommand?)null);
 
     /// <summary>
     /// Is this item a dividing line rather than a command?

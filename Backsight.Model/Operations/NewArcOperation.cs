@@ -3,13 +3,13 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// An edit that creates a circular arc.
 /// </summary>
-class NewArcOperation : NewLineOperation
+public class NewArcOperation : NewLineOperation
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="NewArcOperation"/> class.
     /// </summary>
     /// <param name="store">The map store this operation is part of.</param>
-    internal NewArcOperation(IMapStore store)
+    public NewArcOperation(IMapStore store)
         : base(store)
     {
     }
@@ -37,7 +37,7 @@ class NewArcOperation : NewLineOperation
     /// <param name="circle">The circle that the new arc should sit on.</param>
     /// <param name="isShortArc">True if the new arc refers to the short arc. False
     /// if it's a long arc (i.e. greater than half the circumference of the circle).</param>
-    internal void Execute(PointFeature start, PointFeature end, Circle circle, bool isShortArc)
+    public void Execute(PointFeature start, PointFeature end, Circle circle, bool isShortArc)
     {
         // Disallow an attempt to add a null line.
         if (start.Geometry.IsCoincident(end.Geometry))

@@ -19,7 +19,7 @@ public class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry, IFeatu
     /// </summary>
     private bool m_IsClockwise;
 
-    internal ArcGeometry(Circle c, ITerminal bc, ITerminal ec, bool isClockwise )
+    public ArcGeometry(Circle c, ITerminal bc, ITerminal ec, bool isClockwise )
         : base(bc, ec)
     {
         m_Circle = c;

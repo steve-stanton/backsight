@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Windows;
 using Backsight.Model;
@@ -137,4 +138,10 @@ internal abstract class CommandTool : IDisposable
     {
         ViewModel.RefreshMapDisplay();
     }
+
+    /// <summary>
+    /// Creates any applicable context menu
+    /// </summary>
+    /// <returns>The context menu (null if the command does not involve a context menu).</returns>
+    internal virtual IReadOnlyList<ContextMenuItem>? CreateContextMenu() => null;
 }
