@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Backsight.Geometry;
@@ -66,6 +65,11 @@ internal class NewCircularArcTool : NewLineTool
         return base.Run();
     }
 
+    /// <inheritdoc/>
+    /// <remarks>
+    /// This override confirms that the point is not the start point,
+    /// and that it is coincident with one of the circles passing through the start point.
+    /// </remarks>
     private protected override bool IsPointValid(PointFeature p)
     {
         if (ReferenceEquals(p, StartPoint))
@@ -89,6 +93,7 @@ internal class NewCircularArcTool : NewLineTool
         foreach (var circle in _circles)
             canvas.DrawCircle(circle, circleStyle);
 
+        // Render the start point (and maybe the end point)
         base.Render(canvas);
     }
 
@@ -98,6 +103,10 @@ internal class NewCircularArcTool : NewLineTool
     /// <param name="end"></param>
     private protected override void AddNewLine(PointFeature end)
     {
+        // It might be better to figure out the _newArcCircle at this point. As it is,
+        // this assumes that the value has been defined via the last call to UpdateDisplay
+        // (which should ensure that the circle used agrees with the map preview in a
+        // situation where two or more circles are involved)
         Debug.Assert(_newArcCircle is not null);
         Debug.Assert(ViewModel.Store is not null);
         Debug.Assert(StartPoint is not null);
@@ -164,9 +173,8 @@ internal class NewCircularArcTool : NewLineTool
             }
         }
 
-        // Ignore if the best circle is too far away
-        //if (bestdist > CircleTolerance.Meters)
-        //    return null;
+        // The best circle may be quite distant from the mouse position. Continue with it
+        // anyway so that map preview can at least display a projection onto that circle.
 
         // Project the end point ON to the circle.
         IPosition cirend = CircleGeometry.GetClosestPosition(bestCircle, end);
@@ -185,21 +193,14 @@ internal class NewCircularArcTool : NewLineTool
         var result = new ArcGeometry(bestCircle, StartPoint, ec, iscw);
         
         // It's possible the end position doesn't exactly match the end location
-        // determined by base.MouseMove.
+        // determined by base.MouseMove (this should ensure the arc renders correctly)
         LastMousePosition = result.EC;
 
         return result;
     }
 
-    private async Task SpecifyId()
-    {
-        await ViewModel.ShowMessageBox("TODO: Specify ID");
-    }
-
     internal override IReadOnlyList<ContextMenuItem>? CreateContextMenu() =>
     [
-        new("Specify ID...", SpecifyId),
-        ContextMenuItem.Separator,
         new("Short Arc", () => { _isShortArc = true; }, isChecked: _isShortArc),
         new("Long Arc", () => { _isShortArc = false; }, isChecked: !_isShortArc),
         ContextMenuItem.Separator,

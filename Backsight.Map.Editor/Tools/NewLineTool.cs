@@ -240,7 +240,7 @@ internal class NewLineTool : CommandTool
         {
             canvas.DrawPoint(_start, new PaintStyle
             {
-                Color = SKColors.DarkBlue,
+                Color = SKColors.Blue,
                 Style = SKPaintStyle.Fill
             });
         }
