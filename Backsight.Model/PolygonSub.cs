@@ -84,7 +84,6 @@ public class PolygonSub
 
         for (int i=0; i<m_Links.Length; i++)
         {
-
             // Skip if we are dealing with a corner.
             if (m_Links[i].IsCorner())
             {
@@ -192,14 +191,9 @@ public class PolygonSub
             else
             {
                 PolygonLink pLink1 = m_Links[rem];
-                PolygonLink pLink2 = null;
-                for (int i=0; pLink2!=null && i<m_Links.Length; i++)
-                {
-                    if (pLink1.IsIntersected(m_Links[i]))
-                        pLink2 = m_Links[i];
-                }
-
-                if (pLink2==null)
+                PolygonLink? pLink2 = m_Links.FirstOrDefault(pLink1.IsIntersected);
+                
+                if (pLink2 is null)
                     throw new Exception("PolygonSub: Intersection not found");
 
                 // Check if radial.
@@ -214,10 +208,13 @@ public class PolygonSub
                 bool curve1 = (rad1 || end1);
                 bool curve2 = (rad2 || end2);
 
-                // If one is a curve-related and the other isn't, drop
-                // the one that's curve-related.
+                // If one is a curve-related and the other isn't, drop the one that's curve-related.
                 if (curve1 != curve2)
                 {
+                    // May want to reconsider this. In one case I noticed, it picked a long link
+                    // from a VERY shallow arc - but the other link was much shorter and would have
+                    // been an obvious choice. Should link length be the ONLY criterion? 
+                    
                     if (curve1)
                         pLink1.SetLink(null);
                     else
