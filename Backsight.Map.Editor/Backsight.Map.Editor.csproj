@@ -115,5 +115,8 @@
       <Compile Update="Windows\LineSubdivisionViewModel.cs">
         <DependentUpon>LineSubdivisionWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\AttachPointViewModel.cs">
+        <DependentUpon>AttachPointWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

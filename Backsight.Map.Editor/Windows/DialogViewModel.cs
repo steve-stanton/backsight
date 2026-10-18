@@ -16,7 +16,7 @@ public abstract partial class DialogViewModel : ViewModelBase
     public event EventHandler<DialogResult>? CloseRequested;
 
     [RelayCommand(CanExecute=nameof(CanExecuteOk))]
-    protected void Ok()
+    protected virtual void Ok()
     {
         RequestClose(DialogResult.OK);
     }
@@ -27,7 +27,7 @@ public abstract partial class DialogViewModel : ViewModelBase
     }
 
     [RelayCommand(CanExecute=nameof(CanExecuteCancel))]
-    protected void Cancel()
+    protected virtual void Cancel()
     {
         RequestClose(DialogResult.Cancel);
     }

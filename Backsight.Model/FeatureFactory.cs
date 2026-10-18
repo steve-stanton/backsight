@@ -6,7 +6,7 @@ namespace Backsight.Model;
 /// <summary>
 /// Factory for generating objects that are derived from <see cref="Feature"/>.
 /// </summary>
-class FeatureFactory
+public class FeatureFactory
 {
     /// <summary>
     /// The editing operation that needs to create features (not null).
@@ -43,7 +43,7 @@ class FeatureFactory
     /// </summary>
     /// <param name="op">The editing operation that needs to create features (not null).</param>
     /// <exception cref="ArgumentNullException">If the supplied editing operation is undefined</exception>
-    internal FeatureFactory(Operation op)
+    public FeatureFactory(Operation op)
     {
         m_Operation = op ?? throw new ArgumentNullException(nameof(op));
     }
@@ -62,7 +62,7 @@ class FeatureFactory
     /// The entity type for new point features (if not previously
     /// defined, the default will be obtained from the map model).
     /// </summary>
-    internal IEntity PointType
+    public IEntity PointType
     {
         get
         {

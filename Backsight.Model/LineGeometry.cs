@@ -151,7 +151,7 @@ public abstract class LineGeometry : ILineGeometry, IIntersectable, IPersistent
     /// <param name="tol">Maximum distance from line to the search position</param>
     /// <returns>The closest position (null if the line is further away than the specified
     /// max distance)</returns>
-    internal abstract IPosition GetClosest(IPointGeometry p, ILength tol);
+    public abstract IPosition? GetClosest(IPointGeometry p, ILength tol);
 
     /// <summary>
     /// Loads a list of positions with data for this line.

@@ -635,7 +635,7 @@ public class ArcGeometry : UnsectionedLineGeometry, ICircularArcGeometry, IFeatu
     /// <param name="tol">Maximum distance from line to the search position</param>
     /// <returns>The closest position (null if the line is further away than the specified
     /// max distance)</returns>
-    internal override IPosition GetClosest(IPointGeometry p, ILength tol)
+    public override IPosition? GetClosest(IPointGeometry p, ILength tol)
     {
         // Get the distance from the centre of the circle to the search point.
         IPointGeometry center = m_Circle.Center;

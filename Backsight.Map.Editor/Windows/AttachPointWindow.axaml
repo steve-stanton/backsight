@@ -1,0 +1,55 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="viewModel:AttachPointViewModel"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+        x:Class="Backsight.Map.Editor.Windows.AttachPointWindow"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        SizeToContent="WidthAndHeight"
+        Title="AttachPointWindow">
+    
+    <GroupBox Header="Attach Points to Lines" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="10">
+        <Grid RowDefinitions="Auto Auto Auto" RowSpacing="10">
+            <GroupBox Grid.Row="0" Header="Point Type" Margin="5" Padding="10">
+                <StackPanel Orientation="Vertical" Spacing="10" HorizontalAlignment="Center">
+                    <ComboBox 
+                        ItemsSource="{Binding PointTypes}"
+                        SelectedItem="{Binding SelectedPointType}"
+                        MinWidth="200" Width="300"/>
+                    <CheckBox
+                        Content="Make selected type the _default for this command"
+                        IsChecked="{Binding IsMakeTypeDefault}"
+                        Width="250"/>
+                </StackPanel>
+            </GroupBox>
+            
+            <CheckBox Grid.Row="1"
+                Content="Auto _Repeat (click in space to finish)"
+                IsChecked="{Binding IsAutoRepeat}"
+                HorizontalAlignment="Center"/>
+            
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button
+                    Content="Start pointing"
+                    ToolTip.Tip="Click at the line locations where you want to add points"
+                    IsDefault="True"
+                    FontWeight="Bold"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="150"
+                    Command="{Binding OkCommand}" />
+                <Button
+                    Content="Cancel"
+                    IsCancel="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </Grid>
+    </GroupBox>
+</Window>

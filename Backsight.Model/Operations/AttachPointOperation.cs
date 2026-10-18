@@ -6,7 +6,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// Operation to attach a point to a line.
 /// </summary>
-class AttachPointOperation : Operation
+public class AttachPointOperation : Operation
 {
     /// <summary>
     /// The max value stored for <c>m_PositionRatio</c>
@@ -22,7 +22,7 @@ class AttachPointOperation : Operation
     /// expected by this editing operation.</returns>
     /// <exception cref="ArgumentException">If the position does not appear to coincide
     /// with the supplied line.</exception>
-    internal static uint GetPositionRatio(LineFeature line, IPosition posn)
+    public static uint GetPositionRatio(LineFeature line, IPosition posn)
     {
         // Get the distance to the supplied position (confirming that it does fall on the line)
         LineGeometry g = line.LineGeometry;
@@ -62,7 +62,7 @@ class AttachPointOperation : Operation
     /// <param name="positionRatio">The position ratio of the attached point. A point coincident with the start
     /// of the line is a value of 0. A point at the end of the line is a value of
     /// 1 billion  (1,000,000,000).</param>
-    internal AttachPointOperation(LineFeature line, uint positionRatio)
+    public AttachPointOperation(LineFeature line, uint positionRatio)
         : base(line.MapStore)
     {
         m_Line = line;

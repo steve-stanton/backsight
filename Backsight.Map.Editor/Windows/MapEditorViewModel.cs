@@ -444,11 +444,28 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         Console.WriteLine(nameof(PointNew));
     }
 
-    //[RelayCommand(CanExecute = nameof(CanStartCommandTool))]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void PointAddOnLine()
+    [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    private async Task PointAddOnLine()
     {
-        Console.WriteLine(nameof(PointAddOnLine));
+        if (!ArePointsDrawn)
+        {
+            await _dialogService.ShowMessageBox(
+                "To add points, you must initially make them visible.",
+                "Points are currently invisible");
+            return;
+        }
+        
+        var dialog = new AttachPointWindow(this);
+        var result = await _dialogService.ShowDialog(dialog);
+
+        if (result == DialogResult.OK)
+        {
+            // Ensure nothing is currently selected (highlighted), since we'll be doing our own.
+            ClearSelection();
+            
+            var tool = new AttachPointTool(this, dialog.ViewModel);
+            StartCommand(tool);
+        }
     }
 
     //[RelayCommand(CanExecute = nameof(CanStartConnectionPath))]
@@ -864,7 +881,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     
     private bool CanStartMapDisplayTool => _mapTool is null;
     
-    private bool CanStartCommandTool => _commandTool is null;
+    private bool CanStartCommandTool => _commandTool is null && Store is not null;
 
     internal void FinishTool()
     {

@@ -450,7 +450,7 @@ public abstract class Operation : Change, IFeatureDependent
     /// </summary>
     /// <param name="ff">The factory for creating new spatial features (specify null if
     /// the edit is not expected to create anything).</param>
-    internal void Execute(FeatureFactory ff)
+    public void Execute(FeatureFactory ff)
     {
         CadastralMapModel mapModel = this.MapModel;
 

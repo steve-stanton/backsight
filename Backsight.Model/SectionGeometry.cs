@@ -193,7 +193,7 @@ public class SectionGeometry : LineGeometry, ISection
     /// <param name="tol">Maximum distance from line to the search position</param>
     /// <returns>The closest position (null if the line is further away than the specified
     /// max distance)</returns>
-    internal override IPosition GetClosest(IPointGeometry p, ILength tol)
+    public override IPosition? GetClosest(IPointGeometry p, ILength tol)
     {
         return Make().GetClosest(p, tol);
     }
