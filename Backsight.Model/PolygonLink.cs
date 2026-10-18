@@ -10,7 +10,7 @@ class PolygonLink
     /// <summary>
     /// Point on polygon perimeter (may be null for positions at corners).
     /// </summary>
-    PointFeature m_Point;
+    PointFeature? m_Point;
 
     /// <summary>
     /// The linked object.
@@ -65,7 +65,7 @@ class PolygonLink
         ResetContent();
     }
 
-    internal PolygonLink(PointFeature point, bool isCurveEnd, bool isRadial, double bearing, double angle)
+    internal PolygonLink(PointFeature? point, bool isCurveEnd, bool isRadial, double bearing, double angle)
     {
         ResetContent();
         Define(point, isCurveEnd, isRadial, bearing, angle);
@@ -149,6 +149,14 @@ class PolygonLink
     internal bool IsLinked => m_Link is not null;
 
     /// <summary>
+    /// The distance squared between the point feature for this link
+    /// and the point feature for the linked item. Null if there is no link, or
+    /// either end is not associated with a point feature.
+    /// </summary>
+    internal double? LinkDistanceSquared => m_Point is not null && m_Link?.Point is not null ?
+        BasicGeom.DistanceSquared(m_Point, m_Link.Point) : null;
+
+    /// <summary>
     /// The angular difference between the desired bearing for this link point,
     /// and the direction to the object that this has been linked to. The return
     ///	value only has meaning if <c>IsLinked</c> returns true.
@@ -162,7 +170,7 @@ class PolygonLink
     /// <summary>
     /// The point this link object corresponds to.
     /// </summary>
-    PointFeature Point => m_Point;
+    internal PointFeature? Point => m_Point;
 
     /// <summary>
     /// Is this a radial link?
@@ -199,7 +207,7 @@ class PolygonLink
     /// link objects</param>
     /// <param name="angle">The clockwise angle formed with adjacent link positions (irrelevant
     /// if the link is a radial).</param>
-    internal void Define(PointFeature point, bool isCurveEnd, bool isRadial, double bearing, double angle)
+    internal void Define(PointFeature? point, bool isCurveEnd, bool isRadial, double bearing, double angle)
     {
         // Ensure everything is in it's default state
         ResetContent();

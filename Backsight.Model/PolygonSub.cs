@@ -195,41 +195,9 @@ public class PolygonSub
                 
                 if (pLink2 is null)
                     throw new Exception("PolygonSub: Intersection not found");
-
-                // Check if radial.
-                bool rad1 = pLink1.IsRadial || pLink1.Link.IsRadial;
-                bool rad2 = pLink2.IsRadial || pLink2.Link.IsRadial;
-
-                // Check if end of curves.
-                bool end1 = pLink1.IsCurveEnd || pLink1.Link.IsCurveEnd;
-                bool end2 = pLink2.IsCurveEnd || pLink2.Link.IsCurveEnd;
-
-                // We treat radials and end of curves the same.
-                bool curve1 = (rad1 || end1);
-                bool curve2 = (rad2 || end2);
-
-                // If one is a curve-related and the other isn't, drop the one that's curve-related.
-                if (curve1 != curve2)
-                {
-                    // May want to reconsider this. In one case I noticed, it picked a long link
-                    // from a VERY shallow arc - but the other link was much shorter and would have
-                    // been an obvious choice. Should link length be the ONLY criterion? 
-                    
-                    if (curve1)
-                        pLink1.SetLink(null);
-                    else
-                        pLink2.SetLink(null);
-                }
-                else
-                {
-                    // Neither is curve related, or both are. Drop the
-                    // one with the poorer link angle.
-
-                    if (pLink1.LinkAngle > pLink2.LinkAngle)
-                        pLink1.SetLink(null);
-                    else
-                        pLink2.SetLink(null);
-                }
+                
+                var poorerLink = GetPoorerLink(pLink1, pLink2);
+                poorerLink.SetLink(null);
             }
 
             // Rework the intersect counts where necessary.
@@ -247,6 +215,42 @@ public class PolygonSub
                 throw new Exception("PolygonSub: Breaking from infinite loop");
 
         } // end while
+    }
+
+    private PolygonLink GetPoorerLink(PolygonLink pLink1, PolygonLink pLink2)
+    {
+        // In one case I noticed, the logic further down picked a long link
+        // from a VERY shallow arc - but the other link was much shorter and would have
+        // been an obvious choice. I'm thinking now that throwing out the longer link
+        // is more intuitive, so try that so long as both items are associated with
+        // actual point features.
+
+        var d1 = pLink1.LinkDistanceSquared;
+        var d2 = pLink2.LinkDistanceSquared;
+        
+        if (d1.HasValue && d2.HasValue)
+            return d1.Value > d2.Value ? pLink1 : pLink2;
+        
+        // The original logic...
+        
+        // Check if radial
+        bool rad1 = pLink1.IsRadial || pLink1.Link.IsRadial;
+        bool rad2 = pLink2.IsRadial || pLink2.Link.IsRadial;
+
+        // Check if end of curves
+        bool end1 = pLink1.IsCurveEnd || pLink1.Link.IsCurveEnd;
+        bool end2 = pLink2.IsCurveEnd || pLink2.Link.IsCurveEnd;
+
+        // We treat radials and end of curves the same
+        bool curve1 = rad1 || end1;
+        bool curve2 = rad2 || end2;
+
+        // If one is a curve-related and the other isn't, drop the one that's curve-related.
+        if (curve1 != curve2)
+            return curve1 ? pLink1 : pLink2;
+
+        // Neither is curve related, or both are. Drop the one with the poorer link angle.
+        return pLink1.LinkAngle > pLink2.LinkAngle ? pLink1 : pLink2;
     }
 
     /// <summary>
