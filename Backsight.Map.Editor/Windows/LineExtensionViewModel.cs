@@ -93,39 +93,12 @@ public partial class LineExtensionViewModel : DialogViewModel
         _selectedPointType = tool.Store.DefaultPointType;
 
         // Load the ID combo and select the first available ID
-        _pointIds = GetPointIds(tool.Store, _selectedPointType);
+        _pointIds = tool.Store.GetPointIds(_selectedPointType);
         if (_pointIds.Length > 0)
             _selectedPointId = _pointIds[0];
         
         // If we are auto-numbering, disable the combo.
         AllowIdSelection = !tool.Store.Settings.AutoNumber;
-    }
-
-    private static DisplayId[] GetPointIds(IMapStore store, IEntity entityType)
-    {
-        var session = store.Model.WorkingSession;
-        Debug.Assert(session is not null);
-        
-        var idMan = store.Model.IdManager;
-        var idGroup = idMan.GetGroup(entityType);
-        if (idGroup is null)
-            return [];
-
-        // Get the available IDs for the group
-        uint[] avail = idGroup.GetAvailIds(); 
-
-        // If we didn't find any, obtain an extra allocation
-        if (avail.Length == 0)
-        {
-            idGroup.GetAllocation(session);
-            // TODO: Tell the user that we've made an ID allocation
-            
-            avail = idGroup.GetAvailIds();
-            if (avail.Length == 0)
-                throw new ApplicationException("Cannot obtain ID allocation");
-        }
-        
-        return avail.Select(x => new DisplayId(idGroup, x)).ToArray();
     }
     
     internal LineFeature Line => _extendLine;
@@ -160,8 +133,7 @@ public partial class LineExtensionViewModel : DialogViewModel
         }
         else if (value.IdGroup.Id != _selectedPointId?.Group.Id)
         {
-            PointIds = GetPointIds(_tool.Store, value);
-            //Console.WriteLine($"Found {PointIds.Length} IDs for entity type {value.Name}");
+            PointIds = _tool.Store.GetPointIds(value);
 
             if (PointIds.Length == 0)
                 SelectedPointId = null;
