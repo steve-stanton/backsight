@@ -177,7 +177,11 @@ internal class NewCircularArcTool : NewLineTool
         // anyway so that map preview can at least display a projection onto that circle.
 
         // Project the end point ON to the circle.
-        IPosition cirend = CircleGeometry.GetClosestPosition(bestCircle, end);
+        IPosition? cirend = CircleGeometry.GetClosestPosition(bestCircle, end);
+        
+        // The result can be undefined if the end point coincides with the center of the circle.
+        if (cirend is null)
+            return null;
 
         // Get the clockwise angle from the start to the current end point.
         IPointGeometry center = bestCircle.Center;

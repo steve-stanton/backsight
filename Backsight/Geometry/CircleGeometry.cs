@@ -151,7 +151,7 @@ public class CircleGeometry : ILineGeometry, ICircleGeometry
     /// <param name="p">The position to process</param>
     /// <returns>The position on the circle closest to the supplied position. Null
     /// if the supplied position coincides with the center of the circle.</returns>
-    public static IPosition GetClosestPosition(ICircleGeometry g, IPosition p)
+    public static IPosition? GetClosestPosition(ICircleGeometry g, IPosition p)
     {
         // Get the deltas of the supplied position with respect to the circle center
         IPosition c = g.Center;
