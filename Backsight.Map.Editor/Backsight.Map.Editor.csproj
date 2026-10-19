@@ -118,5 +118,8 @@
       <Compile Update="Windows\AttachPointViewModel.cs">
         <DependentUpon>AttachPointWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\NewPointViewModel.cs">
+        <DependentUpon>NewPointWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

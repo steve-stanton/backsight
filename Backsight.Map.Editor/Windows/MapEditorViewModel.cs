@@ -11,6 +11,7 @@ using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.Tools;
 using Backsight.Model;
+using Backsight.Model.Operations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mapsui;
@@ -437,11 +438,45 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         new("Properties", PropertiesCommand)
     ];
 
-    //[RelayCommand(CanExecute = nameof(CanStartCommandTool))]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void PointNew()
+    [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    private async Task PointNew()
     {
-        Console.WriteLine(nameof(PointNew));
+        Debug.Assert(Store is not null);
+        Debug.Assert(Store.Model.WorkingSession is not null);
+
+        var dialog = new NewPointWindow(this);
+        var result = await _dialogService.ShowDialog(dialog);
+
+        if (result == DialogResult.OK)
+        {
+            var idh = new IdHandle(Store.Model.WorkingSession);
+
+            try
+            {
+                var model = dialog.ViewModel;
+                Debug.Assert(model.Position is not null);
+                Debug.Assert(model.SelectedPointType is not null);
+
+                DisplayId? id = model.SelectedPointId;
+                FeatureId? fid = null;
+                if (id is not null)
+                {
+                    idh.ReserveId(id.Packet, model.SelectedPointType, id.RawId);
+                    fid = new NativeId(id.Group, id.RawId);
+                }
+                
+                var op = new NewPointOperation(Store);
+                op.Execute(model.Position, model.SelectedPointType, fid);
+                
+                // Ensure the point gets displayed
+                Refresh();
+            }
+            catch (Exception e)
+            {
+                idh.DiscardReservedId();
+                await _dialogService.ShowMessageBox(e.Message, "Error");
+            }
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanStartCommandTool))]

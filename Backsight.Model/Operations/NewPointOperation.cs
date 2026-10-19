@@ -2,7 +2,7 @@ using Backsight.Environment;
 
 namespace Backsight.Model.Operations;
 
-class NewPointOperation : Operation, IRecallable, IRevisable
+public class NewPointOperation : Operation, IRecallable, IRevisable
 {
     /// <summary>
     /// The created feature
@@ -13,7 +13,7 @@ class NewPointOperation : Operation, IRecallable, IRevisable
     /// Initializes a new instance of the <see cref="NewPointOperation"/> class.
     /// </summary>
     /// <param name="store">The map store this operation is part of.</param>
-    internal NewPointOperation(IMapStore store)
+    public NewPointOperation(IMapStore store)
         : base(store)
     {
     }
@@ -52,16 +52,16 @@ class NewPointOperation : Operation, IRecallable, IRevisable
     /// <param name="vtx">The position of the new point.</param>
     /// <param name="e">The entity type for the point (not null)</param>
     /// <param name="pointId">The ID to assign to the new point</param>
-    internal void Execute(IPosition vtx, IEntity e, FeatureId pointId)
+    public void Execute(IPosition vtx, IEntity e, FeatureId? pointId)
     {
         // Add a point on the model
         m_NewPoint = MapModel.AddPoint(vtx, e, this);
 
         // Give the new point the specified ID (point the ID to the feature & vice versa)
-        if (pointId != null)
+        if (pointId is not null)
             pointId.Add(m_NewPoint);
 
-        // Peform standard completion steps
+        // Perform standard completion steps
         Complete();
     }
 

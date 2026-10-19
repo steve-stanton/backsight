@@ -5,7 +5,7 @@ namespace Backsight.Model;
 /// An ID that corresponds to an item within an <see cref="IdGroup"/>
 /// </summary>
 /// <seealso cref="ForeignId"/>
-class NativeId : FeatureId
+public class NativeId : FeatureId
 {
     /// <summary>
     /// Gets the check digit for a numeric key. 
@@ -43,7 +43,7 @@ class NativeId : FeatureId
     /// </summary>
     /// <param name="group">The ID group that <paramref name="key"/> is part of.</param>
     /// <param name="key">The raw ID value that identifies a feature.</param>
-    internal NativeId(IdGroup group, uint key)
+    public NativeId(IdGroup group, uint key)
     {
         m_Group = group;
         m_Key = key;
