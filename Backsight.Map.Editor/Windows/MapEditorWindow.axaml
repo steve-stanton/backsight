@@ -191,7 +191,21 @@
                 />
             </MenuItem>
             <MenuItem Header="_Data">
-                
+                <MenuItem
+                    Header="Get _Control..."
+                    Command="{Binding DataGetControlCommand}"
+                    ToolTip.Tip="Get control points from file"
+                />
+                <MenuItem
+                    Header="_Import Map..."
+                    Command="{Binding DataImportMapCommand}"
+                    ToolTip.Tip="Load map to edit"
+                />
+                <MenuItem
+                    Header="Import _Attributes..."
+                    Command="{Binding DataImportAttributesCommand}"
+                    ToolTip.Tip="Import Attributes for Existing Map Data"
+                />
             </MenuItem>
             <MenuItem Header="_Point">
                 <MenuItem

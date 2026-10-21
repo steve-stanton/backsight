@@ -4,7 +4,7 @@ namespace Backsight.Model;
 /// <summary>
 /// A control point.
 /// </summary>
-class ControlPoint : Position3D, IEquatable<ControlPoint>
+public class ControlPoint : Position, IEquatable<ControlPoint>
 {
     /// <summary>
     /// Attempts to parse a string that may represent a control point.
@@ -12,7 +12,7 @@ class ControlPoint : Position3D, IEquatable<ControlPoint>
     /// <param name="s">String read from external control file.</param>
     /// <param name="control">The point created (if successfully parsed)</param>
     /// <returns>True if control point was parsed ok</returns>
-    internal static bool TryParse(string s, out ControlPoint control)
+    public static bool TryParse(string s, out ControlPoint control)
     {
         try
         {
@@ -45,6 +45,9 @@ class ControlPoint : Position3D, IEquatable<ControlPoint>
         if (!Int32.TryParse(t, out xid) || xid<0)
             throw new ArgumentException("Control point string doesn't contain valid ID field");
 
+        // Characters 19:36 contain area name
+        string areaName = s.Substring(18, 18).Trim();
+        
         // Characters 35:38 contain the UTM zone number.
         t = s.Substring(35, 4).Trim();
         int zone;
@@ -64,9 +67,13 @@ class ControlPoint : Position3D, IEquatable<ControlPoint>
             throw new ArgumentException("Control point string doesn't contain valid northing");
 
         // Everything looks ok, so define the object.
-        return new ControlPoint((uint)xid, easting, northing, 0.0, (byte)zone);
+        return new ControlPoint((uint)xid, easting, northing, 0.0, (byte)zone, areaName);
     }
 
+    public uint Id => m_ControlId;
+    public uint Zone => m_Zone;
+    public string AreaName => m_AreaName;
+    
     /// <summary>
     /// The ID of the control point.
     /// </summary>
@@ -78,6 +85,11 @@ class ControlPoint : Position3D, IEquatable<ControlPoint>
     byte m_Zone;
 
     /// <summary>
+    /// A name for the area in which the control point is located.
+    /// </summary>
+    private string m_AreaName;
+
+    /// <summary>
     /// Creates a new <c>ControlPoint</c>
     /// </summary>
     /// <param name="id">The ID of the control point</param>
@@ -85,11 +97,13 @@ class ControlPoint : Position3D, IEquatable<ControlPoint>
     /// <param name="y">The northing of the position</param>
     /// <param name="z">The elevation of the position</param>
     /// <param name="zone">The zone number (in the range [1,60])</param>
-    private ControlPoint(uint id, double x, double y, double z, byte zone)
-        : base(x,y,z)
+    /// <param name="areaName">The name of the area in which the control point is located</param>
+    private ControlPoint(uint id, double x, double y, double z, byte zone, string areaName)
+        : base(x,y)
     {
         m_ControlId = id;
         m_Zone = zone;
+        m_AreaName = areaName;
     }
 
     /// <summary>
