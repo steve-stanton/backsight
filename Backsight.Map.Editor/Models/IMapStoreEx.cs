@@ -18,7 +18,7 @@ internal static class IMapStoreEx
         /// </summary>
         /// <param name="entityType">The entity type.</param>
         /// <returns>The available IDs for the given entity type.</returns>
-        /// <exception cref="ApplicationException">An attempy to obtain an extra allocation
+        /// <exception cref="ApplicationException">An attempt to obtain an extra allocation
         /// did not yield any IDs.</exception>
         internal DisplayId[] GetPointIds(IEntity entityType)
         {
