@@ -1,0 +1,33 @@
+{
+  "lastDraw": {
+    "centerX": 630616.3440640001,
+    "centerY": 5534407.418664438,
+    "mapScale": 8103.268037709294
+  },
+  "displayUnit": "AsEntered",
+  "entryUnit": "Meters",
+  "autoNumber": true,
+  "labelScale": 2000,
+  "pointScale": 2000,
+  "pointHeight": 2,
+  "intersectionsDrawn": false,
+  "nominalMapScale": 2000,
+  "lineAnnotation": {
+    "showScale": 2000,
+    "height": 2,
+    "showAdjustedLengths": false,
+    "showObservedLengths": false,
+    "showObservedAngles": false
+  },
+  "activeLayer": 10,
+  "savedItemCount": 5940,
+  "layerDefaults": [
+    {
+      "layerId": 10,
+      "pointType": 27,
+      "lineType": 30,
+      "polygonType": 31,
+      "textType": 32
+    }
+  ]
+}
