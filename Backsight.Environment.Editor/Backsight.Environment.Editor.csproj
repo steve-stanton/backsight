@@ -160,7 +160,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="RepoDb.Sqlite.Microsoft" Version="1.13.1" />
+      <PackageReference Include="RepoDb.Sqlite.Microsoft" Version="1.17.0" />
     </ItemGroup>
 
 </Project>
