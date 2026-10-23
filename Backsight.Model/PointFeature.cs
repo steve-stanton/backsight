@@ -26,7 +26,7 @@ public class PointFeature : Feature, IPoint, ITerminal, IMapPoint
     /// <param name="id">The internal ID of this feature within the project that created it.</param>
     /// <param name="e">The entity type for the feature (not null)</param>
     /// <param name="g">The geometry for the point (may be null)</param>
-    internal PointFeature(Operation creator, InternalIdValue id, IEntity e, PointGeometry g)
+    public PointFeature(Operation creator, InternalIdValue id, IEntity e, PointGeometry g)
         : base(creator, id, e, null)
     {
         if (g == null)

@@ -68,7 +68,17 @@ public class PointGeometry : IPointGeometry
         m_X = new MicronValue(xInMicrons);
         m_Y = new MicronValue(yInMicrons);
     }
-
+    
+    /// <summary>
+    /// Creates a new <c>PointGeometry</c> at the specified position.
+    /// </summary>
+    /// <param name="easting">The easting of the point.</param>
+    /// <param name="northing">The northing of the point.</param>
+    public PointGeometry(ILength easting, ILength northing)
+        : this(easting.Microns, northing.Microns)
+    {
+    }
+    
     /// <summary>
     /// Copy constructor.
     /// </summary>

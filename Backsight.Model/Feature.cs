@@ -76,7 +76,7 @@ public abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IE
     /// <param name="featureId">The user-perceived ID (if any) for the feature. This is the ID that
     /// is used to associate the feature with any miscellaneous attributes
     /// that may be held in a database.</param>
-    protected Feature(Operation creator, InternalIdValue id, IEntity entityType, FeatureId featureId)
+    protected Feature(Operation creator, InternalIdValue id, IEntity entityType, FeatureId? featureId)
     {
         m_Creator = creator ?? throw new ArgumentNullException("Creating operation must be defined");
         m_InternalId = id;

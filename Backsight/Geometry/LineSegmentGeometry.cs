@@ -19,6 +19,11 @@ namespace Backsight.Geometry;
 /// <summary>
 /// The geometry for a line segment.
 /// </summary>
+/// <remarks>
+/// Unlike the <c>Backsight.Model.SegmentGeometry</c> class, this does not allow for any references
+/// to topological elements. It may be used when you need to work with more transient lines that
+/// do not need to form the edge of any polygon. 
+/// </remarks>
 public class LineSegmentGeometry : ILineGeometry, ILineSegmentGeometry
 {
     /// <summary>

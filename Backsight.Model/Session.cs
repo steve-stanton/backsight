@@ -148,7 +148,7 @@ public class Session
     /// This is a lightweight request, because it just increments a counter.
     /// </summary>
     /// <returns>The allocated internal ID</returns>
-    internal InternalIdValue AllocateNextId()
+    public InternalIdValue AllocateNextId()
     {
         return new InternalIdValue(++MapStore.ItemCount);
     }

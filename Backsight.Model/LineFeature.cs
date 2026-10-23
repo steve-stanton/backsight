@@ -111,7 +111,7 @@ public class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersiste
     /// <param name="g">The geometry defining the shape of the line (not null)</param>
     /// <note>To ensure that the start and end of all lines are instances of <see cref="PointFeature"/>,
     /// this constructor should always remain private.</note>
-    protected LineFeature(Operation creator, InternalIdValue id, IEntity e, PointFeature start, PointFeature end, LineGeometry g)
+    public LineFeature(Operation creator, InternalIdValue id, IEntity e, PointFeature start, PointFeature end, LineGeometry g)
         : base(creator, id, e, null)
     {
         if (g==null)

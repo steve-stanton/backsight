@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
 
 namespace Backsight.Map.Editor.Windows;
 
@@ -18,6 +19,14 @@ public interface IDialogService
     /// <param name="window">The dialog window to show.</param>
     /// <param name="dock">Display the dialog in a docked panel of the main window.</param>
     void Show(DialogWindow window, bool dock = false);
+    
+    /// <summary>
+    /// Displays a file open dialog.
+    /// </summary>
+    /// <param name="title">The title for the dialog.</param>
+    /// <param name="fileType">The file type to filter for (just the file extension, without any leading dot).</param>
+    /// <returns>The absolute path of the selected file (null if the user cancelled).</returns>
+    Task<string?> ShowOpenFileDialog(string title, string fileType);
     
     /// <summary>
     /// Called when a dialog window is closing.
@@ -106,5 +115,22 @@ internal class DialogService : IDialogService
         }
 
         window.DialogService = null;
+    }
+    
+    public async Task<string?> ShowOpenFileDialog(string title, string fileType)
+    {
+        var filter = new FilePickerFileType(fileType)
+        {
+            Patterns = [fileType]
+        };
+
+        var options = new FilePickerOpenOptions
+        {
+            Title = title,
+            AllowMultiple = false,
+            FileTypeFilter = [filter]
+        };
+        OpenFilePickerResult result = await _mainWindow.StorageProvider.OpenFilePickerWithResultAsync(options);
+        return result.Files.Count == 1 ? result.Files[0].Path.AbsolutePath : null;
     }
 }

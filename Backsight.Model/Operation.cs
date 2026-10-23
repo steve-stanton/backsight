@@ -71,7 +71,7 @@ public abstract class Operation : Change, IFeatureDependent
     /// <summary>
     /// The session in which this operation was originally defined (never null).
     /// </summary>        
-    internal Session Session => m_Session;
+    public Session Session => m_Session;
 
     /// <summary>
     /// The coordinate system of the map model this operation is part of.

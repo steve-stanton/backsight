@@ -4,7 +4,7 @@ namespace Backsight.Model.Operations;
 /// Editing operation that transfers data from a <see cref="FileImportSource"/> to
 /// the current map model.
 /// </summary>
-class ImportOperation : Operation
+public class ImportOperation : Operation
 {
     /// <summary>
     /// A name that identifies the source of the data (e.g. a file name).
@@ -20,7 +20,7 @@ class ImportOperation : Operation
     /// Initializes a new instance of the <see cref="ImportOperation"/> class.
     /// </summary>
     /// <param name="store">The store this operation is part of.</param>
-    internal ImportOperation(IMapStore store)
+    public ImportOperation(IMapStore store)
         : base(store)
     {
         m_Source = String.Empty;
@@ -47,7 +47,7 @@ class ImportOperation : Operation
     /// Executes this import by loading data from the supplied source.
     /// </summary>
     /// <param name="source">The data source to use for the import</param>
-    internal void Execute(FileImportSource source)
+    public void Execute(FileImportSource source)
     {
         m_Source = source.FileName;
         m_Data = source.Load(this);

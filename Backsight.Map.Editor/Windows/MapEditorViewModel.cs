@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
+using Avalonia.Platform.Storage;
 using Backsight.Database;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Models;
@@ -18,9 +22,12 @@ using Mapsui;
 using Mapsui.Extensions;
 using Mapsui.Layers;
 using Mapsui.Manipulations;
+using Mapsui.Nts.Providers;
+using Mapsui.Providers;
 using Mapsui.Rendering.Skia.Extensions;
 using Mapsui.Widgets;
 using Mapsui.Widgets.InfoWidgets;
+using RepoDb;
 
 namespace Backsight.Map.Editor.Windows;
 
@@ -1659,5 +1666,60 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             Settings.ReplaceDefaults(newDefaults);
             _model.MapRepository.SaveMapSettings(_model.MapName, Settings);
         }
+    }
+    
+    [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    private void DataGetControl()
+    {
+        Console.WriteLine(nameof(DataGetControl));
+    }
+
+    [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    private async Task DataImportMap()
+    {
+        Debug.Assert(Store is not null);
+        
+        var fileSpec = await _dialogService.ShowOpenFileDialog("Select data file", "*.geojson");
+        if (fileSpec is null)
+            return;
+
+        var reader = new GeoJsonReader(fileSpec);
+        var featureCount = await reader.ReadFeatures();
+
+        if (featureCount == 0)
+        {
+            await _dialogService.ShowMessageBox("Specified file does not seem to contain any lines.", "No lines");
+            return;
+        }
+
+        Console.WriteLine($"Importing {featureCount} features");
+        
+        // Should have some sort of entity translation mechanism
+        var pointType = _model.Environment.EntityTypes.FirstOrDefault(x => x.Name == "Dummy Point");
+        if (pointType is null)
+        {
+            await _dialogService.ShowMessageBox("Cannot find entity type for points.", "No point entity");
+            return;
+        }
+        
+        var lineType = _model.Environment.EntityTypes.FirstOrDefault(x => x.Name == "Current Water Boundary");
+        if (lineType is null)
+        {
+            await _dialogService.ShowMessageBox("Cannot find entity type for lines.", "No line entity");
+            return;
+        }
+
+        var op = new ImportOperation(Store);
+        var source = new GeoJsonImportSource(op, reader, pointType, lineType);
+        op.Execute(source);
+        
+        // Refresh from the model
+        Refresh();
+    }
+    
+    [RelayCommand(CanExecute = "CommandNotImplemented")]
+    private void DataImportAttributes()
+    {
+        Console.WriteLine("DataImportAttributes");
     }
 }
