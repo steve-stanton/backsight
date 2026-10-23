@@ -642,4 +642,34 @@ public class Geom : BasicGeom
 
 		return code;
 	}
+
+	/// <summary>
+	/// Returns a code indicating the relative position of a location with respect to
+	/// a horizontal ray (for use by point-in-polygon tests).
+	/// </summary>
+	/// <param name="p">The position of interest</param>
+	/// <param name="northing">The northing of the ray.</param>
+	/// <param name="west">The western point of the ray.</param>
+	/// <param name="east">The eastern point of the ray.</param>
+	/// <returns></returns>
+	internal static byte GetPositionCode(IPointGeometry p, long northing, long west, long east)
+	{
+		Debug.Assert(west <= east);
+		
+		byte code = 0;
+		long e = p.Easting.Microns;
+
+		if (e < west)
+			code |= 0x01;
+		else if (e > east)
+			code |= 0x02;
+
+		long n = p.Northing.Microns;
+		if (n < northing)
+			code |= 0x04;
+		else if (n > northing)
+			code |= 0x08;
+
+		return code;
+	}
 }

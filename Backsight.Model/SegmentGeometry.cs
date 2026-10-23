@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Backsight.Geometry;
 
 namespace Backsight.Model;
@@ -5,7 +6,9 @@ namespace Backsight.Model;
 /// <written by="Steve Stanton" on="01-AUG-2007" />
 /// <summary>
 /// Geometry for a line that connects two points.
+/// The terminal positions may be associated with elements relating to polygon topology.
 /// </summary>
+/// <seealso cref="LineSegmentGeometry"/>
 public class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
 {
     /// <summary>
@@ -298,7 +301,14 @@ public class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
     internal override bool GetCloser(IPointGeometry s, ref PointGeometry e, out uint status)
     {
         status = 0;
+        var x = IntersectHorizontal(s.Northing, s.Easting, e.Easting);
 
+        if (x is null)
+            return false;
+
+        e = x;
+        return true;
+/*
         // Remember the initial end of segment
         PointGeometry initEnd = new PointGeometry(e);
 
@@ -334,6 +344,70 @@ public class SegmentGeometry : UnsectionedLineGeometry, ILineSegmentGeometry
 
         // Return flag to indicate whether we got closer or not.
         return (!e.IsCoincident(initEnd));
+        */
+    }
+
+    /// <summary>
+    /// Intersects this line with a horizontal ray.
+    /// </summary>
+    /// <param name="northing">The northing of the ray.</param>
+    /// <param name="west">The western point of the ray.</param>
+    /// <param name="east">The eastern point of the ray.</param>
+    /// <returns>The position where this line intersects the horizontal ray (null if there is no intersection).</returns>
+    /// <exception cref="ArgumentException">The horizontal ray has the wrong direction.</exception>
+    private PointGeometry? IntersectHorizontal(ILength northing, ILength west, ILength east)
+    {
+        if (east.Microns < west.Microns)
+            throw new ArgumentException("Horizontal ray has wrong direction");
+        
+        long n = northing.Microns;
+        long hzStart = west.Microns;
+        long hzEnd = east.Microns;
+        
+        long? intersect = null;
+        
+        // Get relative position code for the start of the line. If it's
+        // somewhere ON the horizontal segment, cut the line back.
+        byte scode = Geom.GetPositionCode(Start, n, hzStart, hzEnd);
+        if (scode == 0)
+        {
+            intersect = Start.Easting.Microns;
+            Debug.Assert(intersect <= hzEnd);
+        }
+
+        // Get the position code for the end of the line segment
+        byte ecode = Geom.GetPositionCode(End, n, hzStart, hzEnd);
+
+        // If it's coincident with the horizontal segment, cut the
+        // line back. Otherwise see whether there is any potential
+        // intersection to cut back to.
+
+        if (ecode == 0)
+        {
+            long endIntersect = End.Easting.Microns;
+
+            if (intersect is null || intersect > endIntersect)
+            {
+                intersect = endIntersect;
+                Debug.Assert(intersect <= hzEnd);
+            }
+        }
+        else if ((scode & ecode) == 0)
+        {
+            var start = new PointGeometry(west, northing);
+            var hseg = new HorizontalRay(start, east.Meters - west.Meters);
+            Debug.Assert(hseg.IsValid);
+
+            IPosition x = null;
+            if (hseg.Intersect(Start, End, ref x))
+            {
+                var xp = new MicronValue(x.X);
+                if (xp.Microns <= hzEnd)
+                    intersect = xp.Microns;
+            }
+        }
+
+        return intersect.HasValue ? new PointGeometry(intersect.Value, northing.Microns) : null;
     }
 
     /// <summary>

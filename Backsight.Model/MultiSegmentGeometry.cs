@@ -6,9 +6,10 @@ namespace Backsight.Model;
 
 /// <written by="Steve Stanton" on="03-OCT-1997" was="CeMultiSegment" />
 /// <summary>
-/// A line that consists of a series of connected line segments (referred to in other
-/// worlds as a "LineString").
+/// A line that consists of a series of connected line segments.
+/// The terminal positions may be associated with elements relating to polygon topology.
 /// </summary>
+/// <seealso cref="LineStringGeometry"/>
 public class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeometry
 {
     /// <summary>
@@ -28,7 +29,7 @@ public class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeomet
     /// <param name="end">The point at the end of the connection.</param>
     /// <param name="positions">The ground positions to pack. The first & last positions must exactly
     /// match the position of the supplied end points.</param>
-    internal MultiSegmentGeometry(ITerminal start, ITerminal end, IPointGeometry[] positions)
+    public MultiSegmentGeometry(ITerminal start, ITerminal end, PointGeometry[] positions)
         : base(start, end)
     {
         if (positions==null || positions.Length==0)
@@ -278,12 +279,12 @@ public class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeomet
 
         if (len > 2)
         {
-            IPointGeometry[] result = new IPointGeometry[len];
+            var result = new PointGeometry[len];
             Array.Copy(m_Data, sIndex, result, 0, len-1);
 
             // And ensure the result terminates at the section terminals.
-            result[0] = s.From;
-            result[len-1] = s.To;
+            result[0] = PointGeometry.Create(s.From);
+            result[len-1] = PointGeometry.Create(s.To);
             return new MultiSegmentGeometry(s.From, s.To, result);
         }
 
@@ -502,7 +503,14 @@ public class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeomet
     internal override bool GetCloser(IPointGeometry s, ref PointGeometry e, out uint status)
     {
         status = 0;
+        var x = IntersectHorizontal(s.Northing, s.Easting, e.Easting);
 
+        if (x is null)
+            return false;
+
+        e = x;
+        return true;
+/*
         // Remember the initial end of segment
         PointGeometry initEnd = new PointGeometry(e);
 
@@ -546,6 +554,78 @@ public class MultiSegmentGeometry : UnsectionedLineGeometry, IMultiSegmentGeomet
 
         // Return flag to indicate whether we got closer or not.
         return (!e.IsCoincident(initEnd));
+        */
+    }
+
+    /// <summary>
+    /// Intersects this line with a horizontal ray.
+    /// </summary>
+    /// <param name="northing">The northing of the ray.</param>
+    /// <param name="west">The western point of the ray.</param>
+    /// <param name="east">The eastern point of the ray.</param>
+    /// <returns>The position where this line intersects the horizontal ray (null if there is no intersection).</returns>
+    /// <exception cref="ArgumentException">The horizontal ray has the wrong direction.</exception>
+    private PointGeometry? IntersectHorizontal(ILength northing, ILength west, ILength east)
+    {
+        if (east.Microns < west.Microns)
+            throw new ArgumentException("Horizontal ray has wrong direction");
+
+        var hzStartPoint = new PointGeometry(west, northing);
+        long n = northing.Microns;
+        long hzStart = west.Microns;
+        long hzEnd = east.Microns;
+        long? intersect = null;
+
+        IPointGeometry[] data = this.Data;
+
+        // Get relative position code for the start of the line. If it's
+        // somewhere on the horizontal segment, cut the line back.
+        byte scode = Geom.GetPositionCode(data[0], n, hzStart, hzEnd);
+        if (scode == 0)
+        {
+            intersect = data[0].Easting.Microns;
+            Debug.Assert(intersect <= hzEnd);
+        }
+
+        // Loop through each line segment, testing the end of each segment
+        // against the horizontal segment.
+        byte ecode;
+        for (int i=1; i<data.Length; scode=ecode, i++)
+        {
+            // Get the position code for the end of the line segment
+            ecode = Geom.GetPositionCode(data[i], n, hzStart, intersect ?? hzEnd);
+
+            // If it's coincident with the horizontal segment, cut the
+            // line back. Otherwise see whether there is any potential
+            // intersection to cut back to.
+
+            if (ecode == 0)
+            {
+                long endIntersect = data[i].Easting.Microns;
+
+                if (intersect is null || intersect > endIntersect)
+                {
+                    intersect = endIntersect;
+                    Debug.Assert(intersect <= hzEnd);
+                }
+            }
+            else if ((scode & ecode) == 0)
+            {
+                var currentEast = intersect is null ? east : new Length(intersect.Value);
+                var hseg = new HorizontalRay(hzStartPoint, currentEast.Meters - west.Meters);
+                Debug.Assert(hseg.IsValid);
+                
+                IPosition? x = null;
+                if (hseg.Intersect(data[i - 1], data[i], ref x))
+                {
+                    var xp = new MicronValue(x.X);
+                    if (xp.Microns <= hzEnd)
+                        intersect = xp.Microns;
+                }
+            }
+        }
+
+        return intersect.HasValue ? new PointGeometry(intersect.Value, northing.Microns) : null;
     }
 
     /// <summary>
