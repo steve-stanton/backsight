@@ -1,0 +1,64 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="viewModel:GetControlViewModel"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="600"
+        MinHeight="300"
+        x:Class="Backsight.Map.Editor.Windows.GetControlWindow"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        SizeToContent="WidthAndHeight"
+        Title="GetControlWindow">
+
+    <GroupBox Header="Load Control Points" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="10">
+        <Grid RowDefinitions="Auto Auto Auto Auto Auto" RowSpacing="10">
+            <ComboBox Grid.Row="0"
+                x:Name="AreaCombo"
+                Margin="0 10 0 0"
+                HorizontalAlignment="Center"
+                MinWidth="200"
+                TabIndex="0"
+                MaxDropDownHeight="370"
+                PlaceholderText="Select area of interest"
+                ItemsSource="{Binding Areas}"
+                SelectedItem="{Binding SelectedArea}"/>
+            
+            <TextBox Grid.Row="1"
+                     PlaceholderText="Filter points..."
+                     Text="{Binding Filter}"
+                     MaxWidth="200" />
+            
+            <ListBox Grid.Row="2"
+                     BorderBrush="Black"
+                     BorderThickness="1"
+                     MaxWidth="200"
+                     Height="300"
+                     ItemsSource="{Binding AreaPoints}"
+                     SelectionMode="Multiple"
+                     SelectedItems="{Binding SelectedAreaPoints}"/>
+
+            <TextBlock Grid.Row="3" Text="{Binding SelectionMessage}" HorizontalAlignment="Center"/>
+            
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button
+                    Content="OK"
+                    IsDefault="True"
+                    FontWeight="Bold"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding OkCommand}" />
+                <Button
+                    Content="Cancel"
+                    IsCancel="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </Grid>
+    </GroupBox>
+</Window>

@@ -304,10 +304,10 @@ public abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IE
     /// <summary>
     /// Does this feature have a foreign ID (imported from some external source).
     /// </summary>
-    internal bool IsForeignId
+    public bool IsForeignId
     {
-        get => IsFlagSet(FeatureFlag.ForeignId);
-        private set => SetFlag(FeatureFlag.ForeignId, value);
+        get => m_Id is ForeignId; //IsFlagSet(FeatureFlag.ForeignId);
+        //private set => SetFlag(FeatureFlag.ForeignId, value);
     }
 
     /// <summary>
@@ -331,12 +331,12 @@ public abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IE
             // a foreign ID or not.
 
             m_Id = fid;
-            this.IsForeignId = (fid is ForeignId);
+            //this.IsForeignId = (fid is ForeignId);
         }
         else
         {
             m_Id = null;
-            this.IsForeignId = false;
+            //this.IsForeignId = false;
         }
     }
 
@@ -653,6 +653,11 @@ public abstract class Feature : IMapObject, IPossibleList<Feature>, IFeature, IE
         // Remove the the ID from its enclosing ID packet
         if (m_Id is NativeId nid)
             nid.IdGroup.ReleaseId(nid);
+        
+        // Cover a situation where something like a control point gets delete, then subsequently re-added
+        // (if it's still known to the map model, you won't be able to re-add it)
+        else if (m_Id is ForeignId fid)
+            MapModel.RemoveId(fid);
     }
 
     /// <summary>

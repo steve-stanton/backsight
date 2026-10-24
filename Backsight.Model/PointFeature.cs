@@ -196,6 +196,9 @@ public class PointFeature : Feature, IPoint, ITerminal, IMapPoint
 
     public IDivider[]? IncidentDividers()
     {
+        if (Dependents is null)
+            return [];
+        
         List<IDivider> result = new List<IDivider>(4); // 4 is frequently the number in the result
 
         foreach (IFeatureDependent fd in Dependents)

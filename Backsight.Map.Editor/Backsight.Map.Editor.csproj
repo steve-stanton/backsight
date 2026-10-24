@@ -121,6 +121,9 @@
       <Compile Update="Windows\NewPointViewModel.cs">
         <DependentUpon>NewPointWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\GetControlViewModel.cs">
+        <DependentUpon>GetControlWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -36,6 +36,7 @@ enum FeatureFlag : ushort
     /// <summary>
     /// Does the feature's ID come from a foreign source (i.e. import)?
     /// </summary>
+    [Obsolete("Just check if the feature ID is an instance of ForeignId")]
     ForeignId=0x0400,
 
     /// <summary>

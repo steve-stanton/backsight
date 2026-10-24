@@ -6,7 +6,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// Import control points.
 /// </summary>
-class GetControlOperation : Operation, IRevisable
+public class GetControlOperation : Operation, IRevisable
 {
     /// <summary>
     /// The point features that were added.
@@ -18,7 +18,7 @@ class GetControlOperation : Operation, IRevisable
     /// that refers to nothing.
     /// </summary>
     /// <param name="store">The store this operation is part of.</param>
-    internal GetControlOperation(IMapStore store)
+    public GetControlOperation(IMapStore store)
         : base(store)
     {
         m_Features = new List<PointFeature>();
@@ -92,18 +92,18 @@ class GetControlOperation : Operation, IRevisable
     /// <param name="cps">The points to save (none of these should correspond to previously created
     /// features in the map model, otherwise an exception will be raised).</param>
     /// <param name="ent">The entity type to assign to control points</param>
-    internal void Execute(ControlPoint[] cps, IEntity ent)
+    public void Execute(ControlPoint[] cps, IEntity ent)
     {
         var mapModel = this.MapModel;
 
         foreach (ControlPoint cp in cps)
         {
-            // Add a new point to the map & define it's ID
+            // Add a new point to the map & define it's internal ID
             PointFeature p = mapModel.AddPoint(cp, ent, this);
 
-            // Create the new ID (and point the ID and feature to each other).
+            // Create the external ID (and point the ID and feature to each other).
             string keystr = cp.ControlId.ToString();
-            ForeignId fid = new ForeignId(keystr);
+            ForeignId fid = mapModel.AddForeignId(keystr);
             fid.Add(p);
 
             m_Features.Add(p);

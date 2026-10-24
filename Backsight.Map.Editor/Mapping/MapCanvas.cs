@@ -75,11 +75,12 @@ class MapCanvas : IDisposable
     internal bool ArePointsDrawn => _pointSize is not null;
 
     /// <summary>
-    /// Draws a point as a square.
+    /// Draws a point as a square (or triangle).
     /// </summary>
     /// <param name="p">The position of the point (the center of the rendered square).</param>
     /// <param name="style">The style to use for drawing the point.</param>
-    internal void DrawPoint(IPosition p, PaintStyle style)
+    /// <param name="triangle">Should the point be rendered as a triangle?</param>
+    internal void DrawPoint(IPosition p, PaintStyle style, bool triangle = false)
     {
         if (_pointSize is null)
             return;
@@ -87,12 +88,31 @@ class MapCanvas : IDisposable
         var pointOffset = 0.5f * _pointSize.Value;
         var (sx, sy) = _viewport.WorldToScreenXY(p.X, p.Y);
 
-        _canvas.DrawRect(
-            (float)sx - pointOffset,
-            (float)sy - pointOffset,
-            _pointSize.Value,
-            _pointSize.Value,
-            GetPaint(style));
+        if (triangle)
+        {
+            var left = new SKPoint((float)sx - pointOffset, (float)sy + pointOffset);
+            var right = new SKPoint((float)sx + pointOffset, (float)sy + pointOffset);
+            var top = new SKPoint((float)sx, (float)sy - pointOffset);
+
+            using (var path = new SKPath())
+            {
+                path.MoveTo(top);
+                path.LineTo(left);
+                path.LineTo(right);
+                path.LineTo(top);
+
+                _canvas.DrawPath(path, GetPaint(style));
+            }
+        }
+        else
+        {
+            _canvas.DrawRect(
+                (float)sx - pointOffset,
+                (float)sy - pointOffset,
+                _pointSize.Value,
+                _pointSize.Value,
+                GetPaint(style));
+        }
     }
     
     /// <summary>

@@ -245,7 +245,7 @@ public class CadastralMapModel
             {
                 ForeignId? existingId = FindForeignId(foreignId.FormattedKey);
                 if (existingId is null)
-                    AddForeignId(foreignId);
+                    m_ForeignIds.Add(foreignId.FormattedKey, foreignId);
                 else if (!object.ReferenceEquals(foreignId, existingId))
                     throw new Exception("More than one foreign ID object for: "+foreignId.FormattedKey);
             }
@@ -1125,14 +1125,23 @@ public class CadastralMapModel
     /// Tries to obtains a foreign ID for a feature.
     /// </summary>
     /// <param name="key">The formatted key to look for</param>
-    /// <returns>The ID that corresponds to the supplied key. Null if there is no matching ID - make
-    /// a call to <see cref="AddForeignId"/> to register a new ID.</returns>
+    /// <returns>The ID that corresponds to the supplied key. Null if there is no matching ID.</returns>
     internal ForeignId? FindForeignId(string? key)
     {
         if (key is null)
             return null;
         
         return m_ForeignIds.GetValueOrDefault(key);
+    }
+    
+    /// <summary>
+    /// Has a feature with a specific foreign ID been included in this model?
+    /// </summary>
+    /// <param name="key">The formatted key to look for.</param>
+    /// <returns>True if the foreign ID has been added to this model.</returns>
+    public bool HasForeignId(string key)
+    {
+        return m_ForeignIds.ContainsKey(key);
     }
 
     /// <summary>
@@ -1147,15 +1156,6 @@ public class CadastralMapModel
         var result = new ForeignId(key);
         m_ForeignIds.Add(key, result);
         return result;
-    }
-
-    /// <summary>
-    /// Remembers a foreign ID as part of this model.
-    /// </summary>
-    /// <param name="fid">The ID to index as part of this model</param>
-    internal void AddForeignId(ForeignId fid)
-    {
-        m_ForeignIds.Add(fid.FormattedKey, fid);
     }
 
     /// <summary>

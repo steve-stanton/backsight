@@ -2,6 +2,7 @@
 using System.Linq;
 using Backsight.Map.Editor.Windows;
 using Backsight.Model;
+using Backsight.Model.Operations;
 using Mapsui;
 using Mapsui.Layers;
 using Mapsui.Rendering;
@@ -124,11 +125,11 @@ class Renderer : IMapControlRenderer
             {
                 // Points marked as trimmed are normally invisible on draws, but should be rendered
                 // if they're part of a selection
-                
+
                 if (pt.IsTrimPoint())
                     canvas.DrawPoint(pt, selectionStyle with { Style = SKPaintStyle.Stroke, StrokeWidth = 2 });
                 else
-                    canvas.DrawPoint(pt, selectionStyle);
+                    canvas.DrawPoint(pt, selectionStyle, pt.Creator is GetControlOperation);
             }
             else if (item is LineFeature line)
             {

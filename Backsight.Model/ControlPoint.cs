@@ -70,10 +70,24 @@ public class ControlPoint : Position, IEquatable<ControlPoint>
         return new ControlPoint((uint)xid, easting, northing, 0.0, (byte)zone, areaName);
     }
 
-    public uint Id => m_ControlId;
-    public uint Zone => m_Zone;
-    public string AreaName => m_AreaName;
-    
+    public uint Id
+    {
+        get => m_ControlId;
+        set => m_ControlId = value;
+    }
+
+    public byte Zone
+    {
+        get => m_Zone;
+        set => m_Zone = value;
+    }
+
+    public string AreaName
+    {
+        get => m_AreaName;
+        set => m_AreaName = value;
+    }
+
     /// <summary>
     /// The ID of the control point.
     /// </summary>
@@ -90,6 +104,14 @@ public class ControlPoint : Position, IEquatable<ControlPoint>
     private string m_AreaName;
 
     /// <summary>
+    /// Deserialization constructor.
+    /// </summary>
+    public ControlPoint() : base(0, 0)
+    {
+        m_AreaName = string.Empty;
+    }
+    
+    /// <summary>
     /// Creates a new <c>ControlPoint</c>
     /// </summary>
     /// <param name="id">The ID of the control point</param>
@@ -104,6 +126,11 @@ public class ControlPoint : Position, IEquatable<ControlPoint>
         m_ControlId = id;
         m_Zone = zone;
         m_AreaName = areaName;
+    }
+
+    public override string ToString()
+    {
+        return m_ControlId.ToString();
     }
 
     /// <summary>

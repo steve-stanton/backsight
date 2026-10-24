@@ -387,6 +387,11 @@ public class FeatureFactory
     /// </remarks>
     internal virtual void Deactivate(Feature f)
     {
+        // TODO: Is this needed? Issue when re-adding the same control point following a delete.
+        // I think native IDs are different (since it shouldn't be possible to re-introduce them)
+        if (f.FeatureId is ForeignId fid)
+            MapModel.RemoveId(fid);
+        
         f.IsInactive = true;
     }
 

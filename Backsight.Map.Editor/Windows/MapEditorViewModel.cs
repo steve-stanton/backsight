@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
-using Avalonia.Platform.Storage;
 using Backsight.Database;
+using Backsight.Environment;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.Tools;
@@ -22,12 +19,9 @@ using Mapsui;
 using Mapsui.Extensions;
 using Mapsui.Layers;
 using Mapsui.Manipulations;
-using Mapsui.Nts.Providers;
-using Mapsui.Providers;
 using Mapsui.Rendering.Skia.Extensions;
 using Mapsui.Widgets;
 using Mapsui.Widgets.InfoWidgets;
-using RepoDb;
 
 namespace Backsight.Map.Editor.Windows;
 
@@ -1667,11 +1661,126 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             _model.MapRepository.SaveMapSettings(_model.MapName, Settings);
         }
     }
-    
-    [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
-    private void DataGetControl()
+
+    /// <summary>
+    /// Attempts to obtain the entity type for control points.
+    /// </summary>
+    /// <returns></returns>
+    private async Task<IEntity?> GetControlPointEntity()
     {
-        Console.WriteLine(nameof(DataGetControl));
+        if (Settings is null)
+            return null;
+
+        // Do we have an entity type for control points?
+        // This was formerly obtained via the environment variable called CED$ControlEntity
+        int entId = GlobalUserSetting.ReadInt("ControlEntityTypeId", 0);
+        if (entId != 0)
+        {
+            var entityType = _model.Environment.Find<IEntity>(entId);
+            if (entityType is not null)
+                return entityType;
+        }
+        
+        var layer = _model.Environment.Find<Environment.ILayer>(Settings.ActiveLayer);
+        if (layer is null)
+            return null;
+        
+        await _dialogService.ShowMessageBox("The entity type to use for control points needs to be specified.",
+            "Entity Type Required");
+        
+        var dialog = new GetEntityWindow(_model.Environment, layer, 0, SpatialType.Point);
+        if ((await _dialogService.ShowDialog(dialog)) != DialogResult.OK)
+            return null;
+
+        // Remember the ID of the selected entity type
+        var result = dialog.ViewModel.SelectedEntityType;
+        Debug.Assert(result is not null);
+        GlobalUserSetting.WriteInt("ControlEntityTypeId", result.Id);
+        
+        return result;
+    }
+
+    [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    private async Task DataGetControl()
+    {
+        Debug.Assert(Store is not null);
+
+        var pointType = await GetControlPointEntity();
+        if (pointType is null)
+        {
+            await _dialogService.ShowMessageBox("Cannot find entity type for control points.", "No control point entity");
+            return;
+        }
+        
+        var dialog = new GetControlWindow(this);
+        var result = await _dialogService.ShowDialog(dialog);
+        
+        if (result == DialogResult.OK)
+        {
+            var selection = dialog.ViewModel.SelectedAreaPoints;
+            
+            // Weed out any control points that have already been added. Do nothing if that leaves us with
+            // nothing - otherwise tell the user
+            var toAdd = GetNewControlPoints(selection).ToArray();
+
+            if (toAdd.Length == 0)
+            {
+                await _dialogService.ShowMessageBox("Selected control points have already been added.", "Nothing to save");
+                return;
+            }
+            
+            if (selection.Count != toAdd.Length)
+            {
+                var message = $"""
+                               {selection.Count - toAdd.Length} control point`s were already added.
+                               Only {toAdd.Length} control points will be saved.
+                               """.TrimExtras();
+                
+                await _dialogService.ShowMessageBox(message, "Already saved");
+                return;
+            }
+
+            var wasEmpty = _mapData.Extent is null;
+            
+            var op = new GetControlOperation(Store);
+            op.Execute(toAdd, pointType);
+
+            if (wasEmpty)
+            {
+                // Zoom to the area containing the new control points
+                var extent = _mapData.Extent;
+                if (extent is not null)
+                    _mapData.Navigator.ZoomToBox(extent.Grow(0.1 * Math.Max(100, extent.Height)));
+            }
+            else
+            {
+                // Just refresh where we are (hopefully the new control will appear on screen)
+                Refresh();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Identifies control points that have not already been included as part of the map.
+    /// </summary>
+    /// <param name="controlPoints">The control points to check.</param>
+    /// <returns>Those control points that have not already been included as part of the map.</returns>
+    /// <remarks>
+    /// Control points are considered to be already included if they have the same ID, and
+    /// are located at exactly the same position.
+    /// </remarks>
+    private IEnumerable<ControlPoint> GetNewControlPoints(IReadOnlyCollection<ControlPoint> controlPoints)
+    {
+        // Restricting it to points at the same position makes it easier to identify existing points.
+        // Perhaps problematic if the same control point was previously added, but at a different location.
+        
+        foreach (var cp in controlPoints)
+        {
+            var p = _model.Store!.Model.QueryClosest(cp, Length.Zero, SpatialType.Point) as Model.PointFeature;
+            var isExisting = p is not null && p.IsForeignId && p.FormattedKey == cp.Id.ToString();
+            if (!isExisting)
+                yield return cp;
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
@@ -1694,7 +1803,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
         Console.WriteLine($"Importing {featureCount} features");
         
-        // Should have some sort of entity translation mechanism
+        // TODO: Should have some sort of entity translation mechanism
         var pointType = _model.Environment.EntityTypes.FirstOrDefault(x => x.Name == "Dummy Point");
         if (pointType is null)
         {

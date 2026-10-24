@@ -1,4 +1,6 @@
-﻿using Backsight.Model;
+﻿using Avalonia.Rendering.Composition.Animations;
+using Backsight.Model;
+using Backsight.Model.Operations;
 using SkiaSharp;
 
 namespace Backsight.Map.Editor.Mapping;
@@ -21,6 +23,6 @@ internal class Point : FeatureBase
     protected internal override void Render(MapCanvas canvas, PaintStyle? altStyle = null)
     {
         if (!Feature.IsTrimPoint())
-            canvas.DrawPoint(Feature.Geometry, altStyle ?? _defaultStyle);
+            canvas.DrawPoint(Feature.Geometry, altStyle ?? _defaultStyle, Feature.Creator is GetControlOperation);
     }
 }
