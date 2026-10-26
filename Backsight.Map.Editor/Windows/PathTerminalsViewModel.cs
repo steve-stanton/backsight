@@ -1,0 +1,134 @@
+﻿using Avalonia.Input;
+using Backsight.Map.Editor.Tools;
+using Backsight.Model;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+namespace Backsight.Map.Editor.Windows;
+
+/// <summary>
+/// View model for <see cref="PathTerminalsWindow"/>.
+/// </summary>
+/// <seealso cref="ConnectionPathTool"/>
+internal partial class PathTerminalsViewModel : ToolViewModel<ConnectionPathTool>
+{
+    private enum PickTarget
+    {
+        None,
+        Start,
+        End,
+    }
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(OkCommand))]
+    private PointFeature? _selectedStart;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(OkCommand))]
+    private PointFeature? _selectedEnd;
+    
+    /// <summary>
+    /// The data entry field that the user is filling in via the map.
+    /// </summary>
+    PickTarget _activePickTarget = PickTarget.None;
+
+    /// <summary>
+    /// The point that the mouse is hovering over while actively picking a point.
+    /// Null if <see cref="_activePickTarget"/> is <see cref="PickTarget.None"/>,
+    /// or the last mouse position does not overlap any point."/> 
+    /// </summary>
+    private PointFeature? _pickingPoint;
+
+    public PathTerminalsViewModel(ConnectionPathTool tool)
+        : base(tool)
+    {
+    }
+    
+    protected override bool CanExecuteOk()
+    {
+        return SelectedStart is not null && SelectedEnd is not null;
+    }
+    
+    [RelayCommand]
+    private void PickStart()
+    {
+        if (SelectedStart is not null)
+        {
+            SelectedStart = null;
+            Tool.RefreshMapDisplay();
+        }
+
+        _activePickTarget = PickTarget.Start;
+        Tool.ViewModel.MapCursor = EditingCursors.PickCursor;
+    }
+
+    [RelayCommand]
+    private void PickEnd()
+    {
+        if (SelectedEnd is not null)
+        {
+            SelectedEnd = null;
+            Tool.RefreshMapDisplay();
+        }
+
+        _activePickTarget = PickTarget.End;
+        Tool.ViewModel.MapCursor = EditingCursors.PickCursor;
+    }
+
+    internal PointFeature? PickingStart => _activePickTarget == PickTarget.Start ? _pickingPoint : null;
+    internal PointFeature? PickingEnd => _activePickTarget == PickTarget.End ? _pickingPoint : null;
+    
+    /// <summary>
+    /// Attempts to pick a point from the map.
+    /// </summary>
+    /// <param name="p">The selected map position.</param>
+    /// <returns>True if a point was selected.</returns>
+    internal bool PickPoint(IPosition p)
+    {
+        if (_activePickTarget == PickTarget.None)
+            return false;
+        
+        var pt = QueryPoint(p);
+        
+        if (_activePickTarget == PickTarget.Start)
+            SelectedStart = pt;
+        else if (_activePickTarget == PickTarget.End)
+            SelectedEnd = pt;
+
+        StopPicking();
+        return pt is not null;
+    }
+
+    private PointFeature? QueryPoint(IPosition p)
+    {
+        ILength size = new Length(Tool.Store.Settings.PointHeight * 0.5);
+        return Tool.Store.Model.QueryClosest(p, size, SpatialType.Point) as PointFeature;
+    }
+    
+    /// <summary>
+    /// Ensures that a request to pick a point from the map has been stopped.
+    /// </summary>
+    private void StopPicking()
+    {
+        _activePickTarget = PickTarget.None;
+        _pickingPoint = null;
+        Tool.ViewModel.MapCursor = Cursor.Default;
+    }
+
+    internal void MouseMove(IPosition p)
+    {
+        if (_activePickTarget == PickTarget.None)
+        {
+            _pickingPoint = null;
+            return;
+        }
+
+        var pt = QueryPoint(p);
+
+        if (!ReferenceEquals(pt, _pickingPoint))
+        {
+            _pickingPoint = pt;
+            Tool.ViewModel.RefreshMapDisplay();
+        }
+    }
+}

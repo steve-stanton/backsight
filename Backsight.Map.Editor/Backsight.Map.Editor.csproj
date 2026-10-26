@@ -124,6 +124,15 @@
       <Compile Update="Windows\GetControlViewModel.cs">
         <DependentUpon>GetControlWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\PathTerminalsViewModel.cs">
+        <DependentUpon>PathTerminalsWindow.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\PathViewModel.cs">
+        <DependentUpon>PathWindow.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\PathDistanceViewModel.cs">
+        <DependentUpon>PathDistanceWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

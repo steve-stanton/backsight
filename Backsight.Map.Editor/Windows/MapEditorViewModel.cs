@@ -504,11 +504,10 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         }
     }
 
-    //[RelayCommand(CanExecute = nameof(CanStartConnectionPath))]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RelayCommand(CanExecute = nameof(CanStartConnectionPath))]
     private void PointConnectionPath()
     {
-        Console.WriteLine(nameof(PointConnectionPath));
+        StartCommand(new ConnectionPathTool(this));
     }
 
     private bool CanStartConnectionPath => _commandTool is null && ArePointsDrawn;

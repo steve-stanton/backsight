@@ -1,0 +1,140 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="viewModel:PathDistanceViewModel"
+        xmlns:model="clr-namespace:Backsight.Model;assembly=Backsight.Model"
+        xmlns:conv="clr-namespace:Backsight.Map.Editor.Converters"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Backsight.Map.Editor.Windows.PathDistanceWindow"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        SizeToContent="WidthAndHeight"
+        Title="PathDistanceWindow">
+
+    <Window.Resources>
+        <conv:EnumToBooleanConverter x:Key="EnumToBoolConverter"/>
+    </Window.Resources>
+    
+    <GroupBox Header="Enter distance" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="10">
+        <Grid RowDefinitions="Auto Auto Auto" ColumnDefinitions="Auto Auto" RowSpacing="10" ColumnSpacing="20">
+            <NumericUpDown Grid.Row="0" Grid.Column="0"
+                MinWidth="200"
+                Height="40"
+                TabIndex="0"
+                AllowSpin="False"
+                ShowButtonSpinner="False"
+                Value="{Binding Distance}"
+                VerticalContentAlignment="Center"
+                Minimum="0.0001"/>
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
+                <CheckBox
+                    Content="Create line"
+                    IsTabStop="False"
+                    IsChecked="{Binding CreateLine}"/>
+                <CheckBox
+                    Content="Create point"
+                    IsTabStop="False"
+                    IsChecked="{Binding CreatePoint}"/>
+            </StackPanel>
+            
+            <GroupBox Grid.Row="1" Grid.Column="0" Header="Units">
+                <StackPanel Orientation="Vertical">
+                    <RadioButton
+                        Content="Meters"
+                        GroupName="EntryUnits"
+                        IsTabStop="False"
+                        IsChecked="{Binding EntryUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Meters}}"/>
+                    <RadioButton
+                        Content="Feet"
+                        GroupName="EntryUnits"
+                        IsTabStop="False"
+                        IsChecked="{Binding EntryUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Feet}}"/>
+                    <RadioButton
+                        Content="Chains"
+                        GroupName="EntryUnits"
+                        IsTabStop="False"
+                        IsChecked="{Binding EntryUnit, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:DistanceUnitType.Chains}}"/>
+                    <CheckBox
+                        Content="Make new default"
+                        Margin="0 15 0 0" 
+                        IsTabStop="False"
+                        IsChecked="{Binding MakeUnitsNewDefault}"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Grid.Row="1" Grid.Column="1" Header="Repeat">
+                <Grid RowDefinitions="40 40 40" ColumnDefinitions="40 40 40" RowSpacing="5" ColumnSpacing="5">
+                    <Button Grid.Row="0" Grid.Column="0"
+                        Content="*7"
+                        IsTabStop="False"
+                        Command="{Binding RepeatCommand}"
+                        CommandParameter="7"/>
+                    <Button Grid.Row="0" Grid.Column="1"
+                        Content="*8"
+                        IsTabStop="False"
+                        Command="{Binding RepeatCommand}"
+                        CommandParameter="8"/>
+                    <Button Grid.Row="0" Grid.Column="2"
+                        Content="*9"
+                        IsTabStop="False"
+                        Command="{Binding RepeatCommand}"
+                        CommandParameter="9"/>
+
+                    <Button Grid.Row="1" Grid.Column="0"
+                        Content="*4"
+                        IsTabStop="False"
+                        Command="{Binding RepeatCommand}"
+                        CommandParameter="4"/>
+                    <Button Grid.Row="1" Grid.Column="1"
+                        Content="*5"
+                        IsTabStop="False"
+                        Command="{Binding RepeatCommand}"
+                        CommandParameter="5"/>
+                    <Button Grid.Row="1" Grid.Column="2"
+                        Content="*6"
+                        IsTabStop="False"
+                        Command="{Binding RepeatCommand}"
+                        CommandParameter="6"/>
+                    
+                    <Button Grid.Row="2" Grid.Column="0"
+                        Content="*1"
+                        IsTabStop="False"
+                        Command="{Binding RepeatCommand}"
+                        CommandParameter="1"/>
+                    <Button Grid.Row="2" Grid.Column="1"
+                        Content="*2"
+                        IsTabStop="False"
+                        Command="{Binding RepeatCommand}"
+                        CommandParameter="2"/>
+                    <Button Grid.Row="2" Grid.Column="2"
+                        Content="*3"
+                        IsTabStop="False"
+                        Command="{Binding RepeatCommand}"
+                        CommandParameter="3"/>
+                </Grid>
+            </GroupBox>
+            
+            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button
+                    Content="OK"
+                    IsDefault="True"
+                    FontWeight="Bold"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding OkCommand}" />
+                <Button
+                    Content="Cancel"
+                    IsCancel="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding CancelCommand}" />
+            </StackPanel>
+
+        </Grid>
+    </GroupBox>
+
+</Window>
