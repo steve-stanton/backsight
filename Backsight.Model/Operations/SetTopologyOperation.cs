@@ -113,7 +113,7 @@ public class SetTopologyOperation : Operation
     /// </summary>
     /// <param name="line">The line of interest</param>
     /// <returns>Null (always), since this edit doesn't supersede any lines.</returns>
-    internal override LineFeature GetPredecessor(LineFeature line)
+    internal override LineFeature? GetPredecessor(LineFeature line)
     {
         return null;
     }

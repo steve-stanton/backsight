@@ -262,7 +262,7 @@ class IntersectTwoLinesOperation : IntersectOperation, IRecallable
     /// <param name="line">The line of interest</param>
     /// <returns>The superseded line that the line of interest was derived from. Null if
     /// this edit did not create the line of interest.</returns>
-    internal override LineFeature GetPredecessor(LineFeature line)
+    internal override LineFeature? GetPredecessor(LineFeature line)
     {
         if (Object.ReferenceEquals(m_Line1a, line) ||
             Object.ReferenceEquals(m_Line1b, line))

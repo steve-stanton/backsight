@@ -1144,7 +1144,7 @@ return &newend;
     /// Returns the first predecessor (if any) for this line
     /// </summary>
     /// <returns>The predecessor, or null if none.</returns>
-    internal LineFeature GetPredecessor()
+    internal LineFeature? GetPredecessor()
     {
         // Get the op to find the line (if any) on which it was based.
         return Creator.GetPredecessor(this);

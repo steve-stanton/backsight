@@ -149,7 +149,7 @@ public abstract class Operation : Change, IFeatureDependent
     /// of the <c>Rollback(void)</c> method.
     /// </summary>
     /// <param name="line">The feature to mark for undo (may be null)</param>
-    protected void Rollback(Feature f)
+    protected void Rollback(Feature? f)
     {
         if (f!=null && f.Creator==this)
             f.Undo();
@@ -395,8 +395,8 @@ public abstract class Operation : Change, IFeatureDependent
     /// </summary>
     /// <param name="line">The line of interest</param>
     /// <returns>A line that was superseded by this edit in order to produce
-    /// the line of interest.</returns>
-    internal abstract LineFeature GetPredecessor(LineFeature line);
+    /// the line of interest (null if there is no predecessor).</returns>
+    internal abstract LineFeature? GetPredecessor(LineFeature line);
 
     /// <summary>
     /// Sets the flag bit which indicates that this operation needs to be processed

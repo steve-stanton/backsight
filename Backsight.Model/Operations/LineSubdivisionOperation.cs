@@ -267,7 +267,7 @@ public class LineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// </summary>
     /// <param name="line">The line of interest</param>
     /// <returns>The subdivided line (if any section corresponds to the supplied line).</returns>
-    internal override LineFeature GetPredecessor(LineFeature line)
+    internal override LineFeature? GetPredecessor(LineFeature line)
     {
         if (m_Face != null && m_Face.HasSection(line))
             return m_Line;

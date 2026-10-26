@@ -169,7 +169,7 @@ class UpdateOperation : Operation
     /// <returns>
     /// Null (always)
     /// </returns>
-    internal override LineFeature GetPredecessor(LineFeature line)
+    internal override LineFeature? GetPredecessor(LineFeature line)
     {
         return null;
     }

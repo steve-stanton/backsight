@@ -418,7 +418,7 @@ return TRUE;
     /// <param name="line">The line of interest</param>
     /// <returns>The line that was subdivided (if it resulted in the supplied line
     /// of interest), otherwise null.</returns>
-    internal override LineFeature GetPredecessor(LineFeature line)
+    internal override LineFeature? GetPredecessor(LineFeature line)
     {
         if (Object.ReferenceEquals(line, m_NewLine1) || Object.ReferenceEquals(line, m_NewLine2))
             return m_Line;
