@@ -8,7 +8,7 @@ namespace Backsight.Model.Index;
 /// <summary>
 /// A spatial index
 /// </summary>
-class MapIndex : IEditMapIndex
+public class MapIndex : IEditMapIndex
 {
     /// <summary>
     /// Index of spatial objects with point geometry

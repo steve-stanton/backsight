@@ -177,7 +177,7 @@ internal class Selection : IMapSelection
         return true;
     }
 
-    internal DividerObject? Divider => m_Section;
+    internal DividerObject? Section => m_Section;
 
     /// <summary>
     /// Adds a spatial object to this selection, given that it is not already

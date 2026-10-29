@@ -101,7 +101,7 @@ public class CadastralMapModel
     /// <summary>
     /// The spatial index for this model.
     /// </summary>
-    internal EditingIndex EditingIndex => m_Index;
+    public EditingIndex EditingIndex => m_Index;
 
     /// <summary>
     /// Default rotation angle for text (in radians).

@@ -629,7 +629,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         ClearSelection();
         StartCommand(new SetTopologyTool(this, line));
     }
-    
+
     [RelayCommand(CanExecute = "IsLineTrimDanglesEnabled")]
     private async Task LineTrimDangles()
     {
@@ -651,6 +651,19 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private bool IsLineTrimDanglesEnabled()
     {
         return _commandTool is null && _selection.Items.Any(x => x is LineFeature);
+    }
+
+    [RelayCommand(CanExecute = nameof(IsLineSubdivideAtPointEnabled))]
+    private void LineSubdivideAtPoint()
+    {
+        var line = _selection.SingleOrDefaultLine;
+        if (line is not null)
+            StartCommand(new SubdivideAtPointTool(this, line));
+    }
+
+    private bool IsLineSubdivideAtPointEnabled()
+    {
+        return _selection.SingleOrDefaultLine is not null && _commandTool is null;
     }
     
     [RelayCommand(CanExecute = nameof(CanSetDefaultEntity))]
@@ -714,6 +727,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         new("Extend...", LineExtendCommand),
         new("Subdivide", LineSubdivideCommand),
         new("Subdivide (One Distance)...", LineSubdivideOneDistanceCommand),
+        new("Subdivide (At Point)", LineSubdivideAtPointCommand),
         new("Parallel", LineParallelCommand),
         new("Update", LineUpdateCommand),
         new("Polygon Boundary", LinePolygonBoundaryCommand, IsPolygonBoundary(o)),
@@ -1148,6 +1162,17 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             sel.Add(o);
 
         SetSelection(sel);
+    }
+
+    /// <summary>
+    /// Sets the current map selection to refer to a specific feature.
+    /// </summary>
+    /// <param name="f">The feature to select.</param>
+    /// <remarks>This does not refresh the map display. If you want to highlight the new selection,
+    /// make sure to call <see cref="Refresh"/> after calling this method.</remarks>
+    internal void Select(Feature f)
+    {
+        _selection = new Selection(f);
     }
     
     private IMapObject? Select(double mapScale, IPosition p, SpatialType spatialType)

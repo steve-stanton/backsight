@@ -273,6 +273,11 @@
                     ToolTip.Tip="Break a line into 2 pieces"
                 />
                 <MenuItem
+                    Header="Subdivide Line (At _Point)"
+                    Command="{Binding LineSubdivideAtPointCommand}"
+                    ToolTip.Tip="Break a line into 2 pieces at a point or intersection"
+                />
+                <MenuItem
                     Header="Pa_rallel..."
                     Command="{Binding LineParallelCommand}"
                     ToolTip.Tip="Generate a parallel line"
@@ -300,7 +305,7 @@
                 />
                 <Separator/>
                 <MenuItem
-                    Header="Subdivide _Polygon"
+                    Header="Subdivide Pol_ygon"
                     Command="{Binding LineSubdividePolygonCommand}"
                     ToolTip.Tip="Automatically subdivide a polygon"
                 />

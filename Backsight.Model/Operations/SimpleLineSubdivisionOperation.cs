@@ -209,8 +209,6 @@ public class SimpleLineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
     /// </summary>
     /// <param name="ff">The factory class for generating any spatial features</param>
-    /// <remarks>This implementation does nothing. Derived classes that need to are
-    /// expected to provide a suitable override.</remarks>
     internal override void ProcessFeatures(FeatureFactory ff)
     {
         m_NewPoint = ff.CreatePointFeature(DataField.NewPoint);

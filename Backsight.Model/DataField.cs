@@ -125,4 +125,5 @@ public enum DataField : ushort
     LineString,
     PrimaryFaceId,
     AlternateFaces,
+    IntersectingLine,
 }

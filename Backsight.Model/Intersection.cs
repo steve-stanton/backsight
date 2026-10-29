@@ -57,7 +57,7 @@ public class Intersection : PointGeometry, ITerminal, IPoint
     /// The dividers that start or end at this intersection. If a divider
     /// starts and also ends here, it should appear in the returned array just once.
     /// </summary>
-    public IDivider[]? IncidentDividers() // ITerminal
+    public IDivider[] IncidentDividers() // ITerminal
     {
         List<IDivider> result = new List<IDivider>(m_Lines.Count*2);
 

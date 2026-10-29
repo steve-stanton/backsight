@@ -9,7 +9,7 @@ namespace Backsight.Model;
 /// stuff, this provides an additional index for circles, plus an index of
 /// line intersections.
 /// </summary>
-class EditingIndex : MapIndex, IExtendedMapIndex
+public class EditingIndex : MapIndex, IExtendedMapIndex
 {
     /// <summary>
     /// Spatial index of all extra stuff that is required for the cadastral editor.
@@ -115,17 +115,19 @@ class EditingIndex : MapIndex, IExtendedMapIndex
     /// point (as added via a prior call to <see cref="AddIntersection"/>).
     /// </summary>
     /// <param name="p">The position of interest</param>
+    /// <param name="tol">The search tolerance (null for <see cref="Length.Zero"/>),</param>
     /// <remarks>The corresponding terminal (null if nothing found). This should either
     /// be an instance of <see cref="PointFeature"/> or <see cref="Intersection"/>.</remarks>
-    internal ITerminal? FindTerminal(IPointGeometry p)
+    public ITerminal? FindTerminal(IPointGeometry p, ILength? tol = null)
     {
+        var searchTol = tol ?? Length.Zero;
+        
         // Search the base index for a real point feature
-        PointFeature pf = (base.QueryClosest(p, Length.Zero, SpatialType.Point) as PointFeature);
-        if (pf!=null)
+        if (QueryClosest(p, searchTol, SpatialType.Point) is PointFeature pf)
             return pf;
 
         // Search for an intersection
-        return (m_ExtraData.QueryClosest(p, Length.Zero, SpatialType.Point) as Intersection);
+        return m_ExtraData.QueryClosest(p, searchTol, SpatialType.Point) as Intersection;
     }
 
     /// <summary>

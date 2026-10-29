@@ -358,8 +358,8 @@ public abstract class Operation : Change, IFeatureDependent
     /// subsequent call to <see cref="CalculateGeometry"/> is needed to to that.
     /// </summary>
     /// <param name="ff">The factory class for generating any spatial features</param>
-    /// <remarks>This implementation does nothing. Derived classes that need to are
-    /// expected to provide a suitable override.</remarks>
+    /// <remarks>
+    /// A do-nothing implementation is provided by the <see cref="Operation"/> base class.</remarks>
     internal virtual void ProcessFeatures(FeatureFactory ff)
     {
         // Do nothing
@@ -370,8 +370,8 @@ public abstract class Operation : Change, IFeatureDependent
     /// this editing operation.
     /// </summary>
     /// <param name="ctx">The context in which the geometry is being calculated.</param>
-    /// <remarks>This implementation does nothing. Derived classes that need to are
-    /// expected to provide a suitable override.</remarks>
+    /// <remarks>
+    /// A do-nothing implementation is provided by the <see cref="Operation"/> base class.</remarks>
     internal virtual void CalculateGeometry(EditingContext ctx)
     {
         // Do nothing
@@ -450,7 +450,7 @@ public abstract class Operation : Change, IFeatureDependent
     /// </summary>
     /// <param name="ff">The factory for creating new spatial features (specify null if
     /// the edit is not expected to create anything).</param>
-    public void Execute(FeatureFactory ff)
+    public virtual void Execute(FeatureFactory ff)
     {
         CadastralMapModel mapModel = this.MapModel;
 

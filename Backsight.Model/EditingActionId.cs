@@ -50,4 +50,6 @@ public enum EditingActionId
     NewCircularArc      =41,
     MovePolygonPosition =42,
     PropertyChange      =43,
+    LineSubdivisionAtPoint=44,
+    LineSubdivisionAtIntersection=45,
 }

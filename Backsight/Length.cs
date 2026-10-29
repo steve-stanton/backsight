@@ -21,7 +21,7 @@ namespace Backsight;
 /// </summary>
 public class Length : ILength
 {
-    public static Length Zero = new Length(0.0);
+    public static readonly Length Zero = new Length(0.0);
 
     private readonly double m_Value;
 

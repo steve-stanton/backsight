@@ -76,7 +76,7 @@ internal class AttachPointTool : CommandTool
             return true;
 
         // Attach a new point to the line
-        uint pr = AttachPointOperation.GetPositionRatio(_line, pos);
+        uint pr = PositionRatio.GetValue(_line, pos);
         var op = new AttachPointOperation(_line, pr);
         var ff = new FeatureFactory(op)
         {

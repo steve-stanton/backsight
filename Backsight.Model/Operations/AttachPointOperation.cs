@@ -9,36 +9,6 @@ namespace Backsight.Model.Operations;
 public class AttachPointOperation : Operation
 {
     /// <summary>
-    /// The max value stored for <c>m_PositionRatio</c>
-    /// </summary>
-    const uint MAX_POSITION_RATIO = 1000000000;
-
-    /// <summary>
-    /// Obtains the position ratio for a position that is coincident with a line.
-    /// </summary>
-    /// <param name="line">The line the position is coincident with</param>
-    /// <param name="posn">The position on the line</param>
-    /// <returns>The position ratio of the position, expressed in the numeric range
-    /// expected by this editing operation.</returns>
-    /// <exception cref="ArgumentException">If the position does not appear to coincide
-    /// with the supplied line.</exception>
-    public static uint GetPositionRatio(LineFeature line, IPosition posn)
-    {
-        // Get the distance to the supplied position (confirming that it does fall on the line)
-        LineGeometry g = line.LineGeometry;
-        double lineLen = g.Length.Meters;
-        double posnLen = g.GetLength(posn).Meters;
-        if (posnLen < 0.0)
-            throw new ArgumentException("Position does not appear to coincide with line.");
-
-        // Express the position as a position ratio in the range [0,1 billion]
-        double prat = posnLen/lineLen;
-        uint result = (uint)(prat * (double)MAX_POSITION_RATIO);
-        Debug.Assert(result <= MAX_POSITION_RATIO);
-        return result;
-    }
-
-    /// <summary>
     /// The line the point should appear on 
     /// </summary>
     readonly LineFeature m_Line;
@@ -48,6 +18,7 @@ public class AttachPointOperation : Operation
     /// of the line is a value of 0. A point at the end of the line is a value of
     /// 1 billion  (1,000,000,000).
     /// </summary>
+    /// <seealso cref="PositionRatio"/>
     readonly uint m_PositionRatio;
 
     /// <summary>
@@ -124,13 +95,8 @@ public class AttachPointOperation : Operation
     /// <returns></returns>
     IPosition Calculate()
     {
-        Debug.Assert(m_PositionRatio <= MAX_POSITION_RATIO);
-
-        // Get the current length of the line the point is attached to
-        double len = m_Line.Length.Meters;
-
         // Get the distance to the attached point
-        double dist = len * ((double)(m_PositionRatio)/(double)MAX_POSITION_RATIO);
+        double dist = PositionRatio.GetDistance(m_Line, m_PositionRatio);
 
         // Get the position for the point
         IPosition xpos;
@@ -164,13 +130,6 @@ public class AttachPointOperation : Operation
     /// The line the point should appear on 
     /// </summary>
     internal LineFeature Line => m_Line;
-
-    /// <summary>
-    /// The position ratio of the attached point. A point coincident with the start
-    /// of the line is a value of 0. A point at the end of the line is a value of
-    /// 1 billion  (1,000,000,000).
-    /// </summary>
-    internal uint PositionRatio => m_PositionRatio;
 
     /// <summary>
     /// The point that was created (defined on a call to <see cref="Execute"/>)
