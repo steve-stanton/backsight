@@ -95,7 +95,7 @@ public class LineSubdivisionAtIntersectionOperation : LineSubdivisionAtTerminal
     public override string Name => "Subdivide line at intersection";
 
     /// <inheritdoc/>
-    internal override EditingActionId EditId => EditingActionId.LineSubdivisionAtIntersection;
+    public override EditingActionId EditId => EditingActionId.LineSubdivisionAtIntersection;
 
     /// <inheritdoc/>
     protected override IEnumerable<Feature> ReferencedFeatures()
@@ -177,33 +177,29 @@ public class LineSubdivisionAtIntersectionOperation : LineSubdivisionAtTerminal
         IPosition? closest = null;
         double delta = geom.GetLength(null).Meters;
         double defaultDelta = geom.GetLength(defaultResult).Meters;
-        
+
         foreach (var intersection in xres.Intersections)
         {
-            if (intersection.P1 is not null)
-            {
-                var xd = Math.Abs(geom.GetLength(intersection.P1).Meters - defaultDelta);
-                if (xd < delta)
-                {
-                    closest = intersection.P1;
-                    delta = xd;
-                }
-            }
-
-            if (intersection.P2 is not null)
-            {
-                var xd = Math.Abs(geom.GetLength(intersection.P2).Meters - defaultDelta);
-                if (xd < delta)
-                {
-                    closest = intersection.P2;
-                    delta = xd;
-                }
-            }
+            UpdateIfCloser(intersection.P1);
+            UpdateIfCloser(intersection.P2);
         }
 
         return closest ?? defaultResult;
-    }
 
+        void UpdateIfCloser(IPosition? p)
+        {
+            if (p is null)
+                return;
+
+            var xd = Math.Abs(geom.GetLength(p).Meters - defaultDelta);
+            if (xd < delta)
+            {
+                closest = p;
+                delta = xd;
+            }
+        }
+    }
+    
     IPosition CalculateUsingPositionRatio()
     {
         // Get the distance to the attached point

@@ -186,7 +186,7 @@ class IntersectTwoLinesOperation : IntersectOperation, IRecallable
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.LineIntersect;
+    public override EditingActionId EditId => EditingActionId.LineIntersect;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

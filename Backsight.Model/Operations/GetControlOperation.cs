@@ -72,7 +72,7 @@ public class GetControlOperation : Operation, IRevisable
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.GetControl;
+    public override EditingActionId EditId => EditingActionId.GetControl;
 
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).

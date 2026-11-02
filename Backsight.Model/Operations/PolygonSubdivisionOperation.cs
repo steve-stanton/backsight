@@ -59,7 +59,7 @@ public class PolygonSubdivisionOperation : Operation
     /// </summary>
     internal LineFeature[] NewLines => m_Lines;
 
-    internal override EditingActionId EditId => EditingActionId.PolygonSubdivision;
+    public override EditingActionId EditId => EditingActionId.PolygonSubdivision;
 
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).

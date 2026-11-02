@@ -208,7 +208,7 @@ class PathOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.Path;
+    public override EditingActionId EditId => EditingActionId.Path;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

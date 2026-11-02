@@ -352,7 +352,7 @@ public class LineExtensionOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.LineExtend;
+    public override EditingActionId EditId => EditingActionId.LineExtend;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

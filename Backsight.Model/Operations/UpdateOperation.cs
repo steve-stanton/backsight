@@ -84,7 +84,7 @@ class UpdateOperation : Operation
     /// The unique identifier for this edit.
     /// </summary>
     /// <value>EditingActionId.Update</value>
-    internal override EditingActionId EditId => EditingActionId.Update;
+    public override EditingActionId EditId => EditingActionId.Update;
 
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).

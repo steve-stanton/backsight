@@ -85,7 +85,7 @@ public class NewCircleOperation : NewLineOperation, IRecallable //, IRevisable
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.NewCircle;
+    public override EditingActionId EditId => EditingActionId.NewCircle;
 
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).

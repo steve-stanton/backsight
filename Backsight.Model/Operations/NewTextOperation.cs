@@ -59,7 +59,7 @@ abstract class NewTextOperation : Operation //, IRevisable
 	/// <summary>
 	/// The unique identifier for this edit.
 	/// </summary>
-	internal override EditingActionId EditId => EditingActionId.NewText;
+	public override EditingActionId EditId => EditingActionId.NewText;
 
 	/// <summary>
 	/// Rollback this operation (occurs when a user undoes the last edit).

@@ -320,7 +320,7 @@ public class SimpleLineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.SimpleLineSubdivision;
+    public override EditingActionId EditId => EditingActionId.SimpleLineSubdivision;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

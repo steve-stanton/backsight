@@ -51,7 +51,7 @@ class TextRotationOperation : Operation
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.SetLabelRotation;
+    public override EditingActionId EditId => EditingActionId.SetLabelRotation;
 
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).

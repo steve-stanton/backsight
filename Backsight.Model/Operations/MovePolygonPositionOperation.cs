@@ -61,7 +61,7 @@ class MovePolygonPositionOperation : Operation
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.MovePolygonPosition;
+    public override EditingActionId EditId => EditingActionId.MovePolygonPosition;
 
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).

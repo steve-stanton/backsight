@@ -303,7 +303,7 @@ public class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatur
          */
     }
 
-    internal override EditingActionId EditId => EditingActionId.Parallel;
+    public override EditingActionId EditId => EditingActionId.Parallel;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

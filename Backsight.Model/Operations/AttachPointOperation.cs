@@ -65,7 +65,7 @@ public class AttachPointOperation : Operation
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.AttachPoint;
+    public override EditingActionId EditId => EditingActionId.AttachPoint;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

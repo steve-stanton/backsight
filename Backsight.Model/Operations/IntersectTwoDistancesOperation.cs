@@ -184,7 +184,7 @@ class IntersectTwoDistancesOperation : IntersectOperation, IRecallable, IRevisab
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.DistIntersect;
+    public override EditingActionId EditId => EditingActionId.DistIntersect;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

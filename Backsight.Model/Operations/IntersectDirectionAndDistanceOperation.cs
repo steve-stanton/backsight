@@ -159,7 +159,7 @@ class IntersectDirectionAndDistanceOperation : IntersectOperation, IRecallable, 
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.DirDistIntersect;
+    public override EditingActionId EditId => EditingActionId.DirDistIntersect;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

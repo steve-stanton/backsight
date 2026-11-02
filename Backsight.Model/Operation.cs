@@ -103,7 +103,7 @@ public abstract class Operation : Change, IFeatureDependent
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal abstract EditingActionId EditId { get; }
+    public abstract EditingActionId EditId { get; }
 
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).

@@ -133,7 +133,7 @@ class IntersectTwoDirectionsOperation : IntersectOperation, IRecallable, IRevisa
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.DirIntersect;
+    public override EditingActionId EditId => EditingActionId.DirIntersect;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

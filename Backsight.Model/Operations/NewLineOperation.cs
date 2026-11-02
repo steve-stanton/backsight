@@ -64,7 +64,7 @@ public abstract class NewLineOperation : Operation
 
     internal override Feature[] Features => [m_NewLine];
 
-    internal override EditingActionId EditId => EditingActionId.NewLine;
+    public override EditingActionId EditId => EditingActionId.NewLine;
 
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).

@@ -6,6 +6,27 @@ namespace Backsight.Model.Operations;
 /// Edit to subdivide a line at a specific point.
 /// </summary>
 /// <seealso cref="LineSubdivisionAtIntersectionOperation"/>
+/// <remarks>
+/// This makes it possible to split a line at an arbitrary point along any line (such as a
+/// point that was added using <see cref="AttachPointOperation"/>.
+/// <para/>
+/// As things currently stand, it can also be used to subdivide a line at a point that was
+/// added by an edit such as <see cref="LineSubdivisionAtIntersectionOperation"/>. But be aware
+/// that this will lead to strange results in a situation where the intersection ceases to
+/// exist because of updates to the geometry of the lines involved. Whereas the operation
+/// to add a point at an intersection can still produce a position even if the intersection
+/// has been lost, the same is not true if the other line involved is also subdivided. What
+/// will happen is that the point will be dragged away, because it will continue to fall on
+/// the other line. Consequently, something like a straight line segment that has been split
+/// will no longer be straight.
+/// <para/>
+/// To be able to resolve that, we could perhaps add a second point feature whenever a line
+/// gets split at an intersection. However, this would lead to confusion in a situation where
+/// other edits are dependent on the position of the point (which point is being referred to?).
+/// Alternatively, it could be regarded as a lower-class of point feature that cannot be
+/// referenced by anything else. And, if the intersection is subsequently lost, the update
+/// could still move that point to a new location that is distinct from the original point.
+/// </remarks>
 public class LineSubdivisionAtPointOperation : LineSubdivisionAtTerminal
 {
     /// <summary>
@@ -46,7 +67,7 @@ public class LineSubdivisionAtPointOperation : LineSubdivisionAtTerminal
     protected override PointFeature? SplitPoint => m_Point;
 
     /// <inheritdoc/>
-    internal override EditingActionId EditId => EditingActionId.LineSubdivisionAtPoint;
+    public override EditingActionId EditId => EditingActionId.LineSubdivisionAtPoint;
 
     /// <inheritdoc/>
     public override string Name => "Subdivide line at point";

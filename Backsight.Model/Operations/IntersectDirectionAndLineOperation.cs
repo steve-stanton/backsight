@@ -192,7 +192,7 @@ class IntersectDirectionAndLineOperation : IntersectOperation, IRecallable, IRev
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.DirLineIntersect;
+    public override EditingActionId EditId => EditingActionId.DirLineIntersect;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

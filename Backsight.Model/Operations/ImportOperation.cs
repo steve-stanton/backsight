@@ -63,7 +63,7 @@ public class ImportOperation : Operation
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.DataImport;
+    public override EditingActionId EditId => EditingActionId.DataImport;
 
     /// <summary>
     /// A user-perceived title for this operation.

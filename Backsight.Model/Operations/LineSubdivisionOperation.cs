@@ -206,7 +206,7 @@ public class LineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// The unique identifier for this edit.
     /// </summary>
     /// <value>EditingActionId.LineSubdivision</value>
-    internal override EditingActionId EditId => EditingActionId.LineSubdivision;
+    public override EditingActionId EditId => EditingActionId.LineSubdivision;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

@@ -107,7 +107,7 @@ public class RadialOperation : Operation, IRecallable, IRevisable
     /// </summary>
     public override string Name => "Sideshot";
 
-    internal override EditingActionId EditId => EditingActionId.Radial;
+    public override EditingActionId EditId => EditingActionId.Radial;
 
     /// <summary>
     /// Executes this operation.

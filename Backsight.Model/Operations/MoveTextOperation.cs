@@ -102,7 +102,7 @@ class MoveTextOperation : Operation
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.MoveLabel;
+    public override EditingActionId EditId => EditingActionId.MoveLabel;
 
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).

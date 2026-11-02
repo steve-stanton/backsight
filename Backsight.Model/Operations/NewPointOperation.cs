@@ -65,7 +65,7 @@ public class NewPointOperation : Operation, IRecallable, IRevisable
         Complete();
     }
 
-    internal override EditingActionId EditId => EditingActionId.NewPoint;
+    public override EditingActionId EditId => EditingActionId.NewPoint;
 
     /// <summary>
     /// A user-perceived title for this operation.

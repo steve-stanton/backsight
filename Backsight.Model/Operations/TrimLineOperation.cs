@@ -109,7 +109,7 @@ public class TrimLineOperation : Operation, IFeatureRefArray
     /// <summary>
     /// The unique identifier for this edit.
     /// </summary>
-    internal override EditingActionId EditId => EditingActionId.Trim;
+    public override EditingActionId EditId => EditingActionId.Trim;
 
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).
