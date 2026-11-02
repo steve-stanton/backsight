@@ -26,6 +26,7 @@
         <KeyBinding Gesture="Delete" Command="{Binding EditDeleteCommand}" />
         <KeyBinding Gesture="Alt+Up" Command="{Binding EnlargePointSizeCommand}" />
         <KeyBinding Gesture="Alt+Down" Command="{Binding ReducePointSizeCommand}" />
+        <KeyBinding Gesture="Return" Command="{Binding EditRepeatCommand}" />
     </Window.KeyBindings>
         
     <DockPanel>
@@ -88,6 +89,8 @@
                 <MenuItem
                     Header="_Repeat"
                     Command="{Binding EditRepeatCommand}"
+                    ToolTip.Tip="Repeat the last edit"
+                    InputGesture="Return"
                     />
                 <Separator/>
                 <MenuItem
@@ -348,11 +351,6 @@
                     Header="Two di_stances..."
                     Command="{Binding IntersectTwoDistancesCommand}"
                     ToolTip.Tip="Create point using two distances"
-                />
-                <MenuItem
-                    Header="Two _lines..."
-                    Command="{Binding IntersectTwoLinesCommand}"
-                    ToolTip.Tip="Create point at intersection of two lines"
                 />
                 <MenuItem
                     Header="Direction _and Distance..."

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -166,6 +167,11 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// </summary>
     private readonly IDialogService _dialogService;
 
+    /// <summary>
+    /// Editing operations that can be launched via the <see cref="EditRepeat"/> command.
+    /// </summary>
+    private readonly Dictionary<EditingActionId, IRelayCommand> _editingActions = new();
+
     public MapEditorViewModel() : this(new DesignMapEditorModel(), null!, null!)
     {
     }
@@ -198,8 +204,48 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         _mapData.Navigator.PanLock = true;
 
         _mapData.Navigator.ViewportChanged += OnViewportChanged;
+        
+        // Cross-reference editing actions to the corresponding commands
+        PopulateEditingActions();
     }
 
+    private void PopulateEditingActions()
+    {
+        var methods = GetType().GetMethods(
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+        foreach (var method in methods)
+        {
+            var repeatableAttrs = method.GetCustomAttributes<RepeatableEditAttribute>().ToArray();
+            if (repeatableAttrs.Length == 0)
+                continue;
+            
+            var relayAttr = method.GetCustomAttribute<RelayCommandAttribute>();
+            if (relayAttr is null)
+                continue;
+
+            // Derive generated command property name (e.g., "PointNew" -> "PointNewCommand")
+            string methodName = method.Name;
+            if (methodName.EndsWith("Async", StringComparison.Ordinal))
+                methodName = methodName[..^5];
+
+            string commandPropertyName = $"{methodName}Command";
+
+            var commandProp = GetType().GetProperty(
+                commandPropertyName, 
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+            if (commandProp?.GetValue(this) is IRelayCommand command)
+            {
+                foreach (var attr in repeatableAttrs)
+                    _editingActions[attr.EditId] = command;
+            }
+            else
+            {
+                Debug.Fail($"Could not find generated command property '{commandPropertyName}' for method '{method.Name}'.");
+            }
+        }
+    }
 
     internal IEnvironmentRepository Environment => _model.Environment;
     internal IMapEditorModel Model => _model;
@@ -440,6 +486,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     ];
 
     [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    [RepeatableEdit(EditingActionId.NewPoint)]
     private async Task PointNew()
     {
         Debug.Assert(Store is not null);
@@ -481,6 +528,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    [RepeatableEdit(EditingActionId.AttachPoint)]
     private async Task PointAddOnLine()
     {
         if (!ArePointsDrawn)
@@ -505,6 +553,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand(CanExecute = nameof(CanStartConnectionPath))]
+    [RepeatableEdit(EditingActionId.Path)]
     private void PointConnectionPath()
     {
         StartCommand(new ConnectionPathTool(this));
@@ -515,6 +564,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     internal bool ArePointsDrawn => GetTypesAtCurrentScale().HasFlag(SpatialType.Point);
 
     [RelayCommand(CanExecute = nameof(CanStartSideshot))]
+    [RepeatableEdit(EditingActionId.Radial)]
     private void PointSideshot()
     {
         var fromPoint = _selection.SingleOrDefault as Model.PointFeature;
@@ -543,12 +593,14 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private bool CanSetDefaultEntity => Store is not null;
     
     [RelayCommand(CanExecute = nameof(CanAddFeature))]
+    [RepeatableEdit(EditingActionId.NewLine)]
     private void LineAddStraightLine()
     {
         StartCommand(new NewLineTool(this, _selection.SingleOrDefault as Model.PointFeature));
     }
 
     [RelayCommand(CanExecute = nameof(IsLineAddCircularArcEnabled))]
+    [RepeatableEdit(EditingActionId.NewCircularArc)]
     private async Task LineAddCircularArc()
     {
         // Locate the circles that pass through the start point
@@ -573,12 +625,14 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         _commandTool is null && Store is not null && _selection.SingleOrDefault is Model.PointFeature;
 
     [RelayCommand(CanExecute = nameof(CanAddFeature))]
+    [RepeatableEdit(EditingActionId.NewCircle)]
     private void LineAddCircleConstructionLine()
     {
         StartCommand(new NewCircleTool(this));
     }
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
+    [RepeatableEdit(EditingActionId.LineExtend)]
     private void LineExtend()
     {
         var extendLine = _selection.SingleOrDefaultLine;
@@ -588,6 +642,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
     
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
+    [RepeatableEdit(EditingActionId.LineSubdivision)]
     private void LineSubdivide()
     {
         var line = _selection.SingleOrDefaultLine;
@@ -597,6 +652,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
+    [RepeatableEdit(EditingActionId.SimpleLineSubdivision)]
     private void LineSubdivideOneDistance()
     {
         var line = _selection.SingleOrDefaultLine;
@@ -606,6 +662,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
+    [RepeatableEdit(EditingActionId.Parallel)]
     private void LineParallel()
     {
         var refLine = _selection.SingleOrDefaultLine;
@@ -622,6 +679,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
+    [RepeatableEdit(EditingActionId.SetTopology)]
     private void LinePolygonBoundary()
     {
         var line = _selection.SingleOrDefaultLine;
@@ -631,6 +689,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand(CanExecute = "IsLineTrimDanglesEnabled")]
+    [RepeatableEdit(EditingActionId.Trim)]
     private async Task LineTrimDangles()
     {
         var tool = new TrimDanglesTool(this);
@@ -654,6 +713,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand(CanExecute = nameof(IsLineSubdivideAtPointEnabled))]
+    [RepeatableEdit(EditingActionId.LineSubdivisionAtPoint)]
+    [RepeatableEdit(EditingActionId.LineSubdivisionAtIntersection)]
     private void LineSubdivideAtPoint()
     {
         var line = _selection.SingleOrDefaultLine;
@@ -673,6 +734,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
     
     [RelayCommand(CanExecute = nameof(IsSubdividePolygonEnabled))]
+    [RepeatableEdit(EditingActionId.PolygonSubdivision)]
     private void LineSubdividePolygon()
     {
         var tool = new PolygonSubdivisionTool(this);
@@ -706,6 +768,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private bool CanAddFeature => _commandTool is null && Store is not null;
 
     [RelayCommand(CanExecute = nameof(CanDeletePoint))]
+    [RepeatableEdit(EditingActionId.Deletion)]
     private void PointDelete()
     {
         EditDelete();
@@ -748,6 +811,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
     
     [RelayCommand(CanExecute = nameof(CanDeleteLine))]
+    [RepeatableEdit(EditingActionId.Deletion)]
     private void LineDelete()
     {
         EditDelete();
@@ -766,36 +830,42 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RepeatableEdit(EditingActionId.NewText)]
     private void TextAddMiscellaneousText()
     {
         Console.WriteLine(nameof(TextAddMiscellaneousText));
     }
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RepeatableEdit(EditingActionId.NewText)]
     private void TextAddPolygonLabels()
     {
         Console.WriteLine(nameof(TextAddPolygonLabels));
     }
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RepeatableEdit(EditingActionId.MoveLabel)]
     private void TextMove()
     {
         Console.WriteLine(nameof(TextMove));
     }
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RepeatableEdit(EditingActionId.MovePolygonPosition)]
     private void TextMovePolygonPosition()
     {
         Console.WriteLine(nameof(TextMovePolygonPosition));
     }
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RepeatableEdit(EditingActionId.SetLabelRotation)]
     private void TextDefaultRotationAngle()
     {
         Console.WriteLine(nameof(TextDefaultRotationAngle));
     }
 
     [RelayCommand(CanExecute = nameof(CanDeleteText))]
+    [RepeatableEdit(EditingActionId.Deletion)]
     private void TextDelete()
     {
         EditDelete();
@@ -806,6 +876,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RepeatableEdit(EditingActionId.DirIntersect)]
     private void IntersectTwoDirections()
     {
         Console.WriteLine(nameof(IntersectTwoDirections));
@@ -813,24 +884,21 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RepeatableEdit(EditingActionId.DistIntersect)]
     private void IntersectTwoDistances()
     {
         Console.WriteLine(nameof(IntersectTwoDistances));
     }
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void IntersectTwoLines()
-    {
-        Console.WriteLine(nameof(IntersectTwoLines));
-    }
-    //[RelayCommand]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RepeatableEdit(EditingActionId.DirDistIntersect)]
     private void IntersectDirectionAndDistance()
     {
         Console.WriteLine(nameof(IntersectDirectionAndDistance));
     }
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RepeatableEdit(EditingActionId.DirLineIntersect)]
     private void IntersectDirectionAndLine()
     {
         Console.WriteLine(nameof(IntersectDirectionAndLine));
@@ -844,10 +912,12 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
+    [RepeatableEdit(EditingActionId.Deletion)]
     private void MultiDelete()
     {
-        Console.WriteLine(nameof(MultiDelete));
+        StartCommand(new DeletionTool(this));
     }
+    
     //[RelayCommand]
     [RelayCommand(CanExecute = "CommandNotImplemented")]
     private void MultiTrim()
@@ -1001,12 +1071,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     private void Properties()
     {
         // TODO: Display the properties of the currently selected feature
-    }
-
-    [RelayCommand]
-    private void DeleteSelection()
-    {
-        // TODO: Delete the currently selected feature
     }
 
     internal void OnMouseDown(IPosition p, MouseButton b, KeySelection ks)
@@ -1408,6 +1472,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand(CanExecute = nameof(IsEditDeleteEnabled))]
+    [RepeatableEdit(EditingActionId.Deletion)]
     private void EditDelete()
     {
         StartCommand(new DeletionTool(this));
@@ -1425,11 +1490,39 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         Console.WriteLine(nameof(EditUndo));
     }
 
-    //[RelayCommand]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void EditRepeat()
+    private bool IsEditRepeatEnabled() =>
+        _commandTool is null && Store?.Model.WorkingSession?.LastOperation is not null;
+
+    [RelayCommand(CanExecute = nameof(IsEditRepeatEnabled))]
+    private async Task EditRepeat()
     {
-        Console.WriteLine(nameof(EditRepeat));
+        // Get the last operation in the current sessiob
+        Operation? op = Store?.Model.WorkingSession?.LastOperation;
+        if (op is null)
+            return;
+        
+        if (_editingActions.TryGetValue(op.EditId, out IRelayCommand? action))
+        {
+            if (!action.CanExecute(null))
+            {
+                await _dialogService.ShowMessageBox(
+                    """
+                    The last edit cannot be executed at the moment.
+                    You may first need to select something from the map to work with.
+                    """, op.Name);
+
+                return;
+            }
+            
+            if (action is IAsyncRelayCommand asyncAction)
+                await asyncAction.ExecuteAsync(null);
+            else
+                action.Execute(null);
+        }
+        else
+        {
+            await _dialogService.ShowMessageBox("Cannot determine last edit", op.Name);
+        }
     }
 
     //[RelayCommand]
@@ -1725,6 +1818,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     }
 
     [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
+    [RepeatableEdit(EditingActionId.GetControl)]
     private async Task DataGetControl()
     {
         Debug.Assert(Store is not null);
