@@ -638,12 +638,12 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     [RepeatableEdit(EditingActionId.LineExtend)]
-    private void LineExtend()
+    private void LineExtend(Operation? recall = null)
     {
         var extendLine = _selection.SingleOrDefaultLine;
         Debug.Assert(extendLine is not null);
         ClearSelection();
-        StartCommand(new LineExtensionTool(this, extendLine));
+        StartCommand(new LineExtensionTool(this, extendLine, recall));
     }
     
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]

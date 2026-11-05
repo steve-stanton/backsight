@@ -15,10 +15,10 @@ internal class LineExtensionTool : CommandTool
 {
     private readonly LineExtensionWindow _dialog;
 
-    internal LineExtensionTool(MapEditorViewModel viewModel, LineFeature extendLine)
+    internal LineExtensionTool(MapEditorViewModel viewModel, LineFeature extendLine, Operation? recall)
         : base(viewModel, EditingActionId.LineExtend)
     {
-        _dialog = new LineExtensionWindow(this, extendLine);
+        _dialog = new LineExtensionWindow(this, extendLine, recall as LineExtensionOperation);
     }
 
     internal override bool Run()

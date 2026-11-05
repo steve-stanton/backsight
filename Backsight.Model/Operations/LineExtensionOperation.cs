@@ -29,7 +29,7 @@ public class LineExtensionOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// The actual extension line (if any).
     /// </summary>
-    LineFeature m_NewLine;
+    LineFeature? m_NewLine;
 
     /// <summary>
     /// The point at the end of the extension.
@@ -81,30 +81,30 @@ public class LineExtensionOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// The actual extension line (if any).
     /// </summary>
-    internal LineFeature NewLine
+    public LineFeature? NewLine
     {
         get => m_NewLine;
-        set => m_NewLine = value;
+        internal set => m_NewLine = value;
     }
 
     /// <summary>
     /// The point at the end of the extension.
     /// </summary>
-    internal PointFeature NewPoint
+    public PointFeature NewPoint
     {
         get => m_NewPoint;
-        set => m_NewPoint = value;
+        internal set => m_NewPoint = value;
     }
 
     /// <summary>
     /// The observed length of the extension.
     /// </summary>
-    internal Distance Length => m_Length;
+    public Distance Length => m_Length;
 
     /// <summary>
     /// Is the extension from the end of <see cref="ExtendLine"/>
     /// </summary>
-    internal bool IsExtendFromEnd => m_IsExtendFromEnd;
+    public bool IsExtendFromEnd => m_IsExtendFromEnd;
 
     /// <summary>
     /// Attempts to locate a superseded (inactive) line that was the parent of

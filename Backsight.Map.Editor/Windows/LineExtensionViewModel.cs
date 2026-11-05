@@ -1,35 +1,16 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using Backsight.Environment;
 using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.Tools;
 using Backsight.Model;
+using Backsight.Model.Operations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace Backsight.Map.Editor.Windows;
 
-// The ViewModel should only be responsible for what's needed by LineExtensionWindow.
-// LineExtensionTool should know about the MapEditorViewModel so that it can call FinishCommand or AbortCommand
-// when required. And it will hold a reference to LineExtensionWindow/ViewModel.
-// The question is how to notify the tool when ViewModel.HandleCloseRequested() is called - should the
-// tool be passed into the ViewModel?
-// 
-// In the old system:
-// - LineExtensionUI == LineExtensionTool
-// - The UI created a LineExtensionControl (wrapped in a container form) == LineExtensionWindow. And it
-//   passed in a reference to itself => this says that the "tool" should be known to the ViewModel.
-//   
-// When the user closed the LineExtensionControl by clicking the OK button, it called the UI.DialFinish
-// method. The UI class grabbed the entered data from the dialog and created the LineExtensionOperation.
-
-// Would it be better to make it so that the ViewModel knows nothing about any CommandTool?...
-// The CommandTool could register for the VM.CloseRequested event
-public partial class LineExtensionViewModel : DialogViewModel
+internal partial class LineExtensionViewModel : ToolViewModel<LineExtensionTool>
 {
-    private readonly LineExtensionTool _tool;
-    
     /// <summary>
     /// The line that is being extended.
     /// </summary>
@@ -75,14 +56,16 @@ public partial class LineExtensionViewModel : DialogViewModel
     /// </summary>
     internal bool AllowIdSelection { get; }
 
-    internal LineExtensionViewModel(LineExtensionTool tool, LineFeature extendLine)
+    internal LineExtensionViewModel(
+        LineExtensionTool tool,
+        LineFeature extendLine,
+        LineExtensionOperation? recall) : base(tool)
     {
-        _tool = tool;
         _extendLine = extendLine;
 
         // Get the units hint for the extension length
-        var entryUnit = tool.Store.Settings.EntryUnit;
-        Units = DistanceUnit.GetUnit(entryUnit).Abbreviation + " ";
+        var entryUnit = DistanceUnit.GetUnit(tool.Store.Settings.EntryUnit);
+        Units = entryUnit.Abbreviation + " ";
 
         // Fill the combo with the entity types for the extension point
         PointTypes = tool.ViewModel.Environment.EntityTypes
@@ -90,7 +73,7 @@ public partial class LineExtensionViewModel : DialogViewModel
             .OrderBy(x => x.Name)
             .ToArray();
 
-        _selectedPointType = tool.Store.DefaultPointType;
+        _selectedPointType = recall?.NewPoint.EntityType ?? tool.Store.DefaultPointType;
 
         // Load the ID combo and select the first available ID
         _pointIds = tool.Store.GetPointIds(_selectedPointType);
@@ -99,13 +82,20 @@ public partial class LineExtensionViewModel : DialogViewModel
         
         // If we are auto-numbering, disable the combo.
         AllowIdSelection = !tool.Store.Settings.AutoNumber;
+        
+        if (recall is not null)
+        {
+            Length = (decimal)recall.Length.GetDistance(entryUnit, true);
+            IsExtendFromEnd = recall.IsExtendFromEnd;
+            WantLine = recall.NewLine is not null;
+        }
     }
     
     internal LineFeature Line => _extendLine;
     
     partial void OnLengthChanged(decimal? value)
     {
-        _tool.RefreshMapDisplay();
+        Tool.RefreshMapDisplay();
     }
     
     [RelayCommand]
@@ -116,12 +106,12 @@ public partial class LineExtensionViewModel : DialogViewModel
 
     partial void OnIsExtendFromEndChanged(bool value)
     {
-        _tool.RefreshMapDisplay();
+        Tool.RefreshMapDisplay();
     }
 
     partial void OnWantLineChanged(bool value)
     {
-        _tool.RefreshMapDisplay();
+        Tool.RefreshMapDisplay();
     }
 
     partial void OnSelectedPointTypeChanged(IEntity? value)
@@ -133,32 +123,13 @@ public partial class LineExtensionViewModel : DialogViewModel
         }
         else if (value.IdGroup.Id != _selectedPointId?.Group.Id)
         {
-            PointIds = _tool.Store.GetPointIds(value);
+            PointIds = Tool.Store.GetPointIds(value);
 
             if (PointIds.Length == 0)
                 SelectedPointId = null;
             else
                 SelectedPointId = _pointIds[0];
         }
-    }
-
-    internal override bool HandleCloseRequested(DialogResult result)
-    {
-        Console.WriteLine("Line extension requesting close with result: " + result);
-
-        if (result == DialogResult.OK)
-        {
-            // return if fails validation
-            Debug.Assert(CanExecuteOk());
-            
-            _tool.FinishDataEntry(this);
-        }
-        else
-        {
-            _tool.CancelDataEntry(this);
-        }
-
-        return true;
     }
     
     protected override bool CanExecuteOk()

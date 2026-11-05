@@ -1,9 +1,10 @@
 ﻿using Backsight.Map.Editor.Tools;
 using Backsight.Model;
+using Backsight.Model.Operations;
 
 namespace Backsight.Map.Editor.Windows;
 
-public partial class LineExtensionWindow : DialogWindow<LineExtensionViewModel>
+internal partial class LineExtensionWindow : DialogWindow<LineExtensionViewModel>
 {
     /// <summary>
     /// Design-time constructor.
@@ -13,8 +14,8 @@ public partial class LineExtensionWindow : DialogWindow<LineExtensionViewModel>
         InitializeComponent();
     }
 
-    internal LineExtensionWindow(LineExtensionTool tool, LineFeature extendLine)
-        : base(new LineExtensionViewModel(tool, extendLine))
+    internal LineExtensionWindow(LineExtensionTool tool, LineFeature extendLine, LineExtensionOperation? recall)
+        : base(new LineExtensionViewModel(tool, extendLine, recall))
     {
         InitializeComponent();
     }
