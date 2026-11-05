@@ -100,7 +100,7 @@ public class Change : IPersistent
     /// <summary>
     /// Change sequence number.
     /// </summary>
-    internal uint EditSequence => m_Sequence;
+    public uint EditSequence => m_Sequence;
 
     /// <summary>
     /// Adds references to existing features referenced by an editing event.

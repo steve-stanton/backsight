@@ -122,7 +122,7 @@ class OffsetDistance : Offset
     /// <summary>
     /// Associated point is always null for an offset distance.
     /// </summary>
-    internal override PointFeature Point => null;
+    public override PointFeature Point => null;
 
     internal override void CutRef(Operation op)
     {

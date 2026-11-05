@@ -55,9 +55,9 @@ public class ParallelDirection : Direction, IFeatureRef
         set => m_From = value;
     }
 
-    internal PointFeature Start => m_Par1;
+    public PointFeature Start => m_Par1;
 
-    internal PointFeature End => m_Par2;
+    public PointFeature End => m_Par2;
 
     /// <summary>
     /// Returns the "observed" angle as a bearing. 

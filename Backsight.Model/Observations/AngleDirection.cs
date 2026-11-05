@@ -51,6 +51,7 @@ public class AngleDirection : Direction, IFeatureRef
     }
 
     internal override double ObservationInRadians => m_Observation.Radians;
+    public RadianValue Observation => m_Observation;
 
     /// <summary>
     /// The angle as a bearing
@@ -74,7 +75,7 @@ public class AngleDirection : Direction, IFeatureRef
         set => m_From = value;
     }
 
-    internal PointFeature Backsight => m_Backsight;
+    public PointFeature Backsight => m_Backsight;
 
     /// <summary>
     /// Obtains the features that are referenced by this operation (including features

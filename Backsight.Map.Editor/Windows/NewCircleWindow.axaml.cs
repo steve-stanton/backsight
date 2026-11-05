@@ -12,7 +12,8 @@ internal partial class NewCircleWindow : DialogWindow<NewCircleViewModel>
         InitializeComponent();
     }
     
-    internal NewCircleWindow(NewCircleTool tool) : base(new NewCircleViewModel(tool))
+    internal NewCircleWindow(NewCircleTool tool)
+        : base(new NewCircleViewModel(tool))
     {
         InitializeComponent();
     }

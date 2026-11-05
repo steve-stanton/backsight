@@ -87,7 +87,7 @@ public class PointFeature : Feature, IPoint, ITerminal, IMapPoint
     /// search for ANY circle). A fixed tolerance of 0.001 meters on
     /// the ground is used.</param>
     /// <returns>The attached circle (null if no such circle).</returns>
-    internal Circle? GetCircle(double radius)
+    public Circle? GetCircle(double radius)
     {
         List<IFeatureDependent> deps = this.Dependents;
         if (deps == null)

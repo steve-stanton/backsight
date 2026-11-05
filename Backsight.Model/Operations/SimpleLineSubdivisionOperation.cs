@@ -114,12 +114,12 @@ public class SimpleLineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// The distance to the point.
     /// </summary>
-    internal Distance Distance => m_Distance;
+    public Distance Distance => m_Distance;
 
     /// <summary>
     /// Is the distance observed from the end of the line?
     /// </summary>
-    internal bool IsFromEnd => m_IsFromEnd;
+    public bool IsFromEnd => m_IsFromEnd;
 
     /// <summary>
     /// Calculates the position of the point

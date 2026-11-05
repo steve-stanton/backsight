@@ -13,10 +13,10 @@ internal class LineSubdivisionTool : CommandTool
 {
     private readonly LineSubdivisionWindow _dialog;
     
-    internal LineSubdivisionTool(MapEditorViewModel viewModel, LineFeature line)
+    internal LineSubdivisionTool(MapEditorViewModel viewModel, LineFeature line, Operation? recall)
         : base(viewModel, EditingActionId.LineSubdivision)
     {
-        _dialog = new LineSubdivisionWindow(this, line);
+        _dialog = new LineSubdivisionWindow(this, line, recall as LineSubdivisionOperation);
     }
 
     internal override bool Run()

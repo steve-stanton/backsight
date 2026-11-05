@@ -172,6 +172,11 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// </summary>
     private readonly Dictionary<EditingActionId, IRelayCommand> _editingActions = new();
 
+    /// <summary>
+    /// An operation that is being recalled via the <see cref="EditRecall"/> command.
+    /// </summary>
+    private Operation? _recall;
+
     public MapEditorViewModel() : this(new DesignMapEditorModel(), null!, null!)
     {
     }
@@ -487,12 +492,12 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     [RelayCommand(CanExecute = nameof(CanStartCommandTool))]
     [RepeatableEdit(EditingActionId.NewPoint)]
-    private async Task PointNew()
+    private async Task PointNew(Operation? recall = null)
     {
         Debug.Assert(Store is not null);
         Debug.Assert(Store.Model.WorkingSession is not null);
 
-        var dialog = new NewPointWindow(this);
+        var dialog = new NewPointWindow(this, recall as NewPointOperation);
         var result = await _dialogService.ShowDialog(dialog);
 
         if (result == DialogResult.OK)
@@ -565,12 +570,12 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     [RelayCommand(CanExecute = nameof(CanStartSideshot))]
     [RepeatableEdit(EditingActionId.Radial)]
-    private void PointSideshot()
+    private void PointSideshot(Operation? recall = null)
     {
         var fromPoint = _selection.SingleOrDefault as Model.PointFeature;
         Debug.Assert(fromPoint is not null);
         ClearSelection();
-        StartCommand(new RadialTool(this, fromPoint));
+        StartCommand(new RadialTool(this, fromPoint, recall));
     }
 
     private bool CanStartSideshot => _commandTool is null && _selection.SingleOrDefault is Model.PointFeature;
@@ -643,22 +648,22 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     [RepeatableEdit(EditingActionId.LineSubdivision)]
-    private void LineSubdivide()
+    private void LineSubdivide(Operation? recall = null)
     {
         var line = _selection.SingleOrDefaultLine;
         Debug.Assert(line is not null);
         ClearSelection();
-        StartCommand(new LineSubdivisionTool(this, line));
+        StartCommand(new LineSubdivisionTool(this, line, recall));
     }
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     [RepeatableEdit(EditingActionId.SimpleLineSubdivision)]
-    private void LineSubdivideOneDistance()
+    private void LineSubdivideOneDistance(Operation? recall = null)
     {
         var line = _selection.SingleOrDefaultLine;
         Debug.Assert(line is not null);
         ClearSelection();
-        StartCommand(new SimpleLineSubdivisionTool(this, line));
+        StartCommand(new SimpleLineSubdivisionTool(this, line, recall));
     }
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
@@ -1496,40 +1501,76 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(IsEditRepeatEnabled))]
     private async Task EditRepeat()
     {
-        // Get the last operation in the current sessiob
+        // Get the last operation in the current session
         Operation? op = Store?.Model.WorkingSession?.LastOperation;
         if (op is null)
             return;
-        
+
         if (_editingActions.TryGetValue(op.EditId, out IRelayCommand? action))
         {
-            if (!action.CanExecute(null))
+            var isLaunched = await LaunchCommandTool(action, null);
+            if (!isLaunched)
             {
                 await _dialogService.ShowMessageBox(
                     """
                     The last edit cannot be executed at the moment.
-                    You may first need to select something from the map to work with.
+                    You may first need to select something from the map.
                     """, op.Name);
-
-                return;
             }
-            
-            if (action is IAsyncRelayCommand asyncAction)
-                await asyncAction.ExecuteAsync(null);
-            else
-                action.Execute(null);
         }
         else
         {
-            await _dialogService.ShowMessageBox("Cannot determine last edit", op.Name);
+            await _dialogService.ShowMessageBox("Editing action has not been registered", op.Name);
         }
     }
 
-    //[RelayCommand]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void EditRecall()
+    private async Task<bool> LaunchCommandTool(IRelayCommand action, Operation? recall)
     {
-        Console.WriteLine(nameof(EditRecall));
+        if (!action.CanExecute(null))
+            return false;
+        
+        if (action is IAsyncRelayCommand asyncAction)
+            await asyncAction.ExecuteAsync(recall);
+        else
+            action.Execute(recall);
+
+        return true;
+    }
+ 
+    private bool IsEditRecallEnabled()
+    {
+        return _commandTool is null && _model.Store?.Model.WorkingSession?.OperationCount > 0;
+    }
+    
+    [RelayCommand(CanExecute = nameof(IsEditRecallEnabled))]
+    private async Task EditRecall()
+    {
+        var session = _model.Store?.Model.WorkingSession;
+        Debug.Assert(session is not null);
+        var dialog = new PickEditWindow(session);
+        var result = await _dialogService.ShowDialog(dialog);
+        if (result != DialogResult.OK)
+            return;
+
+        var op = dialog.ViewModel.SelectedOperation;
+        Debug.Assert(op is not null);
+        
+        if (_editingActions.TryGetValue(op.EditId, out IRelayCommand? action))
+        {
+            var isLaunched = await LaunchCommandTool(action, op);
+            if (!isLaunched)
+            {
+                await _dialogService.ShowMessageBox(
+                    """
+                    The selected edit cannot be executed at the moment.
+                    You may first need to select something from the map.
+                    """, op.Name);
+            }
+        }
+        else
+        {
+            await _dialogService.ShowMessageBox("Editing action has not been registered", op.Name);
+        }
     }
 
     //[RelayCommand]
@@ -1891,6 +1932,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     {
         // Restricting it to points at the same position makes it easier to identify existing points.
         // Perhaps problematic if the same control point was previously added, but at a different location.
+        // TODO: Can the dictionary of ForeignId's in the CadastralMapModel class be used?
         
         foreach (var cp in controlPoints)
         {

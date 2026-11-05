@@ -33,7 +33,7 @@ public class LineFeature : Feature, IFeatureDependent, IIntersectable, IPersiste
     /// <summary>
     /// Any observed length for the line (on the ground). 
     /// </summary>
-    internal Distance ObservedLength { get; set; }
+    public Distance ObservedLength { get; internal set; }
 
     /// <summary>
     /// Creates a <c>LineFeature</c> consisting of a simple line segment.

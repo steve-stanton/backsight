@@ -15,10 +15,10 @@ internal class RadialTool : CommandTool
 {
     private readonly RadialWindow _dialog;
     
-    internal RadialTool(MapEditorViewModel viewModel, PointFeature fromPoint)
+    internal RadialTool(MapEditorViewModel viewModel, PointFeature fromPoint, Operation? recall)
         : base(viewModel, EditingActionId.Radial)
     {
-        _dialog = new RadialWindow(this, fromPoint);
+        _dialog = new RadialWindow(this, fromPoint, recall as RadialOperation);
     }
 
     internal override bool Run()

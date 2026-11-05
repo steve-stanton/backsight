@@ -1,0 +1,46 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="viewModel:PickEditViewModel"
+        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="400"
+        Width="750" Height="400"
+        x:Class="Backsight.Map.Editor.Windows.PickEditWindow"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        Title="PickEditWindow">
+
+    <GroupBox Header="Select the edit to recall" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="10">
+        <Grid RowDefinitions="* Auto">
+            <TableView Grid.Row="0" ItemsSource="{Binding Edits}" SelectedItem="{Binding SelectedEdit}">
+                <TableView.Columns>
+                    <TableViewColumn Header="Edit Sequence" Binding="{Binding Sequence}"/>
+                    <TableViewColumn Header="Edit Type" Binding="{Binding Type}" Width="3*"/>
+                    <TableViewColumn Header="Feature Count" Binding="{Binding FeatureCount}"/>
+                    <TableViewColumn Header="Recallable?" Binding="{Binding Recallable}"/>
+                </TableView.Columns>
+            </TableView>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" >
+                <Button
+                    Content="OK"
+                    IsDefault="True"
+                    FontWeight="Bold"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Width="100"
+                    Margin="10"
+                    Command="{Binding OkCommand}" />
+                <Button
+                    Content="Cancel"
+                    IsCancel="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Width="100"
+                    Margin="10"
+                    Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </Grid>
+    </GroupBox>
+    
+</Window>

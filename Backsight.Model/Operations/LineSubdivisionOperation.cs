@@ -278,7 +278,7 @@ public class LineSubdivisionOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// Definition of the line sections for this subdivision.
     /// </summary>
-    internal LineSubdivisionFace Face => m_Face;
+    public LineSubdivisionFace Face => m_Face;
 
     /// <summary>
     /// Exchanges update items that were previously generated via

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Backsight.Map.Editor.Tools;
@@ -45,14 +48,68 @@ internal partial class LineSubdivisionViewModel : ToolViewModel<LineSubdivisionT
     [ObservableProperty]
     private string? _remainingLength;
 
-    internal LineSubdivisionViewModel(LineSubdivisionTool tool, LineFeature line)
-        : base(tool)
+    internal LineSubdivisionViewModel(
+        LineSubdivisionTool tool,
+        LineFeature line,
+        LineSubdivisionOperation? recall) : base(tool)
     {
         Line = line;
         EntryUnits = DistanceUnit.GetUnit(tool.Store.Settings.EntryUnit);
         GroundLength = EntryUnits.Format(Line.GroundLength.Meters, true, -1);
+
+        if (recall is not null)
+            DistanceText = GetEntryString(recall, EntryUnits);
     }
 
+    /// <summary>
+    /// Helper for <c>GetEntryString</c>.
+    /// </summary>
+    /// <param name="text">The text string to be counted.</param>
+    private class StringCount(string text)
+    {
+        internal string Text { get; } = text;
+        internal int Count { get; set; } = 1;
+    }
+    
+    private static string GetEntryString(LineSubdivisionOperation op, DistanceUnit entryUnits)
+    {
+        // Collate each distance along with a repeat count 
+
+        var lastStringCount = new StringCount(String.Empty);
+        var items = new List<StringCount>();
+
+        foreach (var distance in op.Face.Sections.Select(x => x.ObservedLength))
+        {
+            var appendAbbrev = !ReferenceEquals(distance.EntryUnit, entryUnits);
+            var distanceText = distance.Format(appendAbbrev);
+
+            if (lastStringCount.Text == distanceText)
+            {
+                lastStringCount.Count++;
+            }
+            else
+            {
+                lastStringCount = new StringCount(distanceText);
+                items.Add(lastStringCount);
+            }
+        }
+
+        // Generate the entry string with suitable repeat counts
+
+        var sb = new StringBuilder();
+        foreach (var item in items)
+        {
+            if (sb.Length > 0)
+                sb.Append(' ');
+            
+            sb.Append(item.Text);
+            if (item.Count > 1)
+                sb.Append($"*{item.Count}");
+        }
+
+        return sb.ToString();
+    }
+    
     partial void OnDistanceTextChanged(string? value)
     {
         ValidationError = null;

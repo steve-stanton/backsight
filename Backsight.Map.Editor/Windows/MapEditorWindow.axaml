@@ -27,6 +27,7 @@
         <KeyBinding Gesture="Alt+Up" Command="{Binding EnlargePointSizeCommand}" />
         <KeyBinding Gesture="Alt+Down" Command="{Binding ReducePointSizeCommand}" />
         <KeyBinding Gesture="Return" Command="{Binding EditRepeatCommand}" />
+        <KeyBinding Gesture="Ctrl+Return" Command="{Binding EditRecallCommand}" />
     </Window.KeyBindings>
         
     <DockPanel>
@@ -92,16 +93,18 @@
                     ToolTip.Tip="Repeat the last edit"
                     InputGesture="Return"
                     />
-                <Separator/>
                 <MenuItem
                     Header="Re_call"
                     Command="{Binding EditRecallCommand}"
+                    ToolTip.Tip="Recall an edit with the same details filled-in"
+                    InputGesture="Ctrl+Return"
                     />
+                <Separator/>
                 <MenuItem 
                     Header="_Operation History..."
                     Command="{Binding EditOperationHistoryCommand}"
                     ToolTip.Tip="Display + Edit Previous Operations"
-                    />
+                />
                 <Separator/>
                 <MenuItem
                     Header="_ID Allocations..."

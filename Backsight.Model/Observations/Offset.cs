@@ -20,7 +20,7 @@ public abstract class Offset : Observation
     /// The offset point (if this is an instance of <see cref="OffsetPoint"/>), or
     /// null for any other type of offset.
     /// </summary>
-    internal abstract PointFeature Point { get; }
+    public abstract PointFeature Point { get; }
 
     /// <summary>
     /// Cuts references to an operation that are made by any features this offset refers to.

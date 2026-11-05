@@ -4,6 +4,7 @@ using Backsight.Environment;
 using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.Tools;
 using Backsight.Model;
+using Backsight.Model.Operations;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Backsight.Map.Editor.Windows;
@@ -51,7 +52,7 @@ internal partial class NewPointViewModel : DialogViewModel
     [ObservableProperty]
     private decimal? _elevation;
     
-    internal NewPointViewModel(MapEditorViewModel vm)
+    internal NewPointViewModel(MapEditorViewModel vm, NewPointOperation? recall)
     {
         Store = vm.Store ?? throw new ArgumentNullException(nameof(IMapStore));
         
@@ -67,6 +68,16 @@ internal partial class NewPointViewModel : DialogViewModel
         _pointIds = Store.GetPointIds(_selectedPointType);
         if (_pointIds.Length > 0)
             _selectedPointId = _pointIds[0];
+
+        if (recall is not null)
+        {
+            PointFeature pt = recall.Point;
+            Easting = (decimal)pt.X;
+            Northing = (decimal)pt.Y;
+
+            if (pt.Geometry is IPosition3D pz)
+                Elevation = (decimal)pz.Z;
+        }
     }
         
     protected override bool CanExecuteOk()

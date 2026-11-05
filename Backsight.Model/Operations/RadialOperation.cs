@@ -35,7 +35,7 @@ public class RadialOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// The line (if any) that was added to correspond to the sideshot arm.
     /// </summary>
-    LineFeature m_Line;
+    LineFeature? m_Line;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RadialOperation"/> class.
@@ -76,7 +76,7 @@ public class RadialOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// The point created at the end of the sideshot arm.
     /// </summary>
-    internal PointFeature Point
+    public PointFeature Point
     {
         get => m_To;
         set => m_To = value;
@@ -85,22 +85,22 @@ public class RadialOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// The line (if any) that was added to correspond to the sideshot arm.
     /// </summary>
-    internal LineFeature Line
+    public LineFeature? Line
     {
         get => m_Line;
-        set => m_Line = value;
+        internal set => m_Line = value;
     }
 
     /// <summary>
     /// The length of the sideshot arm (either a <c>Distance</c> or
     /// an <c>OffsetPoint</c>).
     /// </summary>
-    internal Observation Length => m_Length;
+    public Observation Length => m_Length;
 
     /// <summary>
     /// The direction (could contain an offset).
     /// </summary>
-    internal Direction Direction => m_Direction;
+    public Direction Direction => m_Direction;
 
     /// <summary>
     /// A user-perceived title for this operation.

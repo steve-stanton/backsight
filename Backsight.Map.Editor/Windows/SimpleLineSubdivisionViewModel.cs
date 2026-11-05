@@ -45,8 +45,10 @@ internal partial class SimpleLineSubdivisionViewModel : ToolViewModel<SimpleLine
     /// </summary>
     internal IPosition? SplitPosition { get; private set; }
     
-    internal SimpleLineSubdivisionViewModel(SimpleLineSubdivisionTool tool, LineFeature line)
-        : base(tool)
+    internal SimpleLineSubdivisionViewModel(
+        SimpleLineSubdivisionTool tool,
+        LineFeature line,
+        SimpleLineSubdivisionOperation? recall) : base(tool)
     {
         Line = line;
         
@@ -59,6 +61,12 @@ internal partial class SimpleLineSubdivisionViewModel : ToolViewModel<SimpleLine
         var entryLength = entryUnit.FromMetric(maxLength);
         var maxDist = new Distance(entryLength, entryUnit).ToString();
         TooLongMessage = $"Too long. The maximum distance is {maxDist}";
+        
+        if (recall is not null)
+        {
+            Distance = (decimal)recall.Distance.GetDistance(entryUnit, true);
+            FromEnd = recall.IsFromEnd;
+        }
     }
 
     [RelayCommand]

@@ -99,7 +99,7 @@ public class OffsetPoint : Offset, IFeatureRef
     /// <summary>
     /// The offset point.
     /// </summary>
-    internal override PointFeature Point => m_Point;
+    public override PointFeature Point => m_Point;
 
     /// <summary>
     /// Checks whether this offset makes reference to a specific feature.

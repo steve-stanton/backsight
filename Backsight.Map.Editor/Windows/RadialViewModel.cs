@@ -8,6 +8,7 @@ using Backsight.Map.Editor.Models;
 using Backsight.Map.Editor.Tools;
 using Backsight.Model;
 using Backsight.Model.Observations;
+using Backsight.Model.Operations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -114,15 +115,20 @@ public partial class RadialViewModel : DialogViewModel
     /// True if the user can select an ID for the extension point.
     /// </summary>
     internal bool AllowIdSelection { get; }
+
+    /// <summary>
+    /// Is the model initializing?
+    /// </summary>
+    private bool _initializing = true;
     
-    internal RadialViewModel(RadialTool tool, PointFeature fromPoint)
+    internal RadialViewModel(RadialTool tool, PointFeature fromPoint, RadialOperation? recall)
     {
         _tool = tool;
         _fromPoint = fromPoint;
 
         // Get the units hint for the extension length
-        var entryUnit = tool.Store.Settings.EntryUnit;
-        Units = DistanceUnit.GetUnit(entryUnit).Abbreviation + " ";
+        var entryUnit = DistanceUnit.GetUnit(tool.Store.Settings.EntryUnit); 
+        Units = entryUnit.Abbreviation + " ";
  
         // Fill the combo with the entity types for the sideshot point
         PointTypes = tool.ViewModel.Environment.EntityTypes
@@ -130,7 +136,7 @@ public partial class RadialViewModel : DialogViewModel
             .OrderBy(x => x.Name)
             .ToArray();
 
-        _selectedPointType = tool.Store.DefaultPointType;
+        _selectedPointType = recall is null ? tool.Store.DefaultPointType : recall.Point.EntityType;
 
         // Load the ID combo and select the first available ID
         _pointIds = tool.Store.GetPointIds(_selectedPointType);
@@ -143,6 +149,73 @@ public partial class RadialViewModel : DialogViewModel
         // Sometimes the BC or EC is apparently not EXACT when the data
         // arrives from a foreign source, so allow 1mm on the ground.
         _circles = tool.Store.Model.FindCircles(_fromPoint, new Length(0.001));
+
+        if (recall is not null)
+        {
+            InitOp(recall, entryUnit);
+            _tool.RefreshMapDisplay();
+        }
+
+        _initializing = false;
+    }
+
+    private void InitOp(RadialOperation op, DistanceUnit entryUnit)
+    {
+        Direction dir = op.Direction;
+        if (dir is AngleDirection angle)
+        {
+            var radianValue = angle.Observation.Value;
+            var suffix = dir is DeflectionDirection ? "d" : "";
+
+            SelectedBacksight = angle.Backsight;
+            IsClockwise = radianValue >= 0.0;
+            AngleText = RadianValue.AsShortString(Math.Abs(radianValue)) + suffix;
+
+            // Does the backsight point correspond to the centre of a
+            // circle that passes through the from-point?
+            double radius = BasicGeom.Distance(angle.Backsight, _fromPoint);
+            if (angle.Backsight.GetCircle(radius) is not null)
+                UsingArcCenter = true;
+        }
+        else if (dir is ParallelDirection par)
+        {
+            _par1 = par.Start;
+            _par2 = par.End;
+            AngleText = $"+{_par1.FormattedKey} +{_par2.FormattedKey}";
+            IsParallel = true;
+        }
+        else if (dir is BearingDirection bearing)
+        {
+            AngleText = RadianValue.AsShortString(bearing.Bearing.Radians);
+        }
+        else
+        {
+            throw new NotSupportedException("Unexpected direction type: " + dir.GetType().Name);
+        }
+
+        // TODO - This is different from a length that's specified via an OffsetPoint
+/*
+        // Did the direction have an offset? If so, make a transient
+        // copy (specifying m_Length since it's transient).
+        Offset offset = dir.Offset;
+        if (offset!=null)
+            m_Offset = offset;
+        //m_Offset = offset.MakeNewCopy(m_Length);
+*/
+
+        // The length was either entered explicitly, or via an offset point
+        if (op.Length is Distance d)
+        {
+            Length = (decimal)d.GetDistance(entryUnit, true);
+        }
+        else if (op.Length is OffsetPoint opt)
+        {
+            _lengthOffset = opt.Point;
+            ShowLengthOffset(_lengthOffset);
+        }
+        
+        // Remember whether a line was added.
+        WantLine = op.Line is not null;
     }
 
     partial void OnSelectedPointTypeChanged(IEntity? value)
@@ -165,6 +238,9 @@ public partial class RadialViewModel : DialogViewModel
     
     partial void OnLengthChanged(decimal? value)
     {
+        if (_initializing)
+            return;
+
         // The displayed length may be changed while picking an offset point. But if the
         // user has picked, they might go on to change things - in that case, the offset
         // point is no longer valid
@@ -176,11 +252,15 @@ public partial class RadialViewModel : DialogViewModel
 
     partial void OnWantLineChanged(bool value)
     {
-        _tool.RefreshMapDisplay();
+        if (!_initializing)
+            _tool.RefreshMapDisplay();
     }
 
     partial void OnAngleTextChanged(string? text)
     {
+        if (_initializing)
+            return;
+
         if (text is not null)
         {
             // Text that starts with a "-" character is a shortcut for a counter-clockwise angle.
@@ -194,7 +274,8 @@ public partial class RadialViewModel : DialogViewModel
 
     partial void OnIsClockwiseChanged(bool value)
     {
-        _tool.RefreshMapDisplay();
+        if (!_initializing)
+            _tool.RefreshMapDisplay();
     }
     
     internal PointFeature From => _fromPoint;
@@ -240,6 +321,7 @@ public partial class RadialViewModel : DialogViewModel
     [RelayCommand]
     private void SetOffset()
     {
+        // TODO
         Console.WriteLine("Radial setting offset");
     }
     

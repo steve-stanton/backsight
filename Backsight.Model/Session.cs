@@ -157,7 +157,7 @@ public class Session
     /// The number of edits performed in this session
     /// </summary>
     /// <remarks>Caution: An ID allocation is not currently regarded as an edit (perhaps it should be).</remarks>
-    internal int OperationCount => m_Operations.Count;
+    public int OperationCount => m_Operations.Count;
 
     /// <summary>
     /// The number of changes in this session (the sum of the <see cref="OperationCount"/> and
@@ -249,7 +249,7 @@ public class Session
     /// <summary>
     /// The edits performed in this session.
     /// </summary>
-    internal Operation[] Edits => m_Operations.ToArray();
+    public Operation[] Edits => m_Operations.ToArray();
 
     /// <summary>
     /// Saves an editing operation as part of this session.

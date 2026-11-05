@@ -346,7 +346,7 @@ public class LineSubdivisionFace : IPersistent
     /// <summary>
     /// The line sections associated with this face
     /// </summary>
-    internal LineFeature[] Sections => m_Sections.ToArray();
+    public LineFeature[] Sections => m_Sections.ToArray();
 
     /// <summary>
     /// The lengths for each subdivision section.

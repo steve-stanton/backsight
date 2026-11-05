@@ -1,4 +1,4 @@
-﻿using Backsight.Map.Editor.Tools;
+﻿using Backsight.Model.Operations;
 
 namespace Backsight.Map.Editor.Windows;
 
@@ -12,8 +12,8 @@ internal partial class NewPointWindow : DialogWindow<NewPointViewModel>
         InitializeComponent();
     }
 
-    internal NewPointWindow(MapEditorViewModel vm)
-        : base(new NewPointViewModel(vm))
+    internal NewPointWindow(MapEditorViewModel vm, NewPointOperation? recall)
+        : base(new NewPointViewModel(vm, recall))
     {
         InitializeComponent();
     }

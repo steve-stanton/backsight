@@ -24,7 +24,7 @@ public class Distance : Observation, ILength, IEquatable<Distance>
     /// <summary>
     /// The way the distance was specified by the user.
     /// </summary>
-    DistanceUnit? m_EnteredUnit;
+    readonly DistanceUnit? m_EnteredUnit;
 
     /// <summary>
     /// Observed distance, in meters on the ground.
@@ -114,7 +114,7 @@ public class Distance : Observation, ILength, IEquatable<Distance>
     {
         // Initialize with undefined values.
         m_ObservedMetric = 0.0;
-        m_EnteredUnit = null;
+        m_EnteredUnit = defaultEntryUnit;
         m_IsFixed = false;
         IsAnnotationFlipped = false;
 
@@ -193,9 +193,10 @@ public class Distance : Observation, ILength, IEquatable<Distance>
     internal bool IsDefined => m_EnteredUnit is not null;
 
     /// <summary>
-    /// The way the distance was originally specified by the user.
+    /// The way the distance was specified by the user (null if the distance was entered with
+    /// a units abbreviation that was not recognized).
     /// </summary>
-    internal DistanceUnit? EntryUnit => m_EnteredUnit;
+    public DistanceUnit? EntryUnit => m_EnteredUnit;
 
     /// <summary>
     /// Observed distance, in meters on the ground.
@@ -213,7 +214,7 @@ public class Distance : Observation, ILength, IEquatable<Distance>
     /// <param name="unit">The desired unit of measurement.</param>
     /// <param name="appendAbbrev">True if units abbreviation should be appended (default was TRUE)</param>
     /// <returns></returns>
-    internal string Format(DistanceUnit unit, bool appendAbbrev)
+    public string Format(DistanceUnit unit, bool appendAbbrev)
     {
         return unit.Format(m_ObservedMetric, appendAbbrev);
     }
@@ -233,7 +234,7 @@ public class Distance : Observation, ILength, IEquatable<Distance>
     /// </summary>
     /// <param name="appendAbbrev">True if units abbreviation should be appended.</param>
     /// <returns></returns>
-    internal string Format(bool appendAbbrev)
+    public string Format(bool appendAbbrev)
     {
         return m_EnteredUnit?.Format(m_ObservedMetric, appendAbbrev) ?? String.Empty;
     }
@@ -242,10 +243,22 @@ public class Distance : Observation, ILength, IEquatable<Distance>
     /// Returns this distance in a specific type of unit.
     /// </summary>
     /// <param name="unit">The desired unit of measurement.</param>
+    /// <param name="roundoff">True if the result should be rounded to the number of decimal digits that are
+    /// usually displayed for the unit of measurement (applies only if the specified unit of measurement is
+    /// different from the original units).</param>
     /// <returns></returns>
-    private double GetDistance(DistanceUnit? unit)
+    /// <remarks>
+    /// This gives you a numeric value (possibly in some other unit of measurement).
+    /// If you're looking for a display string, use <see cref="Format(DistanceUnit, bool)"/> instead.
+    /// </remarks>
+    public double GetDistance(DistanceUnit unit, bool roundoff = false)
     {
-        return unit?.FromMetric(m_ObservedMetric) ?? 0.0;
+        var result = unit.FromMetric(m_ObservedMetric);
+        
+        if (!roundoff || unit == m_EnteredUnit)
+            return result;
+        
+        return Math.Round(result, unit.DisplayPrecision);
     }
 
     /// <summary>
@@ -330,7 +343,7 @@ public class Distance : Observation, ILength, IEquatable<Distance>
     /// </summary>
     /// <param name="feature">The feature to check for.</param>
     /// <returns>False (always)</returns>
-    internal override bool HasReference(Feature feat)
+    internal override bool HasReference(Feature feature)
     {
         return false;
     }
@@ -368,7 +381,7 @@ public class Distance : Observation, ILength, IEquatable<Distance>
     /// <returns>True if the supplied distance is identical</returns>
     /// <remarks>This should really be done by <see cref="Equals"/>, but I'm not confident that
     /// it's usage is consistent with a more thorough equality test.</remarks>
-    internal bool IsIdentical(Distance that)
+    public bool IsIdentical(Distance that)
     {
         return this.m_IsFixed == that.m_IsFixed &&
                this.m_EnteredUnit == that.m_EnteredUnit &&

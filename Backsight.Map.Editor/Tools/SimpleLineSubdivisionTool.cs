@@ -10,10 +10,10 @@ internal class SimpleLineSubdivisionTool : CommandTool
 {
     private readonly SimpleLineSubdivisionWindow _dialog;
 
-    internal SimpleLineSubdivisionTool(MapEditorViewModel viewModel, LineFeature line)
+    internal SimpleLineSubdivisionTool(MapEditorViewModel viewModel, LineFeature line, Operation? recall)
         : base(viewModel, EditingActionId.SimpleLineSubdivision)
     {
-        _dialog = new SimpleLineSubdivisionWindow(this, line);
+        _dialog = new SimpleLineSubdivisionWindow(this, line, recall as SimpleLineSubdivisionOperation);
     }
 
     internal override bool Run()

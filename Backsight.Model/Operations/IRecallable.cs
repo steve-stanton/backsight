@@ -2,12 +2,16 @@ namespace Backsight.Model.Operations;
 
 /// <summary>
 /// Tagging interface for editing operations that may be recalled using the
-/// Cadastral Editor's command recall facility (the <c>Edit - Recall</c> command).
+/// Map Editor's command recall facility (the <c>Edit - Recall</c> command).
 /// </summary>
-/// <remarks>Tagging the editing operation is merely a convenience, arising from
-/// the fact that editing commands are wired up to the user interface via the
-/// <see cref="EditingAction"/> class (which identifies each edit through an editing ID).
-/// However, the editing operation does not need to do anything to accommodate command
-/// recall - rather, it is the UI class that runs the edit that needs to do stuff.
+/// <remarks>
+/// This tag identifies those editing operation that may be recalled, but the operation
+/// class does not have to do anything about it. The recall function only needs the
+/// value provided by the <see cref="Operation.EditId"/> property. This gives the
+/// Map Editor what it needs to relay the request to the correct handler. 
+/// <para/>
+/// The handler will usually involve an instance of the <c>CommandTool</c> class
+/// in the <c>Backsight.Map.Editor</c> project. The responsibility for accommodating
+/// command recall rests there.
 /// </remarks>
-interface IRecallable;
+public interface IRecallable;

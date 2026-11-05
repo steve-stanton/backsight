@@ -1,5 +1,6 @@
 ﻿using Backsight.Map.Editor.Tools;
 using Backsight.Model;
+using Backsight.Model.Operations;
 
 namespace Backsight.Map.Editor.Windows;
 
@@ -13,8 +14,8 @@ public partial class RadialWindow : DialogWindow<RadialViewModel>
         InitializeComponent();
     }
 
-    internal RadialWindow(RadialTool tool, PointFeature fromPoint)
-        : base(new RadialViewModel(tool, fromPoint))
+    internal RadialWindow(RadialTool tool, PointFeature fromPoint, RadialOperation? recall)
+        : base(new RadialViewModel(tool, fromPoint, recall))
     {
         InitializeComponent();
     }

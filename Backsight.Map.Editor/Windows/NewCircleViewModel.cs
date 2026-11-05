@@ -1,6 +1,7 @@
 ﻿using Avalonia.Input;
 using Backsight.Map.Editor.Tools;
 using Backsight.Model;
+using Backsight.Model.Operations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
