@@ -668,12 +668,12 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     [RelayCommand(CanExecute = nameof(IsLineToolEnabled))]
     [RepeatableEdit(EditingActionId.Parallel)]
-    private void LineParallel()
+    private void LineParallel(Operation? recall = null)
     {
         var refLine = _selection.SingleOrDefaultLine;
         Debug.Assert(refLine is not null);
         ClearSelection();
-        StartCommand(new ParallelTool(this, refLine));
+        StartCommand(new ParallelTool(this, refLine, recall));
     }
     
     //[RelayCommand]

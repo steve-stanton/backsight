@@ -97,23 +97,21 @@ public class ParallelLineOperation : Operation, IRecallable, IRevisable, IFeatur
         ProcessFeatures(dff);
     }
 
-    // Needed by ParallelLineUI for updating ...
-
     internal LineFeature ReferenceLine => m_RefLine;
 
-    internal LineFeature ParallelLine
+    public LineFeature ParallelLine
     {
         get => m_ParLine;
-        set => m_ParLine = value;
+        internal set => m_ParLine = value;
     }
-    internal Observation Offset => m_Offset;
+    public Observation Offset => m_Offset;
 
     /// <summary>
     /// The point (if any) that was used to define the offset to the parallel line.
     /// </summary>
     internal PointFeature OffsetPoint => (m_Offset as OffsetPoint)?.Point;
 
-    internal bool IsArcReversed => (m_Flags==1);
+    public bool IsArcReversed => (m_Flags==1);
     internal LineFeature? Terminal1 => m_Term1;
     internal LineFeature? Terminal2 => m_Term2;
 

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Backsight.Map.Editor.Tools;
 using Backsight.Model;
+using Backsight.Model.Operations;
 
 namespace Backsight.Map.Editor.Windows;
 
@@ -16,15 +17,21 @@ public class ParallelViewModel : WizardViewModel
     /// The reference line for the parallel.
     /// </summary>
     internal LineFeature ReferenceLine { get; }
+    
+    /// <summary>
+    /// An operation that is being recalled (null for a brand new parallel line).
+    /// </summary>
+    internal ParallelLineOperation? Recall { get; }
 
     internal ParallelOffsetViewModel Offset { get; }
     internal ParallelTerminalViewModel Terminal1 { get; }
     internal ParallelTerminalViewModel Terminal2 { get; }
 
-    internal ParallelViewModel(ParallelTool tool, LineFeature referenceLine)
+    internal ParallelViewModel(ParallelTool tool, LineFeature referenceLine, ParallelLineOperation? recall)
     {
         Tool = tool;
         ReferenceLine = referenceLine;
+        Recall = recall;
         Offset = new ParallelOffsetViewModel(this);
         Terminal1 = new ParallelTerminalViewModel(this);
         Terminal2 = new ParallelTerminalViewModel(this);

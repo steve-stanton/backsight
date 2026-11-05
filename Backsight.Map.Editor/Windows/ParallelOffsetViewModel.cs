@@ -3,6 +3,7 @@ using Avalonia.Input;
 using Backsight.Map.Editor.Tools;
 using Backsight.Model;
 using Backsight.Model.Observations;
+using Backsight.Model.Operations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -11,7 +12,7 @@ namespace Backsight.Map.Editor.Windows;
 public partial class ParallelOffsetViewModel : PageModel
 {
     private readonly ParallelViewModel _parentModel;
-    
+
     /// <summary>
     /// The units to display for the offset length.
     /// </summary>
@@ -32,12 +33,12 @@ public partial class ParallelOffsetViewModel : PageModel
     /// Validation error to be displayed.
     /// </summary>
     [ObservableProperty] private string? _validationError = null;
-    
+
     /// <summary>
     /// True if the parallel should be generated on the non-default side of the reference line.
     /// </summary>
     private bool _useNegatedOffset = false;
-    
+
     /// <summary>
     /// A point that defines the distance to the parallel line.
     /// </summary>
@@ -68,8 +69,8 @@ public partial class ParallelOffsetViewModel : PageModel
     /// Has the user opted for the circular arc that is not the default (applies
     /// only if <see cref="ShowOtherArc"/> is true).
     /// </summary>
-    internal bool UsingOtherArc { get; private set; } = false;    
-    
+    internal bool UsingOtherArc { get; private set; } = false;
+
     /// <summary>
     /// The position perpendicular to the reference line where the parallel starts (or the
     /// radial position if the reference line is a circular arc).
@@ -85,10 +86,10 @@ public partial class ParallelOffsetViewModel : PageModel
     internal ParallelOffsetViewModel(ParallelViewModel parentModel)
     {
         _parentModel = parentModel;
-        
+
         // Get the units hint for the offset distance
-        var entryUnit = parentModel.Tool.Store.Settings.EntryUnit;
-        Units = DistanceUnit.GetUnit(entryUnit).Abbreviation + " ";
+        var entryUnit = DistanceUnit.GetUnit(parentModel.Tool.Store.Settings.EntryUnit);
+        Units = entryUnit.Abbreviation + " ";
 
         // Are we dealing with a circular arc?
         ShowOtherArc = parentModel.ReferenceLine.GetArcBase() is not null;
@@ -103,8 +104,31 @@ public partial class ParallelOffsetViewModel : PageModel
 
             // Parallel points normally fall on the right-hand side of the reference line, except for clockwise arcs
             bool defaultIsLeft = parentModel.ReferenceLine.LineGeometry is ArcGeometry { IsClockwise: true };
-            
+
             _useNegatedOffset = wantLeft != defaultIsLeft;
+        }
+
+        if (parentModel.Recall is not null)
+            InitOp(parentModel.Recall, entryUnit);
+    }
+
+    private void InitOp(ParallelLineOperation op, DistanceUnit entryUnit)
+    {
+        // The length was either entered explicitly, or via an offset point
+        if (op.Offset is Distance d)
+        {
+            // The distance may have been negated if the user opted for he "other way", but
+            // negated values aren't allowed on data entry
+
+            d = new Distance(d);
+            d.SetPositive(); 
+            OffsetDistance = (decimal)d.GetDistance(entryUnit, true);
+        }
+        else if (op.Offset is OffsetPoint opt)
+        {
+            _offsetPoint = opt.Point;
+            ShowOffsetDistance(opt.Point);
+            AllowOtherWay = false;
         }
     }
 

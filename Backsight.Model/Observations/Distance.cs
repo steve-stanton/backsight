@@ -94,7 +94,7 @@ public class Distance : Observation, ILength, IEquatable<Distance>
     /// Copy constructor
     /// </summary>
     /// <param name="copy">The distance to copy.</param>
-    internal Distance(Distance copy)
+    public Distance(Distance copy)
     {
         m_ObservedMetric = copy.m_ObservedMetric;
         m_EnteredUnit = copy.m_EnteredUnit;
@@ -274,7 +274,7 @@ public class Distance : Observation, ILength, IEquatable<Distance>
     /// Ensures that the stored distance is greater than 0. 
     /// </summary>
     /// <returns>True if the sign of the distance was changed.</returns>
-    internal bool SetPositive()
+    public bool SetPositive()
     {
         if (m_ObservedMetric < 0.0)
         {

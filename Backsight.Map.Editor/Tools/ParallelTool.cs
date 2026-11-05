@@ -18,11 +18,11 @@ internal class ParallelTool : CommandTool
     /// </summary>
     private readonly LineFeature _referenceLine;
     
-    internal ParallelTool(MapEditorViewModel viewModel, LineFeature referenceLine)
+    internal ParallelTool(MapEditorViewModel viewModel, LineFeature referenceLine, Operation? recall)
         : base(viewModel, EditingActionId.Parallel)
     {
         _referenceLine = referenceLine;
-        _dialog = new ParallelWindow(this, referenceLine);
+        _dialog = new ParallelWindow(this, referenceLine, recall as ParallelLineOperation);
     }
 
     internal override bool Run()
