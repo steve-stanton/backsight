@@ -44,6 +44,7 @@
             <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                 HorizontalAlignment="Center"
                 Margin="0 10 0 0"
+                FontWeight="Light"
                 Text="{Binding EntryString}"/>
             
             <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">

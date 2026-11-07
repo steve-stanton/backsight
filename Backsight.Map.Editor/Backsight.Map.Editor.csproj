@@ -143,6 +143,9 @@
       <Compile Update="Windows\PathAngleViewModel.cs">
         <DependentUpon>PathAngleWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\PathArcViewModel.cs">
+        <DependentUpon>PathArcWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

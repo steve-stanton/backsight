@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using Backsight.Model;
 
 namespace Backsight.Map.Editor.Windows;

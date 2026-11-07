@@ -7,7 +7,6 @@ namespace Backsight.Map.Editor.Windows;
 
 internal partial class PathAngleViewModel : DialogViewModel
 {
-    [NotifyCanExecuteChangedFor(nameof(OkCommand))]
     [NotifyDataErrorInfo]
     [AngleFormat]
     [ObservableProperty]
@@ -25,7 +24,7 @@ internal partial class PathAngleViewModel : DialogViewModel
 
     protected override bool CanExecuteOk()
     {
-        return AngleText is not null && !String.IsNullOrWhiteSpace(EntryString);
+        return !String.IsNullOrWhiteSpace(EntryString);
     }
     
     partial void OnAngleTextChanged(string? value)

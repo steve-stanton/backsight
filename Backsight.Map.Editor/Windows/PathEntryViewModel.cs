@@ -59,9 +59,15 @@ public partial class PathEntryViewModel : PageModel
     }
 
     [RelayCommand]
-    private void Curve()
+    private async Task Curve()
     {
-        
+        var vm = _parentModel.Tool.ViewModel;
+        var dialog = new PathArcWindow(_entryUnit);
+        var result = await vm.ShowDialog(dialog);
+        if (result == DialogResult.OK)
+        {
+            Text += $" {dialog.ViewModel.EntryString}";
+        }
     }
 
     [RelayCommand]
