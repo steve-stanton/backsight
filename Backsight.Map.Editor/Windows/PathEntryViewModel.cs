@@ -71,9 +71,15 @@ public partial class PathEntryViewModel : PageModel
     }
 
     [RelayCommand]
-    private void CuldeSac()
+    private async Task CuldeSac()
     {
-        
+        var vm = _parentModel.Tool.ViewModel;
+        var dialog = new CuldeSacWindow(_entryUnit);
+        var result = await vm.ShowDialog(dialog);
+        if (result == DialogResult.OK)
+        {
+            Text += $" {dialog.ViewModel.EntryString}";
+        }
     }
 
     [RelayCommand]

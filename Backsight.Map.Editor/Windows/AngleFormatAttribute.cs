@@ -6,6 +6,13 @@ namespace Backsight.Map.Editor.Windows;
 
 public class AngleFormatAttribute : ValidationAttribute
 {
+    internal bool AllowNegative { get; }
+
+    public AngleFormatAttribute(bool allowNegative = true)
+    {
+        AllowNegative = allowNegative;
+    }
+    
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         if (value is null)
@@ -28,10 +35,14 @@ public class AngleFormatAttribute : ValidationAttribute
         int dindex = text.IndexOf('D', StringComparison.InvariantCultureIgnoreCase);
         if (dindex >= 0)
             text = text.Remove(dindex, 1);
-        
-        if (text.Length > 0 && !RadianValue.TryParse(text, out var result))
+
+        double result = 0.0;
+        if (text.Length > 0 && !RadianValue.TryParse(text, out result))
             return new ValidationResult("Unexpected format for angle");
         
+        if (!AllowNegative && result < 0)
+            return new ValidationResult("Angle less than zero not expected");
+
         return ValidationResult.Success;
     }
 }

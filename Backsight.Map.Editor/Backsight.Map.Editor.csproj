@@ -146,6 +146,9 @@
       <Compile Update="Windows\PathArcViewModel.cs">
         <DependentUpon>PathArcWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\CuldeSacViewModel.cs">
+        <DependentUpon>CuldeSacWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

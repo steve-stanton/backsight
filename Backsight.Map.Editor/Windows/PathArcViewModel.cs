@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Text;
 using Backsight.Model;
-using Backsight.Model.Observations;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Backsight.Map.Editor.Windows;
@@ -11,7 +9,7 @@ internal partial class PathArcViewModel : DialogViewModel
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [NumericFormat]
-    private decimal? _radius;
+    private string? _radius;
     
     [ObservableProperty]
     [NotifyDataErrorInfo]
@@ -28,7 +26,7 @@ internal partial class PathArcViewModel : DialogViewModel
     /// <summary>
     /// The units to display for entry of the radius.
     /// </summary>
-    internal string UnitText { get; }
+    internal string RadiusHeading { get; }
     
     [ObservableProperty]
     private bool _isClockwise = true;
@@ -40,10 +38,10 @@ internal partial class PathArcViewModel : DialogViewModel
     internal PathArcViewModel(DistanceUnit entryUnit)
     {
         EntryUnit = entryUnit;
-        UnitText = entryUnit.Abbreviation + " ";
+        RadiusHeading = $"Radius ({entryUnit.Abbreviation})";
     }
     
-    partial void OnRadiusChanged(decimal? value)
+    partial void OnRadiusChanged(string? value)
     {
         RefreshPreview();
     }
@@ -103,6 +101,6 @@ internal partial class PathArcViewModel : DialogViewModel
         if (IsClockwise)
             return result + "/ ";
         else
-            return result + " CC/ ";
+            return result + " cc/ ";
     }
 }

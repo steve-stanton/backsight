@@ -1,5 +1,4 @@
-﻿using Avalonia.Input;
-using Backsight.Model;
+﻿using Backsight.Model;
 
 namespace Backsight.Map.Editor.Windows;
 

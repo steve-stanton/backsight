@@ -1,0 +1,70 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:me="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="me:CuldeSacViewModel"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Backsight.Map.Editor.Windows.CuldeSacWindow"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        SizeToContent="WidthAndHeight"
+        Title="CuldeSacWindow">
+ 
+    <GroupBox Header="Cul de sac" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="20">
+        <Grid RowDefinitions="Auto Auto Auto Auto Auto" ColumnDefinitions="Auto 100" RowSpacing="10" ColumnSpacing="30">
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding RadiusHeading}" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="0" Grid.Column="1"
+                TabIndex="0"
+                Text="{Binding Radius}"
+                VerticalContentAlignment="Center"
+            />
+            
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Central Angle" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="1" Grid.Column="1"
+                Text="{Binding CentralAngle}"
+                VerticalContentAlignment="Center"
+            />
+            
+            <GroupBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Which way does the curve go?"
+                      Width="300"
+                      Margin="0 15 0 0"
+                      Padding="10">
+                <StackPanel Orientation="Vertical">
+                    <RadioButton Content="Clock_wise"
+                                 GroupName="AngleDirection"
+                                 IsChecked="{Binding IsClockwise}"/>
+                    <RadioButton Content="_Counter-clockwise"
+                                 GroupName="AngleDirection"/>
+                </StackPanel>
+            </GroupBox>
+            
+            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                       HorizontalAlignment="Center"
+                       Margin="0 10 0 0"
+                       FontWeight="Light"
+                       Text="{Binding EntryString}"/>
+
+            <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button
+                    Content="OK"
+                    IsDefault="True"
+                    FontWeight="Bold"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding OkCommand}" />
+                <Button
+                    Content="Cancel"
+                    IsCancel="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </Grid>
+    </GroupBox>
+    
+</Window>

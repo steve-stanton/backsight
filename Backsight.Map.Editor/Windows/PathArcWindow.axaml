@@ -13,16 +13,12 @@
     <GroupBox Header="Circular Arc" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="20">
         <Grid RowDefinitions="Auto Auto Auto Auto Auto Auto" ColumnDefinitions="Auto 100 Auto" RowSpacing="10" ColumnSpacing="30">
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Radius" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Radius}" />
-            <NumericUpDown Grid.Row="0" Grid.Column="1"
-                TabIndex="0"
-                AllowSpin="False"
-                ShowButtonSpinner="False"
-                Value="{Binding Radius}"
-                VerticalContentAlignment="Center"
-                InnerRightContent="{Binding UnitText}"
-                Minimum="0.0001"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding RadiusHeading}" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="0" Grid.Column="1"
+                     TabIndex="0"
+                     Text="{Binding Radius}"
+                     VerticalContentAlignment="Center"
+            />
             
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Angle to center (BC)" VerticalAlignment="Center"/>
             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EntryAngle}" />
