@@ -1,0 +1,70 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:me="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="me:PathAngleViewModel"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Backsight.Map.Editor.Windows.PathAngleWindow"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        SizeToContent="WidthAndHeight"
+        Title="PathAngleWindow">
+
+    <Window.Resources>
+        <me:StringStartsWithConverter x:Key="DoesNotStartWithConverter" ReturnOnMatch="False" />
+    </Window.Resources>
+
+    <GroupBox Header="Enter Angle" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="10">
+        <Grid RowDefinitions="Auto Auto Auto Auto" ColumnDefinitions="120 Auto" RowSpacing="10" ColumnSpacing="30">
+
+            <TextBox Grid.Row="0" Grid.Column="0"
+                TabIndex="0"
+                Height="40"
+                VerticalContentAlignment="Center"
+                Text="{Binding AngleText}"
+            />
+            
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
+                <!-- Angles entered with a leading "-" character are always counter-clockwise -->
+                <RadioButton Content="Clock_wise"
+                             GroupName="AngleDirection"
+                             IsEnabled="{Binding AngleText, Converter={StaticResource DoesNotStartWithConverter}, ConverterParameter='-'}"
+                             IsChecked="{Binding IsClockwise}"/>
+                <!-- IsChecked is needed below to ensure that the button gets checked when the radio above is disabled -->
+                <RadioButton Content="_Counter-clockwise"
+                             GroupName="AngleDirection"
+                             IsChecked="{Binding !IsClockwise}"/>
+            </StackPanel>
+            
+            <CheckBox Grid.Row="1" Grid.Column="1"
+                Content="_Deflection"
+                IsTabStop="False"
+                IsChecked="{Binding IsDeflection}"/>
+            
+            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                Margin="0 10 0 0"
+                Text="{Binding EntryString}"/>
+            
+            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button
+                    Content="OK"
+                    IsDefault="True"
+                    FontWeight="Bold"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding OkCommand}" />
+                <Button
+                    Content="Cancel"
+                    IsCancel="True"
+                    HorizontalContentAlignment="Center"
+                    Height="32"
+                    Margin="10"
+                    Width="100"
+                    Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </Grid>
+    </GroupBox>
+</Window>

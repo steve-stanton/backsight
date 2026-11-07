@@ -559,9 +559,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     [RelayCommand(CanExecute = nameof(CanStartConnectionPath))]
     [RepeatableEdit(EditingActionId.Path)]
-    private void PointConnectionPath()
+    private void PointConnectionPath(Operation? recall = null)
     {
-        StartCommand(new ConnectionPathTool(this));
+        StartCommand(new ConnectionPathTool(this, recall));
     }
 
     private bool CanStartConnectionPath => _commandTool is null && ArePointsDrawn;
@@ -1777,6 +1777,11 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         _mapData.RefreshGraphics();
     }
     
+    internal async Task<DialogResult> ShowDialog(DialogWindow dialog)
+    {
+        return await _dialogService.ShowDialog(dialog);
+    }
+
     internal void Show(DialogWindow dialog)
     {
         _dialogService.Show(dialog);

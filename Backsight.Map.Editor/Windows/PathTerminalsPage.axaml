@@ -1,19 +1,17 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:me="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="me:PathTerminalsViewModel"
-        mc:Ignorable="d" d:DesignWidth="340" d:DesignHeight="210"
-        Width="340" Height="210"
-        CanResize="False"
-        x:Class="Backsight.Map.Editor.Windows.PathTerminalsWindow"
-        Title="Connection Path Terminals">
+        mc:Ignorable="d" d:DesignWidth="340" d:DesignHeight="170"
+        MinWidth="340" MinHeight="170"
+        x:Class="Backsight.Map.Editor.Windows.PathTerminalsPage">
 
-    <Window.Resources>
+    <UserControl.Resources>
         <me:FeatureIdConverter x:Key="FeatureIdConverter"/>
-    </Window.Resources>
+    </UserControl.Resources>
         
-    <Grid RowDefinitions="Auto Auto Auto" ColumnDefinitions="90 Auto 120" RowSpacing="20" ColumnSpacing="20" Margin="20">
+    <Grid RowDefinitions="Auto Auto" ColumnDefinitions="90 Auto 120" RowSpacing="20" ColumnSpacing="20" Margin="20">
         
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Start point" VerticalAlignment="Center"/>
         <me:PickButton Grid.Row="0" Grid.Column="1"
@@ -40,27 +38,7 @@
             ToolTip.Tip="Use the picker to select a point from the map"
             IsReadOnly="True"
             Text="{Binding SelectedEnd, Converter={StaticResource FeatureIdConverter}}"/>
-
-        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 20 0 0">
-            <Button
-                Content="Next"
-                IsDefault="True"
-                FontWeight="Bold"
-                HorizontalContentAlignment="Center"
-                Height="32"
-                Width="100"
-                Margin="10"
-                Command="{Binding OkCommand}" />
-            <Button
-                Content="Cancel"
-                IsCancel="True"
-                HorizontalContentAlignment="Center"
-                Height="32"
-                Width="100"
-                Margin="10"
-                Command="{Binding CancelCommand}" />
-        </StackPanel>
         
     </Grid>
     
-</Window>
+</UserControl>

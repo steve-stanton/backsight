@@ -3,28 +3,27 @@ using System.Diagnostics;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Windows;
 using Backsight.Model;
+using Backsight.Model.Operations;
 using SkiaSharp;
 
 namespace Backsight.Map.Editor.Tools;
 
 internal class ConnectionPathTool : CommandTool
 {
-    private readonly PathTerminalsWindow _terminals;
-    private PathWindow? _path;
+    private readonly PathWindow _dialog;
 
-    internal PointFeature? StartPoint => _terminals.ViewModel.SelectedStart; 
-    internal PointFeature? EndPoint => _terminals.ViewModel.SelectedEnd;
+    //internal PointFeature? StartPoint => _dialog.Model.Terminals.SelectedStart; 
+    //internal PointFeature? EndPoint => _dialog.Model.Terminals.SelectedEnd;
 
-    internal ConnectionPathTool(MapEditorViewModel viewModel)
+    internal ConnectionPathTool(MapEditorViewModel viewModel, Operation? recall)
         : base(viewModel, EditingActionId.Path)
     {
-        _terminals = new PathTerminalsWindow(this);
+        _dialog = new PathWindow(this, recall as PathOperation);
     }
 
     internal override bool Run()
     {
-        // Display the path terminals window as a modeless dialog
-        ViewModel.Show(_terminals);
+        ViewModel.Show(_dialog);
         return true;
     }
 
@@ -49,13 +48,19 @@ internal class ConnectionPathTool : CommandTool
             
         }
         */
-        Console.WriteLine("Path connection finished");
+        var model = _dialog.Model;
+        var start = model.Terminals.SelectedStart;
+        var end = model.Terminals.SelectedEnd;
+        var entryString = model.Entry.Text;
+        
+        Console.WriteLine(entryString);
+
         return base.Finish();
     }
 
     internal override void Render(MapCanvas canvas)
     {
-        var model = _terminals.ViewModel;
+        var model = _dialog.Model;
 
         var pointStyle = new PaintStyle
         {
@@ -63,8 +68,8 @@ internal class ConnectionPathTool : CommandTool
             Style = SKPaintStyle.Fill,
         };
 
-        var startPoint = model.SelectedStart ?? model.PickingStart;
-        var endPoint = model.SelectedEnd ?? model.PickingEnd;
+        var startPoint = model.Terminals.SelectedStart ?? model.Terminals.PickingStart;
+        var endPoint = model.Terminals.SelectedEnd ?? model.Terminals.PickingEnd;
 
         if (startPoint is not null)
             canvas.DrawPoint(startPoint, pointStyle with { Color = SKColors.Blue });
@@ -75,11 +80,16 @@ internal class ConnectionPathTool : CommandTool
 
     internal override bool MouseDown(IPosition p, MouseButton b)
     {
-        return _terminals.ViewModel.PickPoint(p);
+        var selectionChanged = _dialog.Model.MouseDown(p);
+
+        if (selectionChanged)
+            ViewModel.RefreshMapDisplay();
+
+        return true;
     }
 
     internal override void MouseMove(IPosition p, MouseButton b)
     {
-        _terminals.ViewModel.MouseMove(p);
+        _dialog.Model.MouseMove(p);
     }
 }

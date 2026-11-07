@@ -7,7 +7,7 @@ namespace Backsight.Model.Operations;
 /// <summary>
 /// A connection path between two points. Like a traverse.
 /// </summary>
-class PathOperation : Operation, IRecallable, IRevisable
+public class PathOperation : Operation, IRecallable, IRevisable
 {
     /// <summary>
     /// Prepares the legs on this path by allocating a unique ID to each primary face (and
@@ -78,7 +78,7 @@ class PathOperation : Operation, IRecallable, IRevisable
     /// <param name="to"></param>
     /// <param name="entryString"></param>
     /// <param name="defaultEntryUnit"></param>
-    internal PathOperation(PointFeature from, PointFeature to, string entryString, DistanceUnit defaultEntryUnit)
+    public PathOperation(PointFeature from, PointFeature to, string entryString, DistanceUnit defaultEntryUnit)
         : base(from.MapStore)
     {
         m_From = from;
@@ -375,7 +375,7 @@ class PathOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// Executes this operation.
     /// </summary>
-    internal void Execute()
+    public void Execute()
     {
         // To from and to points MUST be defined.
         if (m_From==null || m_To==null)

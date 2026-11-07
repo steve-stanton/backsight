@@ -7,10 +7,10 @@ using CommunityToolkit.Mvvm.Input;
 namespace Backsight.Map.Editor.Windows;
 
 /// <summary>
-/// View model for <see cref="PathTerminalsWindow"/>.
+/// View model for <see cref="PathTerminalsPage"/>.
 /// </summary>
 /// <seealso cref="ConnectionPathTool"/>
-internal partial class PathTerminalsViewModel : ToolViewModel<ConnectionPathTool>
+internal partial class PathTerminalsViewModel : PageModel
 {
     private enum PickTarget
     {
@@ -19,12 +19,12 @@ internal partial class PathTerminalsViewModel : ToolViewModel<ConnectionPathTool
         End,
     }
 
+    private readonly PathViewModel _parentModel;
+
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(OkCommand))]
     private PointFeature? _selectedStart;
     
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(OkCommand))]
     private PointFeature? _selectedEnd;
     
     /// <summary>
@@ -39,15 +39,14 @@ internal partial class PathTerminalsViewModel : ToolViewModel<ConnectionPathTool
     /// </summary>
     private PointFeature? _pickingPoint;
 
-    public PathTerminalsViewModel(ConnectionPathTool tool)
-        : base(tool)
+    internal PathTerminalsViewModel(PathViewModel parentModel)
     {
+        _parentModel = parentModel;
     }
-    
-    protected override bool CanExecuteOk()
-    {
-        return SelectedStart is not null && SelectedEnd is not null;
-    }
+
+    private ConnectionPathTool Tool => _parentModel.Tool;
+
+    internal override bool ValidatePage() => true; //SelectedStart is not null && SelectedEnd is not null; 
     
     [RelayCommand]
     private void PickStart()
@@ -130,5 +129,15 @@ internal partial class PathTerminalsViewModel : ToolViewModel<ConnectionPathTool
             _pickingPoint = pt;
             Tool.ViewModel.RefreshMapDisplay();
         }
+    }
+
+    partial void OnSelectedStartChanged(PointFeature? value)
+    {
+        _parentModel.NextCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnSelectedEndChanged(PointFeature? value)
+    {
+        _parentModel.NextCommand.NotifyCanExecuteChanged();
     }
 }

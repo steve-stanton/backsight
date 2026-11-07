@@ -6,6 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="420"
         x:Class="Backsight.Map.Editor.Windows.WizardWindow"
         x:DataType="vm:WizardViewModel"
+        CanResize="False"
         WindowStartupLocation="CenterOwner"
         Title="{Binding Title}">
 
