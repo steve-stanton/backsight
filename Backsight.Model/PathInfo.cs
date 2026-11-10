@@ -47,6 +47,11 @@ public class PathInfo
     double m_Precision;
 
     /// <summary>
+    /// The misclosure for the path (in meters).
+    /// </summary>
+    private double m_Misclosure;
+    
+    /// <summary>
     /// Creates a new <c>PathInfo</c> object
     /// </summary>
     /// <param name="from">The point where the path starts.</param>
@@ -178,6 +183,7 @@ public class PathInfo
         m_Rotation = rotation;
         m_ScaleFactor = sfac;
         m_Precision = precision;
+        m_Misclosure = delta;
     }
 
     /// <summary>
@@ -213,6 +219,18 @@ public class PathInfo
         {
             EnsureAdjusted();
             return m_Precision;
+        }
+    }
+    
+    /// <summary>
+    /// The misclosure for the path (in meters).
+    /// </summary>
+    public double Misclosure
+    {
+        get
+        {
+            EnsureAdjusted();
+            return m_Misclosure;
         }
     }
 

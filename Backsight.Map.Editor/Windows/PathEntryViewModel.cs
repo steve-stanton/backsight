@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using Backsight.Model;
+using Backsight.Model.Observations;
 using Backsight.Model.Operations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -89,22 +90,23 @@ public partial class PathEntryViewModel : PageModel
 
             if (items.Length > 0)
             {
-                // Ensure that the most recent data entry units are displayed
+                // Ensure that the most recent data entry units are displayed (taking care of a case
+                // where new units were included in the entry string, but then erased)
                 var lastUnits = items.LastOrDefault(x => x.ItemType == PathItemType.Units);
-                if (lastUnits is not null && lastUnits.Units != _entryUnit)
-                {
-                    _entryUnit = lastUnits.Units;
-                    UnitsDefault = _entryUnit.Abbreviation + "...";
-                }
+                _entryUnit = lastUnits?.Units ?? _initialEntryUnit;
+                UnitsDefault = _entryUnit.Abbreviation + "...";
                 
                 Leg[] legs = PathParser.CreateLegs(items);
                 var pd = new PathInfo(_parentModel.StartPoint, _parentModel.EndPoint, legs);
 
+                // Display the misclosure and the associated precision
                 double prec = pd.Precision;
-                if (Math.Abs(prec) < MathConstants.TINY)
-                    PrecisionText = "Precision: Exact fit";
-                else
-                    PrecisionText = $"Precision: 1:{(uint)prec}";
+                var precText = Math.Abs(prec) < MathConstants.TINY ? "exact" : $"1:{(uint)prec}";
+                
+                var delta = new Distance(pd.Misclosure, DistanceUnit.Meters);
+                var deltaText = delta.Format(_entryUnit, true);
+   
+                PrecisionText = $"Misclosure: {deltaText} => {precText}";
 
                 // Save the path with the tool (so that it can be rendered)
                 _parentModel.Tool.SetCurrentPath(pd);

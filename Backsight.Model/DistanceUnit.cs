@@ -7,9 +7,9 @@ namespace Backsight.Model;
 /// </summary>
 public class DistanceUnit : IEquatable<DistanceUnit>
 {
-    internal static readonly DistanceUnit Meters = new (DistanceUnitType.Meters);
-    internal static readonly DistanceUnit Feet = new (DistanceUnitType.Feet);
-    internal static readonly DistanceUnit Chains = new (DistanceUnitType.Chains);
+    public static readonly DistanceUnit Meters = new (DistanceUnitType.Meters);
+    public static readonly DistanceUnit Feet = new (DistanceUnitType.Feet);
+    public static readonly DistanceUnit Chains = new (DistanceUnitType.Chains);
     internal static readonly DistanceUnit AsEntered = new (DistanceUnitType.AsEntered);
 
     public static DistanceUnit GetUnit(DistanceUnitType unitType)
