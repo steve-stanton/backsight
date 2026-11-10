@@ -33,7 +33,7 @@ public class IntersectionResult
     /// existing topology.
     /// </summary>
     /// <param name="intersectedObject"></param>
-    internal IntersectionResult(IIntersectable intersectedObject)
+    public IntersectionResult(IIntersectable intersectedObject)
     {
         m_IntersectedObject = intersectedObject;
         m_Geom = intersectedObject.LineGeometry;
@@ -556,7 +556,7 @@ public class IntersectionResult
         return (uint)m_Data.Count;
     }
 
-    internal uint IntersectSegment(ILineSegmentGeometry seg)
+    public uint IntersectSegment(ILineSegmentGeometry seg)
     {
         return m_IntersectedObject.LineGeometry.IntersectSegment(this, seg);
     }

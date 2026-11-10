@@ -60,15 +60,9 @@ public class LineStringGeometry : ILineGeometry, IMultiSegmentGeometry
             m_Data[i] = PositionGeometry.Create(data[i]);
     }
 
-    public IPointGeometry[] Data
-    {
-        get { return m_Data; }
-    }
+    public IPointGeometry[] Data => m_Data;
 
-    public virtual IWindow Extent
-    {
-       get { return GetExtent(this); }
-    }
+    public virtual IWindow Extent => GetExtent(this);
 
     public static IWindow GetExtent(IMultiSegmentGeometry g)
     {
@@ -102,26 +96,17 @@ public class LineStringGeometry : ILineGeometry, IMultiSegmentGeometry
     /// <summary>
     /// The position of the start of the line (implements ILineGeometry).
     /// </summary>
-    public IPointGeometry Start
-    {
-        get { return m_Data[0]; }
-    }
+    public IPointGeometry Start => m_Data[0];
 
     /// <summary>
     /// The position of the end of the line (implements ILineGeometry).
     /// </summary>
-    public IPointGeometry End
-    {
-        get { return m_Data[m_Data.Length-1]; }
-    }
+    public IPointGeometry End => m_Data[^1];
 
     /// <summary>
     /// The length of the line (on the map projection). (implements ILineGeometry)
     /// </summary>
-    public ILength Length
-    {
-        get { return GetLength(this, null, null); }
-    }
+    public ILength Length => GetLength(this, null, null);
 
     /// <summary>
     /// The length of this line, up to a specific position.

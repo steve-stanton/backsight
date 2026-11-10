@@ -147,12 +147,21 @@ class MapCanvas : IDisposable
     /// <param name="style">The style to use for drawing the line.</param>
     internal void DrawPath(MultiSegmentGeometry multiSeg, PaintStyle style)
     {
-        using var path = new SKPath();
-        path.MoveTo(_viewport.ToScreenPoint(multiSeg.Start));
+        DrawPath(multiSeg.Data, style);
+    }
 
-        foreach (var p in multiSeg.Data.Skip(1))
-            path.LineTo(_viewport.ToScreenPoint(p));
-            
+    internal void DrawPath(IEnumerable<IPosition> multiSeg, PaintStyle style)
+    {
+        using var path = new SKPath();
+
+        foreach (IPosition p in multiSeg)
+        {
+            if (path.IsEmpty)
+                path.MoveTo(_viewport.ToScreenPoint(p));
+            else
+                path.LineTo(_viewport.ToScreenPoint(p));
+        }
+        
         _canvas.DrawPath(path, GetPaint(style));
     }
 

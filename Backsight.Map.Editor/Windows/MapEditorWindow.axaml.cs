@@ -198,8 +198,14 @@ public partial class MapEditorWindow : Avalonia.Controls.Window
 
     private void OnKeyUp(object? sender, KeyEventArgs e)
     {
-        // The KeyEventArgs don't tell you which key just went up, it tells you what keys are still down
+        // The KeyEventArgs don't tell you which key just went up, it tells you what keys are still down.
+        // We're only interested in a situation where the Ctrl key is no longer down.
+        
+        var ctrlReleased = _keySelection.HasFlag(KeySelection.Ctrl) && !e.KeySelection.HasFlag(KeySelection.Ctrl);
         _keySelection = e.KeySelection;
+
+        if (ctrlReleased)
+            (DataContext as MapEditorViewModel)?.OnCtrlUp();
     }
 
     /// <summary>

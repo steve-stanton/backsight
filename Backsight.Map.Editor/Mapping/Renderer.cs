@@ -161,5 +161,8 @@ class Renderer : IMapControlRenderer
                 StrokeWidth = 2f
             });
         }
+
+        // Render any transient area selection we might have
+        _viewModel.AreaSelection?.Render(canvas);
     }
 }

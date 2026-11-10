@@ -17,6 +17,7 @@ internal static class EditingCursors
     internal static Cursor PolygonSubdivideCursorNo => CreateCursor("PolygonSubdivideNo.png", 32, 32);
     internal static Cursor AttachPointCursor => CreateCursor("AttachPoint.png", 32, 32);
     internal static Cursor SubdivideAtPointCursor => CreateCursor("SubdivideAtPoint.png", 32, 32);
+    internal static Cursor AreaSelectionCursor => CreateCursor("DashedCross.png", 32, 32);
 
     private static Cursor CreateCursor(string assetName, int x, int y)
     {

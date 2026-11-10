@@ -69,6 +69,11 @@ internal interface IMapEditorViewModel
     /// The current selection (may be empty).
     /// </summary>
     IMapSelection Selection { get; }
+    
+    /// <summary>
+    /// Any transient area selection that is currently active.
+    /// </summary>
+    AreaSelectionTool? AreaSelection { get; }
 
     /// <summary>
     /// The current data entry command (if any).
@@ -110,6 +115,14 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// The current data entry tool (if any).
     /// </summary>
     private CommandTool? _commandTool = null;
+
+    /// <summary>
+    /// Helper for performing complex selections. This gets created when the user
+    /// moves the mouse while holding down the CTRL key. It gets deleted
+    /// when the CTRL key is released (at that time, any selected features will be
+    /// merged with the current selection).
+    /// </summary>
+    private AreaSelectionTool? _areaSelectionTool;
 
     /// <summary>
     /// The application model.
@@ -261,6 +274,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// <inheritdoc />
     public IMapSelection Selection => _selection;
 
+    AreaSelectionTool? IMapEditorViewModel.AreaSelection => _areaSelectionTool;
+    
     /// <inheritdoc />
     double IMapEditorViewModel.MapScale => _model.Store is null ? 0 : _mapScale;
 
@@ -294,6 +309,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
         return result;
     }
+
+    internal SpatialType VisibleFeatureTypes =>
+        GetTypesAtCurrentScale() & (SpatialType.Line | SpatialType.Point | SpatialType.Text);
 
     /// <summary>
     /// Handler for the <see cref="Navigator.ViewportChanged"/> event.
@@ -1071,91 +1089,81 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     internal void OnMouseDown(IPosition p, MouseButton b, KeySelection ks)
     {
-        /*
-         c.f. MapControl.mapPanel_MouseDown
-            // Ensure focus is with the map panel so that mouse wheel
-            // events will be received
-            mapPanel.Focus();
-
-            Position p = DisplayToGround(e.Location);
-
-            if (m_Tool==null)
-                EditingController.Current.MouseDown(this, p, e.MouseButton);
-            else
-                m_Tool.MouseDown(p, e.MouseButton);
-         */
-
-        if (_mapDisplayTool is null)
+        // Always give the map display tool first shot
+        if (_mapDisplayTool is not null)
         {
-            /*
-             c.f. Backsight.Editor.EditingController.MouseDown
+            _mapDisplayTool.MouseDown(p, b);
+            return;
+        }
 
-            // If there's no command, or it doesn't handle left clicks...
-            else if (m_Command is null || !m_Command.LButtonDown(p))
-            {
-                bool isMultiSelect = (Control.ModifierKeys & Keys.Shift) != 0;
+        // Return if an active editing tool handles mouse down events (regardless of the outcome)
+        if (_commandTool?.MouseDown(p, b) is true)
+            return;
 
-                // If we're currently auto-highlighting, and the user is doing
-                // a multi-select, turn off auto-highlight and get rid of the
-                // properties window (confusing).
-
-                // TODO: May want to keep the properties window, but disabled. In the
-                // past, it was ok to close because the dialog rested on top of the
-                // map. Now, closing the property window causes a redraw, which is
-                // a bit unexpected in the middle of a multiselect.
-
-                if (isMultiSelect)
-                {
-                    m_IsAutoSelect = 0;
-                    m_Main.ClosePropertiesWindow();
-                }
-
-                if (m_Sel is null)
-                    OnSelect(sender.MapScale, p, isMultiSelect);
-                else
-                    m_Sel.CtrlMouseDown(p);
-            }
-             */
-            bool handledByCommand = _commandTool?.MouseDown(p, b) ?? false;
-            if (!handledByCommand)
-            {
-                bool isMultiSelect = ks.HasFlag(KeySelection.Shift);            
-                OnSelect(p, isMultiSelect);
-            }
+        if (ks.HasFlag(KeySelection.Ctrl))
+        {
+            GetAreaSelectionTool().CtrlMouseDown(p);
         }
         else
         {
-            _mapDisplayTool.MouseDown(p, b);
+            bool isMultiSelect = ks.HasFlag(KeySelection.Shift);            
+            OnSelect(p, isMultiSelect);
         }
+    }
+    
+    internal void OnCtrlUp()
+    {
+        if (_areaSelectionTool is not null)
+        {
+            // Include the items selected by the area selection tool as part of the current selection
+            var sel = _areaSelectionTool.Selection;
+            if (sel.Count > 0)
+            {
+                sel.AddRange(_selection.Items);
+                SetSelection(sel);
+            }
+            
+            _areaSelectionTool = null;
+            MapCursor = Cursor.Default;
+            RefreshMapDisplay();
+        }
+    }
+
+    /// <summary>
+    /// Ensures the area selection tool has been created.
+    /// </summary>
+    /// <returns>The area selection tool (never null)</returns>
+    /// <remarks>
+    /// The selection tool should get created when the user moves the mouse while
+    /// holding down the CTRL key. However, it's possible the user might do something
+    /// like press CTRL and then do a mouse down (without moving the mouse).
+    /// </remarks>
+    private AreaSelectionTool GetAreaSelectionTool()
+    {
+        // If we're currently auto-highlighting, get rid of it altogether (confuses things).
+        _autoSelect = false;
+
+        // Ensure any property window has been removed
+        //m_Main.ClosePropertiesWindow();
+
+        if (_areaSelectionTool is null)
+        {
+            Console.WriteLine("Creating area selection tool");
+            _areaSelectionTool = new AreaSelectionTool(this);
+            MapCursor = AreaSelectionTool.Cursor;
+        }
+
+        return _areaSelectionTool;
     }
 
     internal void OnMouseMove(IPosition p, MouseButton b)
     {
-        /*
-         c.f. EditingController.MouseMove
-        
-        if (m_Sel is not null) // means the CTRL key is pressed
-        {
-            m_Sel.CtrlMouseMoveTo(p);
-        }
-        else
-        {
-            // The main window of the cadastral editor provides the option to
-            // display the current position of the mouse
-            m_Main.MouseMove(sender, p, b);
-
-            // Auto-highlight option
-            if (m_IsAutoSelect > 0)
-                Select(sender.MapScale, p, SpatialType.All);
-
-            m_Command?.MouseMove(p);
-        }
-         */
-        
         // Any map display tool should take priority over any command tool.
         // AutoSelect should apply only if nothing else is going on.
 
-        if (_mapDisplayTool is not null)
+        if (_areaSelectionTool is not null)
+            _areaSelectionTool.MouseMove(p);
+        else if (_mapDisplayTool is not null)
             _mapDisplayTool.MouseMove(p, b);
         else if (_commandTool is not null)
             _commandTool.MouseMove(p, MouseButton.None);
