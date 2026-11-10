@@ -5,7 +5,7 @@ using Backsight.Model.Operations;
 
 namespace Backsight.Map.Editor.Windows;
 
-public class PathViewModel : WizardViewModel
+internal class PathViewModel : WizardViewModel
 {
     internal ConnectionPathTool Tool { get; }
     internal PickPointViewModel Start { get; }
@@ -14,6 +14,7 @@ public class PathViewModel : WizardViewModel
     internal PathOperation? Recall { get; }
 
     internal PathViewModel(ConnectionPathTool tool, PathOperation? recall)
+        : base(tool)
     {
         Tool = tool;
         Recall = recall;
@@ -68,5 +69,4 @@ public class PathViewModel : WizardViewModel
         GetCurrentPageModel().OnNext();
         base.Next();
     }
-
 }

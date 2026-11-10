@@ -6,12 +6,11 @@ using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Rendering;
 using Avalonia.VisualTree;
 
 namespace Backsight.Map.Editor.Windows;
 
-public partial class WizardWindow : DialogWindow<WizardViewModel>
+internal partial class WizardWindow : DialogWindow<WizardViewModel>
 {
     private int _previousPageIndex;
     

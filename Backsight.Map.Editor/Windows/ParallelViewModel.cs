@@ -27,7 +27,10 @@ internal class ParallelViewModel : WizardViewModel
     internal ParallelTerminalViewModel Terminal1 { get; }
     internal ParallelTerminalViewModel Terminal2 { get; }
 
-    internal ParallelViewModel(ParallelTool tool, LineFeature referenceLine, ParallelLineOperation? recall)
+    internal ParallelViewModel(
+        ParallelTool tool,
+        LineFeature referenceLine,
+        ParallelLineOperation? recall) : base(tool)
     {
         Tool = tool;
         ReferenceLine = referenceLine;
@@ -71,23 +74,6 @@ internal class ParallelViewModel : WizardViewModel
     {
         GetCurrentPageModel().OnBack();
         base.Back();
-    }
-
-    internal override bool HandleCloseRequested(DialogResult result)
-    {
-        if (result == DialogResult.OK)
-        {
-            // return if fails validation
-            //Debug.Assert(CanExecuteOk());
-            
-            Tool.FinishDataEntry(this);
-        }
-        else
-        {
-            Tool.CancelDataEntry(this);
-        }
-
-        return true;
     }
 
     protected override bool ValidateCurrentPage()

@@ -3,7 +3,7 @@ using Backsight.Model.Operations;
 
 namespace Backsight.Map.Editor.Windows;
 
-public class PathWindow : WizardWindow
+internal class PathWindow : WizardWindow
 {
     internal PathWindow(ConnectionPathTool tool, PathOperation? recall) :
         base(new PathViewModel(tool, recall))

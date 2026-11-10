@@ -4,7 +4,7 @@ using Backsight.Model.Operations;
 
 namespace Backsight.Map.Editor.Windows;
 
-public class ParallelWindow : WizardWindow
+internal class ParallelWindow : WizardWindow
 {
     internal ParallelWindow(ParallelTool tool, LineFeature referenceLine, ParallelLineOperation? recall) :
         base(new ParallelViewModel(tool, referenceLine, recall))

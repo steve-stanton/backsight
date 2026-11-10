@@ -7,7 +7,7 @@ namespace Backsight.Map.Editor.Windows;
 /// <summary>
 /// Base class for a view model that can be used with a wizard-style data entry dialog. 
 /// </summary>
-public abstract partial class WizardViewModel : DialogViewModel
+internal abstract partial class WizardViewModel : DialogViewModel
 {
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(BackCommand))]
@@ -29,6 +29,13 @@ public abstract partial class WizardViewModel : DialogViewModel
     public bool IsFirstPage => CurrentPageIndex == 0;
     public bool IsLastPage => PageCount > 0 && CurrentPageIndex == PageCount - 1;
 
+    private readonly CommandTool _tool;
+    
+    protected WizardViewModel(CommandTool tool)
+    {
+        _tool = tool;
+    }
+    
     [RelayCommand(CanExecute = nameof(CanGoBack))]
     protected virtual void Back()
     {
@@ -66,4 +73,14 @@ public abstract partial class WizardViewModel : DialogViewModel
     /// Override to implement per-step validation before navigating forward or finishing.
     /// </summary>
     protected virtual bool ValidateCurrentPage() => true;
+
+    internal override bool HandleCloseRequested(DialogResult result)
+    {
+        if (result == DialogResult.OK)
+            _tool.FinishDataEntry(this);
+        else
+            _tool.CancelDataEntry(this);
+
+        return true;
+    }
 }
