@@ -36,31 +36,19 @@ internal class ConnectionPathTool : CommandTool
 
     protected override bool Finish()
     {
-        /*
-        if (StartPoint is null)
-        {
-            var model = _terminals.ViewModel;
-            StartPoint = model.SelectedStart;
-            EndPoint = model.SelectedEnd;
-            
-            Debug.Assert(StartPoint is not null);
-            Debug.Assert(EndPoint is not null);
-            
-            // Display the path data entry screen as a modal dialog... but needs to be async
-            _path = new PathWindow(this);
-            ViewModel.Show(_path);
-        }
-        else
-        {
-            
-        }
-        */
         var model = _dialog.Model;
         var start = model.Start.SelectedPoint;
         var end = model.End.SelectedPoint;
         var entryString = model.Entry.Text;
+        var unitType = ViewModel.Settings?.EntryUnit ?? DistanceUnitType.Meters;
+        var defaultUnits = DistanceUnit.GetUnit(unitType);
         
-        Console.WriteLine(entryString);
+        Debug.Assert(start is not null);
+        Debug.Assert(end is not null);
+        Debug.Assert(!string.IsNullOrWhiteSpace(entryString));
+
+        var op = new PathOperation(start, end, entryString, defaultUnits);
+        op.Execute();
 
         return base.Finish();
     }
