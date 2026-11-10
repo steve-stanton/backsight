@@ -330,7 +330,7 @@ public partial class RadialViewModel : DialogViewModel
     {
         ClearBacksight();
         _activePickTarget = PickTarget.Backsight;
-        _tool.ViewModel.MapCursor = EditingCursors.PickCursor;
+        _tool.SetCursor(EditingCursors.PickCursor);
     }
     
     [RelayCommand]
@@ -338,7 +338,7 @@ public partial class RadialViewModel : DialogViewModel
     {
         _activePickTarget = PickTarget.Angle;
         _par1 = _par2 = null;
-        _tool.ViewModel.MapCursor = EditingCursors.PickCursor;
+        _tool.SetCursor(EditingCursors.PickCursor);
         AngleText = "...";
         
         ClearBacksight();
@@ -366,7 +366,7 @@ public partial class RadialViewModel : DialogViewModel
     {
         _activePickTarget = PickTarget.Offset;
         _lengthOffset = null;
-        _tool.ViewModel.MapCursor = EditingCursors.PickCursor;
+        _tool.SetCursor(EditingCursors.PickCursor);
         ShowLengthOffset(null);
     }
         
@@ -444,7 +444,7 @@ public partial class RadialViewModel : DialogViewModel
     {
         _activePickTarget = PickTarget.None;
         _pickingPoint = null;
-        _tool.ViewModel.MapCursor = Cursor.Default;
+        _tool.SetCursor(null);
     }
 
     private void ShowLengthOffset(PointFeature? offsetPoint)

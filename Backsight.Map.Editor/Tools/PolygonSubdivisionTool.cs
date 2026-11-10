@@ -29,7 +29,7 @@ internal class PolygonSubdivisionTool : CommandTool
 
     internal override bool Run()
     {
-        ViewModel.MapCursor = EditingCursors.PolygonSubdivideCursorNo;
+        SetCursor(EditingCursors.PolygonSubdivideCursorNo);
         return true;
     }
 
@@ -50,8 +50,8 @@ internal class PolygonSubdivisionTool : CommandTool
                     _links = links; 
             }
             
-            ViewModel.MapCursor = _links is null ?
-                EditingCursors.PolygonSubdivideCursorNo : EditingCursors.PolygonSubdivideCursorYes;
+            SetCursor(_links is null ?
+                EditingCursors.PolygonSubdivideCursorNo : EditingCursors.PolygonSubdivideCursorYes);
 
             ViewModel.RefreshMapDisplay();
         }

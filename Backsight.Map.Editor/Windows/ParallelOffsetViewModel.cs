@@ -140,7 +140,7 @@ public partial class ParallelOffsetViewModel : PageModel
         _picking = true;
         _offsetPoint = null;
         AllowOtherWay = false;
-        Tool.ViewModel.MapCursor = EditingCursors.PickCursor;
+        Tool.SetCursor(EditingCursors.PickCursor);
         ShowOffsetDistance(null);
     }
     
@@ -257,7 +257,7 @@ public partial class ParallelOffsetViewModel : PageModel
         _picking = false;
         _pickingPoint = null;
         AllowOtherWay = _offsetPoint is null;
-        Tool.ViewModel.MapCursor = Cursor.Default;
+        Tool.SetCursor(null);
     }
     
     /// <summary>

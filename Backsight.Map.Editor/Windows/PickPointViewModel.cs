@@ -60,16 +60,16 @@ internal class PickPointViewModel : PageModel
 
     internal override void OnBack()
     {
-        Tool.ViewModel.MapCursor = Cursor.Default;
+        Tool.SetCursor(null);
     }
 
     internal override void OnNext()
     {
-        Tool.ViewModel.MapCursor = Cursor.Default;
+        Tool.SetCursor(null);
     }
 
     internal override void OnNavigatedTo()
     {
-        Tool.ViewModel.MapCursor = EditingCursors.PickCursor;
+        Tool.SetCursor(EditingCursors.PickCursor);
     }
 }

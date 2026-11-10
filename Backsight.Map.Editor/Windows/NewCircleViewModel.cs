@@ -60,7 +60,7 @@ internal partial class NewCircleViewModel : ToolViewModel<NewCircleTool>
         }
 
         _activePickTarget = PickTarget.Center;
-        Tool.ViewModel.MapCursor = EditingCursors.PickCursor;
+        Tool.SetCursor(EditingCursors.PickCursor);
     }
 
     [RelayCommand]
@@ -73,7 +73,7 @@ internal partial class NewCircleViewModel : ToolViewModel<NewCircleTool>
         }
 
         _activePickTarget = PickTarget.Radius;
-        Tool.ViewModel.MapCursor = EditingCursors.PickCursor;
+        Tool.SetCursor(EditingCursors.PickCursor);
     }
 
     internal PointFeature? PickingCenter => _activePickTarget == PickTarget.Center ? _pickingPoint : null;
@@ -113,7 +113,7 @@ internal partial class NewCircleViewModel : ToolViewModel<NewCircleTool>
     {
         _activePickTarget = PickTarget.None;
         _pickingPoint = null;
-        Tool.ViewModel.MapCursor = Cursor.Default;
+        Tool.SetCursor(null);
     }
 
     internal void MouseMove(IPosition p)

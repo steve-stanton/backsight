@@ -104,7 +104,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// <summary>
     /// The current map navigation tool (if any).
     /// </summary>
-    private MapDisplayTool? _mapTool = null;
+    private MapDisplayTool? _mapDisplayTool = null;
 
     /// <summary>
     /// The current data entry tool (if any).
@@ -979,8 +979,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(CanStartMapDisplayTool))]
     private void ZoomRectangle()
     {
-        _mapTool = new ZoomRectangleMapTool(this);
-        _mapTool.Start();
+        _mapDisplayTool = new ZoomRectangleMapTool(this);
+        _mapDisplayTool.Start();
     }
 
     internal void ZoomTo(IWindow extent)
@@ -999,18 +999,18 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     [RelayCommand(CanExecute = nameof(CanStartMapDisplayTool))]
     private void Pan()
     {
-        _mapTool = new PanMapTool(this);
-        _mapTool.Start();
+        _mapDisplayTool = new PanMapTool(this);
+        _mapDisplayTool.Start();
     }
     
-    private bool CanStartMapDisplayTool => _mapTool is null;
+    private bool CanStartMapDisplayTool => _mapDisplayTool is null;
     
     private bool CanStartCommandTool => _commandTool is null && Store is not null;
 
-    internal void FinishTool()
+    internal void FinishMapDisplayTool()
     {
-        MapCursor = Cursor.Default;
-        _mapTool = null;
+        _mapDisplayTool = null;
+        MapCursor = _commandTool?.Cursor ?? Cursor.Default;
     }
 
     internal void Escape()
@@ -1019,8 +1019,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         // escape just the map tool
         // TODO: if the command tool was displaying a specific cursor, get it back
         
-        if (_mapTool is not null)
-            _mapTool.Escape();
+        if (_mapDisplayTool is not null)
+            _mapDisplayTool.Escape();
         else if (_commandTool is not null)
             _commandTool.Escape();
     }
@@ -1100,7 +1100,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
                 m_Tool.MouseDown(p, e.MouseButton);
          */
 
-        if (_mapTool is null)
+        if (_mapDisplayTool is null)
         {
             /*
              c.f. Backsight.Editor.EditingController.MouseDown
@@ -1140,7 +1140,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         }
         else
         {
-            _mapTool.MouseDown(p, b);
+            _mapDisplayTool.MouseDown(p, b);
         }
     }
 
@@ -1167,8 +1167,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         }
          */
 
-        if (_mapTool is not null)
-            _mapTool.MouseMove(p, b);
+        if (_mapDisplayTool is not null)
+            _mapDisplayTool.MouseMove(p, b);
      
         // Ignore the auto-select function when any command tool is running
         if (_commandTool is not null)
@@ -1179,8 +1179,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     internal void OnMouseUp(IPosition p, MouseButton b)
     {
-        if (_mapTool is not null)
-            _mapTool.MouseUp(p, b);
+        if (_mapDisplayTool is not null)
+            _mapDisplayTool.MouseUp(p, b);
     }
 
     /// <summary>
@@ -1655,7 +1655,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             throw new InvalidOperationException();
 
         // Make sure the normal cursor is on screen.
-        MapCursor = Cursor.Default;
+        cmd.SetCursor(null);
 
         /*
         cmd.ActiveMap.RestoreLastDraw();
@@ -1680,7 +1680,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             throw new InvalidOperationException();
         
         // Make sure the normal cursor is on screen.
-        MapCursor = Cursor.Default;
+        cmd.SetCursor(null);
 
         /*
         // Notify any check dialog (re-check all potential problems).

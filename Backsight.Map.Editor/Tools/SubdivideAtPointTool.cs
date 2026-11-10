@@ -35,7 +35,7 @@ internal class SubdivideAtPointTool : CommandTool
 
     internal override bool Run()
     {
-        ViewModel.MapCursor = EditingCursors.SubdivideAtPointCursor;
+        SetCursor(EditingCursors.SubdivideAtPointCursor);
         return true;
     }
 

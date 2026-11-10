@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Avalonia.Input;
 using Backsight.Map.Editor.Mapping;
 using Backsight.Map.Editor.Windows;
 using Backsight.Model;
@@ -12,6 +13,12 @@ internal abstract class CommandTool : IDisposable
     private readonly EditingActionId _editId;
     private readonly IMapStore _mapStore;
     private readonly Session _session;
+    
+    /// <summary>
+    /// The custom cursor (if any) that the tool is currently using.
+    /// </summary>
+    private Cursor? _cursor;
+
 
     protected CommandTool(MapEditorViewModel viewModel, EditingActionId editId)
     {
@@ -21,6 +28,13 @@ internal abstract class CommandTool : IDisposable
         _editId = editId;
     }
 
+    internal Cursor? Cursor => _cursor;
+    internal void SetCursor(Cursor? cursor)
+    {
+        _cursor = cursor;
+        ViewModel.MapCursor = _cursor ?? Cursor.Default;
+    }
+    
     internal MapEditorViewModel ViewModel => _viewModel;
     
     internal Session WorkingSession => _session;

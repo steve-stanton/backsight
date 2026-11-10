@@ -34,7 +34,7 @@ internal class AttachPointTool : CommandTool
 
     internal override bool Run()
     {
-        ViewModel.MapCursor = EditingCursors.AttachPointCursor;
+        SetCursor(EditingCursors.AttachPointCursor);
         return true;
     }
 

@@ -73,7 +73,7 @@ internal class NewLineTool : CommandTool
         // to cancel the line-add command, the selection needs to be clear... really?)
         //ViewModel.ClearSelection();
 
-        ViewModel.MapCursor = EditingCursors.PenCursor;
+        SetCursor(EditingCursors.PenCursor);
         return true;
     }
 

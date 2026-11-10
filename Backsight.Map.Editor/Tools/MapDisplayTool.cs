@@ -14,7 +14,7 @@ internal abstract class MapDisplayTool(MapEditorViewModel viewModel)
 
     private protected virtual bool Finish()
     {
-        ViewModel.FinishTool();
+        ViewModel.FinishMapDisplayTool();
         return true;
     }
 
