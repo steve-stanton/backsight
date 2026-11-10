@@ -911,24 +911,9 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     
     private ContextMenuItem[] GetMultiSelectionMenu() =>
     [
-        new("Delete", MultiDeleteCommand),
-        new("Trim Dangles", MultiTrimCommand),
+        new("Delete", EditDeleteCommand),
+        new("Trim Dangles", LineTrimDanglesCommand),
     ];
-
-    //[RelayCommand]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    [RepeatableEdit(EditingActionId.Deletion)]
-    private void MultiDelete()
-    {
-        StartCommand(new DeletionTool(this));
-    }
-    
-    //[RelayCommand]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void MultiTrim()
-    {
-        Console.WriteLine(nameof(MultiTrim));
-    }
     
     /// <summary>
     /// Gets the context menu to display when nothing is selected.
