@@ -1151,12 +1151,13 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
             m_Command?.MouseMove(p);
         }
          */
+        
+        // Any map display tool should take priority over any command tool.
+        // AutoSelect should apply only if nothing else is going on.
 
         if (_mapDisplayTool is not null)
             _mapDisplayTool.MouseMove(p, b);
-     
-        // Ignore the auto-select function when any command tool is running
-        if (_commandTool is not null)
+        else if (_commandTool is not null)
             _commandTool.MouseMove(p, MouseButton.None);
         else if (AutoSelect)
             Select(_mapScale, p, SpatialType.All);
