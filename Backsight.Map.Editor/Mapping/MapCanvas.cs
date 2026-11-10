@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Backsight.Model;
+using Backsight.Model.Operations;
 using Mapsui;
 using Mapsui.Extensions;
 using SkiaSharp;
@@ -74,6 +75,16 @@ class MapCanvas : IDisposable
     /// </summary>
     internal bool ArePointsDrawn => _pointSize is not null;
 
+    /// <summary>
+    /// Draws a point feature (with imported control points rendered as triangles).
+    /// </summary>
+    /// <param name="p">The point feature to render.</param>
+    /// <param name="style">The style to use for drawing the point.</param>
+    internal void DrawPoint(PointFeature p, PaintStyle style)
+    {
+        DrawPoint(p, style, p.Creator is GetControlOperation);
+    }
+    
     /// <summary>
     /// Draws a point as a square (or triangle).
     /// </summary>
