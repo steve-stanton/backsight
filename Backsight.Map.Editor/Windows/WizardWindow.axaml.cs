@@ -2,13 +2,19 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Rendering;
+using Avalonia.VisualTree;
 
 namespace Backsight.Map.Editor.Windows;
 
 public partial class WizardWindow : DialogWindow<WizardViewModel>
 {
+    private int _previousPageIndex;
+    
     public ObservableCollection<UserControl> Pages { get; } = new();
 
     /// <summary>
@@ -36,22 +42,58 @@ public partial class WizardWindow : DialogWindow<WizardViewModel>
     {
         if (e.PropertyName == nameof(WizardViewModel.CurrentPageIndex))
         {
+            UpdateTransitionDirection();
             UpdateCurrentPage();
+            _previousPageIndex = ViewModel.CurrentPageIndex;
         }
     }
 
+    private void UpdateTransitionDirection()
+    {
+        if (PagePresenter is not null)
+        {
+            bool isForward = ViewModel.CurrentPageIndex >= _previousPageIndex;
+            var slide = new PageSlide(TimeSpan.FromMilliseconds(200), PageSlide.SlideAxis.Horizontal);
+            PagePresenter.PageTransition = isForward ? slide : new ReverseTransition(slide);
+        }
+    }
+    
     private void UpdateCurrentPage()
     {
         if (ViewModel.CurrentPageIndex >= 0 && ViewModel.CurrentPageIndex < Pages.Count)
         {
             var page = Pages[ViewModel.CurrentPageIndex];
             PagePresenter.Content = page;
+
+            // Defer focus because Avalonia doesn't produce the visual tree until the
+            // ContentPresenter materializes stuff
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                { FindControlByTabIndex(page, 0)?.Focus(); },  Avalonia.Threading.DispatcherPriority.Loaded);
+            
             (page.DataContext as PageModel)?.OnNavigatedTo();
         }
         else
         {
             PagePresenter.Content = null;
         }
+    }
+
+    /// <summary>
+    /// Recursively searches the visual tree for a control with the given TabIndex.
+    /// </summary>
+    private Control? FindControlByTabIndex(Visual root, int tabIndex)
+    {
+        if (root is Control ctrl && ctrl.TabIndex == tabIndex)
+            return ctrl;
+
+        foreach (var child in root.GetVisualChildren())
+        {
+            var result = FindControlByTabIndex(child, tabIndex);
+            if (result is not null)
+                return result;
+        }
+
+        return null;
     }
     
     protected override void OnLoaded(RoutedEventArgs e)
@@ -88,5 +130,26 @@ public partial class WizardWindow : DialogWindow<WizardViewModel>
 
         Width = Math.Max(MinWidth, maxPageWidth + horizontalChromePadding);
         Height = Math.Max(MinHeight, maxPageHeight + verticalChromePadding);
+    }
+}
+
+/// <summary>
+/// Wraps an <see cref="IPageTransition"/> and inverts the forward/backward direction.
+/// </summary>
+/// <remarks>
+/// See <a href="https://docs.avaloniaui.net/docs/graphics-animation/page-transitions"/>
+/// </remarks>
+internal sealed class ReverseTransition : IPageTransition
+{
+    private readonly IPageTransition _inner;
+
+    public ReverseTransition(IPageTransition inner)
+    {
+        _inner = inner;
+    }
+
+    public System.Threading.Tasks.Task Start(Avalonia.Visual? from, Avalonia.Visual? to, bool forward, System.Threading.CancellationToken cancellationToken)
+    {
+        return _inner.Start(from, to, !forward, cancellationToken);
     }
 }

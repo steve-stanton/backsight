@@ -1,4 +1,5 @@
 ﻿using System;
+using Avalonia.Media;
 using Backsight.Map.Editor.Tools;
 using Backsight.Model.Operations;
 
@@ -7,7 +8,8 @@ namespace Backsight.Map.Editor.Windows;
 public class PathViewModel : WizardViewModel
 {
     internal ConnectionPathTool Tool { get; }
-    internal PathTerminalsViewModel Terminals { get; }
+    internal PickPointViewModel Start { get; }
+    internal PickPointViewModel End { get; }
     internal PathEntryViewModel Entry { get; }
     internal PathOperation? Recall { get; }
 
@@ -15,8 +17,9 @@ public class PathViewModel : WizardViewModel
     {
         Tool = tool;
         Recall = recall;
-        Terminals = new PathTerminalsViewModel(this);
-        Entry = new PathEntryViewModel(this);
+        Start = new PickPointViewModel(Tool, Colors.Blue, "Pick the starting point from the map");
+        End = new PickPointViewModel(Tool, Colors.Aqua, "Pick the finishing point from the map");
+        Entry = new PathEntryViewModel(this, recall);
     }
 
     protected override bool ValidateCurrentPage()
@@ -28,23 +31,42 @@ public class PathViewModel : WizardViewModel
     {
         return CurrentPageIndex switch
         {
-            0 => Terminals,
-            1 => Entry,
+            0 => Start,
+            1 => End,
+            2 => Entry,
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
     internal bool MouseDown(IPosition p)
     {
-        if (CurrentPageIndex == 0)
-            return Terminals.PickPoint(p);
-        else
-            return false;
+        var pointSelected = (GetCurrentPageModel() as PickPointViewModel)?.PickPoint(p);
+        if (pointSelected == true)
+            Next();
+
+        return true;
     }
 
     internal void MouseMove(IPosition p)
     {
-        if (CurrentPageIndex == 0)
-            Terminals.MouseMove(p);
+        (GetCurrentPageModel() as PickPointViewModel)?.MouseMove(p);
     }
+
+    internal Model.PointFeature? StartPoint => Start.SelectedPoint;
+    internal Model.PointFeature? EndPoint => End.SelectedPoint;
+    
+    protected override void Back()
+    {
+        Console.WriteLine("path Back");
+        GetCurrentPageModel().OnBack();
+        base.Back();
+    }
+
+    protected override void Next()
+    {
+        Console.WriteLine("path Next");
+        GetCurrentPageModel().OnNext();
+        base.Next();
+    }
+
 }

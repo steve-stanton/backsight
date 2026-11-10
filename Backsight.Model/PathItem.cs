@@ -5,9 +5,9 @@ namespace Backsight.Model;
 /// <written by="Steve Stanton" on="21-JAN-1998" was="CePathItem" />
 /// <summary>
 /// An item in a path description. This is a helper class used by
-/// the <see cref="PathForm"/> dialog.
+/// the <see cref="PathWindow"/> dialog.
 /// </summary>
-class PathItem
+public class PathItem
 {
     /// <summary>
     /// Obtains the highest leg number in the supplied item array.

@@ -12,18 +12,20 @@
  
     <GroupBox Header="Cul de sac" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="20">
         <Grid RowDefinitions="Auto Auto Auto Auto Auto" ColumnDefinitions="Auto 100" RowSpacing="10" ColumnSpacing="30">
-
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding RadiusHeading}" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="0" Grid.Column="1"
-                TabIndex="0"
-                Text="{Binding Radius}"
-                VerticalContentAlignment="Center"
-            />
             
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Central Angle" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="1" Grid.Column="1"
+            <TextBlock Grid.Row="0" Grid.Column="0"
+                       Text="Central Angle"
+                       TabIndex="0"
+                       VerticalAlignment="Center"/>
+            <TextBox Grid.Row="0" Grid.Column="1"
                 Text="{Binding CentralAngle}"
                 VerticalContentAlignment="Center"
+            />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding RadiusHeading}" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="1" Grid.Column="1"
+                     Text="{Binding Radius}"
+                     VerticalContentAlignment="Center"
             />
             
             <GroupBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Which way does the curve go?"

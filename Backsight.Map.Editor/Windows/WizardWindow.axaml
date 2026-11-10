@@ -8,6 +8,7 @@
         x:DataType="vm:WizardViewModel"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
+        SizeToContent="WidthAndHeight"
         Title="{Binding Title}">
 
     <Grid RowDefinitions="Auto,*,Auto" Margin="10">
@@ -26,7 +27,7 @@
         <Separator Grid.Row="0" VerticalAlignment="Bottom" Height="1" Background="Gray"/>
 
         <!-- Main Body: Active Page Content -->
-        <ContentControl x:Name="PagePresenter" Grid.Row="1" Margin="10" />
+        <TransitioningContentControl x:Name="PagePresenter" Grid.Row="1" Margin="10" />
 
         <!-- Footer: Navigation Buttons -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,10,5,0">

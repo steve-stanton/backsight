@@ -3,38 +3,56 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:me="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="me:PathEntryViewModel"
-             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="280"
-             MinWidth="450" MinHeight="280"
+             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="300"
+             MinWidth="450" MinHeight="300"
              x:Class="Backsight.Map.Editor.Windows.PathEntryPage">
     
-    <Grid RowDefinitions="Auto Auto Auto Auto Auto" RowSpacing="10" Margin="20" ColumnDefinitions="Auto 100">
+    <Grid RowDefinitions="Auto Auto Auto Auto Auto Auto Auto" RowSpacing="10" Margin="20" ColumnDefinitions="Auto 100">
         <TextBox Grid.Row="0" Grid.RowSpan="5" Grid.Column="0"
-                 TabIndex="0" MinWidth="300" Margin="0 0 20 0"
+                 TabIndex="0"
+                 MinWidth="300"
+                 Margin="0 0 20 0"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
                  Text="{Binding Text}"/>
+        
+        <TextBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                 Text="{Binding ValidationError}"
+                 BorderBrush="Transparent"
+                 IsVisible="{Binding ValidationError, Converter={x:Static ObjectConverters.IsNotNull}}"
+                 VerticalContentAlignment="Center">
+                <TextBox.InnerLeftContent>
+                        <PathIcon
+                                Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                                Foreground="Red"/>
+                </TextBox.InnerLeftContent>
+        </TextBox>
+        <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
+                   Text="{Binding PrecisionText}"/>
 
         <Button Grid.Row="0" Grid.Column="1"
                 Command="{Binding DistanceCommand}"
-                IsTabStop="False" Content="_Distance..." Height="40"
+                IsTabStop="False" Content="_Distance..." Height="32"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center" MinWidth="100"/>
         <Button Grid.Row="1" Grid.Column="1"
                 Command="{Binding AngleCommand}"
-                IsTabStop="False" Content="_Angle..." Height="40"
+                IsTabStop="False" Content="_Angle..." Height="32"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center" MinWidth="100"/>
         <Button Grid.Row="2" Grid.Column="1"
                 Command="{Binding CurveCommand}"
-                IsTabStop="False" Content="_Curve..." Height="40"
+                IsTabStop="False" Content="_Curve..." Height="32"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center" MinWidth="100"/>
         <Button Grid.Row="3" Grid.Column="1" 
                 Command="{Binding CuldeSacCommand}"
-                IsTabStop="False" Content="Cul de _sac..." Height="40"
+                IsTabStop="False" Content="Cul de _sac..." Height="32"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center" MinWidth="100"/>
         <Button Grid.Row="4" Grid.Column="1" 
                 Command="{Binding EndCurveCommand}"
-                IsTabStop="False" Content="_End Curve" Height="40"
+                IsTabStop="False" Content="_End Curve" Height="32"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center" MinWidth="100"/>
         

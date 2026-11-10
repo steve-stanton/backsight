@@ -6,7 +6,7 @@ namespace Backsight.Model;
 /// Parses the data entry string for a connection path.
 /// </summary>
 /// <remarks>Previously part of the <c>PathForm</c> dialog</remarks>
-class PathParser
+public class PathParser
 {
     /// <summary>
     /// Attempts to parse the supplied string
@@ -15,7 +15,7 @@ class PathParser
     /// <param name="entryUnit">The initial default entry units</param>
     /// <returns>The items in the parsed path</returns>
     /// <exception cref="Exception">If any parsing problem is encountered</exception>
-    internal static PathItem[] GetPathItems(string str, DistanceUnit entryUnit)
+    public static PathItem[] GetPathItems(string str, DistanceUnit entryUnit)
     {
         PathParser pp = new PathParser(str, entryUnit);
         return pp.m_Items.ToArray();
@@ -27,7 +27,7 @@ class PathParser
         return CreateLegs(items);
     }
 
-    internal static Leg[] CreateLegs(PathItem[] items)
+    public static Leg[] CreateLegs(PathItem[] items)
     {
         // Count the number of legs.
         int numLeg = PathItem.GetMaxLegNumber(items);

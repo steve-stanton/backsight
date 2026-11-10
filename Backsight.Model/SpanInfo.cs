@@ -7,7 +7,7 @@ namespace Backsight.Model;
 /// Information for defining a single span in a connection path. A span
 /// is part of a <see cref="Leg"/>.
 /// </summary>
-class SpanInfo
+public class SpanInfo
 {
     /// <summary>
     /// The observed distance for the span. May be null when dealing
@@ -81,7 +81,7 @@ class SpanInfo
     /// <summary>
     /// Does this span involve the creation of a line feature?
     /// </summary>
-    internal bool HasLine
+    public bool HasLine
     {
         get
         {
@@ -95,7 +95,7 @@ class SpanInfo
     /// <summary>
     /// Does this span involve the creation of a terminating point feature?
     /// </summary>
-    internal bool HasEndPoint => !IsOmitPoint;
+    public bool HasEndPoint => !IsOmitPoint;
 
     /// <summary>
     /// Is this span marked as a miss-connect (meaning that a line should not be

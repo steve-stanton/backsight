@@ -1003,7 +1003,7 @@ for ( UINT2 i=0; i<m_NumLeg; i++ ) {
     /// <summary>
     /// The data entry string that defines the connection path.
     /// </summary>
-    internal string EntryString => m_EntryString;
+    public string EntryString => m_EntryString;
 
     /// <summary>
     /// The default distance units to use when decoding the data entry string.

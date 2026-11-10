@@ -1015,8 +1015,14 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     internal void Escape()
     {
-        _mapTool?.Escape();
-        _commandTool?.Escape();
+        // If a map display tool has been launched while running a command tool,
+        // escape just the map tool
+        // TODO: if the command tool was displaying a specific cursor, get it back
+        
+        if (_mapTool is not null)
+            _mapTool.Escape();
+        else if (_commandTool is not null)
+            _commandTool.Escape();
     }
     
     [RelayCommand]

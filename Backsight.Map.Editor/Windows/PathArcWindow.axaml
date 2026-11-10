@@ -12,20 +12,22 @@
 
     <GroupBox Header="Circular Arc" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="20">
         <Grid RowDefinitions="Auto Auto Auto Auto Auto Auto" ColumnDefinitions="Auto 100 Auto" RowSpacing="10" ColumnSpacing="30">
+            
+            <TextBlock Grid.Row="0" Grid.Column="0"
+                       Text="Angle to center (BC)"
+                       TabIndex="0"
+                       VerticalAlignment="Center"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding EntryAngle}" />
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding RadiusHeading}" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="0" Grid.Column="1"
-                     TabIndex="0"
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Angle to center (EC)" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ExitAngle}" />
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="(optional)" VerticalAlignment="Center"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding RadiusHeading}" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="2" Grid.Column="1"
                      Text="{Binding Radius}"
                      VerticalContentAlignment="Center"
             />
-            
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Angle to center (BC)" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EntryAngle}" />
-
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Angle to center (EC)" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ExitAngle}" />
-            <TextBlock Grid.Row="2" Grid.Column="2" Text="(optional)" VerticalAlignment="Center"/>
             
             <GroupBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Header="Which way does the curve go?"
                       Width="300"

@@ -7,7 +7,7 @@ namespace Backsight.Model;
 /// A leg in a connection path. This is the base class for <see cref="StraightLeg"/>
 /// and <see cref="CircularLeg"/>.
 /// </summary>
-abstract class Leg
+public abstract class Leg
 {
     /// <summary>
     /// The initial definition for this leg (if <see cref="m_OtherSide"/> is undefined, the
@@ -51,7 +51,7 @@ abstract class Leg
     /// <param name="sfac">Scale factor to apply to distances.</param>
     /// <param name="spans">Information for the spans coinciding with this leg.</param>
     /// <returns>The sections along this leg</returns>
-    internal abstract ILineGeometry[] GetSpanSections(IPosition start, double bearing, double sfac, SpanInfo[] spans);
+    public abstract ILineGeometry[] GetSpanSections(IPosition start, double bearing, double sfac, SpanInfo[] spans);
 
     /// <summary>
     /// Obtains the geometry for spans along an alternate face attached to this leg.
@@ -154,7 +154,7 @@ abstract class Leg
     /// The initial definition for this leg (if <see cref="AlternateFace"/> is undefined, the
     /// spans relate to both sides of the leg).
     /// </summary>
-    internal LegFace PrimaryFace => m_FirstSide;
+    public LegFace PrimaryFace => m_FirstSide;
 
     /// <summary>
     /// An alternate set of spans for this leg, used to represent staggered property lots.

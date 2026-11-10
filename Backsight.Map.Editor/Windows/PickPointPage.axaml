@@ -1,0 +1,14 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:me="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="me:PickPointViewModel"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
+             Width="400" Height="100"
+             x:Class="Backsight.Map.Editor.Windows.PickPointPage">
+    
+    <StackPanel Orientation="Horizontal" Margin="30" Spacing="20">
+        <Rectangle Width="32" Height="32" Fill="{Binding PointFill}"/>
+        <TextBlock Text="{Binding Prompt}" FontWeight="Bold" VerticalAlignment="Center"/>
+    </StackPanel>
+</UserControl>

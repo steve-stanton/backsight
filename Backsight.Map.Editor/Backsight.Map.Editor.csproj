@@ -149,6 +149,9 @@
       <Compile Update="Windows\CuldeSacViewModel.cs">
         <DependentUpon>CuldeSacWindow.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\PickPointViewModel.cs">
+        <DependentUpon>PickPointPage.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

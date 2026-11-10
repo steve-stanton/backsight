@@ -6,7 +6,7 @@ using Backsight.Model.Operations;
 
 namespace Backsight.Map.Editor.Windows;
 
-public class ParallelViewModel : WizardViewModel
+internal class ParallelViewModel : WizardViewModel
 {
     /// <summary>
     /// The data entry tool for generating parallel lines.

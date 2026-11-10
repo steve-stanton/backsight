@@ -8,7 +8,7 @@ namespace Backsight.Model;
 /// <summary>
 /// A straight leg in a connection path.
 /// </summary>
-class StraightLeg : Leg
+public class StraightLeg : Leg
 {
     /// <summary>
     /// Angle at the start of the leg (signed). 
@@ -95,7 +95,7 @@ class StraightLeg : Leg
     /// <param name="sfac">Scale factor to apply to distances.</param>
     /// <param name="spans">Information for the spans coinciding with this leg.</param>
     /// <returns>The sections along this leg</returns>
-    internal override ILineGeometry[] GetSpanSections(IPosition pos, double bearing, double sfac, SpanInfo[] spans)
+    public override ILineGeometry[] GetSpanSections(IPosition pos, double bearing, double sfac, SpanInfo[] spans)
     {
         var result = new ILineGeometry[spans.Length];
 
@@ -170,7 +170,7 @@ class StraightLeg : Leg
     /// </summary>
     /// <param name="bearing">The bearing at the end of the preceding leg.</param>
     /// <returns>The bearing of this leg (in radians)</returns>
-    internal double AddStartAngle(double bearing)
+    public double AddStartAngle(double bearing)
     {
         if (Math.Abs(m_StartAngle) < MathConstants.TINY)
             return bearing;

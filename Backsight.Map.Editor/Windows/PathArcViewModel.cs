@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Backsight.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -93,14 +94,23 @@ internal partial class PathArcViewModel : DialogViewModel
         if (entryText is null || exitText is null)
             return String.Empty;
         
-        var result = $"({Radius} {entryText}";
-        
+        var sb = new StringBuilder("(");
+        sb.Append(entryText);
+
         if (exitText != entryText)
-            result += $" {exitText}";
+        {
+            sb.Append(" ");
+            sb.Append(exitText);
+        }
+
+        sb.Append(" ");
+        sb.Append(Radius);
 
         if (IsClockwise)
-            return result + "/ ";
+            sb.Append("/ ");
         else
-            return result + " cc/ ";
+            sb.Append(" cc/ ");
+
+        return sb.ToString();
     }
 }

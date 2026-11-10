@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using Backsight.Model;
+using Backsight.Model.Operations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -9,27 +11,97 @@ namespace Backsight.Map.Editor.Windows;
 public partial class PathEntryViewModel : PageModel
 {
     private readonly PathViewModel _parentModel;
+    private readonly DispatcherTimer _previewTimer;
+
     private DistanceUnit _entryUnit;
+    
+    /// <summary>
+    /// The initial data entry units. 
+    /// </summary>
+    private readonly DistanceUnit _initialEntryUnit;
     
     [ObservableProperty]
     private string? _text;
+    
+    [ObservableProperty]
+    private string? _validationError;
 
-    internal PathEntryViewModel(PathViewModel parentModel)
+    [ObservableProperty]
+    private string? _precisionText;
+
+    internal PathEntryViewModel(PathViewModel parentModel, PathOperation? recall)
     {
         _parentModel = parentModel;
-        
+        _previewTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(1500)
+        };
+        _previewTimer.Tick += (_, _) =>
+        {
+            _previewTimer.Stop();
+            ShowPreview();
+        };
+
         var unitType = parentModel.Tool.ViewModel.Settings?.EntryUnit ?? DistanceUnitType.Meters;
         _entryUnit = DistanceUnit.GetUnit(unitType);
+        _initialEntryUnit = _entryUnit;
 
-        Text = _entryUnit.Abbreviation + "... ";
+        if (recall is null)
+            Text = _entryUnit.Abbreviation + "... ";
+        else
+            Text = recall.EntryString;
     }
 
     partial void OnTextChanged(string? value)
     {
         _parentModel.FinishCommand.NotifyCanExecuteChanged();
+        
+        ValidationError = null;
+
+        // Call ShowPreview if the preview timer runs to completion
+        _previewTimer.Stop();
+        _previewTimer.Start();
     }
 
-    internal override bool ValidatePage() => !String.IsNullOrWhiteSpace(Text);
+    private void ShowPreview()
+    {
+        // Both of these should normally have been defined prior to display of this wizard page
+        // (but might not be when recalling an old edit)
+        if (_parentModel.StartPoint is null || _parentModel.EndPoint is null)
+            return;
+        
+        var text = Text?.ReplaceLineEndings(" ").Trim() ?? String.Empty;
+
+        try
+        {
+            // Supply the initial entry units in case the user has removed it from the entered text
+            // (don't use the most recent data entry units from the very start)
+            var items = PathParser.GetPathItems(text, _initialEntryUnit);
+
+            if (items.Length > 0)
+            {
+                Leg[] legs = PathParser.CreateLegs(items);
+                var pd = new PathInfo(_parentModel.StartPoint, _parentModel.EndPoint, legs);
+
+                double prec = pd.Precision;
+                if (Math.Abs(prec) < MathConstants.TINY)
+                    PrecisionText = "Precision: Exact fit";
+                else
+                    PrecisionText = $"Precision: 1:{(uint)prec}";
+
+                // Save the path with the tool (so that it can be rendered)
+                _parentModel.Tool.SetCurrentPath(pd);
+            }
+
+            ValidationError = null;
+        }
+        catch (Exception e)
+        {
+            ValidationError = e.Message;
+        }
+    }
+
+    internal override bool ValidatePage() => !String.IsNullOrWhiteSpace(Text) && ValidationError is null;
 
     [RelayCommand]
     private async Task Distance()

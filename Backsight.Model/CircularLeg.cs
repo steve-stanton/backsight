@@ -9,7 +9,7 @@ namespace Backsight.Model;
 /// <summary>
 /// A circular leg in a connection path.
 /// </summary>
-class CircularLeg : Leg
+public class CircularLeg : Leg
 {
 	/// <summary>
 	/// Observations defining the shape of the circular leg.
@@ -205,7 +205,7 @@ class CircularLeg : Leg
 	/// <param name="bcBearing">The bearing on entry into the leg.</param>
 	/// <param name="sfac">Scale factor to apply to distances.</param>
 	/// <returns>The bearing at the end of this leg (in radians).</returns>
-	internal double GetExitBearing(IPosition bc, double bcBearing, double sfac)
+	public double GetExitBearing(IPosition bc, double bcBearing, double sfac)
 	{
 		double ecBearing;
 		GetPositions(bc, bcBearing, sfac, out _, out _, out _, out ecBearing);
@@ -220,7 +220,7 @@ class CircularLeg : Leg
 	/// <param name="sfac">Scale factor to apply to distances.</param>
 	/// <param name="spans">Information for the spans coinciding with this leg.</param>
 	/// <returns>The sections along this leg</returns>
-	internal override ILineGeometry[] GetSpanSections(IPosition bc, double bcBearing, double sfac, SpanInfo[] spans)
+	public override ILineGeometry[] GetSpanSections(IPosition bc, double bcBearing, double sfac, SpanInfo[] spans)
 	{
 		// Can't do anything if the leg radius isn't defined
 		if (m_Metrics.ObservedRadius == null)

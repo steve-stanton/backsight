@@ -9,7 +9,8 @@ public class PathWindow : WizardWindow
         base(new PathViewModel(tool, recall))
     {
         Title = "Connection Path";
-        Pages.Add(new PathTerminalsPage(Model.Terminals));
+        Pages.Add(new PickPointPage(Model.Start));
+        Pages.Add(new PickPointPage(Model.End));
         Pages.Add(new PathEntryPage(Model.Entry));
     }
     

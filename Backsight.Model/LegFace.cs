@@ -10,7 +10,7 @@ namespace Backsight.Model;
 /// One face of a <see cref="Leg"/> in a connection path.
 /// </summary>
 /// <seealso cref="PathOperation"/>
-class LegFace : IPersistent
+public class LegFace : IPersistent
 {
     /// <summary>
     /// The leg that this face relates to.
@@ -309,7 +309,7 @@ class LegFace : IPersistent
     /// <summary>
     /// The data that defines each span on this face (should always contain at least one element).
     /// </summary>
-    internal SpanInfo[] Spans => m_Spans;
+    public SpanInfo[] Spans => m_Spans;
 
     /// <summary>
     /// Creates stubs for all items that might be created for this face.

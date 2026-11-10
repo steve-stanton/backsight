@@ -4,11 +4,11 @@ namespace Backsight.Model;
 
 /// <written by="Steve Stanton" on="26-MAR-2008"/>
 /// <summary>
-/// Information about a connection path. This acts as a helper for the <see cref="PathForm"/> dialog.
+/// Information about a connection path. This acts as a helper for the <see cref="PathWindow"/> dialog.
 /// It's sort of a half-way between the fairly unstructured world of the dialog class, and the
 /// regimented world of the operation class.
 /// </summary>
-class PathInfo
+public class PathInfo
 {
     /// <summary>
     /// The point where the path starts.
@@ -51,7 +51,7 @@ class PathInfo
     /// </summary>
     /// <param name="from">The point where the path starts.</param>
     /// <param name="to">The point where the path ends.</param>
-    internal PathInfo(PointFeature from, PointFeature to, Leg[] legs)
+    public PathInfo(PointFeature from, PointFeature to, Leg[] legs)
     {
         m_From = from;
         m_To = to;
@@ -84,13 +84,18 @@ class PathInfo
     /// <summary>
     /// The point where the path starts.
     /// </summary>
-    internal PointFeature FromPoint => m_From;
+    public PointFeature FromPoint => m_From;
 
     /// <summary>
     /// The point where the path ends.
     /// </summary>
-    internal PointFeature ToPoint => m_To;
+    public PointFeature ToPoint => m_To;
 
+    /// <summary>
+    /// The legs that make up the path
+    /// </summary>
+    public IEnumerable<Leg> Legs => m_Legs;
+    
     /// <summary>
     /// Ensures the Adjust method has been called.
     /// </summary>
@@ -178,7 +183,7 @@ class PathInfo
     /// <summary>
     /// Rotation for path (in radians)
     /// </summary>
-    internal double RotationInRadians
+    public double RotationInRadians
     {
         get
         {
@@ -190,7 +195,7 @@ class PathInfo
     /// <summary>
     /// Scaling to apply to path distances
     /// </summary>
-    internal double ScaleFactor
+    public double ScaleFactor
     {
         get
         {
@@ -202,7 +207,7 @@ class PathInfo
     /// <summary>
     /// The precision denominator (0 for a perfect match).
     /// </summary>
-    internal double Precision
+    public double Precision
     {
         get
         {
