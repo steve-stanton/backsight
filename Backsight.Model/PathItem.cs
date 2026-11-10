@@ -91,7 +91,7 @@ public class PathItem
         set => m_Leg = value;
     }
 
-    internal PathItemType ItemType
+    public PathItemType ItemType
     {
         get => m_Item;
         set => m_Item = value;
@@ -124,5 +124,5 @@ public class PathItem
     /// The type of distance unit in effect for the item (should be defined
     /// for all items, even if the value is undefined).
     /// </summary>
-    internal DistanceUnit Units => m_Unit;
+    public DistanceUnit Units => m_Unit;
 }

@@ -3,7 +3,7 @@ namespace Backsight.Model;
 /// <summary>
 /// The various sorts of items that may appear in a path description.
 /// </summary>
-enum PathItemType
+public enum PathItemType
 {
     /// <summary>
     /// Undefined type

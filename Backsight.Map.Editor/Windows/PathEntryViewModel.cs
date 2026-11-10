@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using Backsight.Model;
@@ -12,13 +13,22 @@ public partial class PathEntryViewModel : PageModel
 {
     private readonly PathViewModel _parentModel;
     private readonly DispatcherTimer _previewTimer;
-
-    private DistanceUnit _entryUnit;
     
     /// <summary>
     /// The initial data entry units. 
     /// </summary>
     private readonly DistanceUnit _initialEntryUnit;
+
+    /// <summary>
+    /// The most recent data entry units.
+    /// </summary>
+    private DistanceUnit _entryUnit;
+    
+    /// <summary>
+    /// The text to display for the most recent data entry units.
+    /// </summary>
+    [ObservableProperty]
+    private string _unitsDefault;
     
     [ObservableProperty]
     private string? _text;
@@ -45,10 +55,9 @@ public partial class PathEntryViewModel : PageModel
         var unitType = parentModel.Tool.ViewModel.Settings?.EntryUnit ?? DistanceUnitType.Meters;
         _entryUnit = DistanceUnit.GetUnit(unitType);
         _initialEntryUnit = _entryUnit;
+        UnitsDefault = _entryUnit.Abbreviation + "...";
 
-        if (recall is null)
-            Text = _entryUnit.Abbreviation + "... ";
-        else
+        if (recall is not null)
             Text = recall.EntryString;
     }
 
@@ -80,6 +89,14 @@ public partial class PathEntryViewModel : PageModel
 
             if (items.Length > 0)
             {
+                // Ensure that the most recent data entry units are displayed
+                var lastUnits = items.LastOrDefault(x => x.ItemType == PathItemType.Units);
+                if (lastUnits is not null && lastUnits.Units != _entryUnit)
+                {
+                    _entryUnit = lastUnits.Units;
+                    UnitsDefault = _entryUnit.Abbreviation + "...";
+                }
+                
                 Leg[] legs = PathParser.CreateLegs(items);
                 var pd = new PathInfo(_parentModel.StartPoint, _parentModel.EndPoint, legs);
 
@@ -110,12 +127,7 @@ public partial class PathEntryViewModel : PageModel
         var dialog = new PathDistanceWindow(_entryUnit);
         var result = await vm.ShowDialog(dialog);
         if (result == DialogResult.OK)
-        {
-            if (dialog.ViewModel.MakeUnitsNewDefault)
-                _entryUnit = DistanceUnit.GetUnit(dialog.ViewModel.EntryUnit);
-            
             Text += $" {dialog.ViewModel.EntryString}";
-        }
     }
 
     [RelayCommand]
@@ -125,9 +137,7 @@ public partial class PathEntryViewModel : PageModel
         var dialog = new PathAngleWindow();
         var result = await vm.ShowDialog(dialog);
         if (result == DialogResult.OK)
-        {
             Text += $" {dialog.ViewModel.EntryString}";
-        }
     }
 
     [RelayCommand]
@@ -137,9 +147,7 @@ public partial class PathEntryViewModel : PageModel
         var dialog = new PathArcWindow(_entryUnit);
         var result = await vm.ShowDialog(dialog);
         if (result == DialogResult.OK)
-        {
             Text += $" {dialog.ViewModel.EntryString}";
-        }
     }
 
     [RelayCommand]
@@ -149,9 +157,7 @@ public partial class PathEntryViewModel : PageModel
         var dialog = new CuldeSacWindow(_entryUnit);
         var result = await vm.ShowDialog(dialog);
         if (result == DialogResult.OK)
-        {
             Text += $" {dialog.ViewModel.EntryString}";
-        }
     }
 
     [RelayCommand]
