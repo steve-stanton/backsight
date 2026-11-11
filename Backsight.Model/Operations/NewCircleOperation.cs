@@ -90,7 +90,7 @@ public class NewCircleOperation : NewLineOperation //, IRevisable
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).
     /// </summary>
-    internal override void Undo()
+    public override void Undo()
     {
         // Delete observed radius.
         m_Radius.OnRollback(this);

@@ -151,7 +151,7 @@ class IntersectTwoDirectionsOperation : IntersectOperation, IRecallable, IRevisa
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).
     /// </summary>
-    internal override void Undo()
+    public override void Undo()
     {
         base.OnRollback();
 

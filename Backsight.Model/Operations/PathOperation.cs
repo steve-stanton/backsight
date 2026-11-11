@@ -223,7 +223,7 @@ public class PathOperation : Operation, IRecallable, IRevisable
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).
     /// </summary>
-    internal override void Undo()
+    public override void Undo()
     {
         base.OnRollback();
 

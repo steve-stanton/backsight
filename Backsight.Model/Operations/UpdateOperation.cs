@@ -89,7 +89,7 @@ class UpdateOperation : Operation
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).
     /// </summary>
-    internal override void Undo()
+    public override void Undo()
     {
         // Undoing involves re-exchanging the data for each revised edit, then re-calculating.
 
