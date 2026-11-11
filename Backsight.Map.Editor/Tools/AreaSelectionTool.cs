@@ -192,23 +192,11 @@ internal class AreaSelectionTool
         foreach (var item in _limitSelection)
         {
             if (item is Model.PointFeature pt)
-            {
-                // Points marked as trimmed are normally invisible on draws, but should be rendered
-                // if they're part of a selection
-
-                if (pt.IsTrimPoint())
-                    canvas.DrawPoint(pt, selectionStyle with { Style = SKPaintStyle.Stroke, StrokeWidth = 2 });
-                else
-                    canvas.DrawPoint(pt, selectionStyle);
-            }
+                canvas.Highlight(pt);
             else if (item is LineFeature line)
-            {
                 canvas.Highlight(line, false);
-            }
             else if (item is TextFeature text)
-            {
                 canvas.DrawText(text.TextGeometry, selectionStyle);
-            }
         }
     }
 }

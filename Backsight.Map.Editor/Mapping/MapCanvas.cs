@@ -76,6 +76,23 @@ class MapCanvas : IDisposable
     internal bool ArePointsDrawn => _pointSize is not null;
 
     /// <summary>
+    /// Renders a point feature using a highlight style (for use when drawing points
+    /// that are part of a selection).
+    /// </summary>
+    /// <param name="p">The point to be highlighted.</param>
+    internal void Highlight(PointFeature p)
+    {
+        // Points marked as trimmed are normally invisible on draws, but should be rendered
+        // (but not filled) if they're part of a selection
+        
+        var style = p.IsTrimPoint()
+            ? new PaintStyle { Color = SKColors.Red, Style = SKPaintStyle.Stroke, StrokeWidth = 2 }
+            : new PaintStyle { Color = SKColors.Red, Style = SKPaintStyle.Fill };
+
+        DrawPoint(p, style, p.Creator is GetControlOperation);
+    }
+    
+    /// <summary>
     /// Draws a point feature (with imported control points rendered as triangles).
     /// </summary>
     /// <param name="p">The point feature to render.</param>
@@ -427,5 +444,4 @@ class MapCanvas : IDisposable
             });
         }
     }
-    
 }

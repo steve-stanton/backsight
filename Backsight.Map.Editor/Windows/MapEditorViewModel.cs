@@ -118,7 +118,7 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
     /// <summary>
     /// Helper for performing complex selections. This gets created when the user
-    /// moves the mouse while holding down the CTRL key. It gets deleted
+    /// performs a mouse click while holding down the CTRL key. It gets deleted
     /// when the CTRL key is released (at that time, any selected features will be
     /// merged with the current selection).
     /// </summary>
@@ -1134,9 +1134,8 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
     /// </summary>
     /// <returns>The area selection tool (never null)</returns>
     /// <remarks>
-    /// The selection tool should get created when the user moves the mouse while
-    /// holding down the CTRL key. However, it's possible the user might do something
-    /// like press CTRL and then do a mouse down (without moving the mouse).
+    /// The selection tool should get created when the user performs a mouse click while
+    /// holding down the CTRL key.
     /// </remarks>
     private AreaSelectionTool GetAreaSelectionTool()
     {
@@ -1148,7 +1147,6 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
 
         if (_areaSelectionTool is null)
         {
-            Console.WriteLine("Creating area selection tool");
             _areaSelectionTool = new AreaSelectionTool(this);
             MapCursor = AreaSelectionTool.Cursor;
         }
