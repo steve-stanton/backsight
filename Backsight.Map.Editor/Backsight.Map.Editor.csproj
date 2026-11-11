@@ -149,6 +149,12 @@
       <Compile Update="Windows\PickPointViewModel.cs">
         <DependentUpon>PickPointPage.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Windows\HistoryViewModel.cs">
+        <DependentUpon>HistoryWindow.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Windows\SessionOperationsViewModel.cs">
+        <DependentUpon>SessionOperationsWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

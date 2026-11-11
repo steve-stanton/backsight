@@ -116,7 +116,7 @@ public class CadastralMapModel
     /// <summary>
     /// The editing sessions that define this model
     /// </summary>
-    internal Session[] Sessions => m_Sessions.ToArray();
+    public IEnumerable<Session> Sessions => m_Sessions;
 
     public IWindow Extent => m_Window;
 

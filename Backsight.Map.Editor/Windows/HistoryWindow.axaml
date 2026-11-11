@@ -1,0 +1,48 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:Backsight.Map.Editor.Windows" x:DataType="viewModel:HistoryViewModel"
+        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="420"
+        Width="750" Height="420"
+        x:Class="Backsight.Map.Editor.Windows.HistoryWindow"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        Title="HistoryWindow">
+    
+    <GroupBox Header="Session History" BorderBrush="Brown" BorderThickness="4" CornerRadius="4" Margin="5" Padding="10">
+        <Grid RowDefinitions="Auto Auto" ColumnDefinitions="Auto Auto" RowSpacing="20">
+            <TableView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                ItemsSource="{Binding Sessions}"
+                SelectedItem="{Binding SelectedSession}"
+                SelectionMode="Single"
+                Height="300"
+                Width="700"
+                Padding="20"
+                ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                <TableView.Columns>
+                    <TableViewColumn Header="Start" Binding="{Binding StartTime}"/>
+                    <TableViewColumn Header="Finish" Binding="{Binding FinishTime}"/>
+                    <TableViewColumn Header="User" Binding="{Binding User}"/>
+                    <TableViewColumn Header="Edit count" Binding="{Binding EditCount}"/>
+                </TableView.Columns>
+            </TableView>
+
+            <Button Grid.Row="1" Grid.Column="0"
+                Content="Details"
+                HorizontalAlignment="Left"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Command="{Binding DetailsCommand}" />
+            <Button Grid.Row="1" Grid.Column="1"
+                Content="Close"
+                HorizontalAlignment="Right"
+                HorizontalContentAlignment="Center"
+                Height="32"
+                Width="100"
+                Command="{Binding OkCommand}" />
+            
+        </Grid>
+    </GroupBox>        
+</Window>

@@ -35,15 +35,12 @@ public abstract class DialogWindow<TViewModel> : DialogWindow where TViewModel :
 
     private void OnCloseRequested(object? sender, DialogResult result)
     {
-        Console.WriteLine("OnCloseRequested: " + result);
         Result = result;
         Close(result);
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        Console.WriteLine("Closing dialog window with result: " + Result);
-        
         // Force cancellation if the window was closed in an unexpected way (e.g. the user
         // might have clicked the [x] in a Windows title bar)
 

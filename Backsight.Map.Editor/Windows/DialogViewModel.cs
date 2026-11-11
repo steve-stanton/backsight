@@ -6,6 +6,11 @@ namespace Backsight.Map.Editor.Windows;
 public abstract partial class DialogViewModel : ViewModelBase
 {
     /// <summary>
+    /// The dialog service used to display this dialog (null if this dialog is not currently shown).
+    /// </summary>
+    internal IDialogService? DialogService { get; set; }
+
+    /// <summary>
     /// Event indicating that the dialog needs to be closed (usually when a user
     /// clicks the OK or Cancel button).
     /// </summary>

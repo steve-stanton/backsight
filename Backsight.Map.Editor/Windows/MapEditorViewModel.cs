@@ -1576,11 +1576,13 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         }
     }
 
-    //[RelayCommand]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void EditOperationHistory()
+    [RelayCommand(CanExecute = nameof(IsMapOpen))]
+    private async Task EditOperationHistory()
     {
-        Console.WriteLine(nameof(EditOperationHistory));
+        var sessions = _model.Store?.Model.Sessions;
+        Debug.Assert(sessions is not null);
+        var dialog = new HistoryWindow(sessions);
+        await _dialogService.ShowDialog(dialog);
     }
     
     //[RelayCommand]

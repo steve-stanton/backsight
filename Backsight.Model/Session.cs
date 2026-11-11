@@ -81,7 +81,7 @@ public class Session
     /// <summary>
     /// The login name of the user logged on for the session. 
     /// </summary>
-    internal string User => m_Data.UserName;
+    public string User => m_Data.UserName;
 
     /// <summary>
     /// Rolls back the last operation in this session. The operation will be removed from
@@ -118,6 +118,8 @@ public class Session
             return numOp==0 ? null : m_Operations[numOp-1];
         }
     }
+    
+    public IEnumerable<Operation> Operations => m_Operations;
 
     /// <summary>
     /// Obtains the numbers of data files in a specific folder
@@ -201,12 +203,12 @@ public class Session
     /// <summary>
     /// When was session started? 
     /// </summary>
-    internal DateTime StartTime => m_Data.When;
+    public DateTime StartTime => m_Data.When;
 
     /// <summary>
     /// When was the session completed (null if the session is still active).
     /// </summary>
-    internal DateTime? EndTime => m_EndData?.When;
+    public DateTime? EndTime => m_EndData?.When;
 
     /// <summary>
     /// Obtains dependent edits within this session.

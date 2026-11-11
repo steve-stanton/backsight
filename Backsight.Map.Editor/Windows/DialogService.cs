@@ -81,6 +81,7 @@ internal class DialogService : IDialogService
     async Task<DialogResult> IDialogService.ShowDialog(DialogWindow window)
     {
         window.DialogService = this;
+        (window.DataContext as DialogViewModel)?.DialogService = this;
         return await window.ShowDialog<DialogResult>(_mainWindow);
     }
 
@@ -115,6 +116,7 @@ internal class DialogService : IDialogService
         }
 
         window.DialogService = null;
+        (window.DataContext as DialogViewModel)?.DialogService = null;
     }
     
     public async Task<string?> ShowOpenFileDialog(string title, string fileType)
