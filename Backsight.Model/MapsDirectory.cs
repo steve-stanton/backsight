@@ -142,9 +142,6 @@ public class MapsDirectory : IMapRepository
             SaveMapSettings(mapName, settings);
         }
         
-        // Get rid of any undo folder that may be left over from a crashed editing session
-        DeleteUndoFolder(mapName);
-        
         // Now do the heavy-lifting
         var store = new MapStore(mapName, this, _envRepo, settings);
         LoadEdits(mapName, store);
@@ -180,9 +177,6 @@ public class MapsDirectory : IMapRepository
         var session = store.Model.WorkingSession;
         if (session is null)
             throw new ApplicationException("No working session");
-        
-        // Remove any undo folder
-        DeleteUndoFolder(store.Name);
 
         // Combine data files for the session (and append an EndSessionEvent)
         CompleteSession(session); 
@@ -317,30 +311,6 @@ public class MapsDirectory : IMapRepository
     }
 
     /// <summary>
-    /// Ensures any undo folder for a specific map has been removed (usually done when an
-    /// editing session is being closed).
-    /// </summary>
-    private void DeleteUndoFolder(string mapName)
-    {
-        var undoFolder = Path.Combine(_mapsFolderPath, mapName, "undo");
-        if (Directory.Exists(undoFolder))
-            Directory.Delete(undoFolder, true);
-    }
-
-    /// <summary>
-    /// Obtains the path for a map undo folder (creating it if it does not already exist).
-    /// </summary>
-    /// <returns>The path for the undo folder.</returns>
-    private static string GetUndoFolder(string mapFolder)
-    {
-        string undoFolder = Path.Combine(mapFolder, "undo");
-        if (!Directory.Exists(undoFolder))
-            Directory.CreateDirectory(undoFolder);
-
-        return undoFolder;
-    }
-
-    /// <summary>
     /// Loads a map store with the edits found in a map folder.
     /// </summary>
     /// <param name="mapName">The name of the map.</param>
@@ -453,15 +423,18 @@ public class MapsDirectory : IMapRepository
 
         var mapFolder = Path.Combine(_mapsFolderPath, mapName);
         var fileNumber = change.EditSequence + itemCount - 1;
-        var fileName = Path.Combine(mapFolder, GetDataFileName(fileNumber));
+        var fileName = GetDataFileName(fileNumber);
         var srcFileName = Path.Combine(mapFolder, fileName);
         if (!File.Exists(srcFileName))
             return false;
         
-        // Move the file to an undo sub-folder
-        var undoFolder = GetUndoFolder(mapFolder);
-        var dstFileName = Path.Combine(undoFolder, fileName);
-        File.Move(srcFileName, dstFileName);
+        // This formerly moved the file to an undo folder, anticipating that an Edit-Redo function
+        // would be useful to introduce. But its probably better to handle that by just retaining the
+        // undone operation in memory (would probably involve a stack of edits, which might all need
+        // to be trashed as soon as a further edit ia completed - something like that). Bottom line
+        // is that undo/redo shouldn't really touch the repository.
+        
+        File.Delete(srcFileName);
         return true;
     }
 

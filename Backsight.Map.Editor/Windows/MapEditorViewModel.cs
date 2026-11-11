@@ -1486,12 +1486,17 @@ public partial class MapEditorViewModel : ViewModelBase, IMapEditorViewModel
         return _selection.Count > 0;
     }
 
-    //[RelayCommand]
-    [RelayCommand(CanExecute = "CommandNotImplemented")]
-    private void EditUndo()
+    [RelayCommand(CanExecute = nameof(IsEditUndoEnabled))]
+    private async Task EditUndo()
     {
-        Console.WriteLine(nameof(EditUndo));
+        if (Store?.UndoLastEdit() is true)
+            Refresh();
+        else
+            await ShowMessageBox("Unable to undo last edit");
     }
+    
+    private bool IsEditUndoEnabled() =>
+        Store?.Model.WorkingSession?.UnsavedChangeCount > 0;
 
     private bool IsEditRepeatEnabled() =>
         _commandTool is null && Store?.Model.WorkingSession?.LastOperation is not null;

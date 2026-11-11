@@ -20,14 +20,15 @@
         <KeyBinding Gesture="Ctrl+N" Command="{Binding FileNewCommand}" />
         <KeyBinding Gesture="Ctrl+O" Command="{Binding FileOpenCommand}" />
         <KeyBinding Gesture="Ctrl+S" Command="{Binding FileSaveCommand}" />
-        <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}" />
+        <KeyBinding Gesture="Ctrl+Z" Command="{Binding EditUndoCommand}" />
+        <KeyBinding Gesture="Ctrl+Return" Command="{Binding EditRecallCommand}" />
         <KeyBinding Gesture="Alt+Right" Command="{Binding NextCommand}" />
         <KeyBinding Gesture="Alt+Left" Command="{Binding PreviousCommand}" />
-        <KeyBinding Gesture="Delete" Command="{Binding EditDeleteCommand}" />
         <KeyBinding Gesture="Alt+Up" Command="{Binding EnlargePointSizeCommand}" />
         <KeyBinding Gesture="Alt+Down" Command="{Binding ReducePointSizeCommand}" />
+        <KeyBinding Gesture="F5" Command="{Binding RefreshCommand}" />
+        <KeyBinding Gesture="Delete" Command="{Binding EditDeleteCommand}" />
         <KeyBinding Gesture="Return" Command="{Binding EditRepeatCommand}" />
-        <KeyBinding Gesture="Ctrl+Return" Command="{Binding EditRecallCommand}" />
     </Window.KeyBindings>
         
     <DockPanel>
@@ -81,11 +82,13 @@
                     Header="_Delete"
                     Command="{Binding EditDeleteCommand}"
                     ToolTip.Tip="Delete currently selected feature(s)"
+                    InputGesture="Delete"
                     />
                 <MenuItem
                     Header="_Undo"
                     Command="{Binding EditUndoCommand}"
-                    ToolTip.Tip="Undo the last action"
+                    ToolTip.Tip="Undo the last edit"
+                    InputGesture="Ctrl+Z"
                     />
                 <MenuItem
                     Header="_Repeat"
