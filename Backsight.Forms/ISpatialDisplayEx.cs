@@ -1,4 +1,6 @@
-﻿namespace Backsight.Editor.Forms;
+﻿using Backsight.Forms;
+
+namespace Backsight.Editor.Forms;
 
 public static class ISpatialDisplayEx
 {
