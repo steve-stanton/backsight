@@ -64,7 +64,7 @@ public class SetTopologyOperation : Operation
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).
     /// </summary>
-    public override void Undo()
+    internal override void Undo()
     {
         base.OnRollback();
 

@@ -122,7 +122,7 @@ public abstract class LineSubdivisionAtTerminal : Operation
     internal override Feature[] Features => [.. CreatedFeatures()];
 
     /// <inheritdoc/>
-    public override void Undo()
+    internal override void Undo()
     {
         base.OnRollback();
 

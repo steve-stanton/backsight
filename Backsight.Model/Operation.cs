@@ -108,7 +108,7 @@ public abstract class Operation : Change, IFeatureDependent
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).
     /// </summary>
-    public abstract void Undo();
+    internal abstract void Undo();
 
     /// <summary>
     /// Rollback any "extra things" known to this operation. Should be called at

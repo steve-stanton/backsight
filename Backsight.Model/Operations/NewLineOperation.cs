@@ -69,7 +69,7 @@ public abstract class NewLineOperation : Operation
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).
     /// </summary>
-    public override void Undo()
+    internal override void Undo()
     {
         if (m_NewLine==null)
             throw new Exception("NewLineOperation.Rollback - No line to rollback.");

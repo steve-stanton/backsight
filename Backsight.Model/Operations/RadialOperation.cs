@@ -365,7 +365,7 @@ m_pDirection->CreateAngleText(text,wantLinesToo,pFrom,m_pTo);
     /// <summary>
     /// Rollback this operation (occurs when a user undoes the last edit).
     /// </summary>
-    public override void Undo()
+    internal override void Undo()
     {
         base.OnRollback();
 
